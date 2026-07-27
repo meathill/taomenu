@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "TaoMenu — Lightweight QR ordering for small restaurants",
+    "description": "Customers scan a QR code to order. Owners run menus, staff terminals, and payment notes from a phone — no POS, no payment processing."
+  },
+  "nav": {
+    "pricing": "Pricing",
+    "login": "Log in",
+    "cta": "Start free"
+  },
+  "home": {
+    "badge": "Phone-only setup",
+    "title": "Lightweight QR ordering for restaurants, cafés, and banh mi shops",
+    "subtitle": "Guests scan to browse the menu and order. Staff handle tickets on a phone. TaoMenu never takes meal payments and needs no POS hardware.",
+    "primaryCta": "Start free",
+    "secondaryCta": "See pricing",
+    "feature1Title": "No guest app install",
+    "feature1Body": "Customers scan a QR code, open the menu, and submit orders in the browser.",
+    "feature2Title": "Run everything from a phone",
+    "feature2Body": "Owners register, build menus, and share table or pickup codes without a computer.",
+    "feature3Title": "Table service or counter pickup",
+    "feature3Body": "Support dine-in table codes and short pickup numbers for walk-up shops."
+  },
+  "pricing": {
+    "title": "Simple pricing",
+    "subtitle": "Start free. Upgrade to Pro when you need more terminals, languages, and AI tools.",
+    "freeName": "Free",
+    "freePrice": "0 ₫",
+    "freeDesc": "Enough for a small shop to run day to day.",
+    "freeF1": "1 staff terminal",
+    "freeF2": "1 menu language",
+    "freeF3": "Manual menu entry",
+    "proName": "Pro",
+    "proPrice": "149,000 ₫/month",
+    "proDesc": "For busy shops that need multi-language menus and faster setup.",
+    "proF1": "Up to 5 staff terminals",
+    "proF2": "Up to 5 menu languages",
+    "proF3": "Photo import / AI translate / voice assist",
+    "cta": "Start with Free"
+  },
+  "footer": {
+    "tagline": "QR ordering software for small restaurants in Vietnam."
+  }
+}

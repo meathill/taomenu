@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "TaoMenu — Phần mềm order QR cho nhà hàng nhỏ",
+    "description": "Quét mã QR để gọi món, không cần máy POS. Chủ quán chỉ cần điện thoại để tạo menu, nhận order và ghi nhận thanh toán."
+  },
+  "nav": {
+    "pricing": "Bảng giá",
+    "login": "Đăng nhập",
+    "cta": "Bắt đầu miễn phí"
+  },
+  "home": {
+    "badge": "Chỉ cần điện thoại",
+    "title": "Order QR nhẹ cho quán ăn, cà phê và tiệm bánh mì",
+    "subtitle": "Khách quét mã để xem menu và gọi món. Nhân viên nhận order trên điện thoại. TaoMenu không thu tiền hộ, không cần POS.",
+    "primaryCta": "Bắt đầu miễn phí",
+    "secondaryCta": "Xem bảng giá",
+    "feature1Title": "Không cần tải app khách",
+    "feature1Body": "Khách chỉ quét mã QR, xem menu và gửi order ngay trên trình duyệt.",
+    "feature2Title": "Một điện thoại cũng chạy được",
+    "feature2Body": "Chủ quán đăng ký, tạo menu, chia sẻ mã bàn hoặc mã lấy món chỉ bằng điện thoại.",
+    "feature3Title": "Ăn tại bàn hoặc lấy tại quầy",
+    "feature3Body": "Hỗ trợ order theo bàn và số lấy món cho quán ít chỗ ngồi."
+  },
+  "pricing": {
+    "title": "Bảng giá đơn giản",
+    "subtitle": "Bắt đầu miễn phí. Nâng cấp Pro khi cần nhiều nhân viên, đa ngôn ngữ và AI.",
+    "freeName": "Free",
+    "freePrice": "0 ₫",
+    "freeDesc": "Đủ để một quán nhỏ vận hành hằng ngày.",
+    "freeF1": "1 thiết bị nhân viên",
+    "freeF2": "1 ngôn ngữ menu",
+    "freeF3": "Tạo menu thủ công",
+    "proName": "Pro",
+    "proPrice": "149.000 ₫/tháng",
+    "proDesc": "Cho quán bận, đa ngôn ngữ và nhập menu nhanh.",
+    "proF1": "Tối đa 5 thiết bị nhân viên",
+    "proF2": "Tối đa 5 ngôn ngữ menu",
+    "proF3": "Chụp menu / AI dịch / trợ lý giọng nói",
+    "cta": "Bắt đầu với Free"
+  },
+  "footer": {
+    "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ tại Việt Nam."
+  }
+}

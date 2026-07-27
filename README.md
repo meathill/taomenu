@@ -4,6 +4,37 @@ TaoMenu 是面向越南中小餐饮门店的轻量二维码点餐 SaaS。它同�
 
 产品以手机为唯一必需设备：没有电脑的店主也能完成注册、手工建菜单、生成并分享桌码、配对员工终端和管理订阅；Pro 进一步提供拍照/PDF 建菜单、AI 翻译和越南语语音输入与操作。
 
+## 仓库结构
+
+```text
+apps/
+  website/   # 营销站与 SEO（localhost:3000）
+  app/       # PWA 产品面：登录、店主/员工、顾客扫码（localhost:3001）
+packages/
+  config/    # 共享 tsconfig
+  shared/    # 跨端常量与类型
+  ui/        # 设计 token 与工具
+```
+
+## 开发
+
+需要 Node.js ≥ 24 与 pnpm 11。
+
+```bash
+pnpm install
+pnpm dev:website   # http://localhost:3000
+pnpm dev:app       # http://localhost:3001
+# 或并行
+pnpm dev
+```
+
+```bash
+pnpm format
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
 ## 当前文档
 
 - [产品需求文档](docs/PRD.md)
@@ -11,6 +42,9 @@ TaoMenu 是面向越南中小餐饮门店的轻量二维码点餐 SaaS。它同�
 - [技术规格](docs/TECH_SPEC.md)
 - [越南关键词研究](docs/KEYWORD_RESEARCH.md)
 - [实施计划](WIP.md)
+- [测试指南](TESTING.md)
+- [开发笔记](DEV_NOTE.md)
+- [AI 行为准则](AGENTS.md)
 
 ## MVP 定位
 

@@ -1,0 +1,53 @@
+/* TaoMenu 设计 token — 见 docs/DESIGN_SYSTEM.md */
+
+:root {
+  --brand-50: #fff1f0;
+  --brand-600: #b3262d;
+  --brand-700: #8c1d24;
+  --gold-600: #c58a12;
+  --paper-50: #fff9f2;
+  --ink-900: #211a18;
+  --jade-600: #2e6f5e;
+  --indigo-600: #3e5e8c;
+  --violet-600: #79557a;
+  --terracotta-600: #9b5a3c;
+
+  --background: var(--paper-50);
+  --foreground: var(--ink-900);
+  --primary: var(--brand-600);
+  --primary-foreground: #ffffff;
+  --accent: var(--jade-600);
+  --accent-foreground: #ffffff;
+  --muted: #f0e8de;
+  --muted-foreground: #5c524e;
+  --border: #e6d9cb;
+  --ring: var(--jade-600);
+  --radius: 12px;
+  --radius-card: 16px;
+}
+
+@theme inline {
+  --color-brand-50: var(--brand-50);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-gold-600: var(--gold-600);
+  --color-paper-50: var(--paper-50);
+  --color-ink-900: var(--ink-900);
+  --color-jade-600: var(--jade-600);
+  --color-indigo-600: var(--indigo-600);
+  --color-violet-600: var(--violet-600);
+  --color-terracotta-600: var(--terracotta-600);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-card);
+}
