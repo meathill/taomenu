@@ -1,6 +1,6 @@
 import { APP_NAME } from '@taomenu/shared';
 import { Suspense } from 'react';
-import { SignInButton } from './sign-in-button';
+import { LoginForm } from './login-form';
 
 export const metadata = {
   title: 'Đăng nhập',
@@ -8,12 +8,11 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4 py-10">
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       <p className="text-sm font-bold tracking-wide text-jade-600 uppercase">{APP_NAME}</p>
       <h1 className="mt-2 text-2xl font-extrabold text-ink-900">Đăng nhập cửa hàng</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        Giai đoạn 0: đăng nhập thật (Google / email OTP) sẽ có ở giai đoạn sau. Hiện tại dùng nút
-        dưới để mô phỏng phiên dev.
+        Dùng Google hoặc email OTP. Không cần mật khẩu.
       </p>
       <div className="mt-8 rounded-2xl border border-border bg-white p-5 shadow-sm">
         <Suspense
@@ -23,7 +22,7 @@ export default function LoginPage() {
             </div>
           }
         >
-          <SignInButton />
+          <LoginForm />
         </Suspense>
       </div>
     </div>

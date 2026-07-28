@@ -1,25 +1,47 @@
 import { ForkKnifeIcon, QrCodeIcon, StorefrontIcon } from '@phosphor-icons/react/dist/ssr';
+import { listStoresForUser } from '@taomenu/db';
 import { APP_NAME } from '@taomenu/shared';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getDb } from '@/lib/db';
+import { getSession } from '@/lib/session';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Chủ quán',
 };
 
-const links = [
-  { href: '/app/menu', label: 'Menu', icon: ForkKnifeIcon },
-  { href: '/app/tables', label: 'Bàn / QR', icon: QrCodeIcon },
-  { href: '/terminal', label: 'Terminal nhân viên', icon: StorefrontIcon },
-] as const;
+export default async function OwnerHomePage() {
+  const session = await getSession();
+  if (!session?.user) {
+    redirect('/login?next=/app');
+  }
 
-export default function OwnerHomePage() {
+  const stores = await listStoresForUser(getDb(), session.user.id);
+  if (stores.length === 0) {
+    redirect('/app/onboarding');
+  }
+
+  const store = stores[0]!;
+  const links = [
+    { href: '/app/menu', label: 'Menu', icon: ForkKnifeIcon },
+    { href: '/app/tables', label: 'Bàn / QR', icon: QrCodeIcon },
+    { href: '/terminal', label: 'Terminal nhân viên', icon: StorefrontIcon },
+  ] as const;
+
   return (
-    <div className="mx-auto min-h-dvh max-w-lg px-4 py-6 pb-safe">
+    <div className="mx-auto min-h-dvh max-w-lg px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <header className="mb-6">
         <p className="text-sm font-semibold text-jade-600">{APP_NAME}</p>
-        <h1 className="mt-1 text-2xl font-extrabold text-ink-900">Bảng điều khiển</h1>
+        <h1 className="mt-1 text-2xl font-extrabold text-ink-900">{store.name}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Khung chủ quán — menu, bàn và terminal sẽ được nối ở các giai đoạn sau.
+          {store.serviceMode === 'counter_pickup'
+            ? 'Lấy tại quầy'
+            : store.serviceMode === 'hybrid'
+              ? 'Bàn + lấy quầy'
+              : 'Ăn tại bàn'}{' '}
+          · gói {store.plan}
         </p>
       </header>
       <ul className="space-y-3">

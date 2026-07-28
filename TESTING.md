@@ -11,8 +11,11 @@ pnpm test
 ```bash
 pnpm --filter @taomenu/shared test
 pnpm --filter @taomenu/ui test
+pnpm --filter @taomenu/db test
 pnpm --filter @taomenu/app test
 ```
+
+租户隔离：`packages/db` 中 `getStoreIfMatches` 在 `storeId` 与 `StoreContext` 不一致时不得触库并返回 `null`。
 
 ## 约定
 

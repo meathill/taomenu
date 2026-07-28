@@ -1,22 +1,26 @@
 {
-  "name": "@taomenu/shared",
+  "name": "@taomenu/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./plans": "./src/plans.ts",
-    "./store": "./src/store.ts"
+    "./schema": "./src/schema/index.ts",
+    "./repositories": "./src/repositories/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@taomenu/shared": "workspace:*",
+    "drizzle-orm": "^0.45.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.31.10",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   }

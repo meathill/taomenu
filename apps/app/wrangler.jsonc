@@ -14,7 +14,19 @@
       "service": "taomenu-app"
     }
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "taomenu",
+      // 本地开发可用任意占位；部署前 wrangler d1 create taomenu 后替换
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "../../packages/db/migrations"
+    }
+  ],
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    "BETTER_AUTH_URL": "http://localhost:3001"
   }
 }

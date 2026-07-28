@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "db:migrate:local": "wrangler d1 migrations apply taomenu --local",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
@@ -17,11 +18,15 @@
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.1",
     "@phosphor-icons/react": "^2.1.10",
+    "@taomenu/db": "workspace:*",
     "@taomenu/shared": "workspace:*",
     "@taomenu/ui": "workspace:*",
+    "better-auth": "^1.6.23",
+    "drizzle-orm": "^0.45.2",
     "next": "^16.2.10",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.2",

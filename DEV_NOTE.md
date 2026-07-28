@@ -10,6 +10,10 @@
 - 不预建空的 realtime/ai/db 包；需要时再加
 - `packages/*` 直接导出 TypeScript 源码（`workspace:*` + Next `transpilePackages`），不强制 Vite 出 dist，减少双构建
 
-## 本地开发会话
+## 认证与 D1（2026-07-28）
 
-- 阶段 0 用 cookie `taomenu_dev_session=1` 模拟登录；阶段 1 接 Better Auth 后删除 `apps/app/lib/auth-stub.ts`
+- Better Auth + drizzle adapter + D1；Google OAuth（可选 env）+ 邮箱 OTP
+- OTP 本地只 `console.info('[taomenu-otp] …')`，未接邮件发送
+- 账号合并：`accountLinking` + `trustedProviders: ['google']`
+- 本地：`apps/app/.dev.vars`（见 `.dev.vars.example`）+ `pnpm --filter @taomenu/app db:migrate:local`
+- repository 强制 `StoreContext`；跨租户路径 id 在 API 层 `resolveStoreContext` 失败 → 404

@@ -18,13 +18,13 @@
 
 ## 1. 身份、租户与门店
 
-- [ ] Better Auth Google OAuth + 邮箱 OTP，并覆盖账号合并和恢复流程
-- [ ] `stores`、`store_members` 和认证 schema migration
-- [ ] 创建门店和 mobile-first 首次引导，360px 竖屏可完成全部步骤
-- [ ] 经营模式选择：桌边堂食、柜台取餐、混合模式；无座店引导不要求创建桌号
-- [ ] 建立手机表单自动保存、软键盘/safe-area 和 Web Share 回退基线
-- [ ] 建立强制 `StoreContext` 的 repository 层
-- [ ] 两租户隔离测试
+- [x] Better Auth Google OAuth（可选）+ 邮箱 OTP；account linking 信任 Google
+- [x] `packages/db`：auth / stores / store_members schema + migration
+- [x] 创建门店 + mobile-first onboarding（店名 → 经营模式；counter 不要求桌号）
+- [x] 表单 localStorage 自动保存草稿 + safe-area 底部留白
+- [x] 强制 `StoreContext` 的 repository；`getStoreIfMatches` 跨租户短路
+- [x] 租户隔离单测 + slug 单测
+- [ ] 后续：真邮件发送 OTP、Web Share 基线、Playwright 双店主 e2e
 
 完成标准：两个店主只能访问自己的门店，跨租户实体 ID 返回 `404`。
 

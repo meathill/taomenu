@@ -12,8 +12,9 @@ apps/
   app/       # PWA 产品面：登录、店主/员工、顾客扫码（localhost:3001）
 packages/
   config/    # 共享 tsconfig
-  shared/    # 跨端常量与类型
+  shared/    # 跨端常量、Zod schema
   ui/        # 设计 token 与工具
+  db/        # Drizzle schema、migration、repository
 ```
 
 ## 开发
@@ -22,10 +23,11 @@ packages/
 
 ```bash
 pnpm install
+# app 本地密钥与 D1
+cp apps/app/.dev.vars.example apps/app/.dev.vars
+pnpm --filter @taomenu/app db:migrate:local
 pnpm dev:website   # http://localhost:3000
 pnpm dev:app       # http://localhost:3001
-# 或并行
-pnpm dev
 ```
 
 ```bash

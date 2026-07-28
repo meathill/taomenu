@@ -1,0 +1,6 @@
+# 复制为 .dev.vars（勿提交）。OpenNext / wrangler dev 会读取。
+BETTER_AUTH_SECRET=dev-only-change-me-to-a-long-random-string
+BETTER_AUTH_URL=http://localhost:3001
+# 可选：配置后登录页显示 Google
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
