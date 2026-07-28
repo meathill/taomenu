@@ -2,6 +2,7 @@ import { createCustomerOrder, findPickupPointByToken } from '@taomenu/db';
 import { createOrderSchema } from '@taomenu/shared';
 import { badRequest, notFound } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
+import { scheduleOutboxProcessing } from '@/lib/push-send';
 
 type RouteContext = { params: Promise<{ pickupToken: string }> };
 
@@ -31,6 +32,10 @@ export async function POST(request: Request, context: RouteContext) {
 
   if (!result.ok) {
     return Response.json({ error: result.error, code: result.code }, { status: result.status });
+  }
+
+  if (!result.reused && result.outboxId) {
+    scheduleOutboxProcessing(2200);
   }
 
   return Response.json(

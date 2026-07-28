@@ -10,10 +10,14 @@ export const metadata: Metadata = {
   },
   description: 'TaoMenu store owner and staff PWA',
   applicationName: APP_NAME,
+  manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: APP_NAME,
+  },
+  icons: {
+    apple: '/icons/icon-192.png',
   },
   formatDetection: {
     telephone: false,

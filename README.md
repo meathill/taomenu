@@ -23,12 +23,15 @@ packages/
 
 ```bash
 pnpm install
-# app 本地密钥与 D1
+# app 本地密钥与 D1（含 VAPID，用于员工 Push）
 cp apps/app/.dev.vars.example apps/app/.dev.vars
 pnpm --filter @taomenu/app db:migrate:local
 pnpm dev:website   # http://localhost:3000
 pnpm dev:app       # http://localhost:3001
 ```
+
+员工终端：打开 `/terminal` → 安装 PWA → **Bật thông báo** → **Gửi thử** → 点击通知完成验证。  
+新订单约 2s 后推送（仅订单仍为 `submitted`）；顾客页 `/m/*` 不申请通知。
 
 ```bash
 pnpm format

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getDb } from '@/lib/db';
 import { getSession } from '@/lib/session';
+import { NotificationSetup } from './notification-setup';
 import { TerminalBoard } from './terminal-board';
 
 export const dynamic = 'force-dynamic';
@@ -36,6 +37,9 @@ export default async function TerminalPage() {
           ← Chủ quán
         </Link>
       </header>
+      <div className="mb-4">
+        <NotificationSetup storeId={store.id} />
+      </div>
       <TerminalBoard storeId={store.id} />
     </div>
   );

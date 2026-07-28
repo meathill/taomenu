@@ -56,10 +56,12 @@
 
 - [x] 员工工作台查看活跃订单并推进状态（MVP 暂用店主 session）
 - [x] 堂食/外带状态机校验
-- [ ] 一次性配对码和终端凭证
-- [ ] PWA Service Worker + Web Push
+- [x] PWA Service Worker + Web Push（VAPID / outbox / 测试验证）
+- [x] 安装引导 + 能力检测（iOS 需加主屏幕）
+- [ ] 一次性配对码和终端凭证（当前 subscription 挂 owner）
 - [ ] 付款记录与桌台关闭
 - [ ] 审计日志
+- [ ] Cloudflare Queue 替代 setTimeout 投递（生产强化）
 
 ## 5～7
 

@@ -1,6 +1,16 @@
 # 复制为 .dev.vars（勿提交）。OpenNext / wrangler dev 会读取。
 BETTER_AUTH_SECRET=dev-only-change-me-to-a-long-random-string
 BETTER_AUTH_URL=http://localhost:3001
+
+# Web Push VAPID（npx @pushforge/builder vapid 重新生成）
+# 下列为本地开发示例密钥，生产必须轮换
+VAPID_PUBLIC_KEY=BBtp7659cmZ6zDUHP0juspCmN4Z105iWDb9FNqHj2UO9vt_5YMVId9MKFXtWC-CUrj-aV5kQZNDmO-2Oj0khXbg
+VAPID_PRIVATE_JWK={"alg":"ES256","key_ops":["sign"],"ext":true,"kty":"EC","x":"G2nvrn1yZnrMNQc_SO6ykKY3hnXTmJYNv0U2oePZQ70","y":"vt_5YMVId9MKFXtWC-CUrj-aV5kQZNDmO-2Oj0khXbg","crv":"P-256","d":"s6cpjyc0AB_EGZAf7Eo9qtSO_9ORv1ifk8xKqbxICoQ"}
+VAPID_SUBJECT=mailto:ops@taomenu.app
+
 # 可选：配置后登录页显示 Google
 # GOOGLE_CLIENT_ID=
 # GOOGLE_CLIENT_SECRET=
+
+# 可选：保护 /api/internal/process-outbox
+# CRON_SECRET=

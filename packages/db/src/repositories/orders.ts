@@ -12,6 +12,7 @@ import {
   tableSessions,
 } from '../schema/tables-orders';
 import type { Db } from '../types';
+import { enqueueOrderSubmittedNotification } from './push';
 
 function nowMs(): Date {
   return new Date();
@@ -38,6 +39,7 @@ export type CreateOrderResult =
       subtotalAmount: number;
       status: string;
       reused: boolean;
+      outboxId?: string | null;
     }
   | { ok: false; status: number; error: string; code?: string };
 
@@ -215,6 +217,14 @@ export async function createCustomerOrder(
     .set({ orderVersion: store.orderVersion + 1, updatedAt: createdAt })
     .where(eq(stores.id, input.storeId));
 
+  // 与订单同路径写入 outbox；失败不回滚订单（尽力而为）
+  let outboxId: string | null = null;
+  try {
+    outboxId = await enqueueOrderSubmittedNotification(db, input.storeId, orderId);
+  } catch {
+    outboxId = null;
+  }
+
   return {
     ok: true,
     orderId,
@@ -224,6 +234,7 @@ export async function createCustomerOrder(
     subtotalAmount: priced.subtotalAmount,
     status: 'submitted',
     reused: false,
+    outboxId,
   };
 }
 

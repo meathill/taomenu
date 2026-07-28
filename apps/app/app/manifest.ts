@@ -3,14 +3,18 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: '/',
     name: APP_NAME,
     short_name: APP_NAME,
-    description: 'TaoMenu owner and staff PWA',
-    start_url: '/app',
+    description: 'TaoMenu — order QR và terminal nhân viên',
+    start_url: '/terminal',
+    scope: '/',
     display: 'standalone',
+    orientation: 'portrait-primary',
     background_color: '#FFF9F2',
     theme_color: '#2E6F5E',
     lang: 'vi',
+    categories: ['business', 'food'],
     icons: [
       {
         src: '/icons/icon-192.png',
@@ -23,6 +27,12 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
+      },
+      {
+        src: '/icons/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
   };

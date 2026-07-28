@@ -25,4 +25,13 @@
 - 桌码/取餐码：明文仅创建或轮换时返回，库内 `token_hash`（SHA-256）
 - 顾客下单：服务端按当前菜单价重算；`idempotency_key` 唯一；外带取餐号按 `Asia/Ho_Chi_Minh` 营业日序列
 - Terminal MVP 用店主 session 拉单/改状态；终端配对码仍未做
-- 本地迁移：`pnpm --filter @taomenu/app db:migrate:local`（含 0001～0003）
+- 本地迁移：`pnpm --filter @taomenu/app db:migrate:local`（含 0001～0004）
+
+## PWA / Web Push（2026-07-28）
+
+- Service Worker：`apps/app/public/sw.js`（push + notificationclick + 壳缓存）；**顾客 `/m/*` 不注册、不申请权限**
+- VAPID：`@pushforge/builder`（Web Crypto，Workers 可用）；密钥在 `.dev.vars`
+- 新订单：同路径写 `notification_outbox`（`not_before` +2s），下单 API `scheduleOutboxProcessing`；仍为 `submitted` 才投递
+- 永久失效：Push 404/410 → `disabled_at`；测试推送点击后 `verified_at`
+- 补扫：`POST /api/internal/process-outbox`（可选 `Authorization: Bearer CRON_SECRET`）
+- Terminal UI：安装引导 + 开通知 + 测试 + 点击验证

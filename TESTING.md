@@ -23,6 +23,8 @@ pnpm --filter @taomenu/app test
 
 token：`hashToken` / `tokensMatch` 对错误 token 必须失败。
 
+Push：文案不含菜品/金额；测试推送 URL 含 subscription id 供点击验证。本地需配置 VAPID 后真机测锁屏收单。
+
 ## 约定
 
 - 单元/集成测试用 Vitest
