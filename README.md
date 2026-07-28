@@ -42,6 +42,7 @@ pnpm build
 
 ## 当前文档
 
+- **[验收清单 ACCEPTANCE.md](ACCEPTANCE.md)** ← 人工走查从这里开始
 - [产品需求文档](docs/PRD.md)
 - [设计系统与移动端交互基线](docs/DESIGN_SYSTEM.md)
 - [技术规格](docs/TECH_SPEC.md)

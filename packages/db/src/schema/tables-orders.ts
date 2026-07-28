@@ -121,3 +121,50 @@ export const pickupNumberSequences = sqliteTable(
   },
   (table) => [uniqueIndex('pickup_seq_store_date').on(table.storeId, table.businessDate)],
 );
+
+export const SERVICE_REQUEST_TYPES = ['call_staff', 'request_bill'] as const;
+export type ServiceRequestType = (typeof SERVICE_REQUEST_TYPES)[number];
+
+export const SERVICE_REQUEST_STATUSES = ['open', 'acknowledged', 'resolved', 'cancelled'] as const;
+export type ServiceRequestStatus = (typeof SERVICE_REQUEST_STATUSES)[number];
+
+export const serviceRequests = sqliteTable(
+  'service_requests',
+  {
+    id: text('id').primaryKey(),
+    publicTokenHash: text('public_token_hash').notNull(),
+    storeId: text('store_id')
+      .notNull()
+      .references(() => stores.id, { onDelete: 'cascade' }),
+    tableId: text('table_id')
+      .notNull()
+      .references(() => diningTables.id, { onDelete: 'cascade' }),
+    tableSessionId: text('table_session_id'),
+    type: text('type').notNull().$type<ServiceRequestType>(),
+    status: text('status').notNull().$type<ServiceRequestStatus>().default('open'),
+    idempotencyKey: text('idempotency_key').notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+    acknowledgedAt: integer('acknowledged_at', { mode: 'timestamp_ms' }),
+    resolvedAt: integer('resolved_at', { mode: 'timestamp_ms' }),
+  },
+  (table) => [
+    uniqueIndex('service_requests_store_idempotency').on(table.storeId, table.idempotencyKey),
+  ],
+);
+
+export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'other'] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+export const payments = sqliteTable('payments', {
+  id: text('id').primaryKey(),
+  storeId: text('store_id')
+    .notNull()
+    .references(() => stores.id, { onDelete: 'cascade' }),
+  tableSessionId: text('table_session_id'),
+  orderId: text('order_id'),
+  type: text('type').notNull().default('payment'),
+  method: text('method').notNull().$type<PaymentMethod>(),
+  amount: integer('amount').notNull(),
+  note: text('note'),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+});

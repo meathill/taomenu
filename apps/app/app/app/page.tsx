@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getDb } from '@/lib/db';
 import { getSession } from '@/lib/session';
+import { StoreControls } from './store-controls';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,7 @@ export default async function OwnerHomePage() {
           · gói {store.plan}
         </p>
       </header>
+      <StoreControls storeId={store.id} acceptingPublicRequests={store.acceptingPublicRequests} />
       <ul className="space-y-3">
         {links.map(({ href, label, icon: Icon }) => (
           <li key={href}>

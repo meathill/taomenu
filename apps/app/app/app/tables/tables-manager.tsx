@@ -1,5 +1,6 @@
 'use client';
 
+import QRCode from 'qrcode';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 
 type TableRow = {
@@ -20,14 +21,19 @@ type TablesManagerProps = {
   storeSlug: string;
 };
 
+function appOrigin(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3001';
+}
+
 function customerTableUrl(storeSlug: string, token: string): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? '';
-  return `${base}/m/${storeSlug}/t/${token}`;
+  return `${appOrigin()}/m/${storeSlug}/t/${token}`;
 }
 
 function customerPickupUrl(storeSlug: string, token: string): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? '';
-  return `${base}/m/${storeSlug}/p/${token}`;
+  return `${appOrigin()}/m/${storeSlug}/p/${token}`;
 }
 
 export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
@@ -37,7 +43,17 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   const [pointName, setPointName] = useState('Quầy');
   const [error, setError] = useState<string | null>(null);
   const [lastLink, setLastLink] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  async function showLink(url: string) {
+    setLastLink(url);
+    try {
+      setQrDataUrl(await QRCode.toDataURL(url, { width: 240, margin: 1 }));
+    } catch {
+      setQrDataUrl(null);
+    }
+  }
 
   const load = useCallback(async () => {
     const [tRes, pRes] = await Promise.all([
@@ -73,7 +89,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
         setError(data.error || 'Tạo bàn thất bại.');
         return;
       }
-      setLastLink(customerTableUrl(storeSlug, data.table.token));
+      await showLink(customerTableUrl(storeSlug, data.table.token));
       setTableName('');
       await load();
     } finally {
@@ -93,7 +109,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
         setError(data.error || 'Đổi mã thất bại.');
         return;
       }
-      setLastLink(customerTableUrl(storeSlug, data.table.token));
+      await showLink(customerTableUrl(storeSlug, data.table.token));
       await load();
     } finally {
       setBusy(false);
@@ -115,7 +131,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
         setError(data.error || 'Tạo điểm lấy món thất bại.');
         return;
       }
-      setLastLink(customerPickupUrl(storeSlug, data.pickupPoint.token));
+      await showLink(customerPickupUrl(storeSlug, data.pickupPoint.token));
       await load();
     } finally {
       setBusy(false);
@@ -144,11 +160,19 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
       {lastLink ? (
         <div className="rounded-2xl border border-jade-600 bg-white p-4 text-sm">
-          <p className="font-semibold text-ink-900">Link mã QR (chỉ hiện lần tạo/đổi)</p>
+          <p className="font-semibold text-ink-900">Mã QR (chỉ hiện lần tạo/đổi)</p>
+          {qrDataUrl ? (
+            // biome-ignore lint/performance/noImgElement: data URL QR for print/share
+            <img
+              src={qrDataUrl}
+              alt="QR code"
+              className="mx-auto mt-3 size-48 rounded-xl border border-border bg-white p-2"
+            />
+          ) : null}
           <p className="mt-2 break-all font-mono text-xs text-muted-foreground">{lastLink}</p>
           <button
             type="button"
-            className="mt-3 min-h-11 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
+            className="mt-3 min-h-11 w-full rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
             onClick={() => void shareLink(lastLink.replace(' (đã copy)', ''))}
           >
             Chia sẻ / Copy

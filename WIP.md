@@ -46,9 +46,11 @@
 - [x] table session 自动创建和复用
 - [x] 外带取餐号按门店时区营业日分配
 - [x] 服务端价格重算、幂等下单、订单 public token
-- [ ] 二维码/PDF 导出与系统分享完善
-- [ ] 呼叫服务员/请求结账
-- [ ] 限流、暂停接单之外的滥用保护细化
+- [x] 桌码 QR 展示 + 分享/复制（PDF 导出后续）
+- [x] 呼叫服务员 / 请求结账 + 同类合并
+- [x] 暂停/恢复公开接单
+- [x] 顾客状态：visibility / pageshow / 手动刷新（无后台轮询）
+- [ ] 限流与 token 滥用细化自动化
 
 完成标准：顾客可扫码下单；幂等键防重复。
 
@@ -58,8 +60,10 @@
 - [x] 堂食/外带状态机校验
 - [x] PWA Service Worker + Web Push（VAPID / outbox / 测试验证）
 - [x] 安装引导 + 能力检测（iOS 需加主屏幕）
+- [x] 现金付款记录 + 关台（余额为 0）
+- [x] 服务请求在终端处理
+- [x] [ACCEPTANCE.md](ACCEPTANCE.md) 人工验收清单
 - [ ] 一次性配对码和终端凭证（当前 subscription 挂 owner）
-- [ ] 付款记录与桌台关闭
 - [ ] 审计日志
 - [ ] Cloudflare Queue 替代 setTimeout 投递（生产强化）
 

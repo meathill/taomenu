@@ -355,6 +355,16 @@ function buildPayload(event: typeof notificationOutbox.$inferSelect): Record<str
       ...base,
     };
   }
+  if (event.eventType === 'service_request.created') {
+    return {
+      type: 'service_request.created',
+      title: 'TaoMenu',
+      body: 'Khách cần hỗ trợ',
+      url: '/terminal',
+      tag: `svc-${event.entityId}`,
+      ...base,
+    };
+  }
   return {
     type: event.eventType,
     title: 'TaoMenu',

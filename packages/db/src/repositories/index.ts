@@ -31,6 +31,13 @@ export {
   getOrderByPublicToken,
 } from './orders';
 export {
+  closeTableSession,
+  getSessionBalance,
+  listOpenSessions,
+  recordOrderPayment,
+  recordSessionPayment,
+} from './payments';
+export {
   getPublishedMenuForStore,
   type PublicMenuPayload,
 } from './public-menu';
@@ -48,6 +55,13 @@ export {
   type SaveSubscriptionInput,
   upsertPushSubscription,
 } from './push';
+export {
+  type CreateServiceRequestInput,
+  createServiceRequest,
+  getServiceRequestByPublicToken,
+  listOpenServiceRequests,
+  transitionServiceRequest,
+} from './service-requests';
 export {
   canTransition,
   listActiveOrders,

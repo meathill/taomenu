@@ -35,3 +35,9 @@
 - 永久失效：Push 404/410 → `disabled_at`；测试推送点击后 `verified_at`
 - 补扫：`POST /api/internal/process-outbox`（可选 `Authorization: Bearer CRON_SECRET`）
 - Terminal UI：安装引导 + 开通知 + 测试 + 点击验证
+
+## 验收切片（2026-07-28）
+
+- 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`
+- 顾客堂食页：状态刷新 + 叫人/结账；外带：取餐号 + 切回刷新
+- 桌码创建时本地生成 QR data URL（`qrcode` 包）

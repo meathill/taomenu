@@ -19,6 +19,12 @@ export {
 } from './order';
 export { getPlanLimits, PLAN_IDS, PLAN_LIMITS, type PlanId, type PlanLimits } from './plans';
 export {
+  type CreateServiceRequestBody,
+  createServiceRequestSchema,
+  type RecordPaymentBody,
+  recordPaymentSchema,
+} from './service';
+export {
   type CreateStoreBody,
   createStoreSchema,
   SERVICE_MODES,

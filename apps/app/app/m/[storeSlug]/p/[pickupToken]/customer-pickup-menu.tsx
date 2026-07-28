@@ -29,6 +29,8 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     pickupNumber: number | null;
     displayNumber: number;
     subtotalAmount: number;
+    publicToken?: string;
+    status?: string;
   } | null>(null);
 
   const load = useCallback(async () => {
@@ -88,6 +90,8 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         pickupNumber?: number | null;
         displayNumber?: number;
         subtotalAmount?: number;
+        publicToken?: string;
+        status?: string;
       };
       if (!res.ok || data.displayNumber === undefined) {
         setError(data.error || 'Gửi order thất bại.');
@@ -97,12 +101,54 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         pickupNumber: data.pickupNumber ?? null,
         displayNumber: data.displayNumber,
         subtotalAmount: data.subtotalAmount ?? subtotal,
+        publicToken: data.publicToken,
+        status: data.status ?? 'submitted',
       });
+      if (data.publicToken) {
+        try {
+          localStorage.setItem(
+            'taomenu.lastPickupOrder',
+            JSON.stringify({ publicToken: data.publicToken, at: Date.now() }),
+          );
+        } catch {
+          // ignore
+        }
+      }
       setCart([]);
     } finally {
       setSubmitting(false);
     }
   }
+
+  useEffect(() => {
+    if (!result?.publicToken) return;
+    function refresh() {
+      if (!result?.publicToken) return;
+      void fetch(`/api/public/orders/${encodeURIComponent(result.publicToken)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data: { status?: string; pickupNumber?: number | null } | null) => {
+          if (!data) return;
+          setResult((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: data.status ?? prev.status,
+                  pickupNumber: data.pickupNumber ?? prev.pickupNumber,
+                }
+              : prev,
+          );
+        });
+    }
+    function onVisible() {
+      if (document.visibilityState === 'visible') refresh();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', refresh);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', refresh);
+    };
+  }, [result?.publicToken]);
 
   if (result) {
     return (
@@ -113,9 +159,36 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
             ? String(result.pickupNumber).padStart(2, '0')
             : `#${result.displayNumber}`}
         </p>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Tổng {formatVnd(result.subtotalAmount)}. Chờ gọi số — không cần ở lại trang này.
+        <p className="mt-2 text-sm font-bold text-ink-900">
+          {result.status === 'ready_for_pickup'
+            ? 'Sẵn sàng lấy'
+            : result.status === 'accepted'
+              ? 'Đang chuẩn bị'
+              : result.status === 'picked_up'
+                ? 'Đã lấy'
+                : 'Đã gửi'}
         </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Tổng {formatVnd(result.subtotalAmount)}. Nhân viên sẽ gọi số — không cần ở lại trang. Quay
+          lại app để làm mới trạng thái.
+        </p>
+        <button
+          type="button"
+          className="mt-6 min-h-12 w-full rounded-xl border border-border text-sm font-bold"
+          onClick={() => {
+            if (result.publicToken) {
+              void fetch(`/api/public/orders/${encodeURIComponent(result.publicToken)}`)
+                .then((r) => (r.ok ? r.json() : null))
+                .then((data: { status?: string } | null) => {
+                  if (data?.status) {
+                    setResult((prev) => (prev ? { ...prev, status: data.status } : prev));
+                  }
+                });
+            }
+          }}
+        >
+          Làm mới trạng thái
+        </button>
       </div>
     );
   }
