@@ -1,4 +1,45 @@
 export {
+  createDiningTable,
+  createPickupPoint,
+  type DiningTableView,
+  findDiningTableByToken,
+  findPickupPointByToken,
+  listDiningTables,
+  listPickupPoints,
+  rotateDiningTableToken,
+} from './dining';
+export {
+  batchUpdateItemAvailability,
+  createCategory,
+  createItem,
+  deleteCategory,
+  deleteItem,
+  ensureStoreMenu,
+  getMenuTree,
+  listMenuLocales,
+  type MenuTree,
+  type MenuTreeCategory,
+  MenuValidationError,
+  publishMenu,
+  updateCategory,
+  updateItem,
+} from './menu';
+export {
+  type CreateCustomerOrderInput,
+  type CreateOrderResult,
+  createCustomerOrder,
+  getOrderByPublicToken,
+} from './orders';
+export {
+  getPublishedMenuForStore,
+  type PublicMenuPayload,
+} from './public-menu';
+export {
+  canTransition,
+  listActiveOrders,
+  transitionOrder,
+} from './staff-orders';
+export {
   listStoreContextsForUser,
   resolveStoreContext,
 } from './store-context';

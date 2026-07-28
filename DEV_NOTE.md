@@ -17,3 +17,12 @@
 - 账号合并：`accountLinking` + `trustedProviders: ['google']`
 - 本地：`apps/app/.dev.vars`（见 `.dev.vars.example`）+ `pnpm --filter @taomenu/app db:migrate:local`
 - repository 强制 `StoreContext`；跨租户路径 id 在 API 层 `resolveStoreContext` 失败 → 404
+
+## 菜单与订单（2026-07-28）
+
+- 菜单：`menus` + categories/items + 翻译；发布前 `validateMenuForPublish` 纯函数
+- Free：`maxMenuLocales=1`，写第二语言或发布多语言会 422
+- 桌码/取餐码：明文仅创建或轮换时返回，库内 `token_hash`（SHA-256）
+- 顾客下单：服务端按当前菜单价重算；`idempotency_key` 唯一；外带取餐号按 `Asia/Ho_Chi_Minh` 营业日序列
+- Terminal MVP 用店主 session 拉单/改状态；终端配对码仍未做
+- 本地迁移：`pnpm --filter @taomenu/app db:migrate:local`（含 0001～0003）

@@ -64,16 +64,14 @@ export async function createStoreForOwner(
     updatedAt: createdAt,
   };
 
-  await db.batch([
-    db.insert(stores).values(row),
-    db.insert(storeMembers).values({
-      id: memberId,
-      storeId: id,
-      userId,
-      role: 'owner',
-      createdAt,
-    }),
-  ]);
+  await db.insert(stores).values(row);
+  await db.insert(storeMembers).values({
+    id: memberId,
+    storeId: id,
+    userId,
+    role: 'owner',
+    createdAt,
+  });
 
   return row as StoreRow;
 }

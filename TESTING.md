@@ -17,6 +17,12 @@ pnpm --filter @taomenu/app test
 
 租户隔离：`packages/db` 中 `getStoreIfMatches` 在 `storeId` 与 `StoreContext` 不一致时不得触库并返回 `null`。
 
+菜单发布：`validateMenuForPublish` 覆盖空菜单、缺基础语言、Free 多语言、无可用菜。
+
+订单：`priceOrderLines` 拒绝售罄/非法数量；`canTransition` 覆盖堂食/外带状态机。
+
+token：`hashToken` / `tokensMatch` 对错误 token 必须失败。
+
 ## 约定
 
 - 单元/集成测试用 Vitest

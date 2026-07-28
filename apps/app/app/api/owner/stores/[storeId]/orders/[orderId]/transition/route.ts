@@ -1,0 +1,35 @@
+import { type OrderStatus, transitionOrder } from '@taomenu/db';
+import { z } from 'zod';
+import { badRequest, notFound } from '@/lib/api-error';
+import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
+
+const bodySchema = z.object({
+  status: z.enum(['accepted', 'served', 'ready_for_pickup', 'picked_up', 'cancelled']),
+});
+
+type RouteContext = { params: Promise<{ storeId: string; orderId: string }> };
+
+export async function POST(request: Request, context: RouteContext) {
+  const { storeId, orderId } = await context.params;
+  const owner = await requireOwnerStore(storeId);
+  if (isErrorResponse(owner)) return owner;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return badRequest('Invalid JSON');
+  }
+  const parsed = bodySchema.safeParse(body);
+  if (!parsed.success) {
+    return badRequest(parsed.error.issues[0]?.message ?? 'Invalid body');
+  }
+
+  const nextStatus = parsed.data.status as OrderStatus;
+  const result = await transitionOrder(owner.storeCtx, owner.db, orderId, nextStatus);
+  if (!result) return notFound();
+  if ('error' in result) {
+    return badRequest(String(result.error));
+  }
+  return Response.json(result);
+}

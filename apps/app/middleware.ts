@@ -12,7 +12,11 @@ function hasSessionCookie(request: NextRequest): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/app')) {
+  if (
+    pathname.startsWith('/app') ||
+    pathname === '/terminal' ||
+    pathname.startsWith('/terminal/')
+  ) {
     if (!hasSessionCookie(request)) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';
@@ -25,5 +29,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/app/:path*'],
+  matcher: ['/app/:path*', '/terminal', '/terminal/:path*'],
 };
