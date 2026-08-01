@@ -1,8 +1,12 @@
 'use client';
 
-import { type CreateCategoryBody, type CreateItemBody, formatVnd } from '@taomenu/shared';
+import { SquaresFourIcon } from '@phosphor-icons/react';
+import type { CreateCategoryBody, CreateItemBody } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { MenuBatchBar } from './menu-batch-bar';
+import { MenuItemDraftForm } from './menu-item-draft-form';
+import { MenuItemRow } from './menu-item-row';
 
 type MenuTree = {
   menu: {
@@ -55,6 +59,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
     name: string;
     price: string;
   } | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
 
   const load = useCallback(async () => {
     setError(null);
@@ -69,6 +75,25 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const allItemIds = useMemo(
+    () => tree?.categories.flatMap((c) => c.items.map((i) => i.id)) ?? [],
+    [tree],
+  );
+
+  function toggleSelected(itemId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) next.delete(itemId);
+      else next.add(itemId);
+      return next;
+    });
+  }
+
+  function exitSelectMode() {
+    setSelectMode(false);
+    setSelectedIds(new Set());
+  }
 
   async function handleAddCategory(event: FormEvent) {
     event.preventDefault();
@@ -102,11 +127,12 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       setError('Tên và giá không hợp lệ.');
       return;
     }
+    const categoryId = itemDraft.categoryId;
     setBusy(true);
     setError(null);
     try {
       const body: CreateItemBody = {
-        categoryId: itemDraft.categoryId,
+        categoryId,
         name: itemDraft.name.trim(),
         priceAmount,
       };
@@ -120,7 +146,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         setError(data?.error || 'Thêm món thất bại.');
         return;
       }
-      setItemDraft(null);
+      // 保存并继续：保留分类，清空名称/价格便于连录
+      setItemDraft({ categoryId, name: '', price: '' });
       await load();
     } finally {
       setBusy(false);
@@ -140,6 +167,65 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         setError('Cập nhật hết món thất bại.');
         return;
       }
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleCopyItem(itemId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/copy`, {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        setError('Sao chép món thất bại.');
+        return;
+      }
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleBatchSoldOut(isSoldOut: boolean) {
+    if (selectedIds.size === 0) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds: [...selectedIds], isSoldOut }),
+      });
+      if (!res.ok) {
+        setError('Cập nhật hàng loạt thất bại.');
+        return;
+      }
+      exitSelectMode();
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleBatchAvailability(isAvailable: boolean) {
+    if (selectedIds.size === 0) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds: [...selectedIds], isAvailable }),
+      });
+      if (!res.ok) {
+        setError('Cập nhật hàng loạt thất bại.');
+        return;
+      }
+      exitSelectMode();
       await load();
     } finally {
       setBusy(false);
@@ -191,15 +277,43 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             {' · '}v{tree.menu.menuVersion}
           </p>
         </div>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => void handlePublish()}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-60"
-        >
-          Xuất bản menu
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={busy || allItemIds.length === 0}
+            onClick={() => {
+              if (selectMode) exitSelectMode();
+              else setSelectMode(true);
+            }}
+            className={cn(
+              'inline-flex min-h-12 items-center gap-1.5 rounded-xl border px-3 text-sm font-bold disabled:opacity-60',
+              selectMode ? 'border-jade-600 text-jade-600' : 'border-border text-ink-900',
+            )}
+          >
+            <SquaresFourIcon className="size-4" weight="bold" aria-hidden />
+            {selectMode ? 'Hủy chọn' : 'Chọn nhiều'}
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void handlePublish()}
+            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-60"
+          >
+            Xuất bản menu
+          </button>
+        </div>
       </div>
+
+      {selectMode ? (
+        <MenuBatchBar
+          selectedCount={selectedIds.size}
+          totalCount={allItemIds.length}
+          busy={busy}
+          onSelectAll={() => setSelectedIds(new Set(allItemIds))}
+          onSoldOut={(v) => void handleBatchSoldOut(v)}
+          onAvailability={(v) => void handleBatchAvailability(v)}
+        />
+      ) : null}
 
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
 
@@ -239,84 +353,44 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
               <h2 className="text-lg font-bold text-ink-900">
                 {labelForCategory(category, baseLocale)}
               </h2>
-              <button
-                type="button"
-                className="text-sm font-semibold text-jade-600"
-                onClick={() => setItemDraft({ categoryId: category.id, name: '', price: '' })}
-              >
-                + Món
-              </button>
+              {!selectMode ? (
+                <button
+                  type="button"
+                  className="text-sm font-semibold text-jade-600"
+                  onClick={() => setItemDraft({ categoryId: category.id, name: '', price: '' })}
+                >
+                  + Món
+                </button>
+              ) : null}
             </div>
 
             <ul className="mt-3 divide-y divide-border">
               {category.items.map((item) => (
-                <li key={item.id} className="flex items-center justify-between gap-3 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-ink-900">
-                      {labelForItem(item, baseLocale)}
-                    </p>
-                    <p className="text-sm tabular-nums text-muted-foreground">
-                      {formatVnd(item.priceAmount)}
-                      {item.isSoldOut ? (
-                        <span className="ml-2 font-semibold text-brand-600">Hết</span>
-                      ) : null}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void toggleSoldOut(item.id, item.isSoldOut)}
-                    className={cn(
-                      'min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold',
-                      item.isSoldOut
-                        ? 'border-jade-600 text-jade-600'
-                        : 'border-border text-ink-900',
-                    )}
-                  >
-                    {item.isSoldOut ? 'Còn hàng' : 'Báo hết'}
-                  </button>
-                </li>
+                <MenuItemRow
+                  key={item.id}
+                  item={item}
+                  label={labelForItem(item, baseLocale)}
+                  busy={busy}
+                  selectMode={selectMode}
+                  selected={selectedIds.has(item.id)}
+                  onToggleSelect={() => toggleSelected(item.id)}
+                  onCopy={() => void handleCopyItem(item.id)}
+                  onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
+                />
               ))}
               {category.items.length === 0 ? (
                 <li className="py-3 text-sm text-muted-foreground">Chưa có món trong nhóm này.</li>
               ) : null}
             </ul>
 
-            {itemDraft?.categoryId === category.id ? (
-              <form
+            {itemDraft?.categoryId === category.id && !selectMode ? (
+              <MenuItemDraftForm
+                draft={itemDraft}
+                busy={busy}
+                onChange={setItemDraft}
+                onCancel={() => setItemDraft(null)}
                 onSubmit={(e) => void handleAddItem(e)}
-                className="mt-3 space-y-2 rounded-xl bg-paper-50 p-3"
-              >
-                <input
-                  value={itemDraft.name}
-                  onChange={(e) => setItemDraft({ ...itemDraft, name: e.target.value })}
-                  placeholder="Tên món"
-                  className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base outline-none ring-jade-600 focus:ring-2"
-                />
-                <input
-                  value={itemDraft.price}
-                  onChange={(e) => setItemDraft({ ...itemDraft, price: e.target.value })}
-                  placeholder="Giá (VND)"
-                  inputMode="numeric"
-                  className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base tabular-nums outline-none ring-jade-600 focus:ring-2"
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    className="min-h-12 flex-1 rounded-xl border border-border text-sm font-bold"
-                    onClick={() => setItemDraft(null)}
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={busy}
-                    className="min-h-12 flex-1 rounded-xl bg-jade-600 text-sm font-bold text-white disabled:opacity-60"
-                  >
-                    Lưu & tiếp
-                  </button>
-                </div>
-              </form>
+              />
             ) : null}
           </li>
         ))}

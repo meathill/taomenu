@@ -14,6 +14,8 @@ export {
   createItem,
   deleteCategory,
   deleteItem,
+  duplicatedItemName,
+  duplicateItem,
   ensureStoreMenu,
   getMenuTree,
   listMenuLocales,

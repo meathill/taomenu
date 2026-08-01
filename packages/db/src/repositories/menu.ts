@@ -546,6 +546,79 @@ export async function deleteItem(ctx: StoreContext, db: Db, itemId: string) {
   return true;
 }
 
+/** Free 手工建菜单：复制菜品时在名称后追加的后缀（避免无限叠加）。 */
+export function duplicatedItemName(name: string): string {
+  const suffix = ' (sao chép)';
+  if (name.endsWith(suffix)) {
+    return name;
+  }
+  return `${name}${suffix}`;
+}
+
+/**
+ * 复制菜品（含全部 locale 翻译）。售罄状态重置为可售；规格组暂不复制（编辑 UI 未上线）。
+ */
+export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
+  const sourceRows = await db
+    .select()
+    .from(menuItems)
+    .where(and(eq(menuItems.id, itemId), eq(menuItems.storeId, ctx.storeId)))
+    .limit(1);
+  const source = sourceRows[0];
+  if (!source) {
+    return null;
+  }
+
+  const translations = await db
+    .select()
+    .from(menuItemTranslations)
+    .where(
+      and(eq(menuItemTranslations.itemId, itemId), eq(menuItemTranslations.storeId, ctx.storeId)),
+    );
+  if (translations.length === 0) {
+    return null;
+  }
+
+  const createdAt = nowMs();
+  const newItemId = crypto.randomUUID();
+  const siblings = await db
+    .select({ sortOrder: menuItems.sortOrder })
+    .from(menuItems)
+    .where(and(eq(menuItems.storeId, ctx.storeId), eq(menuItems.categoryId, source.categoryId)));
+  const sortOrder = (siblings.at(-1)?.sortOrder ?? -1) + 1;
+
+  await db.insert(menuItems).values({
+    id: newItemId,
+    storeId: ctx.storeId,
+    categoryId: source.categoryId,
+    priceAmount: source.priceAmount,
+    imageKey: source.imageKey,
+    sortOrder,
+    isAvailable: source.isAvailable,
+    isSoldOut: false,
+    createdAt,
+    updatedAt: createdAt,
+  });
+
+  await db.insert(menuItemTranslations).values(
+    translations.map((t) => ({
+      id: crypto.randomUUID(),
+      storeId: ctx.storeId,
+      itemId: newItemId,
+      locale: t.locale,
+      name: duplicatedItemName(t.name),
+      description: t.description,
+      source: 'manual' as const,
+      reviewStatus: 'reviewed' as const,
+      sourceGenerationId: null,
+      reviewedByUserId: ctx.userId,
+      reviewedAt: createdAt,
+    })),
+  );
+
+  return { itemId: newItemId, categoryId: source.categoryId };
+}
+
 export async function batchUpdateItemAvailability(
   ctx: StoreContext,
   db: Db,

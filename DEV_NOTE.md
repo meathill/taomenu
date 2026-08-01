@@ -22,10 +22,12 @@
 
 - 菜单：`menus` + categories/items + 翻译；发布前 `validateMenuForPublish` 纯函数
 - Free：`maxMenuLocales=1`，写第二语言或发布多语言会 422
+- 复制菜品：`POST .../menu/items/:id/copy` → `duplicateItem`（名称加 `(sao chép)`，售罄重置；规格暂不复制）
+- 批量上下架：`PATCH .../menu/items` + `batchItemAvailabilitySchema`（`isSoldOut` / `isAvailable`）
 - 桌码/取餐码：明文仅创建或轮换时返回，库内 `token_hash`（SHA-256）
 - 顾客下单：服务端按当前菜单价重算；`idempotency_key` 唯一；外带取餐号按 `Asia/Ho_Chi_Minh` 营业日序列
 - Terminal MVP 用店主 session 拉单/改状态；终端配对码仍未做
-- 本地迁移：`pnpm --filter @taomenu/app db:migrate:local`（含 0001～0004）
+- 本地迁移：`pnpm --filter @taomenu/app db:migrate:local`（含 0001～0005）
 
 ## PWA / Web Push（2026-07-28）
 

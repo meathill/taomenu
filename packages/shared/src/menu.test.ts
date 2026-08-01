@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createItemSchema, formatVnd } from './menu';
+import { batchItemAvailabilitySchema, createItemSchema, formatVnd } from './menu';
 
 describe('formatVnd', () => {
   it('格式化整数越南盾', () => {
@@ -27,5 +27,25 @@ describe('createItemSchema', () => {
         priceAmount: 45000,
       }).success,
     ).toBe(true);
+  });
+});
+
+describe('batchItemAvailabilitySchema', () => {
+  it('接受批量售罄', () => {
+    expect(
+      batchItemAvailabilitySchema.safeParse({
+        itemIds: ['00000000-0000-4000-8000-000000000001'],
+        isSoldOut: true,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('拒绝空 itemIds', () => {
+    expect(
+      batchItemAvailabilitySchema.safeParse({
+        itemIds: [],
+        isAvailable: false,
+      }).success,
+    ).toBe(false);
   });
 });
