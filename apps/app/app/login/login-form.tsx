@@ -25,8 +25,8 @@ export function LoginForm() {
   useEffect(() => {
     function loadProviders() {
       fetch('/api/auth/providers')
-        .then((res) => res.json())
-        .then((data: Providers) => setProviders(data))
+        .then((res) => res.json() as Promise<Providers>)
+        .then((data) => setProviders(data))
         .catch(() => {
           setProviders({ google: false, emailOtp: true });
         });
@@ -188,8 +188,8 @@ export function LoginForm() {
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Dev: mã OTP in ra terminal log (`[taomenu-otp]`). Google chỉ hiện khi đã cấu hình client
-        id/secret.
+        OTP gửi qua email (Cloudflare Email). Dev chưa cấu hình EMAIL: xem log
+        <code className="mx-1">[taomenu-otp]</code>. Google chỉ hiện khi đã cấu hình OAuth.
       </p>
     </div>
   );

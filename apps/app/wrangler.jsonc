@@ -18,15 +18,29 @@
     {
       "binding": "DB",
       "database_name": "taomenu",
-      // 本地开发可用任意占位；部署前 wrangler d1 create taomenu 后替换
+      // 部署前：wrangler d1 create taomenu → 填入真实 database_id
       "database_id": "00000000-0000-0000-0000-000000000001",
       "migrations_dir": "../../packages/db/migrations"
+    }
+  ],
+  // Cloudflare Email Sending：from 域名需先 wrangler email sending enable <domain>
+  // local dev 可用 remote:true 走真实发送；无远程时代码回退 console OTP
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "remote": true
     }
   ],
   "observability": {
     "enabled": true
   },
+  // 仅非敏感配置。密钥用 wrangler secret / .dev.vars，不要写进本文件。
   "vars": {
-    "BETTER_AUTH_URL": "http://localhost:3001"
+    "BETTER_AUTH_URL": "http://localhost:3001",
+    "NEXT_PUBLIC_APP_URL": "http://localhost:3001",
+    "NEXT_PUBLIC_WEBSITE_URL": "http://localhost:3000",
+    "EMAIL_FROM": "noreply@taomenu.app",
+    "EMAIL_FROM_NAME": "TaoMenu",
+    "VAPID_SUBJECT": "mailto:ops@taomenu.app"
   }
 }

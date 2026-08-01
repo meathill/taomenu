@@ -12,6 +12,12 @@ coverage
 *.tsbuildinfo
 next-env.d.ts
 
+# wrangler / OpenNext 生成的类型（构建与 typecheck 时生成，勿提交）
+cloudflare-env.d.ts
+**/cloudflare-env.d.ts
+worker-configuration.d.ts
+**/worker-configuration.d.ts
+
 # env
 .env
 .env.*

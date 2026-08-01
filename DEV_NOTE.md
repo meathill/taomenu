@@ -36,6 +36,14 @@
 - 补扫：`POST /api/internal/process-outbox`（可选 `Authorization: Bearer CRON_SECRET`）
 - Terminal UI：安装引导 + 开通知 + 测试 + 点击验证
 
+## Email Sending + 部署约定（2026-07-28）
+
+- OTP：`apps/app/lib/email.ts` → `env.EMAIL.send`（Cloudflare Email Sending binding）
+- 无 EMAIL / `EMAIL_DEV_LOG_ONLY=1` → console `[taomenu-otp]`
+- `cloudflare-env.d.ts` 不入库；`pnpm cf-typegen` 在 typecheck/build/deploy 前执行
+- 密钥只进 secret / `.dev.vars`；`NEXT_PUBLIC_*` 仅 APP/WEBSITE URL
+- 详见 `DEPLOYMENT.md`
+
 ## 验收切片（2026-07-28）
 
 - 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`

@@ -23,7 +23,8 @@
 - [x] 创建门店 + mobile-first onboarding
 - [x] 强制 `StoreContext` 的 repository
 - [x] 租户隔离单测
-- [ ] 后续：真邮件发送 OTP、Playwright 双店主 e2e
+- [x] 真邮件发送 OTP（Cloudflare Email Sending binding，见 `lib/email.ts` + DEPLOYMENT.md）
+- [ ] 后续：Playwright 双店主 e2e
 
 ## 2. 菜单与多语言数据模型
 

@@ -125,8 +125,10 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     function refresh() {
       if (!result?.publicToken) return;
       void fetch(`/api/public/orders/${encodeURIComponent(result.publicToken)}`)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data: { status?: string; pickupNumber?: number | null } | null) => {
+        .then((r) =>
+          r.ok ? (r.json() as Promise<{ status?: string; pickupNumber?: number | null }>) : null,
+        )
+        .then((data) => {
           if (!data) return;
           setResult((prev) =>
             prev
@@ -178,8 +180,8 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           onClick={() => {
             if (result.publicToken) {
               void fetch(`/api/public/orders/${encodeURIComponent(result.publicToken)}`)
-                .then((r) => (r.ok ? r.json() : null))
-                .then((data: { status?: string } | null) => {
+                .then((r) => (r.ok ? (r.json() as Promise<{ status?: string }>) : null))
+                .then((data) => {
                   if (data?.status) {
                     setResult((prev) => (prev ? { ...prev, status: data.status } : prev));
                   }

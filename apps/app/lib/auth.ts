@@ -5,6 +5,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { emailOTP } from 'better-auth/plugins';
 import { getEnv } from '@/lib/cf';
 import { getDb } from '@/lib/db';
+import { sendOtpEmail } from '@/lib/email';
 
 function hasGoogleOAuth(env: CloudflareEnv): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
@@ -26,7 +27,7 @@ export function getAuth() {
 
   return betterAuth({
     appName: 'TaoMenu',
-    baseURL: env.BETTER_AUTH_URL || 'http://localhost:3001',
+    baseURL: env.BETTER_AUTH_URL || env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001',
     secret: env.BETTER_AUTH_SECRET,
     database: drizzleAdapter(db, {
       provider: 'sqlite',
@@ -55,8 +56,7 @@ export function getAuth() {
     plugins: [
       emailOTP({
         async sendVerificationOTP({ email, otp, type }) {
-          // 本地与 MVP：OTP 打日志。生产邮件通道后续再接。
-          console.info(`[taomenu-otp] type=${type} email=${email} otp=${otp}`);
+          await sendOtpEmail({ email, otp, type });
         },
         otpLength: 6,
         expiresIn: 300,
