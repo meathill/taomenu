@@ -9,6 +9,8 @@ export const createOrderSchema = z.object({
       z.object({
         menuItemId: z.string().uuid(),
         quantity: z.number().int().min(1).max(99),
+        /** 选中的规格 option id */
+        modifierIds: z.array(z.string().uuid()).max(40).optional(),
       }),
     )
     .min(1)

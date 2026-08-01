@@ -27,6 +27,18 @@ export {
   updateItem,
 } from './menu';
 export {
+  copyModifiersToItem,
+  createModifier,
+  createModifierGroup,
+  deleteModifier,
+  deleteModifierGroup,
+  loadModifierGroupsForItems,
+  type MenuModifierGroup,
+  type MenuModifierOption,
+  updateModifier,
+  updateModifierGroup,
+} from './modifiers';
+export {
   type CreateCustomerOrderInput,
   type CreateOrderResult,
   createCustomerOrder,

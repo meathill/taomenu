@@ -7,6 +7,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react
 import { MenuBatchBar } from './menu-batch-bar';
 import { MenuItemDraftForm } from './menu-item-draft-form';
 import { MenuItemRow } from './menu-item-row';
+import { MenuModifiersPanel, type ModifierGroupView } from './menu-modifiers-panel';
 
 type MenuTree = {
   menu: {
@@ -25,6 +26,7 @@ type MenuTree = {
       isAvailable: boolean;
       isSoldOut: boolean;
       translations: Array<{ locale: string; name: string }>;
+      modifierGroups: ModifierGroupView[];
     }>;
   }>;
 };
@@ -61,6 +63,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   } | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [modifiersItemId, setModifiersItemId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -366,17 +369,34 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
 
             <ul className="mt-3 divide-y divide-border">
               {category.items.map((item) => (
-                <MenuItemRow
-                  key={item.id}
-                  item={item}
-                  label={labelForItem(item, baseLocale)}
-                  busy={busy}
-                  selectMode={selectMode}
-                  selected={selectedIds.has(item.id)}
-                  onToggleSelect={() => toggleSelected(item.id)}
-                  onCopy={() => void handleCopyItem(item.id)}
-                  onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
-                />
+                <li key={item.id}>
+                  <MenuItemRow
+                    item={item}
+                    label={labelForItem(item, baseLocale)}
+                    busy={busy}
+                    selectMode={selectMode}
+                    selected={selectedIds.has(item.id)}
+                    modifierCount={item.modifierGroups?.length ?? 0}
+                    onToggleSelect={() => toggleSelected(item.id)}
+                    onCopy={() => void handleCopyItem(item.id)}
+                    onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
+                    onEditModifiers={() => setModifiersItemId(item.id)}
+                  />
+                  {modifiersItemId === item.id && !selectMode ? (
+                    <MenuModifiersPanel
+                      storeId={storeId}
+                      itemId={item.id}
+                      itemName={labelForItem(item, baseLocale)}
+                      baseLocale={baseLocale}
+                      groups={item.modifierGroups ?? []}
+                      busy={busy}
+                      onBusy={setBusy}
+                      onError={setError}
+                      onChanged={load}
+                      onClose={() => setModifiersItemId(null)}
+                    />
+                  ) : null}
+                </li>
               ))}
               {category.items.length === 0 ? (
                 <li className="py-3 text-sm text-muted-foreground">Chưa có món trong nhóm này.</li>

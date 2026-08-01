@@ -2,6 +2,12 @@
 
 import { formatVnd } from '@taomenu/shared';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type CartLineSelection,
+  cartLineKey,
+  ModifierPicker,
+  type PublicMenuItem,
+} from '../../../modifier-picker';
 
 type MenuPayload = {
   store: { name: string; acceptingPublicRequests: boolean };
@@ -9,22 +15,18 @@ type MenuPayload = {
   categories: Array<{
     id: string;
     name: string;
-    items: Array<{
-      id: string;
-      name: string;
-      priceAmount: number;
-      isSoldOut: boolean;
-    }>;
+    items: PublicMenuItem[];
   }>;
 };
 
-type CartLine = { menuItemId: string; name: string; priceAmount: number; quantity: number };
+type CartLine = CartLineSelection & { quantity: number };
 
 export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [picking, setPicking] = useState<PublicMenuItem | null>(null);
   const [result, setResult] = useState<{
     pickupNumber: number | null;
     displayNumber: number;
@@ -51,20 +53,32 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     [cart],
   );
 
-  function addItem(item: MenuPayload['categories'][number]['items'][number]) {
+  function requestAddItem(item: PublicMenuItem) {
     if (item.isSoldOut) return;
+    if ((item.modifierGroups?.length ?? 0) > 0) {
+      setPicking(item);
+      return;
+    }
+    commitSelection({
+      menuItemId: item.id,
+      name: item.name,
+      priceAmount: item.priceAmount,
+      modifierIds: [],
+      lineKey: cartLineKey(item.id, []),
+    });
+  }
+
+  function commitSelection(selection: Omit<CartLineSelection, 'quantity'>) {
     setCart((prev) => {
-      const existing = prev.find((l) => l.menuItemId === item.id);
+      const existing = prev.find((l) => l.lineKey === selection.lineKey);
       if (existing) {
         return prev.map((l) =>
-          l.menuItemId === item.id ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
+          l.lineKey === selection.lineKey ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
         );
       }
-      return [
-        ...prev,
-        { menuItemId: item.id, name: item.name, priceAmount: item.priceAmount, quantity: 1 },
-      ];
+      return [...prev, { ...selection, quantity: 1 }];
     });
+    setPicking(null);
   }
 
   async function submitOrder() {
@@ -81,7 +95,11 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             idempotencyKey,
-            lines: cart.map((l) => ({ menuItemId: l.menuItemId, quantity: l.quantity })),
+            lines: cart.map((l) => ({
+              menuItemId: l.menuItemId,
+              quantity: l.quantity,
+              modifierIds: l.modifierIds,
+            })),
           }),
         },
       );
@@ -224,13 +242,14 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                   <button
                     type="button"
                     disabled={item.isSoldOut}
-                    onClick={() => addItem(item)}
+                    onClick={() => requestAddItem(item)}
                     className="flex min-h-14 w-full items-center justify-between rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
                   >
                     <span>
                       <span className="block font-semibold">{item.name}</span>
                       <span className="text-sm tabular-nums text-muted-foreground">
                         {formatVnd(item.priceAmount)}
+                        {(item.modifierGroups?.length ?? 0) > 0 ? ' · Tuỳ chọn' : ''}
                       </span>
                     </span>
                     <span className="font-bold text-brand-600">+</span>
@@ -252,6 +271,13 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
             {submitting ? 'Đang gửi…' : `Gửi · ${formatVnd(subtotal)}`}
           </button>
         </div>
+      ) : null}
+      {picking ? (
+        <ModifierPicker
+          item={picking}
+          onCancel={() => setPicking(null)}
+          onConfirm={commitSelection}
+        />
       ) : null}
     </div>
   );

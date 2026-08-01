@@ -18,9 +18,11 @@ type MenuItemRowProps = {
   busy: boolean;
   selectMode: boolean;
   selected: boolean;
+  modifierCount?: number;
   onToggleSelect: () => void;
   onCopy: () => void;
   onToggleSoldOut: () => void;
+  onEditModifiers: () => void;
 };
 
 export function MenuItemRow({
@@ -29,12 +31,14 @@ export function MenuItemRow({
   busy,
   selectMode,
   selected,
+  modifierCount = 0,
   onToggleSelect,
   onCopy,
   onToggleSoldOut,
+  onEditModifiers,
 }: MenuItemRowProps) {
   return (
-    <li className="flex items-center justify-between gap-3 py-3">
+    <div className="flex items-center justify-between gap-3 py-3">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         {selectMode ? (
           <input
@@ -61,6 +65,16 @@ export function MenuItemRow({
           <button
             type="button"
             disabled={busy}
+            title="Tùy chọn"
+            aria-label="Chỉnh tùy chọn món"
+            onClick={onEditModifiers}
+            className="min-h-11 shrink-0 rounded-xl border border-border px-2 text-xs font-bold text-ink-900 disabled:opacity-60"
+          >
+            Tùy chọn{modifierCount > 0 ? ` (${modifierCount})` : ''}
+          </button>
+          <button
+            type="button"
+            disabled={busy}
             title="Sao chép"
             aria-label="Sao chép món"
             onClick={onCopy}
@@ -81,6 +95,6 @@ export function MenuItemRow({
           </button>
         </div>
       ) : null}
-    </li>
+    </div>
   );
 }

@@ -2,6 +2,12 @@
 
 import { formatVnd } from '@taomenu/shared';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type CartLineSelection,
+  cartLineKey,
+  ModifierPicker,
+  type PublicMenuItem,
+} from '../../../modifier-picker';
 
 type MenuPayload = {
   store: { name: string; acceptingPublicRequests: boolean; menuVersion: number };
@@ -9,16 +15,11 @@ type MenuPayload = {
   categories: Array<{
     id: string;
     name: string;
-    items: Array<{
-      id: string;
-      name: string;
-      priceAmount: number;
-      isSoldOut: boolean;
-    }>;
+    items: PublicMenuItem[];
   }>;
 };
 
-type CartLine = { menuItemId: string; name: string; priceAmount: number; quantity: number };
+type CartLine = CartLineSelection & { quantity: number };
 
 type OrderStatusView = {
   displayNumber: number;
@@ -55,6 +56,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const [order, setOrder] = useState<OrderStatusView | null>(null);
   const [svcBusy, setSvcBusy] = useState(false);
   const [svcMsg, setSvcMsg] = useState<string | null>(null);
+  const [picking, setPicking] = useState<PublicMenuItem | null>(null);
 
   const loadMenu = useCallback(async () => {
     setError(null);
@@ -124,25 +126,32 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
     [cart],
   );
 
-  function addItem(item: MenuPayload['categories'][number]['items'][number]) {
+  function requestAddItem(item: PublicMenuItem) {
     if (item.isSoldOut) return;
+    if ((item.modifierGroups?.length ?? 0) > 0) {
+      setPicking(item);
+      return;
+    }
+    commitSelection({
+      menuItemId: item.id,
+      name: item.name,
+      priceAmount: item.priceAmount,
+      modifierIds: [],
+      lineKey: cartLineKey(item.id, []),
+    });
+  }
+
+  function commitSelection(selection: Omit<CartLineSelection, 'quantity'>) {
     setCart((prev) => {
-      const existing = prev.find((l) => l.menuItemId === item.id);
+      const existing = prev.find((l) => l.lineKey === selection.lineKey);
       if (existing) {
         return prev.map((l) =>
-          l.menuItemId === item.id ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
+          l.lineKey === selection.lineKey ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
         );
       }
-      return [
-        ...prev,
-        {
-          menuItemId: item.id,
-          name: item.name,
-          priceAmount: item.priceAmount,
-          quantity: 1,
-        },
-      ];
+      return [...prev, { ...selection, quantity: 1 }];
     });
+    setPicking(null);
   }
 
   async function submitOrder() {
@@ -157,7 +166,11 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           idempotencyKey,
-          lines: cart.map((l) => ({ menuItemId: l.menuItemId, quantity: l.quantity })),
+          lines: cart.map((l) => ({
+            menuItemId: l.menuItemId,
+            quantity: l.quantity,
+            modifierIds: l.modifierIds,
+          })),
         }),
       });
       const data = (await res.json()) as {
@@ -337,7 +350,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
                     <button
                       type="button"
                       disabled={item.isSoldOut || !menu.store.acceptingPublicRequests}
-                      onClick={() => addItem(item)}
+                      onClick={() => requestAddItem(item)}
                       className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
                     >
                       <span>
@@ -345,6 +358,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
                         <span className="text-sm tabular-nums text-muted-foreground">
                           {formatVnd(item.priceAmount)}
                           {item.isSoldOut ? ' · Hết' : ''}
+                          {(item.modifierGroups?.length ?? 0) > 0 ? ' · Tuỳ chọn' : ''}
                         </span>
                       </span>
                       <span className="text-sm font-bold text-brand-600">+</span>
@@ -376,6 +390,14 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
             </button>
           </div>
         </div>
+      ) : null}
+
+      {picking ? (
+        <ModifierPicker
+          item={picking}
+          onCancel={() => setPicking(null)}
+          onConfirm={commitSelection}
+        />
       ) : null}
     </div>
   );

@@ -8,6 +8,22 @@ import {
 } from '../schema/menu';
 import { stores } from '../schema/stores';
 import type { Db } from '../types';
+import { loadModifierGroupsForItems } from './modifiers';
+
+export type PublicModifierOption = {
+  id: string;
+  name: string;
+  priceDeltaAmount: number;
+};
+
+export type PublicModifierGroup = {
+  id: string;
+  name: string;
+  minSelected: number;
+  maxSelected: number;
+  isRequired: boolean;
+  options: PublicModifierOption[];
+};
 
 export type PublicMenuPayload = {
   store: {
@@ -29,6 +45,7 @@ export type PublicMenuPayload = {
       description: string | null;
       priceAmount: number;
       isSoldOut: boolean;
+      modifierGroups: PublicModifierGroup[];
     }>;
   }>;
 };
@@ -130,6 +147,8 @@ export async function getPublishedMenuForStore(
             ),
           );
 
+  const modifiersByItem = await loadModifierGroupsForItems(db, storeId, itemIds);
+
   function pickName(
     translations: Array<{ locale: string; name: string; description?: string | null }>,
     baseLocale: string,
@@ -165,12 +184,41 @@ export async function getPublishedMenuForStore(
               itemTr.filter((t) => t.itemId === item.id),
               store.baseLocale,
             );
+            const groups = modifiersByItem.get(item.id) ?? [];
             return {
               id: item.id,
               name: itr?.name ?? '—',
               description: itr?.description ?? null,
               priceAmount: item.priceAmount,
               isSoldOut: item.isSoldOut,
+              modifierGroups: groups.map((g) => {
+                const gName =
+                  g.translations.find((t) => t.locale === preferredLocale)?.name ||
+                  g.translations.find((t) => t.locale === store.baseLocale)?.name ||
+                  g.translations[0]?.name ||
+                  '—';
+                return {
+                  id: g.id,
+                  name: gName,
+                  minSelected: g.isRequired ? Math.max(g.minSelected, 1) : g.minSelected,
+                  maxSelected: g.maxSelected,
+                  isRequired: g.isRequired,
+                  options: g.options
+                    .filter((o) => o.isAvailable)
+                    .map((o) => {
+                      const oName =
+                        o.translations.find((t) => t.locale === preferredLocale)?.name ||
+                        o.translations.find((t) => t.locale === store.baseLocale)?.name ||
+                        o.translations[0]?.name ||
+                        '—';
+                      return {
+                        id: o.id,
+                        name: oName,
+                        priceDeltaAmount: o.priceDeltaAmount,
+                      };
+                    }),
+                };
+              }),
             };
           }),
       };

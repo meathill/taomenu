@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { batchItemAvailabilitySchema, createItemSchema, formatVnd } from './menu';
+import {
+  batchItemAvailabilitySchema,
+  createItemSchema,
+  createModifierGroupSchema,
+  createModifierSchema,
+  formatVnd,
+} from './menu';
 
 describe('formatVnd', () => {
   it('格式化整数越南盾', () => {
@@ -47,5 +53,27 @@ describe('batchItemAvailabilitySchema', () => {
         isAvailable: false,
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('modifier schemas', () => {
+  it('接受必选规格组', () => {
+    expect(
+      createModifierGroupSchema.safeParse({
+        name: 'Size',
+        isRequired: true,
+        minSelected: 1,
+        maxSelected: 1,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('接受加价选项', () => {
+    expect(
+      createModifierSchema.safeParse({
+        name: 'L',
+        priceDeltaAmount: 10000,
+      }).success,
+    ).toBe(true);
   });
 });

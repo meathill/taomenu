@@ -9,6 +9,11 @@ import {
 } from '../schema/menu';
 import { stores } from '../schema/stores';
 import type { Db, StoreContext } from '../types';
+import {
+  copyModifiersToItem,
+  loadModifierGroupsForItems,
+  type MenuModifierGroup,
+} from './modifiers';
 
 function nowMs(): Date {
   return new Date();
@@ -34,6 +39,7 @@ export type MenuTreeCategory = {
       name: string;
       description: string | null;
     }>;
+    modifierGroups: MenuModifierGroup[];
   }>;
 };
 
@@ -133,6 +139,8 @@ export async function getMenuTree(ctx: StoreContext, db: Db): Promise<MenuTree> 
             ),
           );
 
+  const modifiersByItem = await loadModifierGroupsForItems(db, ctx.storeId, itemIds);
+
   const treeCategories: MenuTreeCategory[] = categories.map((category) => ({
     id: category.id,
     sortOrder: category.sortOrder,
@@ -159,6 +167,7 @@ export async function getMenuTree(ctx: StoreContext, db: Db): Promise<MenuTree> 
             name: t.name,
             description: t.description,
           })),
+        modifierGroups: modifiersByItem.get(item.id) ?? [],
       })),
   }));
 
@@ -556,7 +565,7 @@ export function duplicatedItemName(name: string): string {
 }
 
 /**
- * 复制菜品（含全部 locale 翻译）。售罄状态重置为可售；规格组暂不复制（编辑 UI 未上线）。
+ * 复制菜品（含全部 locale 翻译与规格组）。售罄状态重置为可售。
  */
 export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
   const sourceRows = await db
@@ -615,6 +624,8 @@ export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
       reviewedAt: createdAt,
     })),
   );
+
+  await copyModifiersToItem(ctx, db, itemId, newItemId);
 
   return { itemId: newItemId, categoryId: source.categoryId };
 }

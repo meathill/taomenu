@@ -1,6 +1,7 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import { getBusinessDate } from '../business-date';
 import { generateToken, hashToken } from '../crypto-token';
+import { type ModifierGroupInput, resolveModifierSelection } from '../modifier-select';
 import { priceOrderLines } from '../order-price';
 import { menuItems, menuItemTranslations, menus } from '../schema/menu';
 import { stores } from '../schema/stores';
@@ -12,6 +13,7 @@ import {
   tableSessions,
 } from '../schema/tables-orders';
 import type { Db } from '../types';
+import { loadModifierGroupsForItems } from './modifiers';
 import { enqueueOrderSubmittedNotification } from './push';
 
 function nowMs(): Date {
@@ -26,7 +28,7 @@ export type CreateCustomerOrderInput = {
   locale?: string;
   note?: string;
   idempotencyKey: string;
-  lines: Array<{ menuItemId: string; quantity: number }>;
+  lines: Array<{ menuItemId: string; quantity: number; modifierIds?: string[] }>;
 };
 
 export type CreateOrderResult =
@@ -109,6 +111,8 @@ export async function createCustomerOrder(
       ),
     );
 
+  const modifiersByItem = await loadModifierGroupsForItems(db, input.storeId, itemIds);
+
   const pricedInputs = [];
   for (const line of input.lines) {
     const item = itemsById.get(line.menuItemId);
@@ -118,11 +122,51 @@ export async function createCustomerOrder(
     const tr =
       translations.find((t) => t.itemId === item.id && t.locale === locale) ||
       translations.find((t) => t.itemId === item.id && t.locale === store.baseLocale);
+    const baseName = tr?.name ?? 'Item';
+    const rawGroups = modifiersByItem.get(item.id) ?? [];
+    const groups: ModifierGroupInput[] = rawGroups.map((g) => ({
+      id: g.id,
+      name:
+        g.translations.find((t) => t.locale === locale)?.name ||
+        g.translations.find((t) => t.locale === store.baseLocale)?.name ||
+        g.translations[0]?.name ||
+        '—',
+      minSelected: g.minSelected,
+      maxSelected: g.maxSelected,
+      isRequired: g.isRequired,
+      options: g.options.map((o) => ({
+        id: o.id,
+        groupId: g.id,
+        name:
+          o.translations.find((t) => t.locale === locale)?.name ||
+          o.translations.find((t) => t.locale === store.baseLocale)?.name ||
+          o.translations[0]?.name ||
+          '—',
+        priceDeltaAmount: o.priceDeltaAmount,
+        isAvailable: o.isAvailable,
+      })),
+    }));
+
+    const resolved = resolveModifierSelection({
+      baseName,
+      basePriceAmount: item.priceAmount,
+      groups,
+      selectedIds: line.modifierIds ?? [],
+    });
+    if (!resolved.ok) {
+      return {
+        ok: false,
+        status: 400,
+        error: resolved.error.code,
+        code: resolved.error.code,
+      };
+    }
+
     pricedInputs.push({
       menuItemId: item.id,
       quantity: line.quantity,
-      unitPriceAmount: item.priceAmount,
-      name: tr?.name ?? 'Item',
+      unitPriceAmount: resolved.unitPriceAmount,
+      name: resolved.nameSnapshot,
       isAvailable: item.isAvailable,
       isSoldOut: item.isSoldOut,
     });

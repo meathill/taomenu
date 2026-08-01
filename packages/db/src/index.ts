@@ -5,6 +5,7 @@ import type { Db } from './types';
 export * from './business-date';
 export * from './crypto-token';
 export * from './menu-publish';
+export * from './modifier-select';
 export * from './order-price';
 export * from './repositories';
 export * from './schema';
