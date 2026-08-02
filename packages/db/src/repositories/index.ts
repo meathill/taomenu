@@ -23,6 +23,7 @@ export {
   type MenuTreeCategory,
   MenuValidationError,
   publishMenu,
+  setItemImageKey,
   updateCategory,
   updateItem,
 } from './menu';

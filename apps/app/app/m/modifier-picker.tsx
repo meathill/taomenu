@@ -23,6 +23,7 @@ export type PublicMenuItem = {
   name: string;
   priceAmount: number;
   isSoldOut: boolean;
+  imageKey?: string | null;
   modifierGroups: PublicModifierGroup[];
 };
 

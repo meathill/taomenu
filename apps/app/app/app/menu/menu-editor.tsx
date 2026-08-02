@@ -6,6 +6,7 @@ import { cn } from '@taomenu/ui';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { MenuBatchBar } from './menu-batch-bar';
 import { MenuItemDraftForm } from './menu-item-draft-form';
+import { MenuItemImage } from './menu-item-image';
 import { MenuItemRow } from './menu-item-row';
 import { MenuModifiersPanel, type ModifierGroupView } from './menu-modifiers-panel';
 
@@ -25,6 +26,7 @@ type MenuTree = {
       priceAmount: number;
       isAvailable: boolean;
       isSoldOut: boolean;
+      imageKey: string | null;
       translations: Array<{ locale: string; name: string }>;
       modifierGroups: ModifierGroupView[];
     }>;
@@ -370,18 +372,33 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             <ul className="mt-3 divide-y divide-border">
               {category.items.map((item) => (
                 <li key={item.id}>
-                  <MenuItemRow
-                    item={item}
-                    label={labelForItem(item, baseLocale)}
-                    busy={busy}
-                    selectMode={selectMode}
-                    selected={selectedIds.has(item.id)}
-                    modifierCount={item.modifierGroups?.length ?? 0}
-                    onToggleSelect={() => toggleSelected(item.id)}
-                    onCopy={() => void handleCopyItem(item.id)}
-                    onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
-                    onEditModifiers={() => setModifiersItemId(item.id)}
-                  />
+                  <div className="flex items-start gap-2">
+                    {!selectMode ? (
+                      <MenuItemImage
+                        storeId={storeId}
+                        itemId={item.id}
+                        imageKey={item.imageKey ?? null}
+                        busy={busy}
+                        onBusy={setBusy}
+                        onError={setError}
+                        onChanged={load}
+                      />
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                      <MenuItemRow
+                        item={item}
+                        label={labelForItem(item, baseLocale)}
+                        busy={busy}
+                        selectMode={selectMode}
+                        selected={selectedIds.has(item.id)}
+                        modifierCount={item.modifierGroups?.length ?? 0}
+                        onToggleSelect={() => toggleSelected(item.id)}
+                        onCopy={() => void handleCopyItem(item.id)}
+                        onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
+                        onEditModifiers={() => setModifiersItemId(item.id)}
+                      />
+                    </div>
+                  </div>
                   {modifiersItemId === item.id && !selectMode ? (
                     <MenuModifiersPanel
                       storeId={storeId}

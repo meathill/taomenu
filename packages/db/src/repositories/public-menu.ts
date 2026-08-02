@@ -45,6 +45,8 @@ export type PublicMenuPayload = {
       description: string | null;
       priceAmount: number;
       isSoldOut: boolean;
+      /** R2 object key；前端拼 `/api/media/...` */
+      imageKey: string | null;
       modifierGroups: PublicModifierGroup[];
     }>;
   }>;
@@ -191,6 +193,7 @@ export async function getPublishedMenuForStore(
               description: itr?.description ?? null,
               priceAmount: item.priceAmount,
               isSoldOut: item.isSoldOut,
+              imageKey: item.imageKey,
               modifierGroups: groups.map((g) => {
                 const gName =
                   g.translations.find((t) => t.locale === preferredLocale)?.name ||

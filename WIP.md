@@ -33,7 +33,7 @@
 - [x] 发布完整性校验与 `menu_version`
 - [x] Free 单菜单语言权益检查（publish + 写翻译）
 - [x] Free 手工录入：保存并继续、售罄切换
-- [ ] R2 菜品图片上传
+- [x] R2 菜品图片上传（MEDIA binding + 上传校验 + 公开读 + 店主/顾客 UI）
 - [x] 规格 modifier：owner CRUD UI + 公开菜单 + 顾客选规格 + 服务端重算加价
 - [x] 复制菜品 / 批量上下架 UI 增强（copy API + 多选批量售罄/显隐 + 保存并继续）
 

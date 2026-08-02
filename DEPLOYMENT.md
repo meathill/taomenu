@@ -54,6 +54,7 @@
 |---|---|---|
 | `DB` | `d1_databases` | 业务库 |
 | `EMAIL` | `send_email` | Cloudflare Email Sending |
+| `MEDIA` | `r2_buckets` | 菜品图片等媒体（bucket: `taomenu-media`） |
 | `ASSETS` | OpenNext 静态资源 | 自动 |
 | `WORKER_SELF_REFERENCE` | `services` | OpenNext 自引用 |
 
@@ -97,7 +98,16 @@ npx wrangler d1 migrations apply taomenu --remote
 pnpm --filter @taomenu/app db:migrate:local
 ```
 
-### 3. Cloudflare Email Sending
+### 3. R2（菜品图片）
+
+```bash
+npx wrangler r2 bucket create taomenu-media
+# apps/app/wrangler.jsonc 已配置 binding MEDIA → taomenu-media
+```
+
+本地 `wrangler`/`next dev` 会用模拟 R2；生产需先创建真实 bucket。
+
+### 4. Cloudflare Email Sending
 
 在**发件域名**上启用（与 `EMAIL_FROM` 同域）：
 
@@ -116,7 +126,7 @@ npx wrangler email sending list
 - `remote: true`：本地 `wrangler`/OpenNext 开发可走真实发送  
 - 无 binding 或 `EMAIL_DEV_LOG_ONLY=1`：OTP 打到 console（`[taomenu-otp]`）
 
-### 4. VAPID（Web Push）
+### 5. VAPID（Web Push）
 
 ```bash
 npx @pushforge/builder vapid
@@ -125,7 +135,7 @@ npx @pushforge/builder vapid
 - 公钥 → vars `VAPID_PUBLIC_KEY`  
 - 私钥 JWK → secret `VAPID_PRIVATE_JWK`（整段 JSON 一行）
 
-### 5. Google OAuth（可选）
+### 6. Google OAuth（可选）
 
 - 授权回调：`https://app.taomenu.app/api/auth/callback/google`  
 - `GOOGLE_CLIENT_ID` → vars  

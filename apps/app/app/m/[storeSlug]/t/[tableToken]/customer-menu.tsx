@@ -2,6 +2,7 @@
 
 import { formatVnd } from '@taomenu/shared';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { publicMediaPath } from '@/lib/menu-image';
 import {
   type CartLineSelection,
   cartLineKey,
@@ -353,12 +354,25 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
                       onClick={() => requestAddItem(item)}
                       className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
                     >
-                      <span>
-                        <span className="block font-semibold text-ink-900">{item.name}</span>
-                        <span className="text-sm tabular-nums text-muted-foreground">
-                          {formatVnd(item.priceAmount)}
-                          {item.isSoldOut ? ' · Hết' : ''}
-                          {(item.modifierGroups?.length ?? 0) > 0 ? ' · Tuỳ chọn' : ''}
+                      <span className="flex min-w-0 items-center gap-3">
+                        {item.imageKey ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={publicMediaPath(item.imageKey)}
+                            alt=""
+                            className="size-12 shrink-0 rounded-xl object-cover"
+                            loading="lazy"
+                          />
+                        ) : null}
+                        <span className="min-w-0">
+                          <span className="block truncate font-semibold text-ink-900">
+                            {item.name}
+                          </span>
+                          <span className="text-sm tabular-nums text-muted-foreground">
+                            {formatVnd(item.priceAmount)}
+                            {item.isSoldOut ? ' · Hết' : ''}
+                            {(item.modifierGroups?.length ?? 0) > 0 ? ' · Tuỳ chọn' : ''}
+                          </span>
                         </span>
                       </span>
                       <span className="text-sm font-bold text-brand-600">+</span>

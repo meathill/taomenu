@@ -34,6 +34,7 @@ export type MenuTreeCategory = {
     sortOrder: number;
     isAvailable: boolean;
     isSoldOut: boolean;
+    imageKey: string | null;
     translations: Array<{
       locale: string;
       name: string;
@@ -160,6 +161,7 @@ export async function getMenuTree(ctx: StoreContext, db: Db): Promise<MenuTree> 
         sortOrder: item.sortOrder,
         isAvailable: item.isAvailable,
         isSoldOut: item.isSoldOut,
+        imageKey: item.imageKey,
         translations: itemTranslations
           .filter((t) => t.itemId === item.id)
           .map((t) => ({
@@ -540,6 +542,29 @@ export async function updateItem(
   return { itemId };
 }
 
+/** 仅由上传 API 写入；客户端不得直接 PATCH 任意 key。 */
+export async function setItemImageKey(
+  ctx: StoreContext,
+  db: Db,
+  itemId: string,
+  imageKey: string | null,
+): Promise<{ itemId: string; previousKey: string | null } | null> {
+  const rows = await db
+    .select({ id: menuItems.id, imageKey: menuItems.imageKey })
+    .from(menuItems)
+    .where(and(eq(menuItems.id, itemId), eq(menuItems.storeId, ctx.storeId)))
+    .limit(1);
+  if (!rows[0]) {
+    return null;
+  }
+  const previousKey = rows[0].imageKey;
+  await db
+    .update(menuItems)
+    .set({ imageKey, updatedAt: nowMs() })
+    .where(and(eq(menuItems.id, itemId), eq(menuItems.storeId, ctx.storeId)));
+  return { itemId, previousKey };
+}
+
 export async function deleteItem(ctx: StoreContext, db: Db, itemId: string) {
   const existing = await db
     .select({ id: menuItems.id })
@@ -601,7 +626,8 @@ export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
     storeId: ctx.storeId,
     categoryId: source.categoryId,
     priceAmount: source.priceAmount,
-    imageKey: source.imageKey,
+    // 不共用 R2 key：避免删图时互相影响；用户可再上传
+    imageKey: null,
     sortOrder,
     isAvailable: source.isAvailable,
     isSoldOut: false,
