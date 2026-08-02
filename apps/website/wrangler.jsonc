@@ -3,7 +3,10 @@
   "main": ".open-next/worker.js",
   "name": "taomenu-website",
   "compatibility_date": "2026-06-30",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -17,8 +20,11 @@
   "observability": {
     "enabled": true
   },
+  "placement": {
+    "mode": "smart"
+  },
   "vars": {
-    "NEXT_PUBLIC_WEBSITE_URL": "http://localhost:3000",
-    "NEXT_PUBLIC_APP_URL": "http://localhost:3001"
+    "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.meathill.workers.dev/",
+    "NEXT_PUBLIC_APP_URL": "https://taomenu-app.meathill.workers.dev/"
   }
 }
