@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import {
@@ -24,6 +25,7 @@ type Status =
   | 'error';
 
 export function NotificationSetup({ storeId }: NotificationSetupProps) {
+  const t = useTranslations('terminal');
   const [status, setStatus] = useState<Status>('loading');
   const [message, setMessage] = useState<string | null>(null);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
@@ -36,18 +38,12 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
     const cap = detectPushCapability();
     if (!cap.serviceWorker || !cap.pushManager || !cap.notification) {
       setStatus('unsupported');
-      setMessage(
-        cap.ios
-          ? 'iOS cần Safari → Chia sẻ → Thêm vào Màn hình chính, rồi mở icon app.'
-          : 'Trình duyệt không hỗ trợ Web Push.',
-      );
+      setMessage(cap.ios ? t('pushIosInstall') : t('pushNoSupport'));
       return cap;
     }
     if (cap.ios && !cap.standalone) {
       setStatus('need_install');
-      setMessage(
-        'iOS chỉ gửi Push sau khi cài PWA: Safari → nút Chia sẻ → “Thêm vào Màn hình chính”.',
-      );
+      setMessage(t('pushIosOnlyPwa'));
       return cap;
     }
     if (!cap.standalone && cap.ios === false) {
@@ -83,7 +79,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
         if (res.ok) {
           setSubscriptionId(verifyId);
           setStatus('verified');
-          setMessage('Đã xác nhận thông báo. Máy này sẵn sàng nhận đơn nền.');
+          setMessage(t('pushConfirmed'));
           window.history.replaceState({}, '', '/terminal');
         }
       })();
@@ -103,7 +99,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
 
       const perm = await Notification.requestPermission();
       if (perm !== 'granted') {
-        setMessage('Bạn đã từ chối thông báo. Mở lại trong cài đặt trình duyệt.');
+        setMessage(t('pushDenied'));
         setStatus('error');
         return;
       }
@@ -111,7 +107,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       const vapidRes = await fetch(`/api/owner/stores/${storeId}/push/vapid-public-key`);
       const vapid = (await vapidRes.json()) as { configured: boolean; publicKey: string | null };
       if (!vapid.configured || !vapid.publicKey) {
-        setMessage('Server chưa cấu hình VAPID. Kiểm tra .dev.vars.');
+        setMessage(t('pushNoVapid'));
         setStatus('error');
         return;
       }
@@ -119,7 +115,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       const reg = (await registerStaffServiceWorker()) || (await navigator.serviceWorker.ready);
       const sub = await subscribePush(reg, vapid.publicKey);
       if (!sub) {
-        setMessage('Không tạo được subscription.');
+        setMessage(t('pushSubFailed'));
         setStatus('error');
         return;
       }
@@ -136,14 +132,14 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       });
       const saved = (await saveRes.json()) as { subscriptionId?: string; error?: string };
       if (!saveRes.ok || !saved.subscriptionId) {
-        setMessage(saved.error || 'Lưu subscription thất bại.');
+        setMessage(saved.error || t('pushSaveFailed'));
         setStatus('error');
         return;
       }
 
       setSubscriptionId(saved.subscriptionId);
       setStatus('subscribed');
-      setMessage('Đã bật Push. Bấm “Gửi thử” rồi chạm thông báo để xác nhận.');
+      setMessage(t('pushEnabled'));
       void cap;
     } finally {
       setBusy(false);
@@ -161,10 +157,10 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       );
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setMessage(data.error || 'Gửi thử thất bại.');
+        setMessage(data.error || t('pushTestFailed'));
         return;
       }
-      setMessage('Đã gửi thử. Nếu máy khóa màn hình vẫn hiện — chạm thông báo để xác nhận.');
+      setMessage(t('pushTestSent'));
     } finally {
       setBusy(false);
     }
@@ -176,19 +172,13 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       setDeferredPrompt(null);
       return;
     }
-    setMessage(
-      detectPushCapability().ios
-        ? 'Trên iPhone: Safari → Chia sẻ → Thêm vào Màn hình chính.'
-        : 'Dùng menu trình duyệt “Cài đặt ứng dụng” / “Add to Home screen”.',
-    );
+    setMessage(detectPushCapability().ios ? t('pushIosHint') : t('pushDesktopHint'));
   }
 
   return (
     <section className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-bold text-ink-900">Cài PWA & thông báo đơn mới</h2>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-        Đơn quan trọng: máy cần cài icon + bật Push. Không dựa vào tab luôn mở.
-      </p>
+      <h2 className="text-sm font-bold text-ink-900">{t('pushTitle')}</h2>
+      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t('pushDesc')}</p>
 
       {message ? (
         <p
@@ -209,7 +199,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
             onClick={() => void installPwa()}
             className="min-h-11 rounded-xl border border-border text-sm font-bold text-ink-900"
           >
-            Cài ra màn hình chính
+            {t('pushInstall')}
           </button>
         )}
 
@@ -220,7 +210,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
             onClick={() => void enableNotifications()}
             className="min-h-11 rounded-xl bg-jade-600 text-sm font-bold text-white"
           >
-            Bật thông báo đơn mới
+            {t('pushEnable')}
           </Button>
         )}
 
@@ -231,20 +221,16 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
             onClick={() => void sendTest()}
             className="min-h-11 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
           >
-            Gửi thông báo thử
+            {t('pushTest')}
           </Button>
         ) : null}
 
         {status === 'verified' ? (
-          <p className="text-xs font-semibold text-jade-600">
-            ✓ Thông báo đã xác nhận trên máy này
-          </p>
+          <p className="text-xs font-semibold text-jade-600">{t('pushVerified')}</p>
         ) : null}
 
         {status === 'unsupported' ? (
-          <p className="text-xs text-muted-foreground">
-            Hãy dùng Chrome/Edge (Android) hoặc Safari PWA (iOS 16.4+).
-          </p>
+          <p className="text-xs text-muted-foreground">{t('pushUnsupported')}</p>
         ) : null}
       </div>
     </section>

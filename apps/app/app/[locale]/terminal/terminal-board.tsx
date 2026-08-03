@@ -1,6 +1,7 @@
 'use client';
 
 import { formatVnd } from '@taomenu/shared';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -32,21 +33,38 @@ type TerminalBoardProps = {
   storeId: string;
 };
 
-function nextAction(order: OrderCard): { label: string; status: string } | null {
-  if (order.status === 'submitted') return { label: 'Nhận', status: 'accepted' };
+type ActionKey = 'accept' | 'served' | 'readyPickup' | 'pickedUp';
+
+function nextAction(order: OrderCard): { labelKey: ActionKey; status: string } | null {
+  if (order.status === 'submitted') return { labelKey: 'accept', status: 'accepted' };
   if (order.fulfillmentMode === 'dine_in' && order.status === 'accepted') {
-    return { label: 'Đã phục vụ', status: 'served' };
+    return { labelKey: 'served', status: 'served' };
   }
   if (order.fulfillmentMode === 'pickup' && order.status === 'accepted') {
-    return { label: 'Sẵn sàng lấy', status: 'ready_for_pickup' };
+    return { labelKey: 'readyPickup', status: 'ready_for_pickup' };
   }
   if (order.status === 'ready_for_pickup') {
-    return { label: 'Đã lấy', status: 'picked_up' };
+    return { labelKey: 'pickedUp', status: 'picked_up' };
   }
   return null;
 }
 
+const ORDER_STATUS_KEYS: Record<string, string> = {
+  submitted: 'statusSubmitted',
+  accepted: 'statusAccepted',
+  served: 'statusServed',
+  ready_for_pickup: 'statusReadyForPickup',
+  picked_up: 'statusPickedUp',
+  cancelled: 'statusCancelled',
+};
+
+const REQUEST_STATUS_KEYS: Record<string, string> = {
+  open: 'reqStatusOpen',
+  acknowledged: 'reqStatusAcknowledged',
+};
+
 export function TerminalBoard({ storeId }: TerminalBoardProps) {
+  const t = useTranslations('terminal');
   const [orders, setOrders] = useState<OrderCard[]>([]);
   const [requests, setRequests] = useState<ServiceCard[]>([]);
   const [sessions, setSessions] = useState<SessionCard[]>([]);
@@ -60,7 +78,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
       fetch(`/api/owner/stores/${storeId}/sessions`),
     ]);
     if (!oRes.ok) {
-      setError('Không tải được order.');
+      setError(t('loadFailed'));
       return;
     }
     const oData = (await oRes.json()) as { orders: OrderCard[] };
@@ -91,7 +109,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
         body: JSON.stringify({ status }),
       });
       if (!res.ok) {
-        setError('Cập nhật thất bại.');
+        setError(t('updateFailed'));
         return;
       }
       await load();
@@ -112,7 +130,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
         },
       );
       if (!res.ok) {
-        setError('Cập nhật yêu cầu thất bại.');
+        setError(t('requestUpdateFailed'));
         return;
       }
       await load();
@@ -130,7 +148,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
         body: JSON.stringify({ orderId, method: 'cash', amount }),
       });
       if (!res.ok) {
-        setError('Ghi nhận thanh toán thất bại.');
+        setError(t('paymentFailed'));
         return;
       }
       await load();
@@ -149,8 +167,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
       if (!res.ok) {
         setError(
           data.error === 'BALANCE_REMAINING'
-            ? `Còn nợ ${formatVnd(data.balance ?? 0)}`
-            : data.error || 'Đóng bàn thất bại.',
+            ? t('balanceDue', { amount: formatVnd(data.balance ?? 0) })
+            : data.error || t('closeFailed'),
         );
         return;
       }
@@ -166,7 +184,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
       {requests.length > 0 ? (
         <section className="space-y-2">
-          <h2 className="text-sm font-bold text-ink-900">Yêu cầu khách</h2>
+          <h2 className="text-sm font-bold text-ink-900">{t('requests')}</h2>
           <ul className="space-y-2">
             {requests.map((req) => (
               <li
@@ -174,10 +192,15 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                 className="rounded-2xl border border-gold-600 bg-white p-4 shadow-sm"
               >
                 <p className="font-bold text-ink-900">
-                  Bàn {req.tableName} ·{' '}
-                  {req.type === 'request_bill' ? 'Tính tiền' : 'Gọi nhân viên'}
+                  {t('tableLabel', { name: req.tableName })} ·{' '}
+                  {req.type === 'request_bill' ? t('requestBill') : t('callStaff')}
                 </p>
-                <p className="text-xs text-muted-foreground">{req.status}</p>
+                <p className="text-xs text-muted-foreground">
+                  {(() => {
+                    const key = REQUEST_STATUS_KEYS[req.status];
+                    return key ? t(key) : req.status;
+                  })()}
+                </p>
                 <div className="mt-3 flex gap-2">
                   {req.status === 'open' ? (
                     <Button
@@ -186,7 +209,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                       onClick={() => void transitionService(req.id, 'acknowledged')}
                       className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
                     >
-                      Đã thấy
+                      {t('ack')}
                     </Button>
                   ) : null}
                   <Button
@@ -195,7 +218,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                     onClick={() => void transitionService(req.id, 'resolved')}
                     className="min-h-11 flex-1 rounded-xl border border-border text-xs font-bold"
                   >
-                    Xong
+                    {t('done')}
                   </Button>
                 </div>
               </li>
@@ -206,19 +229,21 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
       <section className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{orders.length} order đang mở</p>
+          <p className="text-sm text-muted-foreground">
+            {t('openOrders', { count: orders.length })}
+          </p>
           <button
             type="button"
             onClick={() => void load()}
             className="text-sm font-semibold text-jade-600"
           >
-            Làm mới
+            {t('refresh')}
           </button>
         </div>
         {orders.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-white p-10 text-center">
             <p className="text-4xl font-extrabold tabular-nums text-gold-600">0</p>
-            <p className="mt-2 text-sm font-semibold text-ink-900">Chưa có order mới</p>
+            <p className="mt-2 text-sm font-semibold text-ink-900">{t('noOrdersTitle')}</p>
           </div>
         ) : (
           <ul className="space-y-3">
@@ -237,8 +262,10 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                           : `#${order.displayNumber}`}
                       </p>
                       <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                        {order.fulfillmentMode === 'pickup' ? 'Lấy món' : 'Tại bàn'} ·{' '}
-                        {order.status}
+                        {order.fulfillmentMode === 'pickup' ? t('pickup') : t('dineIn')} · {(() => {
+                          const key = ORDER_STATUS_KEYS[order.status];
+                          return key ? t(key) : order.status;
+                        })()}
                       </p>
                     </div>
                     <p className="text-sm font-bold tabular-nums">
@@ -261,7 +288,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                         onClick={() => void transition(order.id, action.status)}
                         className="min-h-12 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
                       >
-                        {action.label}
+                        {t(action.labelKey)}
                       </Button>
                     ) : null}
                     {(order.status === 'served' ||
@@ -274,7 +301,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                         onClick={() => void payOrder(order.id, order.subtotalAmount)}
                         className="min-h-11 w-full rounded-xl border border-border text-xs font-bold"
                       >
-                        Ghi nhận đã thu tiền mặt
+                        {t('recordCash')}
                       </Button>
                     )}
                   </div>
@@ -287,7 +314,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
       {sessions.some((s) => (s.balance?.balance ?? 0) <= 0) ? (
         <section className="space-y-2">
-          <h2 className="text-sm font-bold text-ink-900">Đóng bàn (đã thu đủ)</h2>
+          <h2 className="text-sm font-bold text-ink-900">{t('closeSection')}</h2>
           <ul className="space-y-2">
             {sessions
               .filter((s) => s.balance && s.balance.balance <= 0)
@@ -296,14 +323,14 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   key={s.id}
                   className="flex items-center justify-between rounded-xl border border-border bg-white px-4 py-3"
                 >
-                  <span className="text-sm">Session {s.id.slice(0, 8)}…</span>
+                  <span className="text-sm">{t('sessionLabel', { id: s.id.slice(0, 8) })}</span>
                   <Button
                     type="button"
                     pending={busyId === `close-${s.id}`}
                     onClick={() => void closeSession(s.id)}
                     className="min-h-10 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white"
                   >
-                    Đóng bàn
+                    {t('closeTable')}
                   </Button>
                 </li>
               ))}
