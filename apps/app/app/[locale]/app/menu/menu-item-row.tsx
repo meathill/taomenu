@@ -3,6 +3,7 @@
 import { CopyIcon } from '@phosphor-icons/react';
 import { formatVnd } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 
 export type MenuItemView = {
@@ -38,6 +39,7 @@ export function MenuItemRow({
   onToggleSoldOut,
   onEditModifiers,
 }: MenuItemRowProps) {
+  const t = useTranslations('menu');
   return (
     <div className="flex items-center justify-between gap-3 py-3">
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -47,16 +49,18 @@ export function MenuItemRow({
             checked={selected}
             onChange={onToggleSelect}
             className="mt-1 size-5 shrink-0 accent-jade-600"
-            aria-label={`Chọn ${label}`}
+            aria-label={t('selectItemAria', { name: label })}
           />
         ) : null}
         <div className="min-w-0">
           <p className="truncate font-semibold text-ink-900">{label}</p>
           <p className="text-sm tabular-nums text-muted-foreground">
             {formatVnd(item.priceAmount)}
-            {item.isSoldOut ? <span className="ml-2 font-semibold text-brand-600">Hết</span> : null}
+            {item.isSoldOut ? (
+              <span className="ml-2 font-semibold text-brand-600">{t('soldOut')}</span>
+            ) : null}
             {!item.isAvailable ? (
-              <span className="ml-2 font-semibold text-muted-foreground">Ẩn</span>
+              <span className="ml-2 font-semibold text-muted-foreground">{t('hidden')}</span>
             ) : null}
           </p>
         </div>
@@ -66,19 +70,20 @@ export function MenuItemRow({
           <Button
             type="button"
             pending={busy}
-            title="Tùy chọn"
-            aria-label="Chỉnh tùy chọn món"
+            title={t('options')}
+            aria-label={t('editOptions')}
             onClick={onEditModifiers}
             className="min-h-11 shrink-0 rounded-xl border border-border px-2 text-xs font-bold text-ink-900"
           >
-            Tùy chọn{modifierCount > 0 ? ` (${modifierCount})` : ''}
+            {t('options')}
+            {modifierCount > 0 ? ` (${modifierCount})` : ''}
           </Button>
           <Button
             type="button"
             pending={busy}
             iconOnly
-            title="Sao chép"
-            aria-label="Sao chép món"
+            title={t('copy')}
+            aria-label={t('copyItem')}
             onClick={onCopy}
             className="size-11 rounded-xl border border-border text-ink-900"
           >
@@ -93,7 +98,7 @@ export function MenuItemRow({
               item.isSoldOut ? 'border-jade-600 text-jade-600' : 'border-border text-ink-900',
             )}
           >
-            {item.isSoldOut ? 'Còn hàng' : 'Báo hết'}
+            {item.isSoldOut ? t('inStockToggle') : t('soldOutToggle')}
           </Button>
         </div>
       ) : null}

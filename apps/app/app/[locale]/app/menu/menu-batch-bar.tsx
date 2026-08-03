@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 
 type MenuBatchBarProps = {
@@ -19,13 +20,14 @@ export function MenuBatchBar({
   onSoldOut,
   onAvailability,
 }: MenuBatchBarProps) {
+  const t = useTranslations('menu');
   return (
     <div className="sticky top-0 z-10 space-y-2 rounded-2xl border border-jade-600/30 bg-jade-50 p-3 shadow-sm">
       <p className="text-sm font-semibold text-ink-900">
-        Đã chọn {selectedCount} món
+        {t('selectedCount', { count: selectedCount })}
         {selectedCount < totalCount ? (
           <button type="button" className="ml-2 text-jade-600 underline" onClick={onSelectAll}>
-            Chọn tất cả
+            {t('selectAll')}
           </button>
         ) : null}
       </p>
@@ -37,7 +39,7 @@ export function MenuBatchBar({
           onClick={() => onSoldOut(true)}
           className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
         >
-          Báo hết
+          {t('markSoldOut')}
         </Button>
         <Button
           type="button"
@@ -46,7 +48,7 @@ export function MenuBatchBar({
           onClick={() => onSoldOut(false)}
           className="min-h-11 rounded-xl border border-jade-600 px-3 text-xs font-bold text-jade-600"
         >
-          Còn hàng
+          {t('markInStock')}
         </Button>
         <Button
           type="button"
@@ -55,7 +57,7 @@ export function MenuBatchBar({
           onClick={() => onAvailability(false)}
           className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
         >
-          Ẩn món
+          {t('hideItems')}
         </Button>
         <Button
           type="button"
@@ -64,7 +66,7 @@ export function MenuBatchBar({
           onClick={() => onAvailability(true)}
           className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
         >
-          Hiện món
+          {t('showItems')}
         </Button>
       </div>
     </div>

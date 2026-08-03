@@ -3,6 +3,7 @@
 import { SquaresFourIcon } from '@phosphor-icons/react';
 import type { CreateCategoryBody, CreateItemBody } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
+import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
 import { MenuBatchBar } from './menu-batch-bar';
@@ -55,6 +56,7 @@ function labelForItem(item: MenuTree['categories'][number]['items'][number], bas
 }
 
 export function MenuEditor({ storeId }: MenuEditorProps) {
+  const t = useTranslations('menu');
   const [tree, setTree] = useState<MenuTree | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -72,7 +74,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
     setError(null);
     const res = await fetch(`/api/owner/stores/${storeId}/menu`);
     if (!res.ok) {
-      setError('Không tải được menu.');
+      setError(t('loadFailed'));
       return;
     }
     setTree((await res.json()) as MenuTree);
@@ -115,7 +117,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error || 'Thêm nhóm thất bại.');
+        setError(data?.error || t('addCategoryFailed'));
         return;
       }
       setCategoryName('');
@@ -130,7 +132,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
     if (!itemDraft) return;
     const priceAmount = Number(itemDraft.price.replace(/\D/g, ''));
     if (!itemDraft.name.trim() || !Number.isFinite(priceAmount)) {
-      setError('Tên và giá không hợp lệ.');
+      setError(t('invalidNamePrice'));
       return;
     }
     const categoryId = itemDraft.categoryId;
@@ -149,7 +151,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error || 'Thêm món thất bại.');
+        setError(data?.error || t('addItemFailed'));
         return;
       }
       // 保存并继续：保留分类，清空名称/价格便于连录
@@ -170,7 +172,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         body: JSON.stringify({ isSoldOut: !isSoldOut }),
       });
       if (!res.ok) {
-        setError('Cập nhật hết món thất bại.');
+        setError(t('soldOutFailed'));
         return;
       }
       await load();
@@ -187,7 +189,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         method: 'POST',
       });
       if (!res.ok) {
-        setError('Sao chép món thất bại.');
+        setError(t('copyFailed'));
         return;
       }
       await load();
@@ -207,7 +209,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         body: JSON.stringify({ itemIds: [...selectedIds], isSoldOut }),
       });
       if (!res.ok) {
-        setError('Cập nhật hàng loạt thất bại.');
+        setError(t('batchFailed'));
         return;
       }
       exitSelectMode();
@@ -228,7 +230,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         body: JSON.stringify({ itemIds: [...selectedIds], isAvailable }),
       });
       if (!res.ok) {
-        setError('Cập nhật hàng loạt thất bại.');
+        setError(t('batchFailed'));
         return;
       }
       exitSelectMode();
@@ -252,7 +254,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         issues?: Array<{ message: string }>;
       } | null;
       if (!res.ok) {
-        setError(data?.issues?.[0]?.message || data?.error || 'Xuất bản thất bại.');
+        setError(data?.issues?.[0]?.message || data?.error || t('publishFailed'));
         return;
       }
       await load();
@@ -264,7 +266,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   if (!tree) {
     return (
       <div className="rounded-2xl border border-border bg-white p-6 text-sm text-muted-foreground">
-        {error || 'Đang tải menu…'}
+        {error || t('loading')}
       </div>
     );
   }
@@ -276,11 +278,12 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-muted-foreground">
-            Trạng thái:{' '}
+            {t('status')}{' '}
             <span className="font-semibold text-ink-900">
-              {tree.menu.status === 'published' ? 'Đã xuất bản' : 'Nháp'}
+              {tree.menu.status === 'published' ? t('published') : t('draft')}
             </span>
-            {' · '}v{tree.menu.menuVersion}
+            {' · '}
+            {t('version', { version: tree.menu.menuVersion })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -297,7 +300,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             )}
           >
             <SquaresFourIcon className="size-4" weight="bold" aria-hidden />
-            {selectMode ? 'Hủy chọn' : 'Chọn nhiều'}
+            {selectMode ? t('cancelSelect') : t('selectMany')}
           </button>
           <Button
             type="button"
@@ -305,7 +308,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             onClick={() => void handlePublish()}
             className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
-            Xuất bản menu
+            {t('publish')}
           </Button>
         </div>
       </div>
@@ -328,14 +331,14 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         className="rounded-2xl border border-border bg-white p-4"
       >
         <label className="text-sm font-semibold text-ink-900" htmlFor="new-cat">
-          Thêm nhóm món
+          {t('addCategory')}
         </label>
         <div className="mt-2 flex gap-2">
           <input
             id="new-cat"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
-            placeholder="Món chính"
+            placeholder={t('categoryPlaceholder')}
             className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
           />
           <Button
@@ -344,13 +347,13 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             disabled={!categoryName.trim()}
             className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
-            Thêm
+            {t('add')}
           </Button>
         </div>
       </form>
 
       {tree.categories.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Chưa có nhóm. Thêm nhóm rồi thêm món.</p>
+        <p className="text-sm text-muted-foreground">{t('emptyCategories')}</p>
       ) : null}
 
       <ul className="space-y-4">
@@ -366,7 +369,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                   className="text-sm font-semibold text-jade-600"
                   onClick={() => setItemDraft({ categoryId: category.id, name: '', price: '' })}
                 >
-                  + Món
+                  {t('addItem')}
                 </button>
               ) : null}
             </div>
@@ -418,7 +421,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                 </li>
               ))}
               {category.items.length === 0 ? (
-                <li className="py-3 text-sm text-muted-foreground">Chưa có món trong nhóm này.</li>
+                <li className="py-3 text-sm text-muted-foreground">{t('emptyItems')}</li>
               ) : null}
             </ul>
 

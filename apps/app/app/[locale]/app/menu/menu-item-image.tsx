@@ -1,6 +1,7 @@
 'use client';
 
 import { ImageIcon, TrashIcon } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
 import { Button } from '@/components/button';
 import { publicMediaPath } from '@/lib/menu-image';
@@ -24,6 +25,7 @@ export function MenuItemImage({
   onError,
   onChanged,
 }: MenuItemImageProps) {
+  const t = useTranslations('menu');
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(file: File | undefined) {
@@ -39,7 +41,7 @@ export function MenuItemImage({
       });
       const data = (await res.json().catch(() => null)) as { error?: string } | null;
       if (!res.ok) {
-        onError(data?.error || 'Upload ảnh thất bại.');
+        onError(data?.error || t('uploadFailed'));
         return;
       }
       await onChanged();
@@ -57,7 +59,7 @@ export function MenuItemImage({
         method: 'DELETE',
       });
       if (!res.ok) {
-        onError('Xóa ảnh thất bại.');
+        onError(t('removeImageFailed'));
         return;
       }
       await onChanged();
@@ -91,8 +93,8 @@ export function MenuItemImage({
         type="button"
         pending={busy}
         iconOnly
-        title="Ảnh món"
-        aria-label="Tải ảnh món"
+        title={t('image')}
+        aria-label={t('uploadImage')}
         onClick={() => inputRef.current?.click()}
         className="size-11 rounded-xl border border-border text-ink-900"
       >
@@ -103,8 +105,8 @@ export function MenuItemImage({
           type="button"
           pending={busy}
           iconOnly
-          title="Xóa ảnh"
-          aria-label="Xóa ảnh món"
+          title={t('removeImage')}
+          aria-label={t('removeImage')}
           onClick={() => void handleRemove()}
           className="size-11 rounded-xl border border-border text-brand-600"
         >

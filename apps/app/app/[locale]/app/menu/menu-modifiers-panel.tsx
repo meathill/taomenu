@@ -1,6 +1,7 @@
 'use client';
 
 import { formatVnd } from '@taomenu/shared';
+import { useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -61,6 +62,8 @@ export function MenuModifiersPanel({
   onChanged,
   onClose,
 }: MenuModifiersPanelProps) {
+  const t = useTranslations('menu');
+  const tCommon = useTranslations('common');
   const [groupName, setGroupName] = useState('');
   const [groupRequired, setGroupRequired] = useState(true);
   const [optionDraft, setOptionDraft] = useState<{
@@ -87,7 +90,7 @@ export function MenuModifiersPanel({
         }),
       });
       if (!res.ok) {
-        onError('Thêm nhóm tùy chọn thất bại.');
+        onError(t('addGroupFailed'));
         return;
       }
       setGroupName('');
@@ -105,7 +108,7 @@ export function MenuModifiersPanel({
         method: 'DELETE',
       });
       if (!res.ok) {
-        onError('Xóa nhóm thất bại.');
+        onError(t('deleteGroupFailed'));
         return;
       }
       await onChanged();
@@ -119,7 +122,7 @@ export function MenuModifiersPanel({
     if (!optionDraft) return;
     const priceDeltaAmount = Number(optionDraft.delta.replace(/\D/g, '') || '0');
     if (!optionDraft.name.trim() || !Number.isFinite(priceDeltaAmount)) {
-      onError('Tên hoặc giá cộng thêm không hợp lệ.');
+      onError(t('invalidOption'));
       return;
     }
     onBusy(true);
@@ -138,7 +141,7 @@ export function MenuModifiersPanel({
         },
       );
       if (!res.ok) {
-        onError('Thêm lựa chọn thất bại.');
+        onError(t('addOptionFailed'));
         return;
       }
       setOptionDraft(null);
@@ -156,7 +159,7 @@ export function MenuModifiersPanel({
         method: 'DELETE',
       });
       if (!res.ok) {
-        onError('Xóa lựa chọn thất bại.');
+        onError(t('deleteOptionFailed'));
         return;
       }
       await onChanged();
@@ -169,18 +172,18 @@ export function MenuModifiersPanel({
     <div className="mt-3 space-y-3 rounded-xl border border-jade-600/30 bg-jade-50/60 p-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-jade-700">Tùy chọn</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-jade-700">
+            {t('modifiersTitle')}
+          </p>
           <p className="text-sm font-bold text-ink-900">{itemName}</p>
         </div>
         <button type="button" className="text-sm font-semibold text-ink-900" onClick={onClose}>
-          Đóng
+          {tCommon('close')}
         </button>
       </div>
 
       {groups.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Chưa có nhóm. Ví dụ: Size (bắt buộc), Topping (tùy chọn).
-        </p>
+        <p className="text-sm text-muted-foreground">{t('emptyGroupsHint')}</p>
       ) : null}
 
       <ul className="space-y-3">
@@ -190,8 +193,8 @@ export function MenuModifiersPanel({
               <div>
                 <p className="font-semibold text-ink-900">{groupLabel(group, baseLocale)}</p>
                 <p className="text-xs text-muted-foreground">
-                  {group.isRequired ? 'Bắt buộc' : 'Tùy chọn'} · chọn {group.minSelected}–
-                  {group.maxSelected}
+                  {group.isRequired ? t('required') : t('optional')} ·{' '}
+                  {t('chooseRange', { min: group.minSelected, max: group.maxSelected })}
                 </p>
               </div>
               <Button
@@ -200,7 +203,7 @@ export function MenuModifiersPanel({
                 className="text-xs font-bold text-brand-600"
                 onClick={() => void handleDeleteGroup(group.id)}
               >
-                Xóa nhóm
+                {t('deleteGroup')}
               </Button>
             </div>
             <ul className="mt-2 divide-y divide-border">
@@ -214,7 +217,7 @@ export function MenuModifiersPanel({
                       </span>
                     ) : null}
                     {!option.isAvailable ? (
-                      <span className="ml-1 text-xs text-muted-foreground">(ẩn)</span>
+                      <span className="ml-1 text-xs text-muted-foreground">{t('hiddenParen')}</span>
                     ) : null}
                   </span>
                   <Button
@@ -223,7 +226,7 @@ export function MenuModifiersPanel({
                     className="text-xs font-bold text-brand-600"
                     onClick={() => void handleDeleteOption(option.id)}
                   >
-                    Xóa
+                    {t('deleteOption')}
                   </Button>
                 </li>
               ))}
@@ -233,13 +236,13 @@ export function MenuModifiersPanel({
                 <input
                   value={optionDraft.name}
                   onChange={(e) => setOptionDraft({ ...optionDraft, name: e.target.value })}
-                  placeholder="Tên lựa chọn"
+                  placeholder={t('optionName')}
                   className="min-h-11 w-full rounded-xl border border-border px-3 text-sm outline-none ring-jade-600 focus:ring-2"
                 />
                 <input
                   value={optionDraft.delta}
                   onChange={(e) => setOptionDraft({ ...optionDraft, delta: e.target.value })}
-                  placeholder="Giá cộng thêm (0 nếu không)"
+                  placeholder={t('priceDelta')}
                   inputMode="numeric"
                   className="min-h-11 w-full rounded-xl border border-border px-3 text-sm tabular-nums outline-none ring-jade-600 focus:ring-2"
                 />
@@ -249,14 +252,14 @@ export function MenuModifiersPanel({
                     className="min-h-11 flex-1 rounded-xl border border-border text-xs font-bold"
                     onClick={() => setOptionDraft(null)}
                   >
-                    Hủy
+                    {t('cancel')}
                   </button>
                   <Button
                     type="submit"
                     pending={busy}
                     className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
                   >
-                    Lưu lựa chọn
+                    {t('saveOption')}
                   </Button>
                 </div>
               </form>
@@ -266,7 +269,7 @@ export function MenuModifiersPanel({
                 className="mt-2 text-xs font-semibold text-jade-600"
                 onClick={() => setOptionDraft({ groupId: group.id, name: '', delta: '0' })}
               >
-                + Lựa chọn
+                {t('addOption')}
               </button>
             )}
           </li>
@@ -274,11 +277,11 @@ export function MenuModifiersPanel({
       </ul>
 
       <form onSubmit={(e) => void handleAddGroup(e)} className="space-y-2 rounded-xl bg-white p-3">
-        <p className="text-sm font-semibold text-ink-900">Thêm nhóm tùy chọn</p>
+        <p className="text-sm font-semibold text-ink-900">{t('addGroupTitle')}</p>
         <input
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
-          placeholder="Size / Độ cay / Topping…"
+          placeholder={t('groupPlaceholder')}
           className="min-h-11 w-full rounded-xl border border-border px-3 text-sm outline-none ring-jade-600 focus:ring-2"
         />
         <label className="flex items-center gap-2 text-sm text-ink-900">
@@ -288,7 +291,7 @@ export function MenuModifiersPanel({
             onChange={(e) => setGroupRequired(e.target.checked)}
             className="size-4 accent-jade-600"
           />
-          Bắt buộc chọn (mặc định 1 lựa chọn)
+          {t('groupRequired')}
         </label>
         <Button
           type="submit"
@@ -296,7 +299,7 @@ export function MenuModifiersPanel({
           disabled={!groupName.trim()}
           className="min-h-11 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
         >
-          Thêm nhóm
+          {t('addGroup')}
         </Button>
       </form>
     </div>
