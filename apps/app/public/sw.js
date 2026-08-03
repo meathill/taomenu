@@ -53,7 +53,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   let data = {
     title: 'TaoMenu',
-    body: 'Có đơn hàng mới',
+    body: 'New order',
     url: '/terminal',
     tag: 'taomenu-order',
   };
@@ -72,7 +72,7 @@ self.addEventListener('push', (event) => {
   }
 
   const options = {
-    body: data.body || 'Có đơn hàng mới',
+    body: data.body || 'New order',
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
     tag: data.tag || 'taomenu-order',

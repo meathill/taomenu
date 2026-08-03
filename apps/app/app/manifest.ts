@@ -6,14 +6,15 @@ export default function manifest(): MetadataRoute.Manifest {
     id: '/',
     name: APP_NAME,
     short_name: APP_NAME,
-    description: 'TaoMenu — order QR và terminal nhân viên',
+    description: 'TaoMenu — QR ordering and staff terminal',
     start_url: '/terminal',
     scope: '/',
     display: 'standalone',
     orientation: 'portrait-primary',
     background_color: '#FFF9F2',
     theme_color: '#2E6F5E',
-    lang: 'vi',
+    // manifest 会被浏览器缓存且无法按用户语言动态化，保持中性英文
+    lang: 'en',
     categories: ['business', 'food'],
     icons: [
       {
