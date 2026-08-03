@@ -6,6 +6,7 @@ import { emailOTP } from 'better-auth/plugins';
 import { getEnv } from '@/lib/cf';
 import { getDb } from '@/lib/db';
 import { sendOtpEmail } from '@/lib/email';
+import { getAuthBaseUrl } from '@/lib/public-url';
 
 function hasGoogleOAuth(env: CloudflareEnv): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
@@ -27,7 +28,8 @@ export function getAuth() {
 
   return betterAuth({
     appName: 'TaoMenu',
-    baseURL: env.BETTER_AUTH_URL || env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001',
+    // baseURL 只读 process.env，不要从 getCloudflareContext 取 NEXT_PUBLIC_*
+    baseURL: getAuthBaseUrl(),
     secret: env.BETTER_AUTH_SECRET,
     database: drizzleAdapter(db, {
       provider: 'sqlite',

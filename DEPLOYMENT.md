@@ -9,35 +9,47 @@
 | `taomenu-website` | `apps/website` | 营销站 / SEO |
 | `taomenu-app` | `apps/app` | PWA、Auth、API、Push、业务 |
 
-推荐域名：
+域名（可选，测通后再买）：
 
-- `https://taomenu.app` → website  
-- `https://app.taomenu.app` → app  
+- 自定义域示例：`https://taomenu.app` → website，`https://app.taomenu.app` → app  
+- **无自定义域**：直接用 Workers 默认 `https://<name>.<subdomain>.workers.dev`  
+- 本地：website `:3000`，app `:3001`
 
-本地：website `:3000`，app `:3001`。
+**URL 一律无尾斜杠**（`https://xxx.workers.dev`，不要 `.../`）。
 
 ## 环境变量约定
+
+### 读取规则（强制）
+
+| 变量类型 | 代码怎么读 | 不要 |
+|---|---|---|
+| `NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WEBSITE_URL` | **`process.env.NEXT_PUBLIC_*`**（见 `public-url.ts` / `site.ts`） | `getCloudflareContext().env.NEXT_PUBLIC_*` |
+| `BETTER_AUTH_URL` | **`process.env.BETTER_AUTH_URL`**（Auth baseURL） | 写死域名 |
+| DB / EMAIL / MEDIA 等 binding、密钥 | `getCloudflareContext().env`（`getEnv()`） | 放进 `NEXT_PUBLIC_*` |
+
+`NEXT_PUBLIC_*` 在 **构建时** 内联到客户端；运行时也依赖 `process.env`（`nodejs_compat` 会把 wrangler vars 灌进 process.env）。  
+`pnpm deploy` / `build` 会经 `scripts/run-with-wrangler-vars.mjs` 把当前包 `wrangler.jsonc` 的 `vars` 注入构建环境（**不覆盖** shell / `.env.production` 已有值）。
 
 ### 可以进客户端的（`NEXT_PUBLIC_*`）
 
 | 变量 | 用途 |
 |---|---|
-| `NEXT_PUBLIC_APP_URL` | app 绝对 URL（登录跳转、桌码链接、OAuth callback 基址） |
-| `NEXT_PUBLIC_WEBSITE_URL` | 营销站绝对 URL（sitemap、跨站 CTA） |
+| `NEXT_PUBLIC_APP_URL` | app 绝对 URL（营销站 CTA、Better Auth 回退基址等） |
+| `NEXT_PUBLIC_WEBSITE_URL` | 营销站绝对 URL（sitemap、robots） |
 
-只放**非密钥**、可公开的配置。推送到浏览器的包体会内嵌这些值。
+只放**非密钥**、可公开的配置。浏览器包体会内嵌这些值。
 
-### 放 wrangler `vars`（非密钥，可进仓库默认值/生产覆盖）
+### 放 wrangler `vars`（非密钥）
 
 | 变量 | 用途 |
 |---|---|
-| `BETTER_AUTH_URL` | Better Auth `baseURL`（通常等于 `https://app.taomenu.app`） |
-| `EMAIL_FROM` | 发件地址，如 `noreply@taomenu.app`（域名须已 onboard Email Sending） |
+| `BETTER_AUTH_URL` | Better Auth `baseURL`（通常等于当前 app 公网 URL） |
+| `EMAIL_FROM` | 发件地址（域名须已 onboard Email Sending） |
 | `EMAIL_FROM_NAME` | 发件显示名，默认 `TaoMenu` |
 | `VAPID_PUBLIC_KEY` | Web Push 公钥（经 API 下发到终端，不是密钥） |
-| `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@taomenu.app` |
+| `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@example.com` |
 | `GOOGLE_CLIENT_ID` | Google OAuth 客户端 ID（可公开） |
-| `NEXT_PUBLIC_*` | 同上，生产必须写成真实 HTTPS 域名 |
+| `NEXT_PUBLIC_*` | 同上；**填实际可访问的 HTTPS 地址**（workers.dev 或自定义域） |
 
 ### 必须 `wrangler secret` / `.dev.vars`（密钥，禁止提交）
 
@@ -81,7 +93,7 @@ pnpm --filter @taomenu/website cf-typegen
 
 - Node ≥ 24、pnpm 11  
 - 已登录：`npx wrangler login`  
-- 域名接入 Cloudflare（建议 `taomenu.app`）
+- 域名可选；无域名时用 `*.workers.dev` 即可测
 
 ### 2. D1
 
@@ -137,7 +149,7 @@ npx @pushforge/builder vapid
 
 ### 6. Google OAuth（可选）
 
-- 授权回调：`https://app.taomenu.app/api/auth/callback/google`  
+- 授权回调：`{NEXT_PUBLIC_APP_URL}/api/auth/callback/google`（与 vars 一致）  
 - `GOOGLE_CLIENT_ID` → vars  
 - `GOOGLE_CLIENT_SECRET` → secret  
 
@@ -158,27 +170,31 @@ npx wrangler secret put GOOGLE_CLIENT_SECRET
 npx wrangler secret put CRON_SECRET
 ```
 
-非密钥建议在 `wrangler.jsonc` 的 `vars` 中改为生产值，或使用 Dashboard / `wrangler pages` 等价流程覆盖：
+非密钥写在 `wrangler.jsonc` → `vars`（无域名时用 workers.dev；有域名再改）。**不要尾斜杠**：
 
 ```jsonc
 "vars": {
-  "BETTER_AUTH_URL": "https://app.taomenu.app",
-  "NEXT_PUBLIC_APP_URL": "https://app.taomenu.app",
-  "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu.app",
-  "EMAIL_FROM": "noreply@taomenu.app",
+  // 预览 / 未买域名
+  "BETTER_AUTH_URL": "https://taomenu-app.<account>.workers.dev",
+  "NEXT_PUBLIC_APP_URL": "https://taomenu-app.<account>.workers.dev",
+  "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.<account>.workers.dev",
+  // 有自定义域后再改为 https://app.taomenu.app 等
+  "EMAIL_FROM": "noreply@your-verified-domain",
   "EMAIL_FROM_NAME": "TaoMenu",
   "VAPID_PUBLIC_KEY": "<your-public-key>",
-  "VAPID_SUBJECT": "mailto:ops@taomenu.app",
+  "VAPID_SUBJECT": "mailto:ops@example.com",
   "GOOGLE_CLIENT_ID": "<optional>"
 }
 ```
+
+也可复制 `apps/app/.env.production.example` → `.env.production` 覆盖构建时的 `process.env`（优先级高于 wrangler vars 注入）。
 
 ### website（`apps/website`）
 
 ```jsonc
 "vars": {
-  "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu.app",
-  "NEXT_PUBLIC_APP_URL": "https://app.taomenu.app"
+  "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.<account>.workers.dev",
+  "NEXT_PUBLIC_APP_URL": "https://taomenu-app.<account>.workers.dev"
 }
 ```
 
@@ -193,37 +209,45 @@ website **无密钥、无 D1、无 Email binding**。
 ```bash
 pnpm install
 
-# app
+# 确认 wrangler.jsonc vars 已是当前可访问 URL，再：
 pnpm --filter @taomenu/app deploy
-
-# website
 pnpm --filter @taomenu/website deploy
 ```
 
-等价于：`cf-typegen` → OpenNext build → `opennextjs-cloudflare deploy`。
+等价于：`cf-typegen` → `run-with-wrangler-vars` 注入 vars → OpenNext build → deploy。
 
-### 自定义域
+临时覆盖（不改文件）：
 
-Workers 控制台为两个 Worker 绑定路由/自定义域，或：
+```bash
+NEXT_PUBLIC_APP_URL=https://taomenu-app.xxx.workers.dev \
+BETTER_AUTH_URL=https://taomenu-app.xxx.workers.dev \
+pnpm --filter @taomenu/app deploy
+```
+
+### 自定义域（可选）
+
+Workers 控制台绑定路由/自定义域，或：
 
 ```bash
 cd apps/app && npx wrangler domains add app.taomenu.app
 cd apps/website && npx wrangler domains add taomenu.app
 ```
 
-（具体子命令以当前 wrangler 版本文档为准。）
+改域后同步更新两边 `vars` 的 `NEXT_PUBLIC_*` / `BETTER_AUTH_URL` 并 **重新 deploy**（客户端 URL 靠构建内联）。
 
 ### 部署后检查
 
-1. `https://app.taomenu.app/api/health` → `{ ok: true }`  
+把下面的 host 换成你的 `NEXT_PUBLIC_APP_URL` / website URL：
+
+1. `{APP_URL}/api/health` → `{ ok: true }`  
 2. 登录页发 OTP → 邮箱收到（检查 Spam）  
 3. 终端 `/terminal` Push 测试  
-4. 营销站 CTA 指向 `https://app.taomenu.app/login`  
+4. 营销站 CTA 指向 `{APP_URL}/login`  
 
 ### Outbox 补扫（可选 Cron）
 
 ```bash
-curl -X POST https://app.taomenu.app/api/internal/process-outbox \
+curl -X POST "$NEXT_PUBLIC_APP_URL/api/internal/process-outbox" \
   -H "Authorization: Bearer $CRON_SECRET"
 ```
 

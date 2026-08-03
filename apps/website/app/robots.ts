@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { WEBSITE_URL } from '@/lib/site';
+import { getPublicWebsiteUrl } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: `${WEBSITE_URL}/sitemap.xml`,
+    sitemap: `${getPublicWebsiteUrl()}/sitemap.xml`,
   };
 }

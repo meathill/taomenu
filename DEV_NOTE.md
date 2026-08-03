@@ -48,6 +48,16 @@
 - 密钥只进 secret / `.dev.vars`；`NEXT_PUBLIC_*` 仅 APP/WEBSITE URL
 - 详见 `DEPLOYMENT.md`
 
+## 公开 URL / 环境变量（2026-08-03）
+
+- **不要**在业务代码写死 `taomenu.app` / 具体 workers.dev
+- `NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WEBSITE_URL` / `BETTER_AUTH_URL` **只读 `process.env.*`**
+- **禁止** `getCloudflareContext().env.NEXT_PUBLIC_*`（客户端内联与 Next 约定都不走这条路径）
+- `getCloudflareContext` 仅用于 binding（DB / EMAIL / MEDIA）与密钥
+- URL 统一无尾斜杠；`apps/app/lib/public-url.ts`、`apps/website/lib/site.ts` 负责读取与规范化
+- 构建时：`scripts/run-with-wrangler-vars.mjs` 把 `wrangler.jsonc` 的 `vars` 注入 `process.env`（不覆盖 shell 已有值）
+- 无自定义域：vars 填 `https://<worker>.<account>.workers.dev` 即可测通
+
 ## 验收切片（2026-07-28）
 
 - 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`

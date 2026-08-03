@@ -2,6 +2,7 @@
 
 import QRCode from 'qrcode';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { getPublicAppUrl, joinPublicUrl } from '@/lib/public-url';
 
 type TableRow = {
   id: string;
@@ -21,19 +22,20 @@ type TablesManagerProps = {
   storeSlug: string;
 };
 
+/** 浏览器内优先当前 origin（任意 workers.dev / 自定义域均可扫码）；SSR/缺省用 env。 */
 function appOrigin(): string {
   if (typeof window !== 'undefined' && window.location?.origin) {
     return window.location.origin;
   }
-  return process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3001';
+  return getPublicAppUrl();
 }
 
 function customerTableUrl(storeSlug: string, token: string): string {
-  return `${appOrigin()}/m/${storeSlug}/t/${token}`;
+  return joinPublicUrl(appOrigin(), `/m/${storeSlug}/t/${token}`);
 }
 
 function customerPickupUrl(storeSlug: string, token: string): string {
-  return `${appOrigin()}/m/${storeSlug}/p/${token}`;
+  return joinPublicUrl(appOrigin(), `/m/${storeSlug}/p/${token}`);
 }
 
 export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
