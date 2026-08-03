@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -9,6 +10,7 @@ type StoreControlsProps = {
 };
 
 export function StoreControls({ storeId, acceptingPublicRequests }: StoreControlsProps) {
+  const t = useTranslations('owner');
   const [accepting, setAccepting] = useState(acceptingPublicRequests);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export function StoreControls({ storeId, acceptingPublicRequests }: StoreControl
         body: JSON.stringify({ acceptingPublicRequests: next }),
       });
       if (!res.ok) {
-        setError('Cập nhật thất bại.');
+        setError(t('errorUpdate'));
         return;
       }
       setAccepting(next);
@@ -37,11 +39,9 @@ export function StoreControls({ storeId, acceptingPublicRequests }: StoreControl
     <div className="mb-4 rounded-2xl border border-border bg-white p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-ink-900">Nhận order công khai</p>
+          <p className="text-sm font-bold text-ink-900">{t('publicOrders')}</p>
           <p className="text-xs text-muted-foreground">
-            {accepting
-              ? 'Đang mở — khách quét mã có thể order.'
-              : 'Đã tạm dừng — khách không gửi được order mới.'}
+            {accepting ? t('publicOrdersOpen') : t('publicOrdersPaused')}
           </p>
         </div>
         <Button
@@ -54,7 +54,7 @@ export function StoreControls({ storeId, acceptingPublicRequests }: StoreControl
               : 'min-h-11 shrink-0 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white'
           }
         >
-          {accepting ? 'Tạm dừng' : 'Mở lại'}
+          {accepting ? t('pause') : t('resume')}
         </Button>
       </div>
       {error ? <p className="mt-2 text-xs text-brand-600">{error}</p> : null}
