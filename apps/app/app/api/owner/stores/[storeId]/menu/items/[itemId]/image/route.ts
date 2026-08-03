@@ -1,12 +1,7 @@
 import { setItemImageKey } from '@taomenu/db';
 import { badRequest, notFound } from '@/lib/api-error';
 import { getEnv } from '@/lib/cf';
-import {
-  buildMenuImageKey,
-  MENU_IMAGE_MAX_BYTES,
-  publicMediaPath,
-  validateMenuImageBytes,
-} from '@/lib/menu-image';
+import { buildMenuImageKey, publicMediaPath, validateMenuImageBytes } from '@/lib/menu-image';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
 
 type RouteContext = { params: Promise<{ storeId: string; itemId: string }> };
@@ -39,13 +34,8 @@ export async function POST(request: Request, context: RouteContext) {
   const buffer = new Uint8Array(await file.arrayBuffer());
   const validated = validateMenuImageBytes({ mime, bytes: buffer });
   if (!validated.ok) {
-    const messages: Record<string, string> = {
-      UNSUPPORTED_TYPE: 'Chỉ hỗ trợ JPEG / PNG / WebP',
-      TOO_LARGE: `Ảnh tối đa ${Math.floor(MENU_IMAGE_MAX_BYTES / (1024 * 1024))}MB`,
-      EMPTY: 'File rỗng',
-      BAD_MAGIC: 'File ảnh không hợp lệ',
-    };
-    return badRequest(messages[validated.error] ?? validated.error);
+    // 只返回错误码，文案由前端按 UI 语言映射
+    return badRequest(validated.error);
   }
 
   const key = buildMenuImageKey(storeId, itemId, validated.mime);

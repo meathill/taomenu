@@ -4,7 +4,16 @@ import { ImageIcon, TrashIcon } from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
 import { Button } from '@/components/button';
-import { publicMediaPath } from '@/lib/menu-image';
+import { MENU_IMAGE_MAX_BYTES, publicMediaPath } from '@/lib/menu-image';
+
+const IMAGE_ERROR_KEYS: Record<string, string> = {
+  UNSUPPORTED_TYPE: 'imageErrorUnsupportedType',
+  TOO_LARGE: 'imageErrorTooLarge',
+  EMPTY: 'imageErrorEmpty',
+  BAD_MAGIC: 'imageErrorBadMagic',
+};
+
+const MAX_MB = Math.floor(MENU_IMAGE_MAX_BYTES / (1024 * 1024));
 
 type MenuItemImageProps = {
   storeId: string;
@@ -41,7 +50,8 @@ export function MenuItemImage({
       });
       const data = (await res.json().catch(() => null)) as { error?: string } | null;
       if (!res.ok) {
-        onError(data?.error || t('uploadFailed'));
+        const key = data?.error ? IMAGE_ERROR_KEYS[data.error] : undefined;
+        onError(key ? t(key, { maxMb: MAX_MB }) : t('uploadFailed'));
         return;
       }
       await onChanged();
