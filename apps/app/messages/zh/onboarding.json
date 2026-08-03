@@ -1,0 +1,19 @@
+{
+  "title": "开设门店",
+  "subtitle": "一部手机即可。几分钟完成——菜单与二维码在下一步。",
+  "storeName": "门店名称",
+  "storeNamePlaceholder": "河内牛肉粉",
+  "storeNameHint": "之后可在设置中修改。",
+  "continue": "继续",
+  "back": "返回",
+  "serviceMode": "服务方式",
+  "modeTableTitle": "堂食",
+  "modeTableDesc": "每桌一个二维码。取餐点可选。",
+  "modeCounterTitle": "柜台式取餐",
+  "modeCounterDesc": "座位少的小店。使用取餐码和排队号。",
+  "modeHybridTitle": "混合",
+  "modeHybridDesc": "同时支持堂食与外带 / 柜台式取餐。",
+  "counterHint": "座位很少或不设座位时不必建桌号。下一步只需取餐码。",
+  "createStore": "创建门店",
+  "errorCreate": "无法创建门店。"
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Tables & QR",
+  "subtitle": "Create tables or pickup points. Tokens appear only when created or rotated.",
+  "tables": "Tables",
+  "tablePlaceholder": "Table 1",
+  "add": "Add",
+  "addTableFailed": "Could not create table.",
+  "rotateFailed": "Could not rotate code.",
+  "rotate": "Rotate code",
+  "tokenVersion": "token v{version}",
+  "emptyTables": "No tables yet.",
+  "pickupPoints": "Pickup points",
+  "pickupPlaceholder": "Counter",
+  "addPickupFailed": "Could not create pickup point.",
+  "emptyPickup": "No pickup points yet.",
+  "qrTitle": "QR code (shown only on create/rotate)",
+  "shareCopy": "Share / Copy",
+  "copied": "(copied)"
+}

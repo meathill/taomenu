@@ -1,0 +1,16 @@
+{
+  "title": "Chủ quán",
+  "menu": "Menu",
+  "tables": "Bàn / QR",
+  "terminal": "Terminal nhân viên",
+  "modeDineIn": "Ăn tại bàn",
+  "modeCounter": "Lấy tại quầy",
+  "modeHybrid": "Bàn + lấy quầy",
+  "plan": "gói {plan}",
+  "publicOrders": "Nhận order công khai",
+  "publicOrdersOpen": "Đang mở — khách quét mã có thể order.",
+  "publicOrdersPaused": "Đã tạm dừng — khách không gửi được order mới.",
+  "pause": "Tạm dừng",
+  "resume": "Mở lại",
+  "errorUpdate": "Cập nhật thất bại."
+}

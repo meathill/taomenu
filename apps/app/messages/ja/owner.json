@@ -1,0 +1,16 @@
+{
+  "title": "オーナー",
+  "menu": "メニュー",
+  "tables": "卓 / QR",
+  "terminal": "スタッフ端末",
+  "modeDineIn": "店内",
+  "modeCounter": "カウンター受取",
+  "modeHybrid": "卓 + カウンター",
+  "plan": "プラン {plan}",
+  "publicOrders": "公開オーダー受付",
+  "publicOrdersOpen": "受付中 — お客様は QR で注文できます。",
+  "publicOrdersPaused": "一時停止中 — 新規注文はできません。",
+  "pause": "一時停止",
+  "resume": "再開",
+  "errorUpdate": "更新に失敗しました。"
+}

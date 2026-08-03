@@ -1,0 +1,19 @@
+{
+  "title": "店舗を開く",
+  "subtitle": "スマホだけで数分。メニューと QR は次のステップです。",
+  "storeName": "店舗名",
+  "storeNamePlaceholder": "ハノイ・フォー",
+  "storeNameHint": "後から設定で変更できます。",
+  "continue": "続ける",
+  "back": "戻る",
+  "serviceMode": "提供スタイル",
+  "modeTableTitle": "店内",
+  "modeTableDesc": "卓ごとに QR。受取ポイントは任意。",
+  "modeCounterTitle": "カウンター受取",
+  "modeCounterDesc": "席が少ない店向け。受取コードと順番番号を使います。",
+  "modeHybridTitle": "ハイブリッド",
+  "modeHybridDesc": "店内とテイクアウト／カウンターの両方。",
+  "counterHint": "席が少ない・ない店は卓番号は不要です。次は受取コードだけで大丈夫です。",
+  "createStore": "店舗を作成",
+  "errorCreate": "店舗を作成できませんでした。"
+}

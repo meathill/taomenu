@@ -1,0 +1,19 @@
+{
+  "title": "桌台与二维码",
+  "subtitle": "创建桌台或取餐点。Token 仅在创建/更换时显示。",
+  "tables": "桌台",
+  "tablePlaceholder": "1 号桌",
+  "add": "添加",
+  "addTableFailed": "无法创建桌台。",
+  "rotateFailed": "无法更换二维码。",
+  "rotate": "更换二维码",
+  "tokenVersion": "token v{version}",
+  "emptyTables": "还没有桌台。",
+  "pickupPoints": "取餐点",
+  "pickupPlaceholder": "柜台",
+  "addPickupFailed": "无法创建取餐点。",
+  "emptyPickup": "还没有取餐点。",
+  "qrTitle": "二维码（仅在创建/更换时显示）",
+  "shareCopy": "分享 / 复制",
+  "copied": "（已复制）"
+}

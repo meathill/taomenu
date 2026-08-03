@@ -1,0 +1,18 @@
+{
+  "title": "Đăng nhập cửa hàng",
+  "subtitle": "Dùng Google hoặc email OTP. Không cần mật khẩu.",
+  "continueGoogle": "Tiếp tục với Google",
+  "orEmail": "hoặc dùng email",
+  "email": "Email",
+  "emailPlaceholder": "ban@email.com",
+  "sendOtp": "Gửi mã OTP",
+  "otpSent": "Đã gửi mã tới {email}",
+  "otp": "Mã OTP",
+  "signIn": "Đăng nhập",
+  "changeEmail": "Đổi email",
+  "hint": "OTP gửi qua email (Cloudflare Email). Dev chưa cấu hình EMAIL: xem log [taomenu-otp]. Google chỉ hiện khi đã cấu hình OAuth.",
+  "errorGoogle": "Google đăng nhập thất bại.",
+  "errorSendOtp": "Không gửi được mã OTP.",
+  "errorBadOtp": "Mã OTP không đúng.",
+  "loading": "…"
+}

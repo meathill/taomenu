@@ -1,0 +1,18 @@
+{
+  "title": "门店登录",
+  "subtitle": "使用 Google 或邮箱 OTP，无需密码。",
+  "continueGoogle": "使用 Google 继续",
+  "orEmail": "或使用邮箱",
+  "email": "邮箱",
+  "emailPlaceholder": "you@email.com",
+  "sendOtp": "发送验证码",
+  "otpSent": "验证码已发送至 {email}",
+  "otp": "验证码",
+  "signIn": "登录",
+  "changeEmail": "更换邮箱",
+  "hint": "验证码通过邮件发送（Cloudflare Email）。开发环境未配置 EMAIL 时，请在日志中查找 [taomenu-otp]。仅在配置 OAuth 后显示 Google。",
+  "errorGoogle": "Google 登录失败。",
+  "errorSendOtp": "无法发送验证码。",
+  "errorBadOtp": "验证码不正确。",
+  "loading": "…"
+}

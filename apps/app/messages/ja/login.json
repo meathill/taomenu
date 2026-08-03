@@ -1,0 +1,18 @@
+{
+  "title": "店舗ログイン",
+  "subtitle": "Google またはメール OTP。パスワード不要。",
+  "continueGoogle": "Google で続ける",
+  "orEmail": "またはメール",
+  "email": "メール",
+  "emailPlaceholder": "you@email.com",
+  "sendOtp": "OTP を送る",
+  "otpSent": "{email} にコードを送信しました",
+  "otp": "OTP コード",
+  "signIn": "ログイン",
+  "changeEmail": "メールを変更",
+  "hint": "OTP はメール（Cloudflare Email）で送信します。開発で EMAIL 未設定の場合はログの [taomenu-otp] を確認。Google は OAuth 設定時のみ表示。",
+  "errorGoogle": "Google ログインに失敗しました。",
+  "errorSendOtp": "OTP を送信できませんでした。",
+  "errorBadOtp": "OTP が正しくありません。",
+  "loading": "…"
+}

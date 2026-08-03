@@ -1,0 +1,19 @@
+{
+  "title": "卓と QR コード",
+  "subtitle": "卓または受取ポイントを作成。トークンは作成/更新時のみ表示。",
+  "tables": "卓",
+  "tablePlaceholder": "卓 1",
+  "add": "追加",
+  "addTableFailed": "卓を作成できませんでした。",
+  "rotateFailed": "コードを更新できませんでした。",
+  "rotate": "コードを更新",
+  "tokenVersion": "トークン v{version}",
+  "emptyTables": "卓がまだありません。",
+  "pickupPoints": "受取ポイント",
+  "pickupPlaceholder": "カウンター",
+  "addPickupFailed": "受取ポイントを作成できませんでした。",
+  "emptyPickup": "受取ポイントがまだありません。",
+  "qrTitle": "QR コード（作成/更新時のみ表示）",
+  "shareCopy": "共有 / コピー",
+  "copied": "（コピー済み）"
+}

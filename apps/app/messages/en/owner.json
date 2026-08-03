@@ -1,0 +1,16 @@
+{
+  "title": "Owner",
+  "menu": "Menu",
+  "tables": "Tables / QR",
+  "terminal": "Staff terminal",
+  "modeDineIn": "Dine-in",
+  "modeCounter": "Counter pickup",
+  "modeHybrid": "Tables + counter",
+  "plan": "Plan {plan}",
+  "publicOrders": "Public ordering",
+  "publicOrdersOpen": "Open — guests can order by scanning.",
+  "publicOrdersPaused": "Paused — guests cannot place new orders.",
+  "pause": "Pause",
+  "resume": "Resume",
+  "errorUpdate": "Update failed."
+}

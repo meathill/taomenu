@@ -1,0 +1,19 @@
+{
+  "title": "Bàn & mã QR",
+  "subtitle": "Tạo bàn hoặc điểm lấy món. Token chỉ hiện khi tạo/đổi mã.",
+  "tables": "Bàn",
+  "tablePlaceholder": "Bàn 1",
+  "add": "Thêm",
+  "addTableFailed": "Tạo bàn thất bại.",
+  "rotateFailed": "Đổi mã thất bại.",
+  "rotate": "Đổi mã",
+  "tokenVersion": "token v{version}",
+  "emptyTables": "Chưa có bàn.",
+  "pickupPoints": "Điểm lấy món",
+  "pickupPlaceholder": "Quầy",
+  "addPickupFailed": "Tạo điểm lấy món thất bại.",
+  "emptyPickup": "Chưa có điểm lấy món.",
+  "qrTitle": "Mã QR (chỉ hiện lần tạo/đổi)",
+  "shareCopy": "Chia sẻ / Copy",
+  "copied": "(đã copy)"
+}

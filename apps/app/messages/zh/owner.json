@@ -1,0 +1,16 @@
+{
+  "title": "店主",
+  "menu": "菜单",
+  "tables": "桌台 / 二维码",
+  "terminal": "员工终端",
+  "modeDineIn": "堂食",
+  "modeCounter": "柜台式取餐",
+  "modeHybrid": "桌台 + 取餐",
+  "plan": "方案 {plan}",
+  "publicOrders": "开放接单",
+  "publicOrdersOpen": "接单中——顾客扫码即可下单。",
+  "publicOrdersPaused": "已暂停——顾客无法提交新订单。",
+  "pause": "暂停",
+  "resume": "恢复",
+  "errorUpdate": "更新失败。"
+}
