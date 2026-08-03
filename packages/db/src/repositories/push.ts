@@ -1,3 +1,4 @@
+import { getPushCopy, type PushCopy } from '@taomenu/shared';
 import { and, eq, isNull, lt, lte, or } from 'drizzle-orm';
 import {
   type NotificationEventType,
@@ -6,6 +7,7 @@ import {
   type PushSubjectType,
   pushSubscriptions,
 } from '../schema/push';
+import { stores } from '../schema/stores';
 import { orders } from '../schema/tables-orders';
 import type { Db, StoreContext } from '../types';
 
@@ -235,7 +237,15 @@ export async function processOneOutboxEvent(db: Db, eventId: string, send: PushS
     return { skipped: true as const, reason: 'no_subscriptions' as const };
   }
 
-  const payload = buildPayload(event);
+  // push 正文按店铺 baseLocale 本地化
+  const storeRows = await db
+    .select({ baseLocale: stores.baseLocale })
+    .from(stores)
+    .where(eq(stores.id, event.storeId))
+    .limit(1);
+  const copy = getPushCopy(storeRows[0]?.baseLocale);
+
+  const payload = buildPayload(event, copy);
   let anySent = false;
   let lastError: string | null = null;
 
@@ -329,7 +339,10 @@ export async function processOneOutboxEvent(db: Db, eventId: string, send: PushS
   return { skipped: false as const, anySent };
 }
 
-function buildPayload(event: typeof notificationOutbox.$inferSelect): Record<string, unknown> {
+function buildPayload(
+  event: typeof notificationOutbox.$inferSelect,
+  copy: PushCopy,
+): Record<string, unknown> {
   const base =
     event.payloadJson != null ? (JSON.parse(event.payloadJson) as Record<string, unknown>) : {};
 
@@ -337,7 +350,7 @@ function buildPayload(event: typeof notificationOutbox.$inferSelect): Record<str
     return {
       type: 'order.submitted',
       title: 'TaoMenu',
-      body: 'Có đơn hàng mới',
+      body: copy.newOrder,
       url: '/terminal',
       orderId: event.entityId,
       tag: `order-${event.entityId}`,
@@ -348,7 +361,7 @@ function buildPayload(event: typeof notificationOutbox.$inferSelect): Record<str
     return {
       type: 'push.test',
       title: 'TaoMenu',
-      body: 'Thông báo thử nghiệm — chạm để xác nhận',
+      body: copy.testNotification,
       url: `/terminal?push_verify=${event.entityId}`,
       subscriptionId: event.entityId,
       tag: `push-test-${event.entityId}`,
@@ -356,10 +369,17 @@ function buildPayload(event: typeof notificationOutbox.$inferSelect): Record<str
     };
   }
   if (event.eventType === 'service_request.created') {
+    // requestType 由入队方写入 payload，文案在投递时按店铺语言决定
+    const body =
+      base.requestType === 'request_bill'
+        ? copy.requestBill
+        : base.requestType === 'call_staff'
+          ? copy.callStaff
+          : copy.needAssistance;
     return {
       type: 'service_request.created',
       title: 'TaoMenu',
-      body: 'Khách cần hỗ trợ',
+      body,
       url: '/terminal',
       tag: `svc-${event.entityId}`,
       ...base,
@@ -368,7 +388,7 @@ function buildPayload(event: typeof notificationOutbox.$inferSelect): Record<str
   return {
     type: event.eventType,
     title: 'TaoMenu',
-    body: 'Có cập nhật mới',
+    body: copy.genericUpdate,
     url: '/terminal',
     ...base,
   };

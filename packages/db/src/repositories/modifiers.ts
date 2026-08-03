@@ -379,6 +379,7 @@ export async function copyModifiersToItem(
   const map = await loadModifierGroupsForItems(db, ctx.storeId, [sourceItemId]);
   const groups = map.get(sourceItemId) ?? [];
   for (const group of groups) {
+    // 菜单内容语言归 baseLocale 管，与 UI locale 体系无关；仅在源数据无 translations 时兜底
     const groupName = group.translations[0]?.name ?? 'Tùy chọn';
     const created = await createModifierGroup(ctx, db, {
       itemId: targetItemId,

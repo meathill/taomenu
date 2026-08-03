@@ -124,12 +124,9 @@ export async function createServiceRequest(db: Db, input: CreateServiceRequestIn
       eventType: 'service_request.created',
       entityId: id,
       delayMs: 0,
+      // 只带 requestType，标题/正文由投递时按店铺 baseLocale 生成
       payload: {
-        type: 'service_request.created',
-        title: 'TaoMenu',
-        body: input.type === 'request_bill' ? 'Khách gọi tính tiền' : 'Khách gọi nhân viên',
-        url: '/terminal',
-        tag: `svc-${id}`,
+        requestType: input.type,
       },
     });
   } catch {

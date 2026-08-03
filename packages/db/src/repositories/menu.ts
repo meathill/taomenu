@@ -582,6 +582,7 @@ export async function deleteItem(ctx: StoreContext, db: Db, itemId: string) {
 
 /** Free 手工建菜单：复制菜品时在名称后追加的后缀（避免无限叠加）。 */
 export function duplicatedItemName(name: string): string {
+  // 复制后缀写入菜单内容，语言归 baseLocale 管，不随 UI locale 变化
   const suffix = ' (sao chép)';
   if (name.endsWith(suffix)) {
     return name;

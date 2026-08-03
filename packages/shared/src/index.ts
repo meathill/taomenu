@@ -53,3 +53,4 @@ export {
   matchLocaleFromCountry,
   resolveUiLocale,
 } from './locale';
+export { getPushCopy, type PushCopy } from './push-copy';
