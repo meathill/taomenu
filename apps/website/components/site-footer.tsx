@@ -20,7 +20,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t border-border bg-white">
-      <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="container mx-auto grid gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-1">
           <p className="text-base font-bold text-ink-900">{APP_NAME}</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t('tagline')}</p>
@@ -69,7 +69,7 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-5xl flex-col gap-1 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="container mx-auto flex flex-col gap-1 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {APP_NAME}
           </p>

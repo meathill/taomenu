@@ -47,7 +47,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-dvh flex-col">
             <SiteHeader />
-            <main className="mx-auto w-full max-w-5xl flex-1 px-4">{children}</main>
+            <main className="container mx-auto w-full flex-1 px-4">{children}</main>
             <SiteFooter />
           </div>
         </NextIntlClientProvider>

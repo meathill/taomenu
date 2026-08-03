@@ -7,7 +7,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t border-border bg-white">
-      <div className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="container mx-auto flex flex-col gap-4 px-4 py-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-bold text-ink-900">{APP_NAME}</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t('tagline')}</p>
