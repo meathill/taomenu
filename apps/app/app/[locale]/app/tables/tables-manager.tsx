@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import QRCode from 'qrcode';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
@@ -23,6 +24,11 @@ type TablesManagerProps = {
   storeSlug: string;
 };
 
+type LastLink = {
+  url: string;
+  copied: boolean;
+};
+
 /** 浏览器内优先当前 origin（任意 workers.dev / 自定义域均可扫码）；SSR/缺省用 env。 */
 function appOrigin(): string {
   if (typeof window !== 'undefined' && window.location?.origin) {
@@ -40,17 +46,18 @@ function customerPickupUrl(storeSlug: string, token: string): string {
 }
 
 export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
+  const t = useTranslations('tables');
   const [tables, setTables] = useState<TableRow[]>([]);
   const [points, setPoints] = useState<PointRow[]>([]);
   const [tableName, setTableName] = useState('');
-  const [pointName, setPointName] = useState('Quầy');
+  const [pointName, setPointName] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [lastLink, setLastLink] = useState<string | null>(null);
+  const [lastLink, setLastLink] = useState<LastLink | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function showLink(url: string) {
-    setLastLink(url);
+    setLastLink({ url, copied: false });
     try {
       setQrDataUrl(await QRCode.toDataURL(url, { width: 240, margin: 1 }));
     } catch {
@@ -89,7 +96,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       });
       const data = (await res.json()) as { table?: TableRow; error?: string };
       if (!res.ok || !data.table?.token) {
-        setError(data.error || 'Tạo bàn thất bại.');
+        setError(data.error || t('addTableFailed'));
         return;
       }
       await showLink(customerTableUrl(storeSlug, data.table.token));
@@ -109,7 +116,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       });
       const data = (await res.json()) as { table?: TableRow; error?: string };
       if (!res.ok || !data.table?.token) {
-        setError(data.error || 'Đổi mã thất bại.');
+        setError(data.error || t('rotateFailed'));
         return;
       }
       await showLink(customerTableUrl(storeSlug, data.table.token));
@@ -131,7 +138,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       });
       const data = (await res.json()) as { pickupPoint?: PointRow; error?: string };
       if (!res.ok || !data.pickupPoint?.token) {
-        setError(data.error || 'Tạo điểm lấy món thất bại.');
+        setError(data.error || t('addPickupFailed'));
         return;
       }
       await showLink(customerPickupUrl(storeSlug, data.pickupPoint.token));
@@ -152,9 +159,9 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
     }
     try {
       await navigator.clipboard.writeText(url);
-      setLastLink(`${url} (đã copy)`);
+      setLastLink({ url, copied: true });
     } catch {
-      setLastLink(url);
+      setLastLink({ url, copied: false });
     }
   }
 
@@ -163,7 +170,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
       {lastLink ? (
         <div className="rounded-2xl border border-jade-600 bg-white p-4 text-sm">
-          <p className="font-semibold text-ink-900">Mã QR (chỉ hiện lần tạo/đổi)</p>
+          <p className="font-semibold text-ink-900">{t('qrTitle')}</p>
           {qrDataUrl ? (
             // biome-ignore lint/performance/noImgElement: data URL QR for print/share
             <img
@@ -172,24 +179,27 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
               className="mx-auto mt-3 size-48 rounded-xl border border-border bg-white p-2"
             />
           ) : null}
-          <p className="mt-2 break-all font-mono text-xs text-muted-foreground">{lastLink}</p>
+          <p className="mt-2 break-all font-mono text-xs text-muted-foreground">
+            {lastLink.url}
+            {lastLink.copied ? ` ${t('copied')}` : ''}
+          </p>
           <button
             type="button"
             className="mt-3 min-h-11 w-full rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
-            onClick={() => void shareLink(lastLink.replace(' (đã copy)', ''))}
+            onClick={() => void shareLink(lastLink.url)}
           >
-            Chia sẻ / Copy
+            {t('shareCopy')}
           </button>
         </div>
       ) : null}
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-ink-900">Bàn</h2>
+        <h2 className="text-lg font-bold text-ink-900">{t('tables')}</h2>
         <form onSubmit={(e) => void addTable(e)} className="flex gap-2">
           <input
             value={tableName}
             onChange={(e) => setTableName(e.target.value)}
-            placeholder="Bàn 1"
+            placeholder={t('tablePlaceholder')}
             className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
           />
           <Button
@@ -198,7 +208,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
             disabled={!tableName.trim()}
             className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
-            Thêm
+            {t('add')}
           </Button>
         </form>
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
@@ -206,7 +216,9 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
             <li key={table.id} className="flex items-center justify-between gap-3 px-4 py-3">
               <div>
                 <p className="font-semibold text-ink-900">{table.name}</p>
-                <p className="text-xs text-muted-foreground">token v{table.tokenVersion}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t('tokenVersion', { version: table.tokenVersion })}
+                </p>
               </div>
               <Button
                 type="button"
@@ -214,23 +226,23 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
                 onClick={() => void rotateTable(table.id)}
                 className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
               >
-                Đổi mã
+                {t('rotate')}
               </Button>
             </li>
           ))}
           {tables.length === 0 ? (
-            <li className="px-4 py-3 text-sm text-muted-foreground">Chưa có bàn.</li>
+            <li className="px-4 py-3 text-sm text-muted-foreground">{t('emptyTables')}</li>
           ) : null}
         </ul>
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-ink-900">Điểm lấy món</h2>
+        <h2 className="text-lg font-bold text-ink-900">{t('pickupPoints')}</h2>
         <form onSubmit={(e) => void addPickup(e)} className="flex gap-2">
           <input
             value={pointName}
             onChange={(e) => setPointName(e.target.value)}
-            placeholder="Quầy"
+            placeholder={t('pickupPlaceholder')}
             className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
           />
           <Button
@@ -239,7 +251,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
             disabled={!pointName.trim()}
             className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
-            Thêm
+            {t('add')}
           </Button>
         </form>
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
@@ -249,7 +261,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
             </li>
           ))}
           {points.length === 0 ? (
-            <li className="px-4 py-3 text-sm text-muted-foreground">Chưa có điểm lấy món.</li>
+            <li className="px-4 py-3 text-sm text-muted-foreground">{t('emptyPickup')}</li>
           ) : null}
         </ul>
       </section>
