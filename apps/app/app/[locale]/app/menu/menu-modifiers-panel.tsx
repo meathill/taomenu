@@ -2,6 +2,7 @@
 
 import { formatVnd } from '@taomenu/shared';
 import { type FormEvent, useState } from 'react';
+import { Button } from '@/components/button';
 
 export type ModifierOptionView = {
   id: string;
@@ -193,14 +194,14 @@ export function MenuModifiersPanel({
                   {group.maxSelected}
                 </p>
               </div>
-              <button
+              <Button
                 type="button"
-                disabled={busy}
+                pending={busy}
                 className="text-xs font-bold text-brand-600"
                 onClick={() => void handleDeleteGroup(group.id)}
               >
                 Xóa nhóm
-              </button>
+              </Button>
             </div>
             <ul className="mt-2 divide-y divide-border">
               {group.options.map((option) => (
@@ -216,14 +217,14 @@ export function MenuModifiersPanel({
                       <span className="ml-1 text-xs text-muted-foreground">(ẩn)</span>
                     ) : null}
                   </span>
-                  <button
+                  <Button
                     type="button"
-                    disabled={busy}
+                    pending={busy}
                     className="text-xs font-bold text-brand-600"
                     onClick={() => void handleDeleteOption(option.id)}
                   >
                     Xóa
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -250,13 +251,13 @@ export function MenuModifiersPanel({
                   >
                     Hủy
                   </button>
-                  <button
+                  <Button
                     type="submit"
-                    disabled={busy}
-                    className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white disabled:opacity-60"
+                    pending={busy}
+                    className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
                   >
                     Lưu lựa chọn
-                  </button>
+                  </Button>
                 </div>
               </form>
             ) : (
@@ -289,13 +290,14 @@ export function MenuModifiersPanel({
           />
           Bắt buộc chọn (mặc định 1 lựa chọn)
         </label>
-        <button
+        <Button
           type="submit"
-          disabled={busy || !groupName.trim()}
-          className="min-h-11 w-full rounded-xl bg-jade-600 text-sm font-bold text-white disabled:opacity-50"
+          pending={busy}
+          disabled={!groupName.trim()}
+          className="min-h-11 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
         >
           Thêm nhóm
-        </button>
+        </Button>
       </form>
     </div>
   );

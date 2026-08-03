@@ -4,6 +4,7 @@ import { type CreateStoreBody, SERVICE_MODES } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useEffect, useState } from 'react';
+import { Button } from '@/components/button';
 
 const DRAFT_KEY = 'taomenu.onboarding.draft';
 
@@ -169,13 +170,13 @@ export function OnboardingForm() {
             >
               Quay lại
             </button>
-            <button
+            <Button
               type="submit"
-              disabled={isPending}
-              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-60"
+              pending={isPending}
+              className="min-h-12 flex-1 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
             >
-              {isPending ? 'Đang tạo…' : 'Tạo cửa hàng'}
-            </button>
+              Tạo cửa hàng
+            </Button>
           </div>
         </div>
       )}

@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/button';
+
 type MenuBatchBarProps = {
   selectedCount: number;
   totalCount: number;
@@ -28,38 +30,42 @@ export function MenuBatchBar({
         ) : null}
       </p>
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
           type="button"
-          disabled={busy || selectedCount === 0}
+          pending={busy}
+          disabled={selectedCount === 0}
           onClick={() => onSoldOut(true)}
-          className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600 disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
         >
           Báo hết
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          disabled={busy || selectedCount === 0}
+          pending={busy}
+          disabled={selectedCount === 0}
           onClick={() => onSoldOut(false)}
-          className="min-h-11 rounded-xl border border-jade-600 px-3 text-xs font-bold text-jade-600 disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-jade-600 px-3 text-xs font-bold text-jade-600"
         >
           Còn hàng
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          disabled={busy || selectedCount === 0}
+          pending={busy}
+          disabled={selectedCount === 0}
           onClick={() => onAvailability(false)}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900 disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
         >
           Ẩn món
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          disabled={busy || selectedCount === 0}
+          pending={busy}
+          disabled={selectedCount === 0}
           onClick={() => onAvailability(true)}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900 disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
         >
           Hiện món
-        </button>
+        </Button>
       </div>
     </div>
   );

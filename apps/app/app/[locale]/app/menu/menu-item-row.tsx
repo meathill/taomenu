@@ -3,6 +3,7 @@
 import { CopyIcon } from '@phosphor-icons/react';
 import { formatVnd } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
+import { Button } from '@/components/button';
 
 export type MenuItemView = {
   id: string;
@@ -62,29 +63,30 @@ export function MenuItemRow({
       </div>
       {!selectMode ? (
         <div className="flex shrink-0 gap-1.5">
-          <button
+          <Button
             type="button"
-            disabled={busy}
+            pending={busy}
             title="Tùy chọn"
             aria-label="Chỉnh tùy chọn món"
             onClick={onEditModifiers}
-            className="min-h-11 shrink-0 rounded-xl border border-border px-2 text-xs font-bold text-ink-900 disabled:opacity-60"
+            className="min-h-11 shrink-0 rounded-xl border border-border px-2 text-xs font-bold text-ink-900"
           >
             Tùy chọn{modifierCount > 0 ? ` (${modifierCount})` : ''}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            disabled={busy}
+            pending={busy}
+            iconOnly
             title="Sao chép"
             aria-label="Sao chép món"
             onClick={onCopy}
-            className="inline-flex size-11 items-center justify-center rounded-xl border border-border text-ink-900 disabled:opacity-60"
+            className="size-11 rounded-xl border border-border text-ink-900"
           >
             <CopyIcon className="size-4" weight="bold" aria-hidden />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            disabled={busy}
+            pending={busy}
             onClick={onToggleSoldOut}
             className={cn(
               'min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold',
@@ -92,7 +94,7 @@ export function MenuItemRow({
             )}
           >
             {item.isSoldOut ? 'Còn hàng' : 'Báo hết'}
-          </button>
+          </Button>
         </div>
       ) : null}
     </div>

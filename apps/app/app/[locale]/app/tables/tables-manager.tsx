@@ -2,6 +2,7 @@
 
 import QRCode from 'qrcode';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { Button } from '@/components/button';
 import { getPublicAppUrl, joinPublicUrl } from '@/lib/public-url';
 
 type TableRow = {
@@ -191,13 +192,14 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
             placeholder="Bàn 1"
             className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
           />
-          <button
+          <Button
             type="submit"
-            disabled={busy || !tableName.trim()}
-            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-50"
+            pending={busy}
+            disabled={!tableName.trim()}
+            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
             Thêm
-          </button>
+          </Button>
         </form>
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
           {tables.map((table) => (
@@ -206,14 +208,14 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
                 <p className="font-semibold text-ink-900">{table.name}</p>
                 <p className="text-xs text-muted-foreground">token v{table.tokenVersion}</p>
               </div>
-              <button
+              <Button
                 type="button"
-                disabled={busy}
+                pending={busy}
                 onClick={() => void rotateTable(table.id)}
                 className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
               >
                 Đổi mã
-              </button>
+              </Button>
             </li>
           ))}
           {tables.length === 0 ? (
@@ -231,13 +233,14 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
             placeholder="Quầy"
             className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
           />
-          <button
+          <Button
             type="submit"
-            disabled={busy || !pointName.trim()}
-            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-50"
+            pending={busy}
+            disabled={!pointName.trim()}
+            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
             Thêm
-          </button>
+          </Button>
         </form>
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
           {points.map((point) => (

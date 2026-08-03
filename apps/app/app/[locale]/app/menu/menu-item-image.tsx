@@ -2,6 +2,7 @@
 
 import { ImageIcon, TrashIcon } from '@phosphor-icons/react';
 import { useRef } from 'react';
+import { Button } from '@/components/button';
 import { publicMediaPath } from '@/lib/menu-image';
 
 type MenuItemImageProps = {
@@ -86,27 +87,29 @@ export function MenuItemImage({
         className="hidden"
         onChange={(e) => void handleFile(e.target.files?.[0])}
       />
-      <button
+      <Button
         type="button"
-        disabled={busy}
+        pending={busy}
+        iconOnly
         title="Ảnh món"
         aria-label="Tải ảnh món"
         onClick={() => inputRef.current?.click()}
-        className="inline-flex size-11 items-center justify-center rounded-xl border border-border text-ink-900 disabled:opacity-60"
+        className="size-11 rounded-xl border border-border text-ink-900"
       >
         <ImageIcon className="size-4" weight="bold" aria-hidden />
-      </button>
+      </Button>
       {imageKey ? (
-        <button
+        <Button
           type="button"
-          disabled={busy}
+          pending={busy}
+          iconOnly
           title="Xóa ảnh"
           aria-label="Xóa ảnh món"
           onClick={() => void handleRemove()}
-          className="inline-flex size-11 items-center justify-center rounded-xl border border-border text-brand-600 disabled:opacity-60"
+          className="size-11 rounded-xl border border-border text-brand-600"
         >
           <TrashIcon className="size-4" weight="bold" aria-hidden />
-        </button>
+        </Button>
       ) : null}
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/button';
 
 type StoreControlsProps = {
   storeId: string;
@@ -43,9 +44,9 @@ export function StoreControls({ storeId, acceptingPublicRequests }: StoreControl
               : 'Đã tạm dừng — khách không gửi được order mới.'}
           </p>
         </div>
-        <button
+        <Button
           type="button"
-          disabled={busy}
+          pending={busy}
           onClick={() => void toggle()}
           className={
             accepting
@@ -54,7 +55,7 @@ export function StoreControls({ storeId, acceptingPublicRequests }: StoreControl
           }
         >
           {accepting ? 'Tạm dừng' : 'Mở lại'}
-        </button>
+        </Button>
       </div>
       {error ? <p className="mt-2 text-xs text-brand-600">{error}</p> : null}
     </div>

@@ -1,9 +1,9 @@
 'use client';
 
-import { cn } from '@taomenu/ui';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
+import { Button } from '@/components/button';
 import { useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth-client';
 
@@ -102,14 +102,14 @@ export function LoginForm() {
   return (
     <div className="space-y-4">
       {providers.google ? (
-        <button
+        <Button
           type="button"
-          disabled={isPending}
+          pending={isPending}
           onClick={handleGoogle}
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-white px-4 py-3 text-sm font-bold text-ink-900 hover:bg-muted disabled:opacity-60"
+          className="min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm font-bold text-ink-900 hover:bg-muted"
         >
           {t('continueGoogle')}
-        </button>
+        </Button>
       ) : null}
 
       {providers.google && providers.emailOtp ? (
@@ -132,16 +132,13 @@ export function LoginForm() {
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
             placeholder={t('emailPlaceholder')}
           />
-          <button
+          <Button
             type="submit"
-            disabled={isPending}
-            className={cn(
-              'inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]',
-              isPending && 'opacity-60',
-            )}
+            pending={isPending}
+            className="min-h-12 w-full rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]"
           >
             {t('sendOtp')}
-          </button>
+          </Button>
         </form>
       ) : (
         <form onSubmit={handleVerifyOtp} className="space-y-3">
@@ -162,19 +159,17 @@ export function LoginForm() {
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-center text-2xl font-bold tracking-[0.4em] text-ink-900 outline-none ring-jade-600 focus:ring-2"
             placeholder="••••••"
           />
-          <button
+          <Button
             type="submit"
-            disabled={isPending}
-            className={cn(
-              'inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]',
-              isPending && 'opacity-60',
-            )}
+            pending={isPending}
+            className="min-h-12 w-full rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]"
           >
             {t('signIn')}
-          </button>
+          </Button>
           <button
             type="button"
-            className="w-full py-2 text-sm font-semibold text-jade-600"
+            disabled={isPending}
+            className="w-full py-2 text-sm font-semibold text-jade-600 disabled:opacity-60"
             onClick={() => {
               setStep('email');
               setOtp('');

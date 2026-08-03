@@ -2,6 +2,7 @@
 
 import { formatVnd } from '@taomenu/shared';
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from '@/components/button';
 
 type OrderCard = {
   id: string;
@@ -179,23 +180,23 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                 <p className="text-xs text-muted-foreground">{req.status}</p>
                 <div className="mt-3 flex gap-2">
                   {req.status === 'open' ? (
-                    <button
+                    <Button
                       type="button"
-                      disabled={busyId === req.id}
+                      pending={busyId === req.id}
                       onClick={() => void transitionService(req.id, 'acknowledged')}
                       className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
                     >
                       Đã thấy
-                    </button>
+                    </Button>
                   ) : null}
-                  <button
+                  <Button
                     type="button"
-                    disabled={busyId === req.id}
+                    pending={busyId === req.id}
                     onClick={() => void transitionService(req.id, 'resolved')}
                     className="min-h-11 flex-1 rounded-xl border border-border text-xs font-bold"
                   >
                     Xong
-                  </button>
+                  </Button>
                 </div>
               </li>
             ))}
@@ -254,27 +255,27 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   </ul>
                   <div className="mt-3 grid gap-2">
                     {action ? (
-                      <button
+                      <Button
                         type="button"
-                        disabled={busyId === order.id}
+                        pending={busyId === order.id}
                         onClick={() => void transition(order.id, action.status)}
-                        className="min-h-12 w-full rounded-xl bg-jade-600 text-sm font-bold text-white disabled:opacity-60"
+                        className="min-h-12 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
                       >
                         {action.label}
-                      </button>
+                      </Button>
                     ) : null}
                     {(order.status === 'served' ||
                       order.status === 'picked_up' ||
                       order.status === 'ready_for_pickup' ||
                       order.status === 'accepted') && (
-                      <button
+                      <Button
                         type="button"
-                        disabled={busyId === `pay-${order.id}`}
+                        pending={busyId === `pay-${order.id}`}
                         onClick={() => void payOrder(order.id, order.subtotalAmount)}
                         className="min-h-11 w-full rounded-xl border border-border text-xs font-bold"
                       >
                         Ghi nhận đã thu tiền mặt
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </li>
@@ -296,14 +297,14 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   className="flex items-center justify-between rounded-xl border border-border bg-white px-4 py-3"
                 >
                   <span className="text-sm">Session {s.id.slice(0, 8)}…</span>
-                  <button
+                  <Button
                     type="button"
-                    disabled={busyId === `close-${s.id}`}
+                    pending={busyId === `close-${s.id}`}
                     onClick={() => void closeSession(s.id)}
                     className="min-h-10 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white"
                   >
                     Đóng bàn
-                  </button>
+                  </Button>
                 </li>
               ))}
           </ul>

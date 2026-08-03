@@ -1,6 +1,7 @@
 'use client';
 
 import type { FormEvent } from 'react';
+import { Button } from '@/components/button';
 
 type ItemDraft = {
   categoryId: string;
@@ -46,13 +47,13 @@ export function MenuItemDraftForm({
         >
           Hủy
         </button>
-        <button
+        <Button
           type="submit"
-          disabled={busy}
-          className="min-h-12 flex-1 rounded-xl bg-jade-600 text-sm font-bold text-white disabled:opacity-60"
+          pending={busy}
+          className="min-h-12 flex-1 rounded-xl bg-jade-600 text-sm font-bold text-white"
         >
           Lưu & tiếp
-        </button>
+        </Button>
       </div>
     </form>
   );

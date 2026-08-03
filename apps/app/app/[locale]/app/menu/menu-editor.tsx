@@ -4,6 +4,7 @@ import { SquaresFourIcon } from '@phosphor-icons/react';
 import type { CreateCategoryBody, CreateItemBody } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { Button } from '@/components/button';
 import { MenuBatchBar } from './menu-batch-bar';
 import { MenuItemDraftForm } from './menu-item-draft-form';
 import { MenuItemImage } from './menu-item-image';
@@ -298,14 +299,14 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             <SquaresFourIcon className="size-4" weight="bold" aria-hidden />
             {selectMode ? 'Hủy chọn' : 'Chọn nhiều'}
           </button>
-          <button
+          <Button
             type="button"
-            disabled={busy}
+            pending={busy}
             onClick={() => void handlePublish()}
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-60"
+            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
             Xuất bản menu
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -337,13 +338,14 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             placeholder="Món chính"
             className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
           />
-          <button
+          <Button
             type="submit"
-            disabled={busy || !categoryName.trim()}
-            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white disabled:opacity-50"
+            pending={busy}
+            disabled={!categoryName.trim()}
+            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
             Thêm
-          </button>
+          </Button>
         </div>
       </form>
 

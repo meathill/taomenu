@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from '@/components/button';
 import {
   detectPushCapability,
   platformHint,
@@ -213,25 +214,25 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
         )}
 
         {(status === 'ready' || status === 'subscribed' || status === 'error') && (
-          <button
+          <Button
             type="button"
-            disabled={busy}
+            pending={busy}
             onClick={() => void enableNotifications()}
-            className="min-h-11 rounded-xl bg-jade-600 text-sm font-bold text-white disabled:opacity-60"
+            className="min-h-11 rounded-xl bg-jade-600 text-sm font-bold text-white"
           >
-            {busy ? 'Đang bật…' : 'Bật thông báo đơn mới'}
-          </button>
+            Bật thông báo đơn mới
+          </Button>
         )}
 
         {(status === 'subscribed' || status === 'verified') && subscriptionId ? (
-          <button
+          <Button
             type="button"
-            disabled={busy}
+            pending={busy}
             onClick={() => void sendTest()}
-            className="min-h-11 rounded-xl border border-jade-600 text-sm font-bold text-jade-600 disabled:opacity-60"
+            className="min-h-11 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
           >
             Gửi thông báo thử
-          </button>
+          </Button>
         ) : null}
 
         {status === 'verified' ? (
