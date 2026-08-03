@@ -12,10 +12,26 @@ function hasGoogleOAuth(env: CloudflareEnv): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
 }
 
+/** better-auth emailOTP 第二参是 endpoint ctx，从中取请求头用于邮件语言。 */
+function extractRequestHeaders(ctx: unknown): Headers | null {
+  if (!ctx || typeof ctx !== 'object') {
+    return null;
+  }
+  const record = ctx as Record<string, unknown>;
+  if (record.request instanceof Request) {
+    return record.request.headers;
+  }
+  if (record.headers instanceof Headers) {
+    return record.headers;
+  }
+  return null;
+}
+
 /** 按请求构建 Better Auth（D1 绑定来自 Cloudflare 运行时，不能模块级单例）。 */
 export function getAuth() {
   const env = getEnv();
   const db = getDb();
+  const baseURL = getAuthBaseUrl();
 
   const socialProviders = hasGoogleOAuth(env)
     ? {
@@ -29,8 +45,9 @@ export function getAuth() {
   return betterAuth({
     appName: 'TaoMenu',
     // baseURL 只读 process.env，不要从 getCloudflareContext 取 NEXT_PUBLIC_*
-    baseURL: getAuthBaseUrl(),
+    baseURL,
     secret: env.BETTER_AUTH_SECRET,
+    trustedOrigins: [baseURL],
     database: drizzleAdapter(db, {
       provider: 'sqlite',
       schema: {
@@ -54,11 +71,25 @@ export function getAuth() {
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
       },
+      // 生产 HTTPS 必须 secure，否则浏览器可能不存 session cookie
+      useSecureCookies: baseURL.startsWith('https://'),
+      defaultCookieAttributes: {
+        sameSite: 'lax',
+        path: '/',
+        secure: baseURL.startsWith('https://'),
+      },
     },
     plugins: [
       emailOTP({
-        async sendVerificationOTP({ email, otp, type }) {
-          await sendOtpEmail({ email, otp, type });
+        async sendVerificationOTP({ email, otp, type }, ctx) {
+          const headers = extractRequestHeaders(ctx);
+          await sendOtpEmail({
+            email,
+            otp,
+            type,
+            cookieHeader: headers?.get('cookie'),
+            acceptLanguage: headers?.get('accept-language'),
+          });
         },
         otpLength: 6,
         expiresIn: 300,

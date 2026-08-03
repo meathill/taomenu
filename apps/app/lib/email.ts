@@ -1,57 +1,53 @@
 import { getEnv } from '@/lib/cf';
+import { getOtpEmailCopy, type OtpEmailType, resolveEmailLocale } from '@/lib/otp-email-copy';
 
-export type OtpEmailType = 'sign-in' | 'email-verification' | 'forget-password' | string;
+export type { OtpEmailType };
 
 /**
  * 通过 Cloudflare Email Sending binding（env.EMAIL）发送 OTP。
  * 本地未配置 binding 时回退到 console，便于开发。
+ * 文案语言：优先 explicit locale → NEXT_LOCALE cookie → Accept-Language → en。
  */
 export async function sendOtpEmail(input: {
   email: string;
   otp: string;
   type: OtpEmailType;
+  locale?: string | null;
+  cookieHeader?: string | null;
+  acceptLanguage?: string | null;
 }): Promise<void> {
   const env = getEnv();
   const { email, otp, type } = input;
+  const locale = resolveEmailLocale({
+    locale: input.locale,
+    cookieHeader: input.cookieHeader,
+    acceptLanguage: input.acceptLanguage,
+  });
+  const copy = getOtpEmailCopy(locale, type);
 
   // 开发兜底：无 EMAIL binding 或显式要求日志
   if (!env.EMAIL || env.EMAIL_DEV_LOG_ONLY === '1') {
-    console.info(`[taomenu-otp] type=${type} email=${email} otp=${otp}`);
+    console.info(`[taomenu-otp] locale=${locale} type=${type} email=${email} otp=${otp}`);
     return;
   }
 
-  // 发件域名须已在 Cloudflare Email Sending onboard（生产：dyqr.me）
   const fromAddress = env.EMAIL_FROM || 'noreply@dyqr.me';
   const fromName = env.EMAIL_FROM_NAME || 'TaoMenu';
 
-  const subjects: Record<string, string> = {
-    'sign-in': 'Mã đăng nhập TaoMenu',
-    'email-verification': 'Xác minh email TaoMenu',
-    'forget-password': 'Đặt lại mật khẩu TaoMenu',
-  };
-  const subject = subjects[type] || 'Mã xác minh TaoMenu';
-
-  const text = [
-    `Mã OTP của bạn: ${otp}`,
-    '',
-    'Mã có hiệu lực trong 5 phút.',
-    'Nếu bạn không yêu cầu mã này, hãy bỏ qua email.',
-    '',
-    '— TaoMenu',
-  ].join('\n');
+  const text = [copy.bodyLine, otp, '', copy.expires, copy.ignore, '', copy.footer].join('\n');
 
   const html = `
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="${locale}">
 <body style="font-family:system-ui,-apple-system,sans-serif;background:#FFF9F2;margin:0;padding:24px;color:#211A18;">
   <div style="max-width:420px;margin:0 auto;background:#fff;border-radius:16px;padding:24px;border:1px solid #e6d9cb;">
     <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#2E6F5E;">TaoMenu</p>
-    <h1 style="margin:0 0 12px;font-size:20px;">${escapeHtml(subject)}</h1>
-    <p style="margin:0 0 16px;color:#5c524e;font-size:14px;">Nhập mã sau để tiếp tục. Mã hết hạn sau 5 phút.</p>
+    <h1 style="margin:0 0 12px;font-size:20px;">${escapeHtml(copy.heading)}</h1>
+    <p style="margin:0 0 16px;color:#5c524e;font-size:14px;">${escapeHtml(copy.intro)}</p>
     <div style="background:#FFF1F0;border-radius:12px;padding:16px;text-align:center;letter-spacing:0.35em;font-size:28px;font-weight:800;color:#211A18;">
       ${escapeHtml(otp)}
     </div>
-    <p style="margin:16px 0 0;font-size:12px;color:#999;">Nếu bạn không yêu cầu, hãy bỏ qua email này.</p>
+    <p style="margin:16px 0 0;font-size:12px;color:#999;">${escapeHtml(copy.ignore)}</p>
   </div>
 </body>
 </html>`.trim();
@@ -60,18 +56,19 @@ export async function sendOtpEmail(input: {
     await env.EMAIL.send({
       to: email,
       from: { email: fromAddress, name: fromName },
-      subject,
+      subject: copy.subject,
       text,
       html,
     });
   } catch (error) {
     console.error('[taomenu-email] send failed', error);
-    // 本地 remote binding 失败时仍打日志，避免完全卡死开发
     if (env.EMAIL_FALLBACK_LOG === '1') {
-      console.info(`[taomenu-otp-fallback] type=${type} email=${email} otp=${otp}`);
+      console.info(
+        `[taomenu-otp-fallback] locale=${locale} type=${type} email=${email} otp=${otp}`,
+      );
       return;
     }
-    throw new Error('Không gửi được email OTP. Thử lại sau.');
+    throw new Error('Failed to send OTP email. Please try again.');
   }
 }
 

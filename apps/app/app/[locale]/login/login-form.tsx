@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
-import { useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth-client';
 
 type Providers = {
@@ -16,7 +15,6 @@ type Step = 'email' | 'otp';
 
 export function LoginForm() {
   const t = useTranslations('login');
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [providers, setProviders] = useState<Providers>({ google: false, emailOtp: true });
   const [step, setStep] = useState<Step>('email');
@@ -40,6 +38,11 @@ export function LoginForm() {
   function nextPath(): string {
     const next = searchParams.get('next');
     return next?.startsWith('/') ? next : '/app';
+  }
+
+  /** 登录成功后用整页跳转，确保刚写入的 session cookie 一定带上下一页请求。 */
+  function goAfterLogin() {
+    window.location.assign(nextPath());
   }
 
   async function handleGoogle() {
@@ -82,19 +85,22 @@ export function LoginForm() {
     setError(null);
     setIsPending(true);
     try {
+      const trimmedEmail = email.trim();
       const result = await authClient.signIn.emailOtp({
-        email: email.trim(),
+        email: trimmedEmail,
         otp: otp.trim(),
+        // 首次注册时 better-auth 需要 name；用邮箱本地部分兜底
+        name: trimmedEmail.split('@')[0] || 'Owner',
       });
       if (result.error) {
         setError(result.error.message || t('errorBadOtp'));
+        setIsPending(false);
         return;
       }
-      router.push(nextPath());
-      router.refresh();
+      // 不要用 SPA router.push：cookie 刚 Set 时 soft 导航可能读不到 session，会弹回 /login
+      goAfterLogin();
     } catch {
       setError(t('errorBadOtp'));
-    } finally {
       setIsPending(false);
     }
   }

@@ -7,12 +7,17 @@ const intlMiddleware = createMiddleware(routing);
 
 const LOCALE_COOKIE = 'NEXT_LOCALE';
 
+/** Better Auth session cookie：含 plain / __Secure- / __Host- 前缀变体 */
 function hasSessionCookie(request: NextRequest): boolean {
-  return request.cookies
-    .getAll()
-    .some(
-      (cookie) => cookie.name.includes('session_token') || cookie.name.includes('session-token'),
+  return request.cookies.getAll().some((cookie) => {
+    const name = cookie.name.toLowerCase();
+    return (
+      name.includes('session_token') ||
+      name.includes('session-token') ||
+      name.endsWith('session_token') ||
+      (name.includes('better-auth') && name.includes('session') && Boolean(cookie.value))
     );
+  });
 }
 
 function readCountry(request: NextRequest): string | null {
