@@ -44,10 +44,10 @@
 | 变量 | 用途 |
 |---|---|
 | `BETTER_AUTH_URL` | Better Auth `baseURL`（通常等于当前 app 公网 URL） |
-| `EMAIL_FROM` | 发件地址（域名须已 onboard Email Sending） |
+| `EMAIL_FROM` | 发件地址（**域名须已** Cloudflare Email Sending enable；无 taomenu 域可用 `noreply@meathill.com`） |
 | `EMAIL_FROM_NAME` | 发件显示名，默认 `TaoMenu` |
 | `VAPID_PUBLIC_KEY` | Web Push 公钥（经 API 下发到终端，不是密钥） |
-| `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@example.com` |
+| `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@meathill.com` |
 | `GOOGLE_CLIENT_ID` | Google OAuth 客户端 ID（可公开） |
 | `NEXT_PUBLIC_*` | 同上；**填实际可访问的 HTTPS 地址**（workers.dev 或自定义域） |
 
@@ -121,13 +121,29 @@ npx wrangler r2 bucket create taomenu-media
 
 ### 4. Cloudflare Email Sending
 
-在**发件域名**上启用（与 `EMAIL_FROM` 同域）：
+发件域名必须与 `EMAIL_FROM` 同域，且该域已在 Cloudflare 上 **Email Sending enable**。
+
+**没有 taomenu 域名时可以用已有域名**，例如 `meathill.com`：
 
 ```bash
-npx wrangler email sending enable taomenu.app
-# 按提示完成 DNS（SPF / DKIM 等）
+# 域名须在 Cloudflare 账户下（DNS 可代理或 partial）
+npx wrangler email sending enable meathill.com
+# 按提示完成 SPF / DKIM 等 DNS
 npx wrangler email sending list
 ```
+
+`wrangler.jsonc` vars 示例：
+
+```jsonc
+"EMAIL_FROM": "noreply@meathill.com",
+"EMAIL_FROM_NAME": "TaoMenu"
+```
+
+注意：
+
+- 收件人看到的 From 是 `TaoMenu <noreply@meathill.com>`，技术上完全可用  
+- 日后有 `taomenu.app` 再切回 `noreply@taomenu.app` 即可  
+- 不要用未 verify 的域，否则 `E_SENDER_NOT_VERIFIED`
 
 `apps/app/wrangler.jsonc` 已配置：
 

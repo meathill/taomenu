@@ -42,6 +42,14 @@ export {
 
 export const APP_NAME = 'TaoMenu';
 
-export const LOCALES = ['vi', 'en'] as const;
-export type Locale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = 'vi';
+export {
+  COUNTRY_TO_LOCALE,
+  DEFAULT_LOCALE,
+  isLocale,
+  LOCALE_LABELS,
+  LOCALES,
+  type Locale,
+  matchLocaleFromAcceptLanguage,
+  matchLocaleFromCountry,
+  resolveUiLocale,
+} from './locale';

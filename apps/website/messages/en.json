@@ -6,7 +6,8 @@
   "nav": {
     "pricing": "Pricing",
     "login": "Log in",
-    "cta": "Start free"
+    "cta": "Start free",
+    "language": "Language"
   },
   "home": {
     "badge": "Phone-only setup",

@@ -58,6 +58,13 @@
 - 构建时：`scripts/run-with-wrangler-vars.mjs` 把 `wrangler.jsonc` 的 `vars` 注入 `process.env`（不覆盖 shell 已有值）
 - 无自定义域：vars 填 `https://<worker>.<account>.workers.dev` 即可测通
 
+## 营销站 i18n（2026-08-03）
+
+- UI locale：`en`（默认）/ `zh` / `ja` / `vi`（`packages/shared/src/locale.ts`）
+- next-intl + `localePrefix: always`；协商：cookie → Accept-Language → CF 国家 → en
+- 与**菜单内容** `stores.baseLocale`（默认仍 `vi`）分离：后者是店主录入语言，不是营销站 UI
+- 发信：无 taomenu 域时可用 `EMAIL_FROM=noreply@meathill.com`（域须 Email Sending enable）
+
 ## 验收切片（2026-07-28）
 
 - 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`

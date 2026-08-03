@@ -20,7 +20,8 @@ export async function sendOtpEmail(input: {
     return;
   }
 
-  const fromAddress = env.EMAIL_FROM || 'noreply@taomenu.app';
+  // 发件域名须已在 Cloudflare Email Sending onboard；无 taomenu 域名时可用已有域名（如 meathill.com）
+  const fromAddress = env.EMAIL_FROM || 'noreply@meathill.com';
   const fromName = env.EMAIL_FROM_NAME || 'TaoMenu';
 
   const subjects: Record<string, string> = {

@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "title": "TaoMenu — 小餐厅轻量扫码点餐",
+    "description": "顾客扫码点餐。店主用手机管理菜单、员工终端和收款记录——无需 POS，不代收餐费。"
+  },
+  "nav": {
+    "pricing": "价格",
+    "login": "登录",
+    "cta": "免费开始",
+    "language": "语言"
+  },
+  "home": {
+    "badge": "只用手机即可上线",
+    "title": "面向餐厅、咖啡店与小吃店的轻量扫码点餐",
+    "subtitle": "顾客扫码浏览菜单并下单，员工用手机接单。TaoMenu 不代收餐费，也不需要 POS 硬件。",
+    "primaryCta": "免费开始",
+    "secondaryCta": "查看价格",
+    "feature1Title": "顾客无需装 App",
+    "feature1Body": "扫码即可在浏览器打开菜单并提交订单。",
+    "feature2Title": "一部手机跑通全流程",
+    "feature2Body": "店主注册、做菜单、分享桌码或取餐码，全程可用手机完成。",
+    "feature3Title": "堂食与柜台式取餐",
+    "feature3Body": "支持桌台码堂食，以及适合窗口店的短号取餐。"
+  },
+  "pricing": {
+    "title": "简单定价",
+    "subtitle": "从免费版起步。需要更多终端、菜单语言和 AI 能力时再升级 Pro。",
+    "freeName": "Free",
+    "freePrice": "0 ₫",
+    "freeDesc": "足够小店日常运营。",
+    "freeF1": "1 个员工终端",
+    "freeF2": "1 种菜单语言",
+    "freeF3": "手工录入菜单",
+    "proName": "Pro",
+    "proPrice": "149,000 ₫/月",
+    "proDesc": "适合忙碌门店：多语言菜单与更快上架。",
+    "proF1": "最多 5 个员工终端",
+    "proF2": "最多 5 种菜单语言",
+    "proF3": "拍照导入 / AI 翻译 / 语音助手",
+    "cta": "从 Free 开始"
+  },
+  "footer": {
+    "tagline": "面向越南小餐厅的扫码点餐软件。"
+  }
+}

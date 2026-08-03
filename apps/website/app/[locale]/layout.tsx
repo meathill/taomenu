@@ -1,8 +1,9 @@
-import { APP_NAME } from '@taomenu/shared';
+import { APP_NAME, LOCALES } from '@taomenu/shared';
 import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { LocaleSwitcher } from '@/components/locale-switcher';
 import { Link, routing } from '@/i18n/routing';
 import { getAppLoginUrl, getAppSignupUrl } from '@/lib/site';
 
@@ -23,10 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: t('title'),
     description: t('description'),
     alternates: {
-      languages: {
-        vi: '/vi',
-        en: '/en',
-      },
+      languages: Object.fromEntries(LOCALES.map((code) => [code, `/${code}`])),
     },
   };
 }
@@ -51,7 +49,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
               <Link href="/" className="text-lg font-bold tracking-tight text-brand-600">
                 {APP_NAME}
               </Link>
-              <nav className="flex items-center gap-2 sm:gap-3">
+              <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+                <LocaleSwitcher label={t('language')} />
                 <Link
                   href="/pricing"
                   className="rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-brand-50"

@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "title": "TaoMenu — 小さな飲食店向けの軽量QRオーダー",
+    "description": "お客様はQRで注文。オーナーはスマホでメニュー・端末・会計メモを運用。POS不要、決済代行なし。"
+  },
+  "nav": {
+    "pricing": "料金",
+    "login": "ログイン",
+    "cta": "無料で始める",
+    "language": "言語"
+  },
+  "home": {
+    "badge": "スマホだけで開始",
+    "title": "レストラン・カフェ・バインミー店向けの軽量QRオーダー",
+    "subtitle": "お客様はQRでメニューを見て注文。スタッフはスマホで伝票を処理。TaoMenuは食事代金を代行せず、POSも不要です。",
+    "primaryCta": "無料で始める",
+    "secondaryCta": "料金を見る",
+    "feature1Title": "お客様のアプリ不要",
+    "feature1Body": "QRを読み取り、ブラウザでメニューを見て注文を送信できます。",
+    "feature2Title": "スマホ一台で運用",
+    "feature2Body": "登録、メニュー作成、卓コード／受取コードの共有までスマホで完結。",
+    "feature3Title": "テーブル注文とカウンター受取",
+    "feature3Body": "店内卓コードと、テイクアウト向けの短い受取番号に対応。"
+  },
+  "pricing": {
+    "title": "シンプルな料金",
+    "subtitle": "無料から開始。端末・メニュー言語・AIが必要になったらProへ。",
+    "freeName": "Free",
+    "freePrice": "0 ₫",
+    "freeDesc": "小さな店の日常運用に十分。",
+    "freeF1": "スタッフ端末 1台",
+    "freeF2": "メニュー言語 1つ",
+    "freeF3": "手入力メニュー",
+    "proName": "Pro",
+    "proPrice": "149,000 ₫/月",
+    "proDesc": "多言語メニューと素早い準備が必要な忙しい店向け。",
+    "proF1": "スタッフ端末 最大5台",
+    "proF2": "メニュー言語 最大5つ",
+    "proF3": "写真取込 / AI翻訳 / 音声アシスト",
+    "cta": "Freeで始める"
+  },
+  "footer": {
+    "tagline": "ベトナムの小さな飲食店向けQRオーダーソフト。"
+  }
+}

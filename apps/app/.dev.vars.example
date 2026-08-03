@@ -13,8 +13,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3001
 NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000
 # GOOGLE_CLIENT_ID=
 VAPID_PUBLIC_KEY=BBtp7659cmZ6zDUHP0juspCmN4Z105iWDb9FNqHj2UO9vt_5YMVId9MKFXtWC-CUrj-aV5kQZNDmO-2Oj0khXbg
-VAPID_SUBJECT=mailto:ops@taomenu.app
-EMAIL_FROM=noreply@taomenu.app
+VAPID_SUBJECT=mailto:ops@meathill.com
+EMAIL_FROM=noreply@meathill.com
 EMAIL_FROM_NAME=TaoMenu
 
 # 本地无真实 Email 时：强制只打日志（默认无 EMAIL binding 也会 log）
