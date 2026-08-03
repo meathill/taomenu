@@ -68,10 +68,12 @@ export function getAuth() {
       },
     },
     advanced: {
+      // 与主站 dyqr better-auth 隔离，避免 .dyqr.me 同名 cookie 抢 session
+      cookiePrefix: 'taomenu',
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
       },
-      // 生产 HTTPS 必须 secure，否则浏览器可能不存 session cookie
+      // 生产 HTTPS 必须 secure；不要开 crossSubDomainCookies（只写 app.menu.dyqr.me host-only）
       useSecureCookies: baseURL.startsWith('https://'),
       defaultCookieAttributes: {
         sameSite: 'lax',

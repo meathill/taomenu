@@ -40,7 +40,22 @@
   },
   "onboarding": {
     "title": "Open a store",
-    "subtitle": "Phone only. Finish in a few minutes — menu and QR come next."
+    "subtitle": "Phone only. Finish in a few minutes — menu and QR come next.",
+    "storeName": "Store name",
+    "storeNamePlaceholder": "Hanoi Pho",
+    "storeNameHint": "You can change this later in settings.",
+    "continue": "Continue",
+    "back": "Back",
+    "serviceMode": "Service style",
+    "modeTableTitle": "Dine-in",
+    "modeTableDesc": "One QR code per table. Pickup point optional.",
+    "modeCounterTitle": "Counter pickup",
+    "modeCounterDesc": "Small shops with little seating. Use pickup codes and queue numbers.",
+    "modeHybridTitle": "Hybrid",
+    "modeHybridDesc": "Both table service and takeaway / counter pickup.",
+    "counterHint": "Shops with few or no seats do not need table numbers. Next you only need a pickup code.",
+    "createStore": "Create store",
+    "errorCreate": "Could not create the store."
   },
   "common": {
     "loading": "Loading…"

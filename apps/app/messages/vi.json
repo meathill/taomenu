@@ -40,7 +40,22 @@
   },
   "onboarding": {
     "title": "Mở cửa hàng",
-    "subtitle": "Chỉ cần điện thoại. Hoàn tất trong vài phút — menu và mã QR sẽ ở bước sau."
+    "subtitle": "Chỉ cần điện thoại. Hoàn tất trong vài phút — menu và mã QR sẽ ở bước sau.",
+    "storeName": "Tên cửa hàng",
+    "storeNamePlaceholder": "Phở Hà Nội",
+    "storeNameHint": "Có thể đổi sau trong phần cài đặt.",
+    "continue": "Tiếp tục",
+    "back": "Quay lại",
+    "serviceMode": "Hình thức phục vụ",
+    "modeTableTitle": "Ăn tại bàn",
+    "modeTableDesc": "Mỗi bàn một mã QR. Không bắt buộc điểm lấy món.",
+    "modeCounterTitle": "Lấy tại quầy",
+    "modeCounterDesc": "Quán ít chỗ ngồi. Dùng mã lấy món và số thứ tự.",
+    "modeHybridTitle": "Kết hợp",
+    "modeHybridDesc": "Vừa bàn vừa mang đi / lấy quầy.",
+    "counterHint": "Quán không ghế / ít ghế không cần tạo số bàn. Bước sau chỉ cần mã lấy món.",
+    "createStore": "Tạo cửa hàng",
+    "errorCreate": "Tạo cửa hàng thất bại."
   },
   "common": {
     "loading": "Đang tải…"

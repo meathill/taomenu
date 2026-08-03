@@ -7,15 +7,19 @@ const intlMiddleware = createMiddleware(routing);
 
 const LOCALE_COOKIE = 'NEXT_LOCALE';
 
-/** Better Auth session cookie：含 plain / __Secure- / __Host- 前缀变体 */
+/**
+ * 只认 TaoMenu 的 session cookie（cookiePrefix: taomenu）。
+ * 勿匹配主站 better-auth.*，否则会误放行又在 getSession 时失败回登录。
+ */
 function hasSessionCookie(request: NextRequest): boolean {
   return request.cookies.getAll().some((cookie) => {
+    if (!cookie.value) {
+      return false;
+    }
     const name = cookie.name.toLowerCase();
+    // __Secure-taomenu.session_token / taomenu.session_token
     return (
-      name.includes('session_token') ||
-      name.includes('session-token') ||
-      name.endsWith('session_token') ||
-      (name.includes('better-auth') && name.includes('session') && Boolean(cookie.value))
+      name.includes('taomenu') && (name.includes('session_token') || name.includes('session-token'))
     );
   });
 }

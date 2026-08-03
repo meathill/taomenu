@@ -73,7 +73,14 @@
 - 页面必须放在 `app/[locale]/…`：middleware 会 rewrite 成内部 `/zh/login` 等
 - 协商与 cookie `NEXT_LOCALE` 同 marketing；middleware 兼鉴权
 - 全局 header/footer，语言切换在 footer
-- 已 i18n：登录、店主壳、onboarding 标题；菜单编辑/顾客页等仍有越南文硬编码，后续按页迁移
+- 已 i18n：登录、店主壳、onboarding 表单；菜单编辑/顾客页等仍有越南文硬编码，后续按页迁移
+
+## Auth cookie（2026-08-03）
+
+- Better Auth `cookiePrefix: 'taomenu'` → `__Secure-taomenu.session_token`
+- **不要**与主站 `better-auth.*`（Domain=`.dyqr.me`）同名；否则 Cookie 头撞车，登录后 getSession 失败又回 /login
+- middleware 只认名称含 `taomenu` + `session_token` 的 cookie
+- 不要开 `crossSubDomainCookies`
 
 ## 验收切片（2026-07-28）
 

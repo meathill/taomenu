@@ -2,7 +2,7 @@
 
 import { type CreateStoreBody, SERVICE_MODES } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
-import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -11,21 +11,6 @@ const DRAFT_KEY = 'taomenu.onboarding.draft';
 type Draft = {
   name: string;
   serviceMode: CreateStoreBody['serviceMode'];
-};
-
-const MODE_LABELS: Record<CreateStoreBody['serviceMode'], { title: string; desc: string }> = {
-  table_service: {
-    title: 'Ăn tại bàn',
-    desc: 'Mỗi bàn một mã QR. Không bắt buộc điểm lấy món.',
-  },
-  counter_pickup: {
-    title: 'Lấy tại quầy',
-    desc: 'Quán ít chỗ ngồi. Dùng mã lấy món và số thứ tự.',
-  },
-  hybrid: {
-    title: 'Kết hợp',
-    desc: 'Vừa bàn vừa mang đi / lấy quầy.',
-  },
 };
 
 function loadDraft(): Draft {
@@ -48,7 +33,8 @@ function loadDraft(): Draft {
 }
 
 export function OnboardingForm() {
-  const router = useRouter();
+  const t = useTranslations('onboarding');
+  const locale = useLocale();
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState('');
   const [serviceMode, setServiceMode] = useState<CreateStoreBody['serviceMode']>('table_service');
@@ -83,20 +69,20 @@ export function OnboardingForm() {
           name: name.trim(),
           serviceMode,
           timezone: 'Asia/Ho_Chi_Minh',
-          baseLocale: 'vi',
+          // 菜单内容默认语言跟当前 UI 语言一致
+          baseLocale: locale,
         } satisfies CreateStoreBody),
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error || 'Tạo cửa hàng thất bại.');
+        setError(data?.error || t('errorCreate'));
         return;
       }
       localStorage.removeItem(DRAFT_KEY);
-      router.push('/app');
-      router.refresh();
+      // 整页跳转，避免 SPA 导航与 session 不同步
+      window.location.assign('/app');
     } catch {
-      setError('Tạo cửa hàng thất bại.');
-    } finally {
+      setError(t('errorCreate'));
       setIsPending(false);
     }
   }
@@ -105,12 +91,18 @@ export function OnboardingForm() {
     return <div className="min-h-40 animate-pulse rounded-2xl bg-muted" />;
   }
 
+  const modeMeta: Record<CreateStoreBody['serviceMode'], { title: string; desc: string }> = {
+    table_service: { title: t('modeTableTitle'), desc: t('modeTableDesc') },
+    counter_pickup: { title: t('modeCounterTitle'), desc: t('modeCounterDesc') },
+    hybrid: { title: t('modeHybridTitle'), desc: t('modeHybridDesc') },
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {step === 1 ? (
         <div className="space-y-3">
           <label className="block text-sm font-semibold text-ink-900" htmlFor="store-name">
-            Tên cửa hàng
+            {t('storeName')}
           </label>
           <input
             id="store-name"
@@ -119,24 +111,24 @@ export function OnboardingForm() {
             value={name}
             onChange={(event) => setName(event.target.value)}
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
-            placeholder="Phở Hà Nội"
+            placeholder={t('storeNamePlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">Có thể đổi sau trong phần cài đặt.</p>
+          <p className="text-xs text-muted-foreground">{t('storeNameHint')}</p>
           <button
             type="button"
             disabled={!name.trim()}
             onClick={() => setStep(2)}
             className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white disabled:opacity-50"
           >
-            Tiếp tục
+            {t('continue')}
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm font-semibold text-ink-900">Hình thức phục vụ</p>
+          <p className="text-sm font-semibold text-ink-900">{t('serviceMode')}</p>
           <ul className="space-y-2">
             {SERVICE_MODES.map((mode) => {
-              const meta = MODE_LABELS[mode];
+              const meta = modeMeta[mode];
               const selected = serviceMode === mode;
               return (
                 <li key={mode}>
@@ -159,7 +151,7 @@ export function OnboardingForm() {
           </ul>
           {serviceMode === 'counter_pickup' ? (
             <p className="rounded-xl bg-brand-50 px-3 py-2 text-xs text-brand-700">
-              Quán không ghế / ít ghế không cần tạo số bàn. Bước sau chỉ cần mã lấy món.
+              {t('counterHint')}
             </p>
           ) : null}
           <div className="flex gap-2">
@@ -168,14 +160,14 @@ export function OnboardingForm() {
               onClick={() => setStep(1)}
               className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-border bg-white px-4 text-sm font-bold text-ink-900"
             >
-              Quay lại
+              {t('back')}
             </button>
             <Button
               type="submit"
               pending={isPending}
               className="min-h-12 flex-1 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
             >
-              Tạo cửa hàng
+              {t('createStore')}
             </Button>
           </div>
         </div>
