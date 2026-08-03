@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "description": "TaoMenu — PWA chủ quán và nhân viên"
+  },
+  "shell": {
+    "language": "Ngôn ngữ",
+    "login": "Đăng nhập",
+    "appHome": "Bảng điều khiển",
+    "terminal": "Terminal nhân viên",
+    "tagline": "Order QR cho nhà hàng nhỏ",
+    "rights": "Ứng dụng TaoMenu"
+  },
+  "login": {
+    "title": "Đăng nhập cửa hàng",
+    "subtitle": "Dùng Google hoặc email OTP. Không cần mật khẩu.",
+    "continueGoogle": "Tiếp tục với Google",
+    "orEmail": "hoặc dùng email",
+    "email": "Email",
+    "emailPlaceholder": "ban@email.com",
+    "sendOtp": "Gửi mã OTP",
+    "otpSent": "Đã gửi mã tới {email}",
+    "otp": "Mã OTP",
+    "signIn": "Đăng nhập",
+    "changeEmail": "Đổi email",
+    "hint": "OTP gửi qua email (Cloudflare Email). Dev chưa cấu hình EMAIL: xem log [taomenu-otp]. Google chỉ hiện khi đã cấu hình OAuth.",
+    "errorGoogle": "Google đăng nhập thất bại.",
+    "errorSendOtp": "Không gửi được mã OTP.",
+    "errorBadOtp": "Mã OTP không đúng.",
+    "loading": "…"
+  },
+  "owner": {
+    "title": "Chủ quán",
+    "menu": "Menu",
+    "tables": "Bàn / QR",
+    "terminal": "Terminal nhân viên",
+    "modeDineIn": "Ăn tại bàn",
+    "modeCounter": "Lấy tại quầy",
+    "modeHybrid": "Bàn + lấy quầy",
+    "plan": "gói {plan}"
+  },
+  "onboarding": {
+    "title": "Mở cửa hàng",
+    "subtitle": "Chỉ cần điện thoại. Hoàn tất trong vài phút — menu và mã QR sẽ ở bước sau."
+  },
+  "common": {
+    "loading": "Đang tải…"
+  }
+}

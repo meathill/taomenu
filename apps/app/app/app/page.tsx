@@ -1,48 +1,54 @@
 import { ForkKnifeIcon, QrCodeIcon, StorefrontIcon } from '@phosphor-icons/react/dist/ssr';
 import { listStoresForUser } from '@taomenu/db';
 import { APP_NAME } from '@taomenu/shared';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
 import { getDb } from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { StoreControls } from './store-controls';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: 'Chủ quán',
-};
+export async function generateMetadata() {
+  const t = await getTranslations('owner');
+  return { title: t('title') };
+}
 
 export default async function OwnerHomePage() {
+  const t = await getTranslations('owner');
   const session = await getSession();
   if (!session?.user) {
     redirect('/login?next=/app');
   }
 
-  const stores = await listStoresForUser(getDb(), session.user.id);
+  const userId = session.user.id;
+  const stores = await listStoresForUser(getDb(), userId);
   if (stores.length === 0) {
     redirect('/app/onboarding');
   }
 
   const store = stores[0]!;
+  const modeLabel =
+    store.serviceMode === 'counter_pickup'
+      ? t('modeCounter')
+      : store.serviceMode === 'hybrid'
+        ? t('modeHybrid')
+        : t('modeDineIn');
+
   const links = [
-    { href: '/app/menu', label: 'Menu', icon: ForkKnifeIcon },
-    { href: '/app/tables', label: 'Bàn / QR', icon: QrCodeIcon },
-    { href: '/terminal', label: 'Terminal nhân viên', icon: StorefrontIcon },
-  ] as const;
+    { href: '/app/menu' as const, label: t('menu'), icon: ForkKnifeIcon },
+    { href: '/app/tables' as const, label: t('tables'), icon: QrCodeIcon },
+    { href: '/terminal' as const, label: t('terminal'), icon: StorefrontIcon },
+  ];
 
   return (
-    <div className="mx-auto min-h-dvh max-w-lg px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <div className="mx-auto max-w-lg px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <header className="mb-6">
         <p className="text-sm font-semibold text-jade-600">{APP_NAME}</p>
         <h1 className="mt-1 text-2xl font-extrabold text-ink-900">{store.name}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {store.serviceMode === 'counter_pickup'
-            ? 'Lấy tại quầy'
-            : store.serviceMode === 'hybrid'
-              ? 'Bàn + lấy quầy'
-              : 'Ăn tại bàn'}{' '}
-          · gói {store.plan}
+          {modeLabel} · {t('plan', { plan: store.plan })}
         </p>
       </header>
       <StoreControls storeId={store.id} acceptingPublicRequests={store.acceptingPublicRequests} />

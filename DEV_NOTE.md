@@ -67,6 +67,13 @@
 - 与**菜单内容** `stores.baseLocale`（默认仍 `vi`）分离
 - 发信：`EMAIL_FROM=noreply@dyqr.me`（`dyqr.me` 须 Email Sending enable）
 
+## 产品 app i18n（2026-08-03）
+
+- 同样 en/zh/ja/vi，默认 en；**`localePrefix: 'never'`**（路径仍是 `/login` `/app`，不破坏 Auth/桌码）
+- 协商与 cookie `NEXT_LOCALE` 同 marketing；middleware 兼鉴权
+- 全局 header/footer，语言切换在 footer
+- 已 i18n：登录、店主壳、onboarding 标题；菜单编辑/顾客页等仍有越南文硬编码，后续按页迁移
+
 ## 验收切片（2026-07-28）
 
 - 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`

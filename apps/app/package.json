@@ -26,6 +26,7 @@
     "better-auth": "^1.6.23",
     "drizzle-orm": "^0.45.2",
     "next": "^16.2.10",
+    "next-intl": "^4.13.4",
     "qrcode": "^1.5.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

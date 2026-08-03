@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "description": "TaoMenu — store owner and staff PWA"
+  },
+  "shell": {
+    "language": "Language",
+    "login": "Log in",
+    "appHome": "Dashboard",
+    "terminal": "Staff terminal",
+    "tagline": "QR ordering for small restaurants",
+    "rights": "TaoMenu product app"
+  },
+  "login": {
+    "title": "Store sign-in",
+    "subtitle": "Use Google or email OTP. No password needed.",
+    "continueGoogle": "Continue with Google",
+    "orEmail": "or use email",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "sendOtp": "Send OTP",
+    "otpSent": "Code sent to {email}",
+    "otp": "OTP code",
+    "signIn": "Sign in",
+    "changeEmail": "Change email",
+    "hint": "OTP is sent by email (Cloudflare Email). If EMAIL is not configured in dev, check logs for [taomenu-otp]. Google only appears when OAuth is configured.",
+    "errorGoogle": "Google sign-in failed.",
+    "errorSendOtp": "Could not send OTP.",
+    "errorBadOtp": "Invalid OTP code.",
+    "loading": "…"
+  },
+  "owner": {
+    "title": "Owner",
+    "menu": "Menu",
+    "tables": "Tables / QR",
+    "terminal": "Staff terminal",
+    "modeDineIn": "Dine-in",
+    "modeCounter": "Counter pickup",
+    "modeHybrid": "Tables + counter",
+    "plan": "Plan {plan}"
+  },
+  "onboarding": {
+    "title": "Open a store",
+    "subtitle": "Phone only. Finish in a few minutes — menu and QR come next."
+  },
+  "common": {
+    "loading": "Loading…"
+  }
+}

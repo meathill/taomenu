@@ -1,8 +1,10 @@
 'use client';
 
 import { cn } from '@taomenu/ui';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
+import { useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth-client';
 
 type Providers = {
@@ -13,6 +15,7 @@ type Providers = {
 type Step = 'email' | 'otp';
 
 export function LoginForm() {
+  const t = useTranslations('login');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [providers, setProviders] = useState<Providers>({ google: false, emailOtp: true });
@@ -48,7 +51,7 @@ export function LoginForm() {
         callbackURL: nextPath(),
       });
     } catch {
-      setError('Google đăng nhập thất bại.');
+      setError(t('errorGoogle'));
       setIsPending(false);
     }
   }
@@ -63,12 +66,12 @@ export function LoginForm() {
         type: 'sign-in',
       });
       if (result.error) {
-        setError(result.error.message || 'Không gửi được mã OTP.');
+        setError(result.error.message || t('errorSendOtp'));
         return;
       }
       setStep('otp');
     } catch {
-      setError('Không gửi được mã OTP.');
+      setError(t('errorSendOtp'));
     } finally {
       setIsPending(false);
     }
@@ -84,13 +87,13 @@ export function LoginForm() {
         otp: otp.trim(),
       });
       if (result.error) {
-        setError(result.error.message || 'Mã OTP không đúng.');
+        setError(result.error.message || t('errorBadOtp'));
         return;
       }
       router.push(nextPath());
       router.refresh();
     } catch {
-      setError('Mã OTP không đúng.');
+      setError(t('errorBadOtp'));
     } finally {
       setIsPending(false);
     }
@@ -105,18 +108,18 @@ export function LoginForm() {
           onClick={handleGoogle}
           className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-white px-4 py-3 text-sm font-bold text-ink-900 hover:bg-muted disabled:opacity-60"
         >
-          Tiếp tục với Google
+          {t('continueGoogle')}
         </button>
       ) : null}
 
       {providers.google && providers.emailOtp ? (
-        <p className="text-center text-xs text-muted-foreground">hoặc dùng email</p>
+        <p className="text-center text-xs text-muted-foreground">{t('orEmail')}</p>
       ) : null}
 
       {step === 'email' ? (
         <form onSubmit={handleSendOtp} className="space-y-3">
           <label className="block text-sm font-semibold text-ink-900" htmlFor="email">
-            Email
+            {t('email')}
           </label>
           <input
             id="email"
@@ -127,7 +130,7 @@ export function LoginForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
-            placeholder="ban@email.com"
+            placeholder={t('emailPlaceholder')}
           />
           <button
             type="submit"
@@ -137,16 +140,14 @@ export function LoginForm() {
               isPending && 'opacity-60',
             )}
           >
-            Gửi mã OTP
+            {t('sendOtp')}
           </button>
         </form>
       ) : (
         <form onSubmit={handleVerifyOtp} className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Đã gửi mã tới <span className="font-semibold text-ink-900">{email}</span>
-          </p>
+          <p className="text-sm text-muted-foreground">{t('otpSent', { email })}</p>
           <label className="block text-sm font-semibold text-ink-900" htmlFor="otp">
-            Mã OTP
+            {t('otp')}
           </label>
           <input
             id="otp"
@@ -169,7 +170,7 @@ export function LoginForm() {
               isPending && 'opacity-60',
             )}
           >
-            Đăng nhập
+            {t('signIn')}
           </button>
           <button
             type="button"
@@ -180,17 +181,14 @@ export function LoginForm() {
               setError(null);
             }}
           >
-            Đổi email
+            {t('changeEmail')}
           </button>
         </form>
       )}
 
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
 
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        OTP gửi qua email (Cloudflare Email). Dev chưa cấu hình EMAIL: xem log
-        <code className="mx-1">[taomenu-otp]</code>. Google chỉ hiện khi đã cấu hình OAuth.
-      </p>
+      <p className="text-xs leading-relaxed text-muted-foreground">{t('hint')}</p>
     </div>
   );
 }
