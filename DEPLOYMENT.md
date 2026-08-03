@@ -96,19 +96,30 @@ pnpm --filter @taomenu/website cf-typegen
 - 已登录：`npx wrangler login`  
 - 域名 `dyqr.me` 在 Cloudflare；绑定 `menu.dyqr.me` / `app.menu.dyqr.me`
 
-### 2. D1
+### 2. D1（必做，否则 OTP / 登录会 500）
+
+**只 create 数据库不够**：远程 D1 必须跑 migration，否则没有 `user` / `verification` 等表，  
+`send-verification-otp` 会在 `createVerificationValue` 阶段炸（看起来像邮件失败）。
 
 ```bash
 cd apps/app
 npx wrangler d1 create taomenu
 # 把输出的 database_id 写入 wrangler.jsonc → d1_databases[0].database_id
-npx wrangler d1 migrations apply taomenu --remote
+pnpm --filter @taomenu/app db:migrate:remote
+# 或：npx wrangler d1 migrations apply taomenu --remote
 ```
 
 本地：
 
 ```bash
 pnpm --filter @taomenu/app db:migrate:local
+```
+
+检查表是否齐全：
+
+```bash
+npx wrangler d1 execute taomenu --remote --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+# 应含 user、session、account、verification、stores、…
 ```
 
 ### 3. R2（菜品图片）
@@ -240,9 +251,10 @@ cd apps/website && npx wrangler domains add menu.dyqr.me
 ### 部署后检查
 
 1. `https://app.menu.dyqr.me/api/health` → `{ ok: true }`  
-2. 登录页发 OTP → 邮箱收到（检查 Spam）  
-3. 终端 `/terminal` Push 测试  
-4. `https://menu.dyqr.me` CTA 指向 `https://app.menu.dyqr.me/login`  
+2. **已对远程 D1 执行 `db:migrate:remote`**（否则 OTP 入库失败）  
+3. 登录页发 OTP → 邮箱收到（检查 Spam；From `noreply@dyqr.me` 须 Email Sending enable）  
+4. 终端 `/terminal` Push 测试  
+5. `https://menu.dyqr.me` CTA 指向 `https://app.menu.dyqr.me/login`  
 
 ### Outbox 补扫（可选 Cron）
 

@@ -2,6 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "taomenu-app",
+  // 多账号本机 wrangler 非交互时需要；与日志 account 一致
+  "account_id": "fdc63eeea83ae8f5234357308b9a638b",
   "compatibility_date": "2026-06-30",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
