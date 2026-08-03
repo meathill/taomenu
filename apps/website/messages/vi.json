@@ -5,6 +5,7 @@
   },
   "nav": {
     "pricing": "Bảng giá",
+    "about": "Giới thiệu",
     "login": "Đăng nhập",
     "cta": "Bắt đầu miễn phí",
     "language": "Ngôn ngữ"
@@ -40,6 +41,35 @@
     "cta": "Bắt đầu với Free"
   },
   "footer": {
-    "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ tại Việt Nam."
+    "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",
+    "product": "Sản phẩm",
+    "legal": "Pháp lý",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ",
+    "privacy": "Chính sách quyền riêng tư",
+    "terms": "Điều khoản dịch vụ",
+    "rights": "Tài liệu pháp lý lấy bản tiếng Anh làm chuẩn."
+  },
+  "docs": {
+    "label": "Tài liệu",
+    "englishAuthoritativeTitle": "Tài liệu này chỉ để hiểu; bản tiếng Anh là chuẩn",
+    "englishAuthoritativeBody": "Bản dịch chỉ nhằm thuận tiện. Nếu có mâu thuẫn, bản tiếng Anh có hiệu lực.",
+    "viewEnglish": "Xem bản tiếng Anh",
+    "about": {
+      "title": "Về TaoMenu",
+      "description": "TaoMenu là gì, dành cho ai, và cách hoạt động."
+    },
+    "contact-us": {
+      "title": "Liên hệ",
+      "description": "Cách liên hệ đội TaoMenu về sản phẩm, hỗ trợ và quyền riêng tư."
+    },
+    "privacy": {
+      "title": "Chính sách quyền riêng tư",
+      "description": "Cách chúng tôi thu thập, sử dụng và bảo vệ thông tin khi bạn dùng TaoMenu."
+    },
+    "terms": {
+      "title": "Điều khoản dịch vụ",
+      "description": "Các quy tắc điều chỉnh việc sử dụng dịch vụ TaoMenu."
+    }
   }
 }

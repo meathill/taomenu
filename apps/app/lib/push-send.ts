@@ -6,7 +6,7 @@ function getVapidConfig() {
   const env = getEnv();
   const publicKey = env.VAPID_PUBLIC_KEY;
   const privateJwkRaw = env.VAPID_PRIVATE_JWK;
-  const subject = env.VAPID_SUBJECT || 'mailto:ops@taomenu.app';
+  const subject = env.VAPID_SUBJECT || 'mailto:ops@dyqr.me';
   if (!publicKey || !privateJwkRaw) {
     return null;
   }

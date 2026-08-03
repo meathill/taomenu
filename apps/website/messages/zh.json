@@ -5,6 +5,7 @@
   },
   "nav": {
     "pricing": "价格",
+    "about": "关于",
     "login": "登录",
     "cta": "免费开始",
     "language": "语言"
@@ -40,6 +41,35 @@
     "cta": "从 Free 开始"
   },
   "footer": {
-    "tagline": "面向越南小餐厅的扫码点餐软件。"
+    "tagline": "面向小餐厅的扫码点餐软件。",
+    "product": "产品",
+    "legal": "法律",
+    "about": "关于",
+    "contact": "联系我们",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "rights": "法律文档以英文版为准。"
+  },
+  "docs": {
+    "label": "文档",
+    "englishAuthoritativeTitle": "本文档仅供理解，以英文为准",
+    "englishAuthoritativeBody": "本译文仅为方便阅读。如与英文版有任何不一致，以英文版为准。",
+    "viewEnglish": "查看英文版",
+    "about": {
+      "title": "关于 TaoMenu",
+      "description": "TaoMenu 是什么、适合谁、如何使用。"
+    },
+    "contact-us": {
+      "title": "联系我们",
+      "description": "产品、支持与隐私相关问题的联系方式。"
+    },
+    "privacy": {
+      "title": "隐私政策",
+      "description": "我们在您使用 TaoMenu 时如何收集、使用与保护信息。"
+    },
+    "terms": {
+      "title": "服务条款",
+      "description": "使用 TaoMenu 服务须遵守的规则。"
+    }
   }
 }

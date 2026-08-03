@@ -9,13 +9,14 @@
 | `taomenu-website` | `apps/website` | 营销站 / SEO |
 | `taomenu-app` | `apps/app` | PWA、Auth、API、Push、业务 |
 
-域名（可选，测通后再买）：
+生产域名：
 
-- 自定义域示例：`https://taomenu.app` → website，`https://app.taomenu.app` → app  
-- **无自定义域**：直接用 Workers 默认 `https://<name>.<subdomain>.workers.dev`  
+- `https://menu.dyqr.me` → website（营销站）  
+- `https://app.menu.dyqr.me` → app（PWA / API）  
+- 发信域名：`dyqr.me`（如 `noreply@dyqr.me`）  
 - 本地：website `:3000`，app `:3001`
 
-**URL 一律无尾斜杠**（`https://xxx.workers.dev`，不要 `.../`）。
+**URL 一律无尾斜杠**。
 
 ## 环境变量约定
 
@@ -44,12 +45,12 @@
 | 变量 | 用途 |
 |---|---|
 | `BETTER_AUTH_URL` | Better Auth `baseURL`（通常等于当前 app 公网 URL） |
-| `EMAIL_FROM` | 发件地址（**域名须已** Cloudflare Email Sending enable；无 taomenu 域可用 `noreply@meathill.com`） |
+| `EMAIL_FROM` | 发件地址（**域名须已** Cloudflare Email Sending enable；生产 `noreply@dyqr.me`） |
 | `EMAIL_FROM_NAME` | 发件显示名，默认 `TaoMenu` |
 | `VAPID_PUBLIC_KEY` | Web Push 公钥（经 API 下发到终端，不是密钥） |
-| `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@meathill.com` |
+| `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@dyqr.me` |
 | `GOOGLE_CLIENT_ID` | Google OAuth 客户端 ID（可公开） |
-| `NEXT_PUBLIC_*` | 同上；**填实际可访问的 HTTPS 地址**（workers.dev 或自定义域） |
+| `NEXT_PUBLIC_*` | 同上；生产为 `menu.dyqr.me` / `app.menu.dyqr.me` |
 
 ### 必须 `wrangler secret` / `.dev.vars`（密钥，禁止提交）
 
@@ -93,7 +94,7 @@ pnpm --filter @taomenu/website cf-typegen
 
 - Node ≥ 24、pnpm 11  
 - 已登录：`npx wrangler login`  
-- 域名可选；无域名时用 `*.workers.dev` 即可测
+- 域名 `dyqr.me` 在 Cloudflare；绑定 `menu.dyqr.me` / `app.menu.dyqr.me`
 
 ### 2. D1
 
@@ -121,29 +122,22 @@ npx wrangler r2 bucket create taomenu-media
 
 ### 4. Cloudflare Email Sending
 
-发件域名必须与 `EMAIL_FROM` 同域，且该域已在 Cloudflare 上 **Email Sending enable**。
-
-**没有 taomenu 域名时可以用已有域名**，例如 `meathill.com`：
+发件域名必须与 `EMAIL_FROM` 同域，且该域已在 Cloudflare 上 **Email Sending enable**。生产用 **`dyqr.me`**：
 
 ```bash
-# 域名须在 Cloudflare 账户下（DNS 可代理或 partial）
-npx wrangler email sending enable meathill.com
+npx wrangler email sending enable dyqr.me
 # 按提示完成 SPF / DKIM 等 DNS
 npx wrangler email sending list
 ```
 
-`wrangler.jsonc` vars 示例：
+`wrangler.jsonc` vars：
 
 ```jsonc
-"EMAIL_FROM": "noreply@meathill.com",
+"EMAIL_FROM": "noreply@dyqr.me",
 "EMAIL_FROM_NAME": "TaoMenu"
 ```
 
-注意：
-
-- 收件人看到的 From 是 `TaoMenu <noreply@meathill.com>`，技术上完全可用  
-- 日后有 `taomenu.app` 再切回 `noreply@taomenu.app` 即可  
-- 不要用未 verify 的域，否则 `E_SENDER_NOT_VERIFIED`
+注意：收件人看到 `TaoMenu <noreply@dyqr.me>`；未 enable 的域会 `E_SENDER_NOT_VERIFIED`。
 
 `apps/app/wrangler.jsonc` 已配置：
 
@@ -186,19 +180,17 @@ npx wrangler secret put GOOGLE_CLIENT_SECRET
 npx wrangler secret put CRON_SECRET
 ```
 
-非密钥写在 `wrangler.jsonc` → `vars`（无域名时用 workers.dev；有域名再改）。**不要尾斜杠**：
+非密钥写在 `wrangler.jsonc` → `vars`（仓库默认已是生产域名）。**不要尾斜杠**：
 
 ```jsonc
 "vars": {
-  // 预览 / 未买域名
-  "BETTER_AUTH_URL": "https://taomenu-app.<account>.workers.dev",
-  "NEXT_PUBLIC_APP_URL": "https://taomenu-app.<account>.workers.dev",
-  "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.<account>.workers.dev",
-  // 有自定义域后再改为 https://app.taomenu.app 等
-  "EMAIL_FROM": "noreply@your-verified-domain",
+  "BETTER_AUTH_URL": "https://app.menu.dyqr.me",
+  "NEXT_PUBLIC_APP_URL": "https://app.menu.dyqr.me",
+  "NEXT_PUBLIC_WEBSITE_URL": "https://menu.dyqr.me",
+  "EMAIL_FROM": "noreply@dyqr.me",
   "EMAIL_FROM_NAME": "TaoMenu",
   "VAPID_PUBLIC_KEY": "<your-public-key>",
-  "VAPID_SUBJECT": "mailto:ops@example.com",
+  "VAPID_SUBJECT": "mailto:ops@dyqr.me",
   "GOOGLE_CLIENT_ID": "<optional>"
 }
 ```
@@ -209,8 +201,8 @@ npx wrangler secret put CRON_SECRET
 
 ```jsonc
 "vars": {
-  "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.<account>.workers.dev",
-  "NEXT_PUBLIC_APP_URL": "https://taomenu-app.<account>.workers.dev"
+  "NEXT_PUBLIC_WEBSITE_URL": "https://menu.dyqr.me",
+  "NEXT_PUBLIC_APP_URL": "https://app.menu.dyqr.me"
 }
 ```
 
@@ -225,40 +217,32 @@ website **无密钥、无 D1、无 Email binding**。
 ```bash
 pnpm install
 
-# 确认 wrangler.jsonc vars 已是当前可访问 URL，再：
+# 确认自定义域已绑到对应 Worker，再：
 pnpm --filter @taomenu/app deploy
 pnpm --filter @taomenu/website deploy
 ```
 
 等价于：`cf-typegen` → `run-with-wrangler-vars` 注入 vars → OpenNext build → deploy。
 
-临时覆盖（不改文件）：
+### 自定义域
+
+Workers 控制台为两个 Worker 绑定：
 
 ```bash
-NEXT_PUBLIC_APP_URL=https://taomenu-app.xxx.workers.dev \
-BETTER_AUTH_URL=https://taomenu-app.xxx.workers.dev \
-pnpm --filter @taomenu/app deploy
+cd apps/app && npx wrangler domains add app.menu.dyqr.me
+cd apps/website && npx wrangler domains add menu.dyqr.me
 ```
 
-### 自定义域（可选）
-
-Workers 控制台绑定路由/自定义域，或：
-
-```bash
-cd apps/app && npx wrangler domains add app.taomenu.app
-cd apps/website && npx wrangler domains add taomenu.app
-```
+（子命令以当前 wrangler 文档为准；也可在 Dashboard → Workers → Custom Domains 添加。）
 
 改域后同步更新两边 `vars` 的 `NEXT_PUBLIC_*` / `BETTER_AUTH_URL` 并 **重新 deploy**（客户端 URL 靠构建内联）。
 
 ### 部署后检查
 
-把下面的 host 换成你的 `NEXT_PUBLIC_APP_URL` / website URL：
-
-1. `{APP_URL}/api/health` → `{ ok: true }`  
+1. `https://app.menu.dyqr.me/api/health` → `{ ok: true }`  
 2. 登录页发 OTP → 邮箱收到（检查 Spam）  
 3. 终端 `/terminal` Push 测试  
-4. 营销站 CTA 指向 `{APP_URL}/login`  
+4. `https://menu.dyqr.me` CTA 指向 `https://app.menu.dyqr.me/login`  
 
 ### Outbox 补扫（可选 Cron）
 

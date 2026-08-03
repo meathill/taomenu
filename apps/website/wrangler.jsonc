@@ -20,10 +20,9 @@
   "placement": {
     "mode": "smart"
   },
-  // NEXT_PUBLIC_* 只应通过 process.env 读取（构建时内联 + 运行时 nodejs_compat）。
-  // 无自定义域时填 workers.dev；不要尾斜杠。
+  // NEXT_PUBLIC_* 只应通过 process.env 读取；URL 不要尾斜杠。
   "vars": {
-    "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.meathill.workers.dev",
-    "NEXT_PUBLIC_APP_URL": "https://taomenu-app.meathill.workers.dev"
+    "NEXT_PUBLIC_WEBSITE_URL": "https://menu.dyqr.me",
+    "NEXT_PUBLIC_APP_URL": "https://app.menu.dyqr.me"
   }
 }

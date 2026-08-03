@@ -5,6 +5,7 @@
   },
   "nav": {
     "pricing": "Pricing",
+    "about": "About",
     "login": "Log in",
     "cta": "Start free",
     "language": "Language"
@@ -40,6 +41,35 @@
     "cta": "Start with Free"
   },
   "footer": {
-    "tagline": "QR ordering software for small restaurants in Vietnam."
+    "tagline": "QR ordering software for small restaurants.",
+    "product": "Product",
+    "legal": "Legal",
+    "about": "About",
+    "contact": "Contact us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "rights": "English is the authoritative language for legal documents."
+  },
+  "docs": {
+    "label": "Documentation",
+    "englishAuthoritativeTitle": "English is authoritative",
+    "englishAuthoritativeBody": "This translation is provided for convenience only. If there is any conflict, the English version controls.",
+    "viewEnglish": "View English version",
+    "about": {
+      "title": "About TaoMenu",
+      "description": "What TaoMenu is, who it is for, and how it works."
+    },
+    "contact-us": {
+      "title": "Contact us",
+      "description": "How to reach the TaoMenu team for product, support, and privacy questions."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "How we collect, use, and protect information when you use TaoMenu."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "The rules that govern your use of the TaoMenu service."
+    }
   }
 }

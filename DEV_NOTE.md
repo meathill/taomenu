@@ -4,8 +4,8 @@
 
 ## Monorepo 拆分（2026-07-28）
 
-- `apps/website`：营销站与 SEO（`taomenu.app`，本地 :3000）
-- `apps/app`：PWA 产品面——店主/员工登录能力 + 顾客扫码公开页（`app.taomenu.app`，本地 :3001）
+- `apps/website`：营销站与 SEO（生产 `menu.dyqr.me`，本地 :3000）
+- `apps/app`：PWA 产品面——店主/员工登录能力 + 顾客扫码公开页（生产 `app.menu.dyqr.me`，本地 :3001）
 - 顾客 `/m/*` 放在 `app` 并 `noindex`，不做门店发现 SEO
 - 不预建空的 realtime/ai/db 包；需要时再加
 - `packages/*` 直接导出 TypeScript 源码（`workspace:*` + Next `transpilePackages`），不强制 Vite 出 dist，减少双构建
@@ -50,20 +50,22 @@
 
 ## 公开 URL / 环境变量（2026-08-03）
 
-- **不要**在业务代码写死 `taomenu.app` / 具体 workers.dev
+- 生产域名经 env：`menu.dyqr.me` / `app.menu.dyqr.me`（勿在业务代码硬编码）
 - `NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WEBSITE_URL` / `BETTER_AUTH_URL` **只读 `process.env.*`**
-- **禁止** `getCloudflareContext().env.NEXT_PUBLIC_*`（客户端内联与 Next 约定都不走这条路径）
+- **禁止** `getCloudflareContext().env.NEXT_PUBLIC_*`
 - `getCloudflareContext` 仅用于 binding（DB / EMAIL / MEDIA）与密钥
-- URL 统一无尾斜杠；`apps/app/lib/public-url.ts`、`apps/website/lib/site.ts` 负责读取与规范化
-- 构建时：`scripts/run-with-wrangler-vars.mjs` 把 `wrangler.jsonc` 的 `vars` 注入 `process.env`（不覆盖 shell 已有值）
-- 无自定义域：vars 填 `https://<worker>.<account>.workers.dev` 即可测通
+- URL 统一无尾斜杠；`public-url.ts` / `site.ts` 负责读取与规范化
+- 构建时：`scripts/run-with-wrangler-vars.mjs` 注入 wrangler `vars`
 
 ## 营销站 i18n（2026-08-03）
 
 - UI locale：`en`（默认）/ `zh` / `ja` / `vi`（`packages/shared/src/locale.ts`）
 - next-intl + `localePrefix: always`；协商：cookie → Accept-Language → CF 国家 → en
-- 与**菜单内容** `stores.baseLocale`（默认仍 `vi`）分离：后者是店主录入语言，不是营销站 UI
-- 发信：无 taomenu 域时可用 `EMAIL_FROM=noreply@meathill.com`（域须 Email Sending enable）
+- 全局 `SiteHeader` + `SiteFooter`；语言切换在 **footer**
+- 文档页 MDX：`content/{about,contact-us,privacy,terms}/{en,zh,ja,vi}.mdx`，`next-mdx-remote` + `force-static`
+- 非英文文档顶部 alert：「仅供理解，以英文为准」+ 链到 `/en/...`
+- 与**菜单内容** `stores.baseLocale`（默认仍 `vi`）分离
+- 发信：`EMAIL_FROM=noreply@dyqr.me`（`dyqr.me` 须 Email Sending enable）
 
 ## 验收切片（2026-07-28）
 

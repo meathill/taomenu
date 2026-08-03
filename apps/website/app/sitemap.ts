@@ -1,9 +1,10 @@
 import { LOCALES } from '@taomenu/shared';
 import type { MetadataRoute } from 'next';
+import { DOC_SLUGS } from '@/lib/docs';
 import { getPublicWebsiteUrl } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = ['', '/pricing'];
+  const paths = ['', '/pricing', ...DOC_SLUGS.map((slug) => `/${slug}`)];
   const websiteUrl = getPublicWebsiteUrl();
 
   return LOCALES.flatMap((locale) =>

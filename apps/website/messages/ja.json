@@ -5,6 +5,7 @@
   },
   "nav": {
     "pricing": "料金",
+    "about": "について",
     "login": "ログイン",
     "cta": "無料で始める",
     "language": "言語"
@@ -40,6 +41,35 @@
     "cta": "Freeで始める"
   },
   "footer": {
-    "tagline": "ベトナムの小さな飲食店向けQRオーダーソフト。"
+    "tagline": "小さな飲食店向けのQRオーダーソフト。",
+    "product": "プロダクト",
+    "legal": "法務",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "rights": "法的文書の正文は英語版です。"
+  },
+  "docs": {
+    "label": "ドキュメント",
+    "englishAuthoritativeTitle": "本文書は理解のための参考訳です。正文は英語版です",
+    "englishAuthoritativeBody": "本翻訳は便宜のために提供しています。矛盾がある場合は英語版が優先します。",
+    "viewEnglish": "英語版を見る",
+    "about": {
+      "title": "TaoMenu について",
+      "description": "TaoMenu とは何か、対象、使い方。"
+    },
+    "contact-us": {
+      "title": "お問い合わせ",
+      "description": "製品・サポート・プライバシーに関する連絡先。"
+    },
+    "privacy": {
+      "title": "プライバシーポリシー",
+      "description": "TaoMenu 利用時の情報の収集・利用・保護について。"
+    },
+    "terms": {
+      "title": "利用規約",
+      "description": "TaoMenu サービス利用に適用されるルール。"
+    }
   }
 }

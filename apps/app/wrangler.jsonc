@@ -45,15 +45,13 @@
     "mode": "smart"
   },
   // 仅非敏感配置。密钥用 wrangler secret / .dev.vars，不要写进本文件。
-  // NEXT_PUBLIC_* 与 BETTER_AUTH_URL 会进入 process.env（nodejs_compat），
-  // 代码必须用 process.env 读取，不要 getCloudflareContext().env.NEXT_PUBLIC_*。
-  // 无自定义域时填 workers.dev 地址；URL 不要尾斜杠。构建时也需同名 env 才能内联到客户端。
+  // NEXT_PUBLIC_* / BETTER_AUTH_URL 只读 process.env；URL 不要尾斜杠。
   "vars": {
-    "BETTER_AUTH_URL": "https://taomenu-app.meathill.workers.dev",
-    "NEXT_PUBLIC_APP_URL": "https://taomenu-app.meathill.workers.dev",
-    "NEXT_PUBLIC_WEBSITE_URL": "https://taomenu-website.meathill.workers.dev",
-    "EMAIL_FROM": "noreply@meathill.com",
+    "BETTER_AUTH_URL": "https://app.menu.dyqr.me",
+    "NEXT_PUBLIC_APP_URL": "https://app.menu.dyqr.me",
+    "NEXT_PUBLIC_WEBSITE_URL": "https://menu.dyqr.me",
+    "EMAIL_FROM": "noreply@dyqr.me",
     "EMAIL_FROM_NAME": "TaoMenu",
-    "VAPID_SUBJECT": "mailto:ops@meathill.com"
+    "VAPID_SUBJECT": "mailto:ops@dyqr.me"
   }
 }
