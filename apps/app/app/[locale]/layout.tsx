@@ -6,6 +6,8 @@ import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server
 import type { ReactNode } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
+import { pickMessages } from '@/i18n/load-messages';
+import { SHELL_NAMESPACES } from '@/i18n/namespaces';
 import { routing } from '@/i18n/routing';
 import '../globals.css';
 
@@ -66,7 +68,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <html lang={locale}>
       <body className="min-h-dvh bg-paper-50 text-ink-900 antialiased">
-        <NextIntlClientProvider messages={messages}>
+        {/* 只下发壳层字典；各页面用 PageMessages 追加本页 namespace */}
+        <NextIntlClientProvider messages={pickMessages(messages, SHELL_NAMESPACES)}>
           <div className="flex min-h-dvh flex-col">
             <SiteHeader />
             <div className="flex-1">{children}</div>
