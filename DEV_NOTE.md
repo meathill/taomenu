@@ -69,7 +69,8 @@
 
 ## 产品 app i18n（2026-08-03）
 
-- 同样 en/zh/ja/vi，默认 en；**`localePrefix: 'never'`**（路径仍是 `/login` `/app`，不破坏 Auth/桌码）
+- 同样 en/zh/ja/vi，默认 en；**`localePrefix: 'never'`**（对外仍是 `/login` `/app`）
+- 页面必须放在 `app/[locale]/…`：middleware 会 rewrite 成内部 `/zh/login` 等
 - 协商与 cookie `NEXT_LOCALE` 同 marketing；middleware 兼鉴权
 - 全局 header/footer，语言切换在 footer
 - 已 i18n：登录、店主壳、onboarding 标题；菜单编辑/顾客页等仍有越南文硬编码，后续按页迁移
