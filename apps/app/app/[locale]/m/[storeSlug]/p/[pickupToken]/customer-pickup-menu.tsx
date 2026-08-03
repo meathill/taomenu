@@ -1,6 +1,7 @@
 'use client';
 
 import { formatVnd } from '@taomenu/shared';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
 import {
@@ -23,6 +24,7 @@ type MenuPayload = {
 type CartLine = CartLineSelection & { quantity: number };
 
 export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
+  const t = useTranslations('customer');
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -39,7 +41,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const load = useCallback(async () => {
     const res = await fetch(`/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu`);
     if (!res.ok) {
-      setError('Không tìm thấy mã lấy món hoặc menu.');
+      setError(t('notFoundPickup'));
       return;
     }
     setMenu((await res.json()) as MenuPayload);
@@ -113,7 +115,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         status?: string;
       };
       if (!res.ok || data.displayNumber === undefined) {
-        setError(data.error || 'Gửi order thất bại.');
+        setError(data.error || t('orderFailed'));
         return;
       }
       setResult({
@@ -174,7 +176,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   if (result) {
     return (
       <div className="mx-auto max-w-lg px-4 py-8 text-center">
-        <p className="text-sm font-semibold text-brand-600">Số lấy món</p>
+        <p className="text-sm font-semibold text-brand-600">{t('pickupNumber')}</p>
         <p className="mt-2 text-6xl font-extrabold tabular-nums text-ink-900">
           {result.pickupNumber !== null
             ? String(result.pickupNumber).padStart(2, '0')
@@ -182,16 +184,15 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         </p>
         <p className="mt-2 text-sm font-bold text-ink-900">
           {result.status === 'ready_for_pickup'
-            ? 'Sẵn sàng lấy'
+            ? t('statusReady')
             : result.status === 'accepted'
-              ? 'Đang chuẩn bị'
+              ? t('statusPreparing')
               : result.status === 'picked_up'
-                ? 'Đã lấy'
-                : 'Đã gửi'}
+                ? t('statusPickedUp')
+                : t('statusSubmitted')}
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Tổng {formatVnd(result.subtotalAmount)}. Nhân viên sẽ gọi số — không cần ở lại trang. Quay
-          lại app để làm mới trạng thái.
+          {t('pickupSubmittedHint', { total: formatVnd(result.subtotalAmount) })}
         </p>
         <button
           type="button"
@@ -208,7 +209,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
             }
           }}
         >
-          Làm mới trạng thái
+          {t('refreshStatus')}
         </button>
       </div>
     );
@@ -217,7 +218,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   if (!menu) {
     return (
       <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-        {error || 'Đang tải menu…'}
+        {error || t('loading')}
       </div>
     );
   }
@@ -227,7 +228,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
         <p className="text-sm font-semibold text-brand-600">{menu.store.name}</p>
         <h1 className="text-xl font-extrabold text-ink-900">
-          {menu.pickupPoint?.name ?? 'Lấy món'}
+          {menu.pickupPoint?.name ?? t('pickupMode')}
         </h1>
       </header>
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
@@ -260,7 +261,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                         <span className="block truncate font-semibold">{item.name}</span>
                         <span className="text-sm tabular-nums text-muted-foreground">
                           {formatVnd(item.priceAmount)}
-                          {(item.modifierGroups?.length ?? 0) > 0 ? ' · Tuỳ chọn' : ''}
+                          {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
                         </span>
                       </span>
                     </span>
@@ -280,7 +281,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
             onClick={() => void submitOrder()}
             className="min-h-12 w-full rounded-xl bg-brand-600 text-sm font-bold text-white"
           >
-            {submitting ? 'Đang gửi…' : `Gửi · ${formatVnd(subtotal)}`}
+            {submitting ? t('sending') : t('sendWithPrice', { price: formatVnd(subtotal) })}
           </button>
         </div>
       ) : null}

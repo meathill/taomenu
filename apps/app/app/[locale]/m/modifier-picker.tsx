@@ -1,6 +1,7 @@
 'use client';
 
 import { formatVnd } from '@taomenu/shared';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 export type PublicModifierOption = {
@@ -48,6 +49,8 @@ export function cartLineKey(menuItemId: string, modifierIds: string[]): string {
 }
 
 export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProps) {
+  const t = useTranslations('customer');
+  const tCommon = useTranslations('common');
   const [selectedByGroup, setSelectedByGroup] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     for (const group of item.modifierGroups) {
@@ -105,11 +108,11 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
       const count = (selectedByGroup[group.id] ?? []).length;
       const min = group.isRequired ? Math.max(group.minSelected, 1) : group.minSelected;
       if (count < min) {
-        setError(`Chọn ${group.name} (tối thiểu ${min}).`);
+        setError(t('modifierMinError', { name: group.name, min }));
         return;
       }
       if (count > group.maxSelected) {
-        setError(`${group.name}: tối đa ${group.maxSelected}.`);
+        setError(t('modifierMaxError', { name: group.name, max: group.maxSelected }));
         return;
       }
     }
@@ -138,7 +141,7 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
             </p>
           </div>
           <button type="button" className="text-sm font-bold text-ink-900" onClick={onCancel}>
-            Đóng
+            {tCommon('close')}
           </button>
         </div>
 
@@ -148,8 +151,8 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
               <p className="text-sm font-bold text-ink-900">
                 {group.name}
                 <span className="ml-1 font-normal text-muted-foreground">
-                  {group.isRequired ? '(bắt buộc)' : '(tuỳ chọn)'}
-                  {group.maxSelected > 1 ? ` · tối đa ${group.maxSelected}` : null}
+                  {group.isRequired ? t('required') : t('optional')}
+                  {group.maxSelected > 1 ? ` · ${t('maxTag', { max: group.maxSelected })}` : null}
                 </span>
               </p>
               <ul className="mt-2 space-y-2">
@@ -189,14 +192,14 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
             className="min-h-12 flex-1 rounded-xl border border-border text-sm font-bold"
             onClick={onCancel}
           >
-            Hủy
+            {tCommon('cancel')}
           </button>
           <button
             type="button"
             className="min-h-12 flex-1 rounded-xl bg-brand-600 text-sm font-bold text-white"
             onClick={handleConfirm}
           >
-            Thêm · {formatVnd(unitPrice)}
+            {t('addWithPrice', { price: formatVnd(unitPrice) })}
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { formatVnd } from '@taomenu/shared';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
 import {
@@ -34,22 +35,15 @@ type CustomerMenuProps = {
   tableToken: string;
 };
 
-function statusLabel(status: string): string {
-  switch (status) {
-    case 'submitted':
-      return 'Đã gửi';
-    case 'accepted':
-      return 'Bếp/nhân viên đã nhận';
-    case 'served':
-      return 'Đã phục vụ';
-    case 'cancelled':
-      return 'Đã hủy';
-    default:
-      return status;
-  }
-}
+const ORDER_STATUS_KEYS: Record<string, string> = {
+  submitted: 'statusSubmitted',
+  accepted: 'statusAccepted',
+  served: 'statusServed',
+  cancelled: 'statusCancelled',
+};
 
 export function CustomerMenu({ tableToken }: CustomerMenuProps) {
+  const t = useTranslations('customer');
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -63,7 +57,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
     setError(null);
     const res = await fetch(`/api/public/tables/${encodeURIComponent(tableToken)}/menu`);
     if (!res.ok) {
-      setError('Không tìm thấy bàn hoặc menu.');
+      setError(t('notFoundTable'));
       return;
     }
     setMenu((await res.json()) as MenuPayload);
@@ -181,7 +175,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         subtotalAmount?: number;
       };
       if (!res.ok || data.displayNumber === undefined || !data.publicToken) {
-        setError(data.error || 'Gửi order thất bại.');
+        setError(data.error || t('orderFailed'));
         return;
       }
       setCart([]);
@@ -215,17 +209,17 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       );
       const data = (await res.json()) as { error?: string; status?: string; reused?: boolean };
       if (!res.ok) {
-        setSvcMsg(data.error || 'Gửi yêu cầu thất bại.');
+        setSvcMsg(data.error || t('requestFailed'));
         return;
       }
       setSvcMsg(
         type === 'request_bill'
           ? data.reused
-            ? 'Đã có yêu cầu tính tiền đang chờ.'
-            : 'Đã gọi tính tiền.'
+            ? t('billPending')
+            : t('billSent')
           : data.reused
-            ? 'Đã có yêu cầu gọi nhân viên đang chờ.'
-            : 'Đã gọi nhân viên.',
+            ? t('staffPending')
+            : t('staffSent'),
       );
     } finally {
       setSvcBusy(false);
@@ -235,7 +229,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   if (!menu && !order) {
     return (
       <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-        {error || 'Đang tải menu…'}
+        {error || t('loading')}
       </div>
     );
   }
@@ -247,9 +241,14 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         <h1 className="mt-2 text-3xl font-extrabold tabular-nums text-ink-900">
           #{order.displayNumber}
         </h1>
-        <p className="mt-2 text-base font-bold text-ink-900">{statusLabel(order.status)}</p>
+        <p className="mt-2 text-base font-bold text-ink-900">
+          {(() => {
+            const key = ORDER_STATUS_KEYS[order.status];
+            return key ? t(key) : order.status;
+          })()}
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tổng {formatVnd(order.subtotalAmount)}. Kéo xuống hoặc chạm làm mới khi quay lại app.
+          {t('submittedHint', { total: formatVnd(order.subtotalAmount) })}
         </p>
         <ul className="mt-4 space-y-1 text-sm">
           {order.items.map((item) => (
@@ -264,14 +263,14 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
             className="min-h-12 rounded-xl border border-border text-sm font-bold"
             onClick={() => void refreshOrder(order.publicToken)}
           >
-            Làm mới trạng thái
+            {t('refreshStatus')}
           </button>
           <button
             type="button"
             className="min-h-12 rounded-xl bg-brand-600 text-sm font-bold text-white"
             onClick={() => setOrder(null)}
           >
-            Order thêm
+            {t('orderMore')}
           </button>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -280,7 +279,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
               onClick={() => void sendService('call_staff')}
               className="min-h-12 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
             >
-              Gọi NV
+              {t('callStaffShort')}
             </button>
             <button
               type="button"
@@ -288,7 +287,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
               onClick={() => void sendService('request_bill')}
               className="min-h-12 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
             >
-              Tính tiền
+              {t('requestBill')}
             </button>
           </div>
           {svcMsg ? (
@@ -308,10 +307,10 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
         <p className="text-sm font-semibold text-brand-600">{menu.store.name}</p>
         <h1 className="text-xl font-extrabold text-ink-900">
-          {menu.table ? `Bàn ${menu.table.name}` : 'Menu'}
+          {menu.table ? t('tableLabel', { name: menu.table.name }) : t('menu')}
         </h1>
         {!menu.store.acceptingPublicRequests ? (
-          <p className="mt-1 text-xs font-semibold text-brand-600">Tạm ngưng nhận order</p>
+          <p className="mt-1 text-xs font-semibold text-brand-600">{t('paused')}</p>
         ) : null}
         <div className="mt-3 flex gap-2">
           <button
@@ -320,7 +319,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
             onClick={() => void sendService('call_staff')}
             className="min-h-10 flex-1 rounded-xl border border-border text-xs font-bold"
           >
-            Gọi nhân viên
+            {t('callStaff')}
           </button>
           <button
             type="button"
@@ -328,7 +327,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
             onClick={() => void sendService('request_bill')}
             className="min-h-10 flex-1 rounded-xl border border-border text-xs font-bold"
           >
-            Gọi tính tiền
+            {t('requestBill')}
           </button>
         </div>
         {svcMsg ? <p className="mt-2 text-xs font-medium text-jade-600">{svcMsg}</p> : null}
@@ -337,7 +336,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
 
       {menu.categories.length === 0 ? (
-        <p className="px-4 py-8 text-sm text-muted-foreground">Menu chưa được xuất bản.</p>
+        <p className="px-4 py-8 text-sm text-muted-foreground">{t('menuUnpublished')}</p>
       ) : (
         <ul className="space-y-6 px-4 py-4">
           {menu.categories.map((category) => (
@@ -370,8 +369,8 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
                           </span>
                           <span className="text-sm tabular-nums text-muted-foreground">
                             {formatVnd(item.priceAmount)}
-                            {item.isSoldOut ? ' · Hết' : ''}
-                            {(item.modifierGroups?.length ?? 0) > 0 ? ' · Tuỳ chọn' : ''}
+                            {item.isSoldOut ? ` · ${t('soldOut')}` : ''}
+                            {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
                           </span>
                         </span>
                       </span>
@@ -390,7 +389,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
           <div className="mx-auto flex max-w-lg items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-ink-900">
-                {cart.reduce((n, l) => n + l.quantity, 0)} món
+                {t('cartCount', { count: cart.reduce((n, l) => n + l.quantity, 0) })}
               </p>
               <p className="text-sm tabular-nums text-muted-foreground">{formatVnd(subtotal)}</p>
             </div>
@@ -400,7 +399,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
               onClick={() => void submitOrder()}
               className="min-h-12 rounded-xl bg-brand-600 px-5 text-sm font-bold text-white disabled:opacity-60"
             >
-              {submitting ? 'Đang gửi…' : 'Gửi order'}
+              {submitting ? t('sending') : t('sendOrder')}
             </button>
           </div>
         </div>
