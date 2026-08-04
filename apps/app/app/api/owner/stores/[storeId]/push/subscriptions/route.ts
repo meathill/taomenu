@@ -1,7 +1,7 @@
 import { upsertPushSubscription } from '@taomenu/db';
 import { z } from 'zod';
 import { badRequest } from '@/lib/api-error';
-import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
+import { isErrorResponse, requireStoreActor } from '@/lib/owner-context';
 
 const bodySchema = z.object({
   endpoint: z.string().url(),
@@ -16,7 +16,7 @@ type RouteContext = { params: Promise<{ storeId: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
   const { storeId } = await context.params;
-  const owner = await requireOwnerStore(storeId);
+  const owner = await requireStoreActor(storeId);
   if (isErrorResponse(owner)) return owner;
 
   let body: unknown;
@@ -31,8 +31,9 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const result = await upsertPushSubscription(owner.storeCtx, owner.db, {
-    subjectType: 'owner',
-    userId: owner.userId,
+    subjectType: owner.actor.type === 'terminal' ? 'terminal' : 'owner',
+    userId: owner.actor.type === 'owner' ? owner.userId : null,
+    terminalId: owner.actor.terminalId,
     endpoint: parsed.data.endpoint,
     p256dhKey: parsed.data.keys.p256dh,
     authKey: parsed.data.keys.auth,

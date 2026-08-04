@@ -1,6 +1,7 @@
 'use client';
 
 import { LOCALE_LABELS, LOCALES, type Locale } from '@taomenu/shared';
+import { useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import type { ChangeEvent } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
@@ -13,10 +14,12 @@ export function LocaleSwitcher({ label }: LocaleSwitcherProps) {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   function handleChange(event: ChangeEvent<HTMLSelectElement>) {
     const next = event.target.value as Locale;
-    router.replace(pathname, { locale: next });
+    const query = searchParams.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { locale: next });
   }
 
   return (

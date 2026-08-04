@@ -1,6 +1,6 @@
 import { enqueueNotification, getSubscriptionForStore, processOneOutboxEvent } from '@taomenu/db';
 import { notFound } from '@/lib/api-error';
-import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
+import { isErrorResponse, requireStoreActor } from '@/lib/owner-context';
 import { createPushSender, isPushConfigured } from '@/lib/push-send';
 
 type RouteContext = {
@@ -9,7 +9,7 @@ type RouteContext = {
 
 export async function POST(_request: Request, context: RouteContext) {
   const { storeId, subscriptionId } = await context.params;
-  const owner = await requireOwnerStore(storeId);
+  const owner = await requireStoreActor(storeId);
   if (isErrorResponse(owner)) return owner;
 
   if (!isPushConfigured()) {
@@ -17,7 +17,11 @@ export async function POST(_request: Request, context: RouteContext) {
   }
 
   const sub = await getSubscriptionForStore(owner.storeCtx, owner.db, subscriptionId);
-  if (!sub || sub.disabledAt) {
+  if (
+    !sub ||
+    sub.disabledAt ||
+    (owner.actor.type === 'terminal' && sub.terminalId !== owner.actor.terminalId)
+  ) {
     return notFound();
   }
 

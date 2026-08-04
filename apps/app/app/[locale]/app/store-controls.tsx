@@ -7,9 +7,10 @@ import { Button } from '@/components/button';
 type StoreControlsProps = {
   storeId: string;
   acceptingPublicRequests: boolean;
+  isReady: boolean;
 };
 
-export function StoreControls({ storeId, acceptingPublicRequests }: StoreControlsProps) {
+export function StoreControls({ storeId, acceptingPublicRequests, isReady }: StoreControlsProps) {
   const t = useTranslations('owner');
   const [accepting, setAccepting] = useState(acceptingPublicRequests);
   const [busy, setBusy] = useState(false);
@@ -41,12 +42,17 @@ export function StoreControls({ storeId, acceptingPublicRequests }: StoreControl
         <div>
           <p className="text-sm font-bold text-ink-900">{t('publicOrders')}</p>
           <p className="text-xs text-muted-foreground">
-            {accepting ? t('publicOrdersOpen') : t('publicOrdersPaused')}
+            {!isReady
+              ? t('publicOrdersNotReady')
+              : accepting
+                ? t('publicOrdersOpen')
+                : t('publicOrdersPaused')}
           </p>
         </div>
         <Button
           type="button"
           pending={busy}
+          disabled={!isReady && !accepting}
           onClick={() => void toggle()}
           className={
             accepting

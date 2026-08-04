@@ -78,7 +78,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       return;
     }
     setTree((await res.json()) as MenuTree);
-  }, [storeId]);
+  }, [storeId, t]);
 
   useEffect(() => {
     void load();
@@ -265,8 +265,16 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
 
   if (!tree) {
     return (
-      <div className="rounded-2xl border border-border bg-white p-6 text-sm text-muted-foreground">
-        {error || t('loading')}
+      <div className="rounded-2xl border border-border bg-white p-6">
+        {error ? (
+          <p className="text-sm text-brand-600">{error}</p>
+        ) : (
+          <div className="animate-pulse space-y-3" role="status" aria-live="polite">
+            <div className="h-4 w-32 rounded bg-paper-50" />
+            <div className="h-12 rounded-xl bg-paper-50" />
+            <div className="h-24 rounded-xl bg-paper-50" />
+          </div>
+        )}
       </div>
     );
   }
@@ -274,8 +282,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   const baseLocale = tree.menu.baseLocale;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-6 pb-24 lg:pb-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 lg:sticky lg:top-4 lg:z-20 lg:bg-paper-50/95 lg:py-3 lg:backdrop-blur-sm">
         <div>
           <p className="text-sm text-muted-foreground">
             {t('status')}{' '}
@@ -306,7 +314,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             type="button"
             pending={busy}
             onClick={() => void handlePublish()}
-            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
+            className="fixed inset-x-4 bottom-4 z-30 min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white shadow-lg lg:static lg:z-auto lg:shadow-none"
           >
             {t('publish')}
           </Button>
@@ -325,6 +333,18 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       ) : null}
 
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
+
+      {tree.categories.length === 0 ? (
+        <section className="rounded-2xl border border-jade-600 bg-jade-50 p-5">
+          <h2 className="text-lg font-black text-ink-900">{t('emptyTitle')}</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">{t('emptyHint')}</p>
+          <ol className="mt-4 space-y-2 text-sm font-semibold text-ink-900">
+            <li>1. {t('emptyStepCategory')}</li>
+            <li>2. {t('emptyStepItem')}</li>
+            <li>3. {t('emptyStepPublish')}</li>
+          </ol>
+        </section>
+      ) : null}
 
       <form
         onSubmit={(e) => void handleAddCategory(e)}

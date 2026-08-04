@@ -1,10 +1,7 @@
-import { listStoresForUser } from '@taomenu/db';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
-import { getDb } from '@/lib/db';
-import { getSession } from '@/lib/session';
+import { getOwnerStoreSelection, readStoreSlug, type StoreSearchParams } from '@/lib/active-store';
 import { TablesManager } from './tables-manager';
 
 export const dynamic = 'force-dynamic';
@@ -14,28 +11,25 @@ export async function generateMetadata() {
   return { title: t('title') };
 }
 
-export default async function TablesPage() {
-  const t = await getTranslations('tables');
-  const session = await getSession();
-  if (!session?.user) {
-    redirect('/login?next=/app/tables');
-  }
+type TablesPageProps = { searchParams: Promise<StoreSearchParams> };
 
-  const stores = await listStoresForUser(getDb(), session.user.id);
-  if (stores.length === 0) {
+export default async function TablesPage({ searchParams }: TablesPageProps) {
+  const t = await getTranslations('tables');
+  const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
+  if (!selection) redirect('/login?next=/app/tables');
+  if (!selection.store) {
     redirect('/app/onboarding');
   }
-  const store = stores[0]!;
+  const store = selection.store;
 
   return (
     <PageMessages namespaces={['tables']}>
-      <div className="mx-auto min-h-dvh max-w-lg px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <Link href="/app" className="text-sm font-semibold text-jade-600">
-          ← {store.name}
-        </Link>
-        <h1 className="mt-1 text-2xl font-extrabold text-ink-900">{t('title')}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
-        <div className="mt-6">
+      <div className="space-y-6">
+        <div className="border-b border-border/80 pb-5">
+          <h1 className="mt-1 text-2xl font-extrabold text-ink-900">{t('title')}</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('subtitle')}</p>
+        </div>
+        <div>
           <TablesManager storeId={store.id} storeSlug={store.slug} />
         </div>
       </div>

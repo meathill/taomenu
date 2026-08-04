@@ -7,6 +7,9 @@ export {
   listDiningTables,
   listPickupPoints,
   rotateDiningTableToken,
+  rotatePickupPointToken,
+  updateDiningTable,
+  updatePickupPoint,
 } from './dining';
 export {
   batchUpdateItemAvailability,
@@ -45,6 +48,7 @@ export {
   createCustomerOrder,
   getOrderByPublicToken,
 } from './orders';
+export { getOwnerOverview, type OwnerOverview } from './overview';
 export {
   closeTableSession,
   getSessionBalance,
@@ -96,3 +100,15 @@ export {
   type UpdateStoreInput,
   updateStore,
 } from './stores';
+export {
+  createTerminalPairingCode,
+  getTerminalByCredential,
+  isPairingCodeExpired,
+  listTerminalDevices,
+  normalizePairingCode,
+  type PairingCodeResult,
+  pairTerminalWithCode,
+  revokeTerminalDevice,
+  type TerminalDeviceView,
+  touchTerminalDevice,
+} from './terminals';

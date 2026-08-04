@@ -1,13 +1,13 @@
 import { recordOrderPayment, recordSessionPayment } from '@taomenu/db';
 import { recordPaymentSchema } from '@taomenu/shared';
 import { badRequest, notFound } from '@/lib/api-error';
-import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
+import { isErrorResponse, requireStoreActor } from '@/lib/owner-context';
 
 type RouteContext = { params: Promise<{ storeId: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
   const { storeId } = await context.params;
-  const owner = await requireOwnerStore(storeId);
+  const owner = await requireStoreActor(storeId);
   if (isErrorResponse(owner)) return owner;
 
   let body: unknown;

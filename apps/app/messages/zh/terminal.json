@@ -1,6 +1,6 @@
 {
   "title": "员工终端 · {name}",
-  "subtitle": "MVP 使用店主会话。设备配对码后续提供。",
+  "subtitle": "优先处理订单。设备提醒可在设备准备区域设置。",
   "backOwner": "← 店主",
   "requests": "顾客请求",
   "requestBill": "买单",
@@ -54,5 +54,18 @@
   "pushSaveFailed": "保存订阅失败。",
   "pushEnabled": "推送已开启。点“发送测试”，然后点开通知确认。",
   "pushTestFailed": "测试发送失败。",
-  "pushTestSent": "已发送测试。若锁屏也能显示——点开通知确认。"
+  "pushTestSent": "已发送测试。若锁屏也能显示——点开通知确认。",
+  "pairTitle": "配对这台设备",
+  "pairSubtitle": "输入店主生成的一次性配对码，这台设备就会打开订单工作区。",
+  "pairCode": "配对码",
+  "pairCodeHint": "8 位数字",
+  "deviceName": "设备名称",
+  "deviceNameHint": "柜台 iPad / 前台手机",
+  "pairDevice": "配对设备",
+  "pairFailed": "配对码无效、已过期或已经使用。",
+  "pairedDevice": "已配对的店员设备",
+  "ownerWorkspace": "店主工作区",
+  "pairedAs": "当前设备：{name}",
+  "thisDevice": "这台设备",
+  "devicePreparation": "设备准备和提醒"
 }

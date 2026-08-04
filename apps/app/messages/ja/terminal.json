@@ -1,6 +1,6 @@
 {
   "title": "スタッフ端末 · {name}",
-  "subtitle": "MVP はオーナーセッションを使用。端末ペアリングコードは今後対応。",
+  "subtitle": "注文処理を優先します。端末の準備から通知を設定できます。",
   "backOwner": "← オーナー",
   "requests": "お客様リクエスト",
   "requestBill": "お会計",
@@ -54,5 +54,18 @@
   "pushSaveFailed": "サブスクリプションを保存できませんでした。",
   "pushEnabled": "Push を有効にしました。「テスト送信」を押し、通知をタップして確認してください。",
   "pushTestFailed": "テスト送信に失敗しました。",
-  "pushTestSent": "テストを送信しました。ロック画面に表示されたら通知をタップして確認。"
+  "pushTestSent": "テストを送信しました。ロック画面に表示されたら通知をタップして確認。",
+  "pairTitle": "この端末をペアリング",
+  "pairSubtitle": "オーナーが作成したワンタイムコードを入力すると、注文ワークスペースが開きます。",
+  "pairCode": "ペアリングコード",
+  "pairCodeHint": "8 桁のコード",
+  "deviceName": "端末名",
+  "deviceNameHint": "カウンター iPad / フロントの電話",
+  "pairDevice": "端末をペアリング",
+  "pairFailed": "コードが無効、期限切れ、または使用済みです。",
+  "pairedDevice": "ペアリング済みスタッフ端末",
+  "ownerWorkspace": "オーナーワークスペース",
+  "pairedAs": "{name} として接続中",
+  "thisDevice": "この端末",
+  "devicePreparation": "端末の準備と通知"
 }

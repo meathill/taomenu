@@ -13,6 +13,7 @@ export type DiningTableView = {
   sortOrder: number;
   isActive: boolean;
   tokenVersion: number;
+  updatedAt: Date;
   /** 仅创建/轮换时返回明文 token */
   token?: string;
 };
@@ -25,6 +26,7 @@ export async function listDiningTables(ctx: StoreContext, db: Db) {
       sortOrder: diningTables.sortOrder,
       isActive: diningTables.isActive,
       tokenVersion: diningTables.tokenVersion,
+      updatedAt: diningTables.updatedAt,
     })
     .from(diningTables)
     .where(eq(diningTables.storeId, ctx.storeId))
@@ -61,6 +63,7 @@ export async function createDiningTable(
     sortOrder,
     isActive: true,
     tokenVersion: 1,
+    updatedAt: createdAt,
     token,
   };
 }
@@ -93,7 +96,40 @@ export async function rotateDiningTableToken(
     sortOrder: row.sortOrder,
     isActive: row.isActive,
     tokenVersion,
+    updatedAt,
     token,
+  };
+}
+
+export async function updateDiningTable(
+  ctx: StoreContext,
+  db: Db,
+  tableId: string,
+  input: { name?: string; isActive?: boolean },
+): Promise<DiningTableView | null> {
+  const rows = await db
+    .select()
+    .from(diningTables)
+    .where(and(eq(diningTables.id, tableId), eq(diningTables.storeId, ctx.storeId)))
+    .limit(1);
+  const row = rows[0];
+  if (!row) return null;
+  const updatedAt = nowMs();
+  await db
+    .update(diningTables)
+    .set({
+      name: input.name?.trim() || row.name,
+      isActive: input.isActive ?? row.isActive,
+      updatedAt,
+    })
+    .where(and(eq(diningTables.id, tableId), eq(diningTables.storeId, ctx.storeId)));
+  return {
+    id: row.id,
+    name: input.name?.trim() || row.name,
+    sortOrder: row.sortOrder,
+    isActive: input.isActive ?? row.isActive,
+    tokenVersion: row.tokenVersion,
+    updatedAt,
   };
 }
 
@@ -105,6 +141,7 @@ export async function listPickupPoints(ctx: StoreContext, db: Db) {
       sortOrder: pickupPoints.sortOrder,
       isActive: pickupPoints.isActive,
       tokenVersion: pickupPoints.tokenVersion,
+      updatedAt: pickupPoints.updatedAt,
     })
     .from(pickupPoints)
     .where(eq(pickupPoints.storeId, ctx.storeId))
@@ -140,7 +177,72 @@ export async function createPickupPoint(
     sortOrder: existing.length,
     isActive: true,
     tokenVersion: 1,
+    updatedAt: createdAt,
     token,
+  };
+}
+
+export async function rotatePickupPointToken(
+  ctx: StoreContext,
+  db: Db,
+  pointId: string,
+): Promise<DiningTableView | null> {
+  const rows = await db
+    .select()
+    .from(pickupPoints)
+    .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)))
+    .limit(1);
+  const row = rows[0];
+  if (!row) return null;
+
+  const token = generateToken();
+  const tokenHash = await hashToken(token);
+  const tokenVersion = row.tokenVersion + 1;
+  const updatedAt = nowMs();
+  await db
+    .update(pickupPoints)
+    .set({ tokenHash, tokenVersion, updatedAt })
+    .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)));
+  return {
+    id: row.id,
+    name: row.name,
+    sortOrder: row.sortOrder,
+    isActive: row.isActive,
+    tokenVersion,
+    updatedAt,
+    token,
+  };
+}
+
+export async function updatePickupPoint(
+  ctx: StoreContext,
+  db: Db,
+  pointId: string,
+  input: { name?: string; isActive?: boolean },
+): Promise<DiningTableView | null> {
+  const rows = await db
+    .select()
+    .from(pickupPoints)
+    .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)))
+    .limit(1);
+  const row = rows[0];
+  if (!row) return null;
+  const updatedAt = nowMs();
+  await db
+    .update(pickupPoints)
+    .set({
+      name: input.name?.trim() || row.name,
+      isActive: input.isActive ?? row.isActive,
+      updatedAt,
+    })
+    .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)));
+  return {
+    id: row.id,
+    name: input.name?.trim() || row.name,
+    sortOrder: row.sortOrder,
+    isActive: input.isActive ?? row.isActive,
+    tokenVersion: row.tokenVersion,
+    updatedAt,
   };
 }
 

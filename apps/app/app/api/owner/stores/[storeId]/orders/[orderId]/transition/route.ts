@@ -1,7 +1,7 @@
 import { type OrderStatus, transitionOrder } from '@taomenu/db';
 import { z } from 'zod';
 import { badRequest, notFound } from '@/lib/api-error';
-import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
+import { isErrorResponse, requireStoreActor } from '@/lib/owner-context';
 
 const bodySchema = z.object({
   status: z.enum(['accepted', 'served', 'ready_for_pickup', 'picked_up', 'cancelled']),
@@ -11,7 +11,7 @@ type RouteContext = { params: Promise<{ storeId: string; orderId: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
   const { storeId, orderId } = await context.params;
-  const owner = await requireOwnerStore(storeId);
+  const owner = await requireStoreActor(storeId);
   if (isErrorResponse(owner)) return owner;
 
   let body: unknown;

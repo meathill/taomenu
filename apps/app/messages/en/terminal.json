@@ -1,6 +1,6 @@
 {
   "title": "Terminal · {name}",
-  "subtitle": "MVP uses the owner session. Device pairing codes come later.",
+  "subtitle": "Orders first. Device alerts are available under device preparation.",
   "backOwner": "← Owner",
   "requests": "Guest requests",
   "requestBill": "Request bill",
@@ -54,5 +54,18 @@
   "pushSaveFailed": "Could not save subscription.",
   "pushEnabled": "Push enabled. Tap “Send test”, then open the notification to confirm.",
   "pushTestFailed": "Test send failed.",
-  "pushTestSent": "Test sent. If it shows on a locked screen — open the notification to confirm."
+  "pushTestSent": "Test sent. If it shows on a locked screen — open the notification to confirm.",
+  "pairTitle": "Pair this device",
+  "pairSubtitle": "Enter the one-time code your store owner generated. This device will then open the order workspace.",
+  "pairCode": "Pairing code",
+  "pairCodeHint": "8-digit code",
+  "deviceName": "Device name",
+  "deviceNameHint": "Counter iPad / Front desk phone",
+  "pairDevice": "Pair device",
+  "pairFailed": "This pairing code is invalid, expired, or already used.",
+  "pairedDevice": "Paired staff device",
+  "ownerWorkspace": "Owner workspace",
+  "pairedAs": "Signed in as {name}",
+  "thisDevice": "this device",
+  "devicePreparation": "Device preparation and alerts"
 }

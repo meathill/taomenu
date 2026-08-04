@@ -61,7 +61,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       return;
     }
     setMenu((await res.json()) as MenuPayload);
-  }, [tableToken]);
+  }, [tableToken, t]);
 
   const refreshOrder = useCallback(async (publicToken: string) => {
     const res = await fetch(`/api/public/orders/${encodeURIComponent(publicToken)}`);

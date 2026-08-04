@@ -53,7 +53,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
     }
     setStatus('ready');
     return cap;
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     refreshCapability();
@@ -86,7 +86,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
     }
 
     return () => window.removeEventListener('beforeinstallprompt', onBip);
-  }, [refreshCapability, storeId]);
+  }, [refreshCapability, storeId, t]);
 
   async function enableNotifications() {
     setBusy(true);

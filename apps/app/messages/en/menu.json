@@ -71,5 +71,11 @@
   "imageErrorUnsupportedType": "Only JPEG / PNG / WebP are supported",
   "imageErrorTooLarge": "Image up to {maxMb}MB",
   "imageErrorEmpty": "Empty file",
-  "imageErrorBadMagic": "Invalid image file"
+  "imageErrorBadMagic": "Invalid image file",
+  "viewOrders": "Open order workbench",
+  "emptyTitle": "Your menu is waiting for its first item",
+  "emptyHint": "Start with a category, then add the dishes guests can order. Publish only after the menu looks right.",
+  "emptyStepCategory": "Create a category such as Drinks or Main dishes.",
+  "emptyStepItem": "Add a dish name and price inside that category.",
+  "emptyStepPublish": "Publish the menu when at least one item is available."
 }

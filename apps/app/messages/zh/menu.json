@@ -71,5 +71,11 @@
   "imageErrorUnsupportedType": "仅支持 JPEG / PNG / WebP",
   "imageErrorTooLarge": "图片最大 {maxMb}MB",
   "imageErrorEmpty": "文件为空",
-  "imageErrorBadMagic": "图片文件无效"
+  "imageErrorBadMagic": "图片文件无效",
+  "viewOrders": "打开订单工作台",
+  "emptyTitle": "菜单正在等待第一道菜",
+  "emptyHint": "先创建分类，再添加顾客可以下单的菜品。确认内容无误后再发布。",
+  "emptyStepCategory": "创建“饮品”或“主菜”等分类。",
+  "emptyStepItem": "在分类中添加菜名和价格。",
+  "emptyStepPublish": "至少有一道可售菜品后再发布菜单。"
 }

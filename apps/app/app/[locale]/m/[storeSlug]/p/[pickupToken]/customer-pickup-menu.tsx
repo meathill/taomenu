@@ -45,7 +45,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
       return;
     }
     setMenu((await res.json()) as MenuPayload);
-  }, [pickupToken]);
+  }, [pickupToken, t]);
 
   useEffect(() => {
     void load();

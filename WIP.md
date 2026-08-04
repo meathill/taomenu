@@ -1,3 +1,16 @@
+# TaoMenu 首轮后台改版（2026-08-04）
+
+目标：把店主端从功能入口提升为可日常使用的门店工作台，保持 360px 手机体验，同时让桌面端使用两栏结构。
+
+- [x] 实现 active store、门店切换和响应式后台壳层
+- [x] 实现首页今日经营概览、准备清单、订单入口和店铺设置
+- [x] 补齐桌台/取餐点二维码的重新生成、分享、下载、打印和基础管理
+- [x] 实现店员设备一次性配对、设备列表和撤销
+- [x] 补齐新增界面的 en、vi、zh、ja 文案
+- [x] 完成单元测试、format、typecheck、test、build 和浏览器验收
+
+---
+
 # TaoMenu MVP 实施计划
 
 本计划将 [PRD](docs/PRD.md) 和 [TECH_SPEC](docs/TECH_SPEC.md) 拆成可以连续交付的开发阶段。每个阶段完成后独立提交，并保持主分支可构建、可测试。
@@ -64,7 +77,7 @@
 - [x] 现金付款记录 + 关台（余额为 0）
 - [x] 服务请求在终端处理
 - [x] [ACCEPTANCE.md](ACCEPTANCE.md) 人工验收清单
-- [ ] 一次性配对码和终端凭证（当前 subscription 挂 owner）
+- [x] 一次性配对码和终端凭证（终端设备凭证 + Push subscription）
 - [ ] 审计日志
 - [ ] Cloudflare Queue 替代 setTimeout 投递（生产强化）
 

@@ -71,5 +71,11 @@
   "imageErrorUnsupportedType": "JPEG / PNG / WebP のみ対応",
   "imageErrorTooLarge": "画像は最大 {maxMb}MB",
   "imageErrorEmpty": "ファイルが空です",
-  "imageErrorBadMagic": "画像ファイルが無効です"
+  "imageErrorBadMagic": "画像ファイルが無効です",
+  "viewOrders": "注文ワークベンチを開く",
+  "emptyTitle": "メニューに最初の商品を追加しましょう",
+  "emptyHint": "まずカテゴリを作り、注文できる料理を追加します。内容を確認してから公開してください。",
+  "emptyStepCategory": "ドリンクやメイン料理などのカテゴリを作る。",
+  "emptyStepItem": "カテゴリに料理名と価格を追加する。",
+  "emptyStepPublish": "販売中の商品が 1 つ以上あればメニューを公開する。"
 }

@@ -1,5 +1,5 @@
 import type { AbstractIntlMessages } from 'next-intl';
-import { type MessageNamespace, MESSAGE_NAMESPACES } from './namespaces';
+import { MESSAGE_NAMESPACES, type MessageNamespace } from './namespaces';
 
 type LocaleModule = { default: AbstractIntlMessages };
 

@@ -1,6 +1,6 @@
 {
   "title": "Terminal · {name}",
-  "subtitle": "MVP dùng phiên chủ quán. Ghép mã thiết bị sẽ ở giai đoạn sau.",
+  "subtitle": "Ưu tiên xử lý order. Cài đặt thông báo nằm trong phần chuẩn bị thiết bị.",
   "backOwner": "← Chủ quán",
   "requests": "Yêu cầu khách",
   "requestBill": "Tính tiền",
@@ -54,5 +54,18 @@
   "pushSaveFailed": "Lưu subscription thất bại.",
   "pushEnabled": "Đã bật Push. Bấm “Gửi thử” rồi chạm thông báo để xác nhận.",
   "pushTestFailed": "Gửi thử thất bại.",
-  "pushTestSent": "Đã gửi thử. Nếu máy khóa màn hình vẫn hiện — chạm thông báo để xác nhận."
+  "pushTestSent": "Đã gửi thử. Nếu máy khóa màn hình vẫn hiện — chạm thông báo để xác nhận.",
+  "pairTitle": "Ghép thiết bị này",
+  "pairSubtitle": "Nhập mã dùng một lần do chủ quán tạo. Thiết bị này sẽ mở khu vực xử lý order.",
+  "pairCode": "Mã ghép thiết bị",
+  "pairCodeHint": "Mã 8 chữ số",
+  "deviceName": "Tên thiết bị",
+  "deviceNameHint": "iPad quầy / điện thoại bàn trước",
+  "pairDevice": "Ghép thiết bị",
+  "pairFailed": "Mã ghép không hợp lệ, đã hết hạn hoặc đã được sử dụng.",
+  "pairedDevice": "Thiết bị nhân viên đã ghép",
+  "ownerWorkspace": "Khu vực chủ quán",
+  "pairedAs": "Đang dùng với tên {name}",
+  "thisDevice": "thiết bị này",
+  "devicePreparation": "Chuẩn bị thiết bị và thông báo"
 }

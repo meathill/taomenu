@@ -15,3 +15,22 @@ body {
     "Noto Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  [data-print-qr],
+  [data-print-qr] * {
+    visibility: visible !important;
+  }
+
+  [data-print-qr] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}

@@ -92,7 +92,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
       setSessions(sessData.sessions);
     }
     setError(null);
-  }, [storeId]);
+  }, [storeId, t]);
 
   useEffect(() => {
     void load();

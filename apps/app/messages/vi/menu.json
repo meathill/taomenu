@@ -71,5 +71,11 @@
   "imageErrorUnsupportedType": "Chỉ hỗ trợ JPEG / PNG / WebP",
   "imageErrorTooLarge": "Ảnh tối đa {maxMb}MB",
   "imageErrorEmpty": "File rỗng",
-  "imageErrorBadMagic": "File ảnh không hợp lệ"
+  "imageErrorBadMagic": "File ảnh không hợp lệ",
+  "viewOrders": "Mở khu vực xử lý order",
+  "emptyTitle": "Menu đang chờ món đầu tiên",
+  "emptyHint": "Bắt đầu bằng một danh mục, sau đó thêm món khách có thể order. Chỉ xuất bản khi menu đã đúng.",
+  "emptyStepCategory": "Tạo danh mục như Đồ uống hoặc Món chính.",
+  "emptyStepItem": "Thêm tên món và giá trong danh mục đó.",
+  "emptyStepPublish": "Xuất bản khi có ít nhất một món còn bán."
 }
