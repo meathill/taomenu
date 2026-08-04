@@ -1,6 +1,7 @@
 {
   "title": "店舗を開く",
   "subtitle": "スマホだけで数分。メニューと QR は次のステップです。",
+  "backToStores": "店舗一覧に戻る",
   "storeName": "店舗名",
   "storeNamePlaceholder": "ハノイ・フォー",
   "storeNameHint": "後から設定で変更できます。",

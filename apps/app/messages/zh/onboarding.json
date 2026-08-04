@@ -1,6 +1,7 @@
 {
   "title": "开设门店",
   "subtitle": "一部手机即可。几分钟完成——菜单与二维码在下一步。",
+  "backToStores": "返回店铺列表",
   "storeName": "门店名称",
   "storeNamePlaceholder": "河内牛肉粉",
   "storeNameHint": "之后可在设置中修改。",

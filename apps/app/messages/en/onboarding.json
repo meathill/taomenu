@@ -1,6 +1,7 @@
 {
   "title": "Open a store",
   "subtitle": "Phone only. Finish in a few minutes — menu and QR come next.",
+  "backToStores": "Back to stores",
   "storeName": "Store name",
   "storeNamePlaceholder": "Hanoi Pho",
   "storeNameHint": "You can change this later in settings.",
