@@ -1,19 +1,30 @@
 'use client';
 
-import { ArrowSquareOutIcon, PencilSimpleIcon, QrCodeIcon, TrashIcon } from '@phosphor-icons/react';
+import {
+  ArrowCounterClockwiseIcon,
+  ArrowSquareOutIcon,
+  CopyIcon,
+  DownloadSimpleIcon,
+  PencilSimpleIcon,
+  ProhibitIcon,
+} from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { Button } from '@/components/button';
+import { useQrDataUrl } from './qr-image';
 
 export type QrEntry = {
   id: string;
   name: string;
-  tokenVersion: number;
+  /** 明文固定 token，直接渲染二维码 */
+  token: string;
   isActive: boolean;
-  updatedAt: string;
 };
 
 type QrEntryRowProps = {
   entry: QrEntry;
+  url: string;
+  downloadFilename: string;
   isEditing: boolean;
   editingName: string;
   busy: boolean;
@@ -21,12 +32,13 @@ type QrEntryRowProps = {
   onStartRename: () => void;
   onSaveRename: () => void;
   onCancelRename: () => void;
-  onRotate: () => void;
   onToggleActive: () => void;
 };
 
 export function QrEntryRow({
   entry,
+  url,
+  downloadFilename,
   isEditing,
   editingName,
   busy,
@@ -34,18 +46,25 @@ export function QrEntryRow({
   onStartRename,
   onSaveRename,
   onCancelRename,
-  onRotate,
   onToggleActive,
 }: QrEntryRowProps) {
   const t = useTranslations('tables');
-  const updatedAt = new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(new Date(entry.updatedAt));
+  const [copied, setCopied] = useState(false);
+  const qrDataUrl = useQrDataUrl(url, 512);
 
-  return (
-    <li className="space-y-3 p-4">
-      {isEditing ? (
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // 复制失败时保持原状，用户可改用「打开顾客页」
+    }
+  }
+
+  if (isEditing) {
+    return (
+      <li className="p-4">
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={editingName}
@@ -69,53 +88,89 @@ export function QrEntryRow({
             {t('cancel')}
           </Button>
         </div>
-      ) : (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-bold text-ink-900">{entry.name}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {entry.isActive ? t('active') : t('inactive')} ·{' '}
-              {t('tokenVersion', { version: entry.tokenVersion })}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t('lastUpdated', { date: updatedAt })}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              pending={busy}
-              onClick={onRotate}
-              className="min-h-11 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white"
-            >
-              <QrCodeIcon className="size-4" />
-              {t('generateQr')}
-            </Button>
-            <Button
-              type="button"
-              disabled={busy}
-              onClick={onStartRename}
-              className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
-            >
-              <PencilSimpleIcon className="size-4" />
-              {t('rename')}
-            </Button>
-            <Button
-              type="button"
-              disabled={busy}
-              onClick={onToggleActive}
-              className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
-            >
-              {entry.isActive ? (
-                <TrashIcon className="size-4 text-brand-600" />
-              ) : (
-                <ArrowSquareOutIcon className="size-4 text-jade-600" />
-              )}
-              {entry.isActive ? t('deactivate') : t('reactivate')}
-            </Button>
-          </div>
-        </div>
-      )}
+      </li>
+    );
+  }
+
+  return (
+    <li className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+      <div className="relative shrink-0 self-start">
+        {qrDataUrl ? (
+          // biome-ignore lint/performance/noImgElement: data URL QR，无需走 Next 图片优化
+          <img
+            src={qrDataUrl}
+            alt={t('qrAlt')}
+            className={[
+              'size-24 rounded-lg border border-border bg-white p-1',
+              entry.isActive ? '' : 'opacity-30 grayscale',
+            ].join(' ')}
+          />
+        ) : (
+          <div className="size-24 rounded-lg border border-border bg-white" aria-hidden />
+        )}
+        {entry.isActive ? null : (
+          <span className="absolute inset-x-1 top-1/2 -translate-y-1/2 rounded-md bg-ink-900/80 px-1 py-0.5 text-center text-[10px] font-bold text-white">
+            {t('inactive')}
+          </span>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-ink-900">{entry.name}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {entry.isActive ? t('active') : t('inactive')}
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          onClick={() => void copyLink()}
+          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
+        >
+          <CopyIcon className="size-4" />
+          {copied ? t('copied') : t('copyLink')}
+        </Button>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
+        >
+          <ArrowSquareOutIcon className="size-4" />
+          {t('openLink')}
+        </a>
+        {qrDataUrl ? (
+          <a
+            href={qrDataUrl}
+            download={downloadFilename}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
+          >
+            <DownloadSimpleIcon className="size-4" />
+            {t('download')}
+          </a>
+        ) : null}
+        <Button
+          type="button"
+          disabled={busy}
+          onClick={onStartRename}
+          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
+        >
+          <PencilSimpleIcon className="size-4" />
+          {t('rename')}
+        </Button>
+        <Button
+          type="button"
+          disabled={busy}
+          onClick={onToggleActive}
+          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
+        >
+          {entry.isActive ? (
+            <ProhibitIcon className="size-4 text-brand-600" />
+          ) : (
+            <ArrowCounterClockwiseIcon className="size-4 text-jade-600" />
+          )}
+          {entry.isActive ? t('deactivate') : t('reactivate')}
+        </Button>
+      </div>
     </li>
   );
 }

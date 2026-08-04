@@ -16,21 +16,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* QR 桌贴打印：A4 版面 + 保留模版配色 */
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
 @media print {
-  body * {
-    visibility: hidden !important;
-  }
-
-  [data-print-qr],
-  [data-print-qr] * {
-    visibility: visible !important;
-  }
-
-  [data-print-qr] {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    border: 0 !important;
-    box-shadow: none !important;
+  .qr-card,
+  .qr-card * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }

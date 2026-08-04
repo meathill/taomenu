@@ -1,3 +1,14 @@
+# Tables & QR 改版（2026-08-04）
+
+- [x] token 模型改明文固定（迁移 0007 存量重置一次），删除轮换 API 与前端逻辑
+- [x] 桌台/取餐点二维码常显，操作：重命名 / 复制链接 / 打开顾客页 / 下载 PNG / 停用
+- [x] QR 模版：standard（免费）+ minimal / banner / elegant（Pro，`canUseProQrTemplates` 权益位）
+- [x] A4 打印页 `/app/tables/print`：模版选择 + 勾选入口 + 裁剪虚线，打印隐藏壳层
+- [x] 浏览器验收通过：QR 常显、Pro 锁定、停用置灰/过滤/顾客 404、明文 token 公开链路
+- [x] format / typecheck / test / build 全绿
+
+---
+
 # TaoMenu 首轮后台改版（2026-08-04）
 
 目标：把店主端从功能入口提升为可日常使用的门店工作台，保持 360px 手机体验，同时让桌面端使用两栏结构。

@@ -180,7 +180,7 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
   return (
     <div className="min-h-dvh bg-paper-50">
       <div className="flex min-h-dvh">
-        <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border/80 bg-white lg:flex">
+        <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border/80 bg-white lg:flex print:hidden">
           <OwnerNavigation
             stores={stores}
             activeStore={activeStore}
@@ -227,7 +227,7 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
         ) : null}
 
         <main className="min-w-0 flex-1">
-          <div className="sticky top-0 z-30 flex min-h-16 items-center justify-between border-b border-border/80 bg-paper-50/95 px-4 backdrop-blur-sm lg:hidden">
+          <div className="sticky top-0 z-30 flex min-h-16 items-center justify-between border-b border-border/80 bg-paper-50/95 px-4 backdrop-blur-sm lg:hidden print:hidden">
             <button
               type="button"
               aria-label={t('openMenu')}
@@ -256,8 +256,8 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
               <GearSixIcon className="size-5" />
             </Link>
           </div>
-          <div className="px-4 py-5 sm:px-6 lg:px-10 lg:py-8">
-            <div className="mx-auto max-w-6xl">{children}</div>
+          <div className="px-4 py-5 sm:px-6 lg:px-10 lg:py-8 print:p-0">
+            <div className="mx-auto max-w-6xl print:max-w-none">{children}</div>
           </div>
         </main>
       </div>

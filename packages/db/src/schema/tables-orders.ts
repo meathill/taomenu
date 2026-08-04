@@ -2,33 +2,40 @@ import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core
 import { menuItems } from './menu';
 import { stores } from './stores';
 
-export const diningTables = sqliteTable('dining_tables', {
-  id: text('id').primaryKey(),
-  storeId: text('store_id')
-    .notNull()
-    .references(() => stores.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
-  sortOrder: integer('sort_order').notNull().default(0),
-  tokenHash: text('token_hash').notNull(),
-  tokenVersion: integer('token_version').notNull().default(1),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
-});
+export const diningTables = sqliteTable(
+  'dining_tables',
+  {
+    id: text('id').primaryKey(),
+    storeId: text('store_id')
+      .notNull()
+      .references(() => stores.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    sortOrder: integer('sort_order').notNull().default(0),
+    /** 明文长期有效；二维码可重复打印，不作加密与轮换 */
+    token: text('token').notNull(),
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  },
+  (table) => [uniqueIndex('dining_tables_token_unique').on(table.token)],
+);
 
-export const pickupPoints = sqliteTable('pickup_points', {
-  id: text('id').primaryKey(),
-  storeId: text('store_id')
-    .notNull()
-    .references(() => stores.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
-  sortOrder: integer('sort_order').notNull().default(0),
-  tokenHash: text('token_hash').notNull(),
-  tokenVersion: integer('token_version').notNull().default(1),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
-});
+export const pickupPoints = sqliteTable(
+  'pickup_points',
+  {
+    id: text('id').primaryKey(),
+    storeId: text('store_id')
+      .notNull()
+      .references(() => stores.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    sortOrder: integer('sort_order').notNull().default(0),
+    token: text('token').notNull(),
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  },
+  (table) => [uniqueIndex('pickup_points_token_unique').on(table.token)],
+);
 
 export const TABLE_SESSION_STATUSES = ['open', 'closed', 'force_closed'] as const;
 export type TableSessionStatus = (typeof TABLE_SESSION_STATUSES)[number];

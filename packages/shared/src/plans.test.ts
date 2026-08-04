@@ -7,6 +7,7 @@ describe('getPlanLimits', () => {
     expect(free.maxStaffTerminals).toBe(1);
     expect(free.maxMenuLocales).toBe(1);
     expect(free.canUseAiMenuImport).toBe(false);
+    expect(free.canUseProQrTemplates).toBe(false);
   });
 
   it('pro 开放多终端、多语言与 AI 能力', () => {
@@ -15,6 +16,7 @@ describe('getPlanLimits', () => {
     expect(pro.maxMenuLocales).toBe(5);
     expect(pro.canUseAiMenuImport).toBe(true);
     expect(pro.canUseVoiceAssistant).toBe(true);
+    expect(pro.canUseProQrTemplates).toBe(true);
   });
 
   it('PLAN_IDS 覆盖 free 与 pro', () => {

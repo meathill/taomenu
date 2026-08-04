@@ -26,7 +26,7 @@
 - 批量上下架：`PATCH .../menu/items` + `batchItemAvailabilitySchema`（`isSoldOut` / `isAvailable`）
 - 规格：`modifier_groups` / `modifiers`；owner 面板 + 顾客 `ModifierPicker`；下单 `resolveModifierSelection` 重算加价，名称快照 `菜名 (规格…)`
 - 菜品图：R2 binding `MEDIA`（bucket `taomenu-media`）；key `menu/{storeId}/{itemId}/{uuid}.ext`；上传 `POST .../items/:id/image`（MIME/魔数/2MB）；公开读 `GET /api/media/...`
-- 桌码/取餐码：明文仅创建或轮换时返回，库内 `token_hash`（SHA-256）
+- 桌码/取餐码：token 明文存储、固定不变（无轮换），列表接口直接返回，二维码可随时重印；A4 打印页 `/app/tables/print`（模版 + 勾选，`@page A4`）
 - 顾客下单：服务端按当前菜单价重算；`idempotency_key` 唯一；外带取餐号按 `Asia/Ho_Chi_Minh` 营业日序列
 - Terminal MVP 用店主 session 拉单/改状态；终端配对码仍未做
 - 本地迁移：`pnpm --filter @taomenu/app db:migrate:local`（含 0001～0005）

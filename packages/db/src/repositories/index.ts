@@ -6,8 +6,6 @@ export {
   findPickupPointByToken,
   listDiningTables,
   listPickupPoints,
-  rotateDiningTableToken,
-  rotatePickupPointToken,
   updateDiningTable,
   updatePickupPoint,
 } from './dining';

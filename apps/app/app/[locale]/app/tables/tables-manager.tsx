@@ -1,64 +1,29 @@
 'use client';
 
+import { PrinterIcon } from '@phosphor-icons/react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import QRCode from 'qrcode';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
-import { getPublicAppUrl, joinPublicUrl } from '@/lib/public-url';
-import { QrBatchCard } from './qr-batch-card';
-import { type BatchQrEntry, type BatchQrLink, rotateAllQrEntries } from './qr-batch-utils';
+import { withStore } from '@/lib/active-store-utils';
+import { customerEntryUrl, type QrEntryType, qrDownloadFilename } from './customer-url';
 import { QrCreateForm } from './qr-create-form';
 import { type QrEntry, QrEntryRow } from './qr-entry-row';
-import { type QrLink, QrLinkCard } from './qr-link-card';
-
-type TableRow = QrEntry & {
-  token?: string;
-};
-
-type PointRow = QrEntry & {
-  token?: string;
-};
 
 type TablesManagerProps = {
   storeId: string;
   storeSlug: string;
 };
 
-function appOrigin(): string {
-  if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin;
-  return getPublicAppUrl();
-}
-
-function customerTableUrl(storeSlug: string, token: string): string {
-  return joinPublicUrl(appOrigin(), `/m/${storeSlug}/t/${token}`);
-}
-
-function customerPickupUrl(storeSlug: string, token: string): string {
-  return joinPublicUrl(appOrigin(), `/m/${storeSlug}/p/${token}`);
-}
-
 export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   const t = useTranslations('tables');
-  const [tables, setTables] = useState<TableRow[]>([]);
-  const [points, setPoints] = useState<PointRow[]>([]);
+  const [tables, setTables] = useState<QrEntry[]>([]);
+  const [points, setPoints] = useState<QrEntry[]>([]);
   const [tableName, setTableName] = useState('');
   const [pointName, setPointName] = useState('');
-  const [editing, setEditing] = useState<{ type: 'table' | 'point'; id: string } | null>(null);
+  const [editing, setEditing] = useState<{ type: QrEntryType; id: string } | null>(null);
   const [editingName, setEditingName] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [lastLink, setLastLink] = useState<QrLink | null>(null);
-  const [batchLinks, setBatchLinks] = useState<BatchQrLink[]>([]);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  async function showLink(url: string, label: string, filename: string) {
-    setBatchLinks([]);
-    setLastLink({ url, label, filename, copied: false });
-    try {
-      setQrDataUrl(await QRCode.toDataURL(url, { width: 320, margin: 1 }));
-    } catch {
-      setQrDataUrl(null);
-    }
-  }
 
   const load = useCallback(async () => {
     const [tableResponse, pointResponse] = await Promise.all([
@@ -66,11 +31,11 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       fetch(`/api/owner/stores/${storeId}/pickup-points`),
     ]);
     if (tableResponse.ok) {
-      const data = (await tableResponse.json()) as { tables: TableRow[] };
+      const data = (await tableResponse.json()) as { tables: QrEntry[] };
       setTables(data.tables);
     }
     if (pointResponse.ok) {
-      const data = (await pointResponse.json()) as { pickupPoints: PointRow[] };
+      const data = (await pointResponse.json()) as { pickupPoints: QrEntry[] };
       setPoints(data.pickupPoints);
     }
     if (!tableResponse.ok || !pointResponse.ok) setError(t('loadFailed'));
@@ -80,142 +45,35 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
     void load();
   }, [load]);
 
-  async function addTable(event: FormEvent<HTMLFormElement>) {
+  async function addEntry(event: FormEvent<HTMLFormElement>, type: QrEntryType) {
     event.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/owner/stores/${storeId}/tables`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: tableName.trim() }),
-      });
-      const data = (await response.json()) as { table?: TableRow; error?: string };
-      if (!response.ok || !data.table?.token) {
-        setError(data.error || t('addTableFailed'));
-        return;
-      }
-      await showLink(
-        customerTableUrl(storeSlug, data.table.token),
-        data.table.name,
-        `taomenu-${storeSlug}-${data.table.name}.png`,
-      );
-      setTableName('');
-      await load();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function addPickup(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/owner/stores/${storeId}/pickup-points`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: pointName.trim() }),
-      });
-      const data = (await response.json()) as { pickupPoint?: PointRow; error?: string };
-      if (!response.ok || !data.pickupPoint?.token) {
-        setError(data.error || t('addPickupFailed'));
-        return;
-      }
-      await showLink(
-        customerPickupUrl(storeSlug, data.pickupPoint.token),
-        data.pickupPoint.name,
-        `taomenu-${storeSlug}-${data.pickupPoint.name}.png`,
-      );
-      setPointName('');
-      await load();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function rotateTable(table: TableRow) {
-    if (!window.confirm(t('rotateConfirm'))) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/owner/stores/${storeId}/tables/${table.id}/rotate`, {
-        method: 'POST',
-      });
-      const data = (await response.json()) as { table?: TableRow; error?: string };
-      if (!response.ok || !data.table?.token) {
-        setError(data.error || t('rotateFailed'));
-        return;
-      }
-      await showLink(
-        customerTableUrl(storeSlug, data.table.token),
-        data.table.name,
-        `taomenu-${storeSlug}-${data.table.name}.png`,
-      );
-      await load();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function rotatePoint(point: PointRow) {
-    if (!window.confirm(t('rotateConfirm'))) return;
+    const name = (type === 'table' ? tableName : pointName).trim();
+    if (!name) return;
     setBusy(true);
     setError(null);
     try {
       const response = await fetch(
-        `/api/owner/stores/${storeId}/pickup-points/${point.id}/rotate`,
+        `/api/owner/stores/${storeId}/${type === 'table' ? 'tables' : 'pickup-points'}`,
         {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name }),
         },
       );
-      const data = (await response.json()) as { pickupPoint?: PointRow; error?: string };
-      if (!response.ok || !data.pickupPoint?.token) {
-        setError(data.error || t('rotateFailed'));
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setError(data.error || t(type === 'table' ? 'addTableFailed' : 'addPickupFailed'));
         return;
       }
-      await showLink(
-        customerPickupUrl(storeSlug, data.pickupPoint.token),
-        data.pickupPoint.name,
-        `taomenu-${storeSlug}-${data.pickupPoint.name}.png`,
-      );
+      if (type === 'table') setTableName('');
+      else setPointName('');
       await load();
     } finally {
       setBusy(false);
     }
   }
 
-  async function rotateAllQr() {
-    const entries: BatchQrEntry[] = [
-      ...tables
-        .filter((table) => table.isActive)
-        .map((table) => ({ id: table.id, name: table.name, type: 'table' as const })),
-      ...points
-        .filter((point) => point.isActive)
-        .map((point) => ({ id: point.id, name: point.name, type: 'point' as const })),
-    ];
-    if (entries.length === 0) return;
-    if (!window.confirm(t('batchRotateConfirm', { count: entries.length }))) return;
-
-    setBusy(true);
-    setError(null);
-    setLastLink(null);
-    setQrDataUrl(null);
-    try {
-      const result = await rotateAllQrEntries(storeId, storeSlug, entries, (type, slug, token) =>
-        type === 'table' ? customerTableUrl(slug, token) : customerPickupUrl(slug, token),
-      );
-      setBatchLinks(result.links);
-      if (result.failed > 0) setError(t('batchFailed', { count: result.failed }));
-      await load();
-    } catch {
-      setError(t('rotateFailed'));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function startRename(type: 'table' | 'point', id: string, name: string) {
+  function startRename(type: QrEntryType, id: string, name: string) {
     setEditing({ type, id });
     setEditingName(name);
   }
@@ -245,7 +103,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
     }
   }
 
-  async function setActive(type: 'table' | 'point', id: string, isActive: boolean) {
+  async function toggleActive(type: QrEntryType, id: string, isActive: boolean) {
     if (isActive && !window.confirm(t('deactivateConfirm'))) return;
     setBusy(true);
     setError(null);
@@ -269,54 +127,39 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
     }
   }
 
-  async function copyLink(url: string) {
-    try {
-      await navigator.clipboard.writeText(url);
-      setLastLink((current) => (current ? { ...current, copied: true } : current));
-    } catch {
-      setError(t('copyFailed'));
-    }
+  function renderEntry(type: QrEntryType, entry: QrEntry) {
+    const url = customerEntryUrl(type, storeSlug, entry.token);
+    return (
+      <QrEntryRow
+        key={entry.id}
+        entry={entry}
+        url={url}
+        downloadFilename={qrDownloadFilename(storeSlug, entry.name)}
+        isEditing={editing?.type === type && editing.id === entry.id}
+        editingName={editingName}
+        busy={busy}
+        onEditingNameChange={setEditingName}
+        onStartRename={() => startRename(type, entry.id, entry.name)}
+        onSaveRename={() => void saveRename()}
+        onCancelRename={() => setEditing(null)}
+        onToggleActive={() => void toggleActive(type, entry.id, entry.isActive)}
+      />
+    );
   }
-
-  async function shareLink(url: string) {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'TaoMenu', url });
-        return;
-      } catch {
-        // The user may cancel the share sheet; copying remains available.
-      }
-    }
-    await copyLink(url);
-  }
-
-  const activeQrCount =
-    tables.filter((table) => table.isActive).length +
-    points.filter((point) => point.isActive).length;
 
   return (
     <div className="space-y-8">
       {error ? <p className="text-sm font-semibold text-brand-600">{error}</p> : null}
-      <QrBatchCard
-        count={activeQrCount}
-        links={batchLinks}
-        busy={busy}
-        onGenerate={() => void rotateAllQr()}
-        onPrint={() => window.print()}
-      />
-      {lastLink ? (
-        <QrLinkCard
-          link={lastLink}
-          qrDataUrl={qrDataUrl}
-          onShare={(url) => void shareLink(url)}
-          onCopy={(url) => void copyLink(url)}
-          onPrint={() => window.print()}
-        />
-      ) : (
-        <div className="rounded-2xl border border-dashed border-border bg-white p-5 text-sm leading-6 text-muted-foreground">
-          {t('qrEmptyHint')}
-        </div>
-      )}
+
+      <div className="flex justify-end">
+        <Link
+          href={withStore('/app/tables/print', storeSlug)}
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
+        >
+          <PrinterIcon className="size-4" />
+          {t('printSheet')}
+        </Link>
+      </div>
 
       <section className="space-y-3">
         <div>
@@ -329,24 +172,10 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           addLabel={t('add')}
           busy={busy}
           onChange={setTableName}
-          onSubmit={(event) => void addTable(event)}
+          onSubmit={(event) => void addEntry(event, 'table')}
         />
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
-          {tables.map((table) => (
-            <QrEntryRow
-              key={table.id}
-              entry={table}
-              isEditing={editing?.type === 'table' && editing.id === table.id}
-              editingName={editingName}
-              busy={busy}
-              onEditingNameChange={setEditingName}
-              onStartRename={() => startRename('table', table.id, table.name)}
-              onSaveRename={() => void saveRename()}
-              onCancelRename={() => setEditing(null)}
-              onRotate={() => void rotateTable(table)}
-              onToggleActive={() => void setActive('table', table.id, table.isActive)}
-            />
-          ))}
+          {tables.map((table) => renderEntry('table', table))}
           {tables.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">{t('emptyTables')}</li>
           ) : null}
@@ -364,24 +193,10 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           addLabel={t('add')}
           busy={busy}
           onChange={setPointName}
-          onSubmit={(event) => void addPickup(event)}
+          onSubmit={(event) => void addEntry(event, 'point')}
         />
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
-          {points.map((point) => (
-            <QrEntryRow
-              key={point.id}
-              entry={point}
-              isEditing={editing?.type === 'point' && editing.id === point.id}
-              editingName={editingName}
-              busy={busy}
-              onEditingNameChange={setEditingName}
-              onStartRename={() => startRename('point', point.id, point.name)}
-              onSaveRename={() => void saveRename()}
-              onCancelRename={() => setEditing(null)}
-              onRotate={() => void rotatePoint(point)}
-              onToggleActive={() => void setActive('point', point.id, point.isActive)}
-            />
-          ))}
+          {points.map((point) => renderEntry('point', point))}
           {points.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">{t('emptyPickup')}</li>
           ) : null}

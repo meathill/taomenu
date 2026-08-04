@@ -8,6 +8,7 @@ export type PlanLimits = {
   canUseAiMenuImport: boolean;
   canUseAiTranslation: boolean;
   canUseVoiceAssistant: boolean;
+  canUseProQrTemplates: boolean;
 };
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
@@ -17,6 +18,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseAiMenuImport: false,
     canUseAiTranslation: false,
     canUseVoiceAssistant: false,
+    canUseProQrTemplates: false,
   },
   pro: {
     maxStaffTerminals: 5,
@@ -24,6 +26,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseAiMenuImport: true,
     canUseAiTranslation: true,
     canUseVoiceAssistant: true,
+    canUseProQrTemplates: true,
   },
 };
 

@@ -1,5 +1,5 @@
 import { and, asc, eq } from 'drizzle-orm';
-import { generateToken, hashToken } from '../crypto-token';
+import { generateToken } from '../crypto-token';
 import { diningTables, pickupPoints } from '../schema/tables-orders';
 import type { Db, StoreContext } from '../types';
 
@@ -12,10 +12,9 @@ export type DiningTableView = {
   name: string;
   sortOrder: number;
   isActive: boolean;
-  tokenVersion: number;
+  /** 明文长期有效，二维码可随时重新打印 */
+  token: string;
   updatedAt: Date;
-  /** 仅创建/轮换时返回明文 token */
-  token?: string;
 };
 
 export async function listDiningTables(ctx: StoreContext, db: Db) {
@@ -25,7 +24,7 @@ export async function listDiningTables(ctx: StoreContext, db: Db) {
       name: diningTables.name,
       sortOrder: diningTables.sortOrder,
       isActive: diningTables.isActive,
-      tokenVersion: diningTables.tokenVersion,
+      token: diningTables.token,
       updatedAt: diningTables.updatedAt,
     })
     .from(diningTables)
@@ -39,7 +38,6 @@ export async function createDiningTable(
   input: { name: string },
 ): Promise<DiningTableView> {
   const token = generateToken();
-  const tokenHash = await hashToken(token);
   const createdAt = nowMs();
   const id = crypto.randomUUID();
   const existing = await listDiningTables(ctx, db);
@@ -50,8 +48,7 @@ export async function createDiningTable(
     storeId: ctx.storeId,
     name: input.name.trim(),
     sortOrder,
-    tokenHash,
-    tokenVersion: 1,
+    token,
     isActive: true,
     createdAt,
     updatedAt: createdAt,
@@ -62,42 +59,8 @@ export async function createDiningTable(
     name: input.name.trim(),
     sortOrder,
     isActive: true,
-    tokenVersion: 1,
+    token,
     updatedAt: createdAt,
-    token,
-  };
-}
-
-export async function rotateDiningTableToken(
-  ctx: StoreContext,
-  db: Db,
-  tableId: string,
-): Promise<DiningTableView | null> {
-  const rows = await db
-    .select()
-    .from(diningTables)
-    .where(and(eq(diningTables.id, tableId), eq(diningTables.storeId, ctx.storeId)))
-    .limit(1);
-  const row = rows[0];
-  if (!row) return null;
-
-  const token = generateToken();
-  const tokenHash = await hashToken(token);
-  const tokenVersion = row.tokenVersion + 1;
-  const updatedAt = nowMs();
-  await db
-    .update(diningTables)
-    .set({ tokenHash, tokenVersion, updatedAt })
-    .where(and(eq(diningTables.id, tableId), eq(diningTables.storeId, ctx.storeId)));
-
-  return {
-    id: row.id,
-    name: row.name,
-    sortOrder: row.sortOrder,
-    isActive: row.isActive,
-    tokenVersion,
-    updatedAt,
-    token,
   };
 }
 
@@ -128,7 +91,7 @@ export async function updateDiningTable(
     name: input.name?.trim() || row.name,
     sortOrder: row.sortOrder,
     isActive: input.isActive ?? row.isActive,
-    tokenVersion: row.tokenVersion,
+    token: row.token,
     updatedAt,
   };
 }
@@ -140,7 +103,7 @@ export async function listPickupPoints(ctx: StoreContext, db: Db) {
       name: pickupPoints.name,
       sortOrder: pickupPoints.sortOrder,
       isActive: pickupPoints.isActive,
-      tokenVersion: pickupPoints.tokenVersion,
+      token: pickupPoints.token,
       updatedAt: pickupPoints.updatedAt,
     })
     .from(pickupPoints)
@@ -154,7 +117,6 @@ export async function createPickupPoint(
   input: { name: string },
 ): Promise<DiningTableView> {
   const token = generateToken();
-  const tokenHash = await hashToken(token);
   const createdAt = nowMs();
   const id = crypto.randomUUID();
   const existing = await listPickupPoints(ctx, db);
@@ -164,8 +126,7 @@ export async function createPickupPoint(
     storeId: ctx.storeId,
     name: input.name.trim(),
     sortOrder: existing.length,
-    tokenHash,
-    tokenVersion: 1,
+    token,
     isActive: true,
     createdAt,
     updatedAt: createdAt,
@@ -176,41 +137,8 @@ export async function createPickupPoint(
     name: input.name.trim(),
     sortOrder: existing.length,
     isActive: true,
-    tokenVersion: 1,
+    token,
     updatedAt: createdAt,
-    token,
-  };
-}
-
-export async function rotatePickupPointToken(
-  ctx: StoreContext,
-  db: Db,
-  pointId: string,
-): Promise<DiningTableView | null> {
-  const rows = await db
-    .select()
-    .from(pickupPoints)
-    .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)))
-    .limit(1);
-  const row = rows[0];
-  if (!row) return null;
-
-  const token = generateToken();
-  const tokenHash = await hashToken(token);
-  const tokenVersion = row.tokenVersion + 1;
-  const updatedAt = nowMs();
-  await db
-    .update(pickupPoints)
-    .set({ tokenHash, tokenVersion, updatedAt })
-    .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)));
-  return {
-    id: row.id,
-    name: row.name,
-    sortOrder: row.sortOrder,
-    isActive: row.isActive,
-    tokenVersion,
-    updatedAt,
-    token,
   };
 }
 
@@ -241,27 +169,25 @@ export async function updatePickupPoint(
     name: input.name?.trim() || row.name,
     sortOrder: row.sortOrder,
     isActive: input.isActive ?? row.isActive,
-    tokenVersion: row.tokenVersion,
+    token: row.token,
     updatedAt,
   };
 }
 
 export async function findDiningTableByToken(db: Db, token: string) {
-  const tokenHash = await hashToken(token);
   const rows = await db
     .select()
     .from(diningTables)
-    .where(and(eq(diningTables.tokenHash, tokenHash), eq(diningTables.isActive, true)))
+    .where(and(eq(diningTables.token, token), eq(diningTables.isActive, true)))
     .limit(1);
   return rows[0] ?? null;
 }
 
 export async function findPickupPointByToken(db: Db, token: string) {
-  const tokenHash = await hashToken(token);
   const rows = await db
     .select()
     .from(pickupPoints)
-    .where(and(eq(pickupPoints.tokenHash, tokenHash), eq(pickupPoints.isActive, true)))
+    .where(and(eq(pickupPoints.token, token), eq(pickupPoints.isActive, true)))
     .limit(1);
   return rows[0] ?? null;
 }
