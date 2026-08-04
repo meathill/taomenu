@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
 import { getOwnerStoreSelection, readStoreSlug, type StoreSearchParams } from '@/lib/active-store';
+import { getPublicWebsiteUrl, joinPublicUrl } from '@/lib/public-url';
 import { StoreSettingsForm } from './store-settings-form';
 
 export const dynamic = 'force-dynamic';
@@ -17,6 +18,7 @@ export async function generateMetadata() {
 
 export default async function SettingsPage({ searchParams }: SettingsPageProps) {
   const t = await getTranslations('owner');
+  const locale = await getLocale();
   const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
   if (!selection) redirect('/login?next=/app/settings');
   if (!selection.store) redirect('/app/onboarding');
@@ -29,7 +31,10 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
           <h1 className="mt-1 text-2xl font-black tracking-tight text-ink-900">{t('settings')}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t('settingsSubtitle')}</p>
         </header>
-        <StoreSettingsForm store={selection.store} />
+        <StoreSettingsForm
+          store={selection.store}
+          upgradeUrl={joinPublicUrl(getPublicWebsiteUrl(), `/${locale}/pricing`)}
+        />
       </div>
     </PageMessages>
   );

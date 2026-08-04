@@ -1,9 +1,17 @@
+'use client';
+
 import { APP_NAME } from '@taomenu/shared';
-import { getTranslations } from 'next-intl/server';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 
-export async function SiteFooter() {
-  const t = await getTranslations('shell');
+export function SiteFooter() {
+  const pathname = usePathname();
+  const t = useTranslations('shell');
+
+  if (pathname.includes('/app') || pathname.includes('/terminal')) {
+    return null;
+  }
 
   return (
     <footer className="mt-auto border-t border-border bg-white">

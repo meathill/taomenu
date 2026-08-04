@@ -18,6 +18,7 @@ import { type ComponentType, type ReactNode, useState } from 'react';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { resolveActiveStore, withStore } from '@/lib/active-store-utils';
 import { signOut } from '@/lib/auth-client';
+import { StoreSwitcher } from './store-switcher';
 
 type OwnerShellProps = {
   stores: StoreRow[];
@@ -38,20 +39,16 @@ function OwnerNavigation({
   stores,
   activeStore,
   pathname,
+  onStoreChange,
   onNavigate,
 }: {
   stores: StoreRow[];
   activeStore: StoreRow;
   pathname: string;
+  onStoreChange: (storeSlug: string) => void;
   onNavigate?: () => void;
 }) {
   const t = useTranslations('owner');
-  const mode =
-    activeStore.serviceMode === 'counter_pickup'
-      ? t('modeCounter')
-      : activeStore.serviceMode === 'hybrid'
-        ? t('modeHybrid')
-        : t('modeDineIn');
   const items: NavigationItem[] = [
     { href: '/app', label: t('overview'), icon: StorefrontIcon },
     { href: '/app/orders', label: t('orders'), icon: ListChecksIcon },
@@ -70,28 +67,12 @@ function OwnerNavigation({
         >
           TaoMenu
         </Link>
-        <label className="mt-5 block text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          {t('switchStore')}
-          <select
-            value={activeStore.slug}
-            onChange={(event) => {
-              window.location.assign(withStore(pathname, event.target.value));
-            }}
-            className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900 outline-none ring-jade-600 focus:ring-2"
-          >
-            {stores.map((store) => (
-              <option key={store.id} value={store.slug}>
-                {store.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="mt-3 rounded-xl bg-jade-50 px-3 py-3">
-          <p className="truncate text-sm font-bold text-ink-900">{activeStore.name}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {mode} · {t('plan', { plan: activeStore.plan })}
-          </p>
-        </div>
+        <StoreSwitcher
+          stores={stores}
+          activeStore={activeStore}
+          onStoreChange={onStoreChange}
+          onNavigate={onNavigate}
+        />
       </div>
 
       <nav className="flex-1 px-3 py-4" aria-label={t('navigation')}>
@@ -197,10 +178,15 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
   }
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)] bg-paper-50">
-      <div className="flex min-h-[calc(100dvh-4rem)]">
-        <aside className="sticky top-0 hidden h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col border-r border-border/80 bg-white lg:flex">
-          <OwnerNavigation stores={stores} activeStore={activeStore} pathname={pathname} />
+    <div className="min-h-dvh bg-paper-50">
+      <div className="flex min-h-dvh">
+        <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border/80 bg-white lg:flex">
+          <OwnerNavigation
+            stores={stores}
+            activeStore={activeStore}
+            pathname={pathname}
+            onStoreChange={handleStoreChange}
+          />
           <OwnerSidebarFooter activeStore={activeStore} user={user} />
         </aside>
 
@@ -231,6 +217,7 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
                   stores={stores}
                   activeStore={activeStore}
                   pathname={pathname}
+                  onStoreChange={handleStoreChange}
                   onNavigate={() => setDrawerOpen(false)}
                 />
               </div>
@@ -252,7 +239,8 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
             </button>
             <button
               type="button"
-              onClick={() => handleStoreChange(activeStore.slug)}
+              onClick={() => setDrawerOpen(true)}
+              aria-label={t('switchStore')}
               className="min-w-0 px-3 text-center"
             >
               <span className="block truncate text-sm font-extrabold text-ink-900">

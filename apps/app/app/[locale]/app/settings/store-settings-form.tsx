@@ -7,9 +7,10 @@ import { Button } from '@/components/button';
 
 type StoreSettingsFormProps = {
   store: StoreRow;
+  upgradeUrl: string;
 };
 
-export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
+export function StoreSettingsForm({ store, upgradeUrl }: StoreSettingsFormProps) {
   const t = useTranslations('owner');
   const [name, setName] = useState(store.name);
   const [serviceMode, setServiceMode] = useState(store.serviceMode);
@@ -113,6 +114,23 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
           </div>
         </dl>
         <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('readOnlyHint')}</p>
+      </section>
+
+      <section className="flex flex-col gap-4 rounded-2xl border border-violet-600/30 bg-violet-600/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-lg font-black text-ink-900">{t('upgradeTitle')}</h2>
+          <p className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
+            {t('upgradeSubtitle')}
+          </p>
+        </div>
+        <a
+          href={upgradeUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-violet-600 px-5 text-sm font-bold text-white hover:bg-violet-600/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2"
+        >
+          {t('viewPlans')}
+        </a>
       </section>
 
       {error ? <p className="text-sm font-semibold text-brand-600">{error}</p> : null}
