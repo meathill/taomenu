@@ -17,6 +17,11 @@ interface CloudflareEnv {
   EMAIL_DEV_LOG_ONLY?: string;
   /** 发信失败时回退日志（开发用） */
   EMAIL_FALLBACK_LOG?: string;
+  /** Stripe restricted API key used only by server-side billing routes. */
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  /** Stripe recurring Price ID for one additional staff seat. */
+  STRIPE_STAFF_SEAT_PRICE_ID?: string;
   NEXT_PUBLIC_APP_URL?: string;
   NEXT_PUBLIC_WEBSITE_URL?: string;
 }

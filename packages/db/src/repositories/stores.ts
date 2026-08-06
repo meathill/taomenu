@@ -57,6 +57,10 @@ export async function createStoreForOwner(
     acceptingPublicRequests: true,
     plan: 'free' satisfies PlanId,
     planExpiresAt: null,
+    staffSeatAddons: 0,
+    stripeCustomerId: null,
+    stripeStaffSeatSubscriptionId: null,
+    stripeStaffSeatItemId: null,
     menuVersion: 0,
     orderVersion: 0,
     isActive: true,
@@ -146,6 +150,10 @@ export async function listStoresForUser(db: Db, userId: string): Promise<StoreRo
       acceptingPublicRequests: stores.acceptingPublicRequests,
       plan: stores.plan,
       planExpiresAt: stores.planExpiresAt,
+      staffSeatAddons: stores.staffSeatAddons,
+      stripeCustomerId: stores.stripeCustomerId,
+      stripeStaffSeatSubscriptionId: stores.stripeStaffSeatSubscriptionId,
+      stripeStaffSeatItemId: stores.stripeStaffSeatItemId,
       menuVersion: stores.menuVersion,
       orderVersion: stores.orderVersion,
       isActive: stores.isActive,
@@ -154,5 +162,60 @@ export async function listStoresForUser(db: Db, userId: string): Promise<StoreRo
     })
     .from(storeMembers)
     .innerJoin(stores, eq(stores.id, storeMembers.storeId))
-    .where(and(eq(storeMembers.userId, userId), eq(stores.isActive, true)));
+    .where(
+      and(
+        eq(storeMembers.userId, userId),
+        eq(storeMembers.role, 'owner'),
+        eq(stores.isActive, true),
+      ),
+    );
+}
+
+export async function hasStaffStoreMembership(db: Db, userId: string): Promise<boolean> {
+  const rows = await db
+    .select({ id: storeMembers.id })
+    .from(storeMembers)
+    .innerJoin(stores, eq(stores.id, storeMembers.storeId))
+    .where(
+      and(
+        eq(storeMembers.userId, userId),
+        eq(storeMembers.role, 'staff'),
+        eq(stores.isActive, true),
+      ),
+    )
+    .limit(1);
+  return Boolean(rows[0]);
+}
+
+export type StaffSeatBillingUpdate = {
+  staffSeatAddons: number;
+  stripeCustomerId?: string | null;
+  stripeStaffSeatSubscriptionId?: string | null;
+  stripeStaffSeatItemId?: string | null;
+};
+
+export async function updateStaffSeatBilling(
+  db: Db,
+  storeId: string,
+  input: StaffSeatBillingUpdate,
+): Promise<void> {
+  const patch: {
+    staffSeatAddons: number;
+    stripeCustomerId?: string | null;
+    stripeStaffSeatSubscriptionId?: string | null;
+    stripeStaffSeatItemId?: string | null;
+    updatedAt: Date;
+  } = {
+    staffSeatAddons: Math.max(0, Math.floor(input.staffSeatAddons)),
+    updatedAt: nowMs(),
+  };
+  if (input.stripeCustomerId !== undefined) patch.stripeCustomerId = input.stripeCustomerId;
+  if (input.stripeStaffSeatSubscriptionId !== undefined) {
+    patch.stripeStaffSeatSubscriptionId = input.stripeStaffSeatSubscriptionId;
+  }
+  if (input.stripeStaffSeatItemId !== undefined) {
+    patch.stripeStaffSeatItemId = input.stripeStaffSeatItemId;
+  }
+
+  await db.update(stores).set(patch).where(eq(stores.id, storeId));
 }

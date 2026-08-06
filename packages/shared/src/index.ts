@@ -25,7 +25,14 @@ export {
   createPickupPointSchema,
   createTableSchema,
 } from './order';
-export { getPlanLimits, PLAN_IDS, PLAN_LIMITS, type PlanId, type PlanLimits } from './plans';
+export {
+  getPlanLimits,
+  getStaffSeatLimit,
+  PLAN_IDS,
+  PLAN_LIMITS,
+  type PlanId,
+  type PlanLimits,
+} from './plans';
 export {
   type CreateServiceRequestBody,
   createServiceRequestSchema,

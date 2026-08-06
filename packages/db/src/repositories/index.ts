@@ -93,9 +93,12 @@ export {
   createStoreForOwner,
   getStore,
   getStoreIfMatches,
+  hasStaffStoreMembership,
   listStoresForUser,
+  type StaffSeatBillingUpdate,
   type StoreRow,
   type UpdateStoreInput,
+  updateStaffSeatBilling,
   updateStore,
 } from './stores';
 export {

@@ -15,6 +15,9 @@ export default async function OwnerLayout({ children }: OwnerLayoutProps) {
   }
 
   if (selection.stores.length === 0) {
+    if (selection.hasStaffMembership) {
+      redirect('/terminal/pair');
+    }
     return children;
   }
 

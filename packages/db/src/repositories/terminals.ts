@@ -1,7 +1,13 @@
-import { getPlanLimits, type PlanId } from '@taomenu/shared';
+import { getStaffSeatLimit, type PlanId } from '@taomenu/shared';
 import { and, desc, eq, inArray, isNull, lt } from 'drizzle-orm';
 import { generateToken, hashToken, tokensMatch } from '../crypto-token';
-import { pushSubscriptions, stores, terminalDevices, terminalPairingCodes } from '../schema';
+import {
+  pushSubscriptions,
+  storeMembers,
+  stores,
+  terminalDevices,
+  terminalPairingCodes,
+} from '../schema';
 import type { Db, StoreContext } from '../types';
 
 const PAIRING_CODE_TTL_MS = 10 * 60 * 1000;
@@ -45,7 +51,7 @@ export async function createTerminalPairingCode(
     .select({ id: terminalDevices.id })
     .from(terminalDevices)
     .where(and(eq(terminalDevices.storeId, ctx.storeId), isNull(terminalDevices.revokedAt)));
-  const limit = getPlanLimits(ctx.plan as PlanId).maxStaffTerminals;
+  const limit = getStaffSeatLimit(ctx.plan as PlanId, ctx.staffSeatAddons);
   if (active.length >= limit) {
     return { error: 'TERMINAL_LIMIT' };
   }
@@ -68,13 +74,21 @@ export async function createTerminalPairingCode(
 
 export async function pairTerminalWithCode(
   db: Db,
-  input: { code: string; name: string },
+  input: { code: string; name: string; staffUserId: string },
 ): Promise<
   | {
       credential: string;
       device: TerminalDeviceView;
     }
-  | { error: 'INVALID_CODE' | 'EXPIRED_CODE' | 'CODE_LOCKED' | 'TERMINAL_LIMIT' }
+  | {
+      error:
+        | 'INVALID_CODE'
+        | 'EXPIRED_CODE'
+        | 'CODE_LOCKED'
+        | 'TERMINAL_LIMIT'
+        | 'OWNER_CANNOT_PAIR'
+        | 'STAFF_ALREADY_PAIRED';
+    }
 > {
   const code = normalizePairingCode(input.code);
   if (!/^\d{8}$/.test(code)) {
@@ -122,14 +136,47 @@ export async function pairTerminalWithCode(
     .where(
       and(eq(terminalDevices.storeId, pairingCode.storeId), isNull(terminalDevices.revokedAt)),
     );
-  const storeRows = await db
-    .select({ plan: stores.plan })
+  const storeDetails = await db
+    .select({
+      plan: stores.plan,
+      staffSeatAddons: stores.staffSeatAddons,
+    })
     .from(stores)
     .where(eq(stores.id, pairingCode.storeId))
     .limit(1);
-  const plan = storeRows[0]?.plan ?? 'free';
-  if (active.length >= getPlanLimits(plan as PlanId).maxStaffTerminals) {
+  const plan = storeDetails[0]?.plan ?? 'free';
+  const staffSeatAddons = storeDetails[0]?.staffSeatAddons ?? 0;
+  if (active.length >= getStaffSeatLimit(plan as PlanId, staffSeatAddons)) {
     return { error: 'TERMINAL_LIMIT' };
+  }
+
+  const existingMember = await db
+    .select({ role: storeMembers.role })
+    .from(storeMembers)
+    .where(
+      and(
+        eq(storeMembers.storeId, pairingCode.storeId),
+        eq(storeMembers.userId, input.staffUserId),
+      ),
+    )
+    .limit(1);
+  if (existingMember[0]?.role === 'owner') {
+    return { error: 'OWNER_CANNOT_PAIR' };
+  }
+
+  const existingDevice = await db
+    .select({ id: terminalDevices.id })
+    .from(terminalDevices)
+    .where(
+      and(
+        eq(terminalDevices.storeId, pairingCode.storeId),
+        eq(terminalDevices.staffUserId, input.staffUserId),
+        isNull(terminalDevices.revokedAt),
+      ),
+    )
+    .limit(1);
+  if (existingDevice[0]) {
+    return { error: 'STAFF_ALREADY_PAIRED' };
   }
 
   const pairedAt = nowMs();
@@ -154,12 +201,22 @@ export async function pairTerminalWithCode(
     name: input.name.trim(),
     credentialHash: await hashToken(credential),
     pairedByUserId: pairingCode.createdByUserId,
+    staffUserId: input.staffUserId,
     pairedAt,
     lastSeenAt: pairedAt,
     revokedAt: null,
     createdAt: pairedAt,
   };
 
+  if (!existingMember[0]) {
+    await db.insert(storeMembers).values({
+      id: crypto.randomUUID(),
+      storeId: pairingCode.storeId,
+      userId: input.staffUserId,
+      role: 'staff',
+      createdAt: pairedAt,
+    });
+  }
   await db.insert(terminalDevices).values(device);
 
   return {
@@ -233,9 +290,10 @@ export async function revokeTerminalDevice(
   db: Db,
   terminalId: string,
 ): Promise<boolean> {
+  const revokedAt = nowMs();
   const result = await db
     .update(terminalDevices)
-    .set({ revokedAt: nowMs() })
+    .set({ revokedAt })
     .where(
       and(
         eq(terminalDevices.id, terminalId),
@@ -243,5 +301,11 @@ export async function revokeTerminalDevice(
         isNull(terminalDevices.revokedAt),
       ),
     );
+  if (result.meta.changes > 0) {
+    await db
+      .update(pushSubscriptions)
+      .set({ disabledAt: revokedAt })
+      .where(eq(pushSubscriptions.terminalId, terminalId));
+  }
   return result.meta.changes > 0;
 }

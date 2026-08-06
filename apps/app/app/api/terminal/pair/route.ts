@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { badRequest } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
+import { getSession } from '@/lib/session';
 import { TERMINAL_CREDENTIAL_COOKIE } from '@/lib/terminal-session';
 
 const pairSchema = z.object({
@@ -22,9 +23,17 @@ export async function POST(request: Request) {
     return badRequest('Enter the pairing code and a device name.');
   }
 
-  const result = await pairTerminalWithCode(getDb(), parsed.data);
+  const session = await getSession();
+  if (!session?.user) {
+    return Response.json({ error: 'LOGIN_REQUIRED' }, { status: 401 });
+  }
+
+  const result = await pairTerminalWithCode(getDb(), {
+    ...parsed.data,
+    staffUserId: session.user.id,
+  });
   if ('error' in result) {
-    return badRequest('This pairing code is invalid, expired, or already used.');
+    return badRequest(result.error);
   }
 
   const response = NextResponse.json({ device: result.device });

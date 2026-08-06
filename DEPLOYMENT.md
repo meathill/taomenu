@@ -50,6 +50,7 @@
 | `VAPID_PUBLIC_KEY` | Web Push 公钥（经 API 下发到终端，不是密钥） |
 | `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@dyqr.me` |
 | `GOOGLE_CLIENT_ID` | Google OAuth 客户端 ID（可公开） |
+| `STRIPE_STAFF_SEAT_PRICE_ID` | 一个额外 Staff 席位的 recurring Price ID |
 | `NEXT_PUBLIC_*` | 同上；生产为 `menu.dyqr.me` / `app.menu.dyqr.me` |
 
 ### 必须 `wrangler secret` / `.dev.vars`（密钥，禁止提交）
@@ -60,6 +61,8 @@
 | `GOOGLE_CLIENT_SECRET` | Google OAuth secret（可选） |
 | `VAPID_PRIVATE_JWK` | Web Push 私钥 JWK JSON 字符串 |
 | `CRON_SECRET` | 可选，保护 `POST /api/internal/process-outbox` |
+| `STRIPE_SECRET_KEY` | Stripe 服务端 Restricted API Key（建议 `rk_`，仅支付 API） |
+| `STRIPE_WEBHOOK_SECRET` | Stripe Webhook 签名密钥 |
 
 ### Cloudflare Bindings（不是 env 字符串）
 
@@ -189,6 +192,8 @@ npx wrangler secret put VAPID_PRIVATE_JWK
 # 可选
 npx wrangler secret put GOOGLE_CLIENT_SECRET
 npx wrangler secret put CRON_SECRET
+npx wrangler secret put STRIPE_SECRET_KEY
+npx wrangler secret put STRIPE_WEBHOOK_SECRET
 ```
 
 非密钥写在 `wrangler.jsonc` → `vars`（仓库默认已是生产域名）。**不要尾斜杠**：
@@ -202,9 +207,20 @@ npx wrangler secret put CRON_SECRET
   "EMAIL_FROM_NAME": "TaoMenu",
   "VAPID_PUBLIC_KEY": "<your-public-key>",
   "VAPID_SUBJECT": "mailto:ops@dyqr.me",
-  "GOOGLE_CLIENT_ID": "<optional>"
+  "GOOGLE_CLIENT_ID": "<optional>",
+  "STRIPE_STAFF_SEAT_PRICE_ID": "price_<staff-seat>"
 }
 ```
+
+Stripe Webhook 指向：
+
+```text
+https://app.menu.dyqr.me/api/billing/stripe/webhook
+```
+
+只订阅 `checkout.session.completed`、`customer.subscription.created`、
+`customer.subscription.updated` 和 `customer.subscription.deleted` 事件。
+服务端会校验 `Stripe-Signature`，并将额外 Staff 席位同步到门店。
 
 也可复制 `apps/app/.env.production.example` → `.env.production` 覆盖构建时的 `process.env`（优先级高于 wrangler vars 注入）。
 

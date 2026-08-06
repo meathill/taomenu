@@ -6,6 +6,9 @@ BETTER_AUTH_SECRET=dev-only-change-me-to-a-long-random-string
 # GOOGLE_CLIENT_SECRET=
 VAPID_PRIVATE_JWK={"alg":"ES256","key_ops":["sign"],"ext":true,"kty":"EC","x":"G2nvrn1yZnrMNQc_SO6ykKY3hnXTmJYNv0U2oePZQ70","y":"vt_5YMVId9MKFXtWC-CUrj-aV5kQZNDmO-2Oj0khXbg","crv":"P-256","d":"s6cpjyc0AB_EGZAf7Eo9qtSO_9ORv1ifk8xKqbxICoQ"}
 # CRON_SECRET=
+# Use an rk_ Restricted API Key with only the billing permissions this app needs.
+# STRIPE_SECRET_KEY=
+# STRIPE_WEBHOOK_SECRET=
 
 # ——— 可出现在 vars 的非密钥配置（本地也可写 .dev.vars）———
 BETTER_AUTH_URL=http://localhost:3001
@@ -16,6 +19,8 @@ VAPID_PUBLIC_KEY=BBtp7659cmZ6zDUHP0juspCmN4Z105iWDb9FNqHj2UO9vt_5YMVId9MKFXtWC-C
 VAPID_SUBJECT=mailto:ops@dyqr.me
 EMAIL_FROM=noreply@dyqr.me
 EMAIL_FROM_NAME=TaoMenu
+# Stripe Price ID for one recurring staff seat.
+# STRIPE_STAFF_SEAT_PRICE_ID=
 
 # 本地无真实 Email 时：强制只打日志（默认无 EMAIL binding 也会 log）
 # EMAIL_DEV_LOG_ONLY=1

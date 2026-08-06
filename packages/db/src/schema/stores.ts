@@ -5,7 +5,7 @@ import { user } from './auth';
 export const SERVICE_MODES = ['table_service', 'counter_pickup', 'hybrid'] as const;
 export type ServiceMode = (typeof SERVICE_MODES)[number];
 
-export const STORE_ROLES = ['owner'] as const;
+export const STORE_ROLES = ['owner', 'staff'] as const;
 export type StoreRole = (typeof STORE_ROLES)[number];
 
 export const stores = sqliteTable(
@@ -23,6 +23,10 @@ export const stores = sqliteTable(
       .default(true),
     plan: text('plan').notNull().$type<PlanId>().default('free'),
     planExpiresAt: integer('plan_expires_at', { mode: 'timestamp_ms' }),
+    staffSeatAddons: integer('staff_seat_addons').notNull().default(0),
+    stripeCustomerId: text('stripe_customer_id'),
+    stripeStaffSeatSubscriptionId: text('stripe_staff_seat_subscription_id'),
+    stripeStaffSeatItemId: text('stripe_staff_seat_item_id'),
     menuVersion: integer('menu_version').notNull().default(0),
     orderVersion: integer('order_version').notNull().default(0),
     isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),

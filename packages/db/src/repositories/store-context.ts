@@ -14,6 +14,7 @@ export async function resolveStoreContext(
       plan: stores.plan,
       role: storeMembers.role,
       isActive: stores.isActive,
+      staffSeatAddons: stores.staffSeatAddons,
     })
     .from(storeMembers)
     .innerJoin(stores, eq(stores.id, storeMembers.storeId))
@@ -30,6 +31,7 @@ export async function resolveStoreContext(
     userId,
     role: row.role,
     plan: row.plan,
+    staffSeatAddons: row.staffSeatAddons,
   };
 }
 
@@ -39,6 +41,7 @@ export async function listStoreContextsForUser(db: Db, userId: string): Promise<
       storeId: stores.id,
       plan: stores.plan,
       role: storeMembers.role,
+      staffSeatAddons: stores.staffSeatAddons,
     })
     .from(storeMembers)
     .innerJoin(stores, eq(stores.id, storeMembers.storeId))
@@ -49,5 +52,6 @@ export async function listStoreContextsForUser(db: Db, userId: string): Promise<
     userId,
     role: row.role,
     plan: row.plan,
+    staffSeatAddons: row.staffSeatAddons,
   }));
 }

@@ -16,14 +16,14 @@ export default async function PricingPage({ params }: PricingPageProps) {
       name: t('freeName'),
       price: t('freePrice'),
       desc: t('freeDesc'),
-      features: [t('freeF1'), t('freeF2'), t('freeF3')],
+      features: [t('freeF1'), t('freeF2'), t('freeF3'), t('staffAddOn')],
       highlight: false,
     },
     {
       name: t('proName'),
       price: t('proPrice'),
       desc: t('proDesc'),
-      features: [t('proF1'), t('proF2'), t('proF3')],
+      features: [t('proF1'), t('proF2'), t('proF3'), t('staffAddOn')],
       highlight: true,
     },
   ];

@@ -29,15 +29,16 @@
     "freeName": "Free",
     "freePrice": "0 ₫",
     "freeDesc": "Enough for a small shop to run day to day.",
-    "freeF1": "1 staff terminal",
+    "freeF1": "1 staff seat (2 total including the owner)",
     "freeF2": "1 menu language",
     "freeF3": "Manual menu entry",
     "proName": "Pro",
     "proPrice": "149,000 ₫/month",
     "proDesc": "For busy shops that need multi-language menus and faster setup.",
-    "proF1": "Up to 5 staff terminals",
+    "proF1": "4 staff seats (5 total including the owner)",
     "proF2": "Up to 5 menu languages",
     "proF3": "Photo import / AI translate / voice assist",
+    "staffAddOn": "Buy additional staff seats separately",
     "cta": "Start with Free"
   },
   "footer": {

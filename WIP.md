@@ -88,7 +88,8 @@
 - [x] 现金付款记录 + 关台（余额为 0）
 - [x] 服务请求在终端处理
 - [x] [ACCEPTANCE.md](ACCEPTANCE.md) 人工验收清单
-- [x] 一次性配对码和终端凭证（终端设备凭证 + Push subscription）
+- [x] Staff 设备登录后通过一次性 QR 配对（二维码 + 配对码确认 + 终端凭证）
+- [x] Staff 席位：Free 1 个、Pro 4 个，额外席位通过 Stripe 订阅购买
 - [ ] 审计日志
 - [ ] Cloudflare Queue 替代 setTimeout 投递（生产强化）
 
@@ -98,4 +99,4 @@
 
 ## 暂不实施
 
-- Stripe 自动订阅、原生 App、打印机、餐厅发现、代收款等（同 PRD）
+- 完整套餐订阅升级、原生 App、打印机、餐厅发现、代收款等（同 PRD）

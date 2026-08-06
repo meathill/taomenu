@@ -24,7 +24,13 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
   if (!selection.store) redirect('/app/onboarding');
   const store = selection.store;
   const overview = await getOwnerOverview(
-    { storeId: store.id, userId: selection.user.id, role: 'owner', plan: store.plan },
+    {
+      storeId: store.id,
+      userId: selection.user.id,
+      role: 'owner',
+      plan: store.plan,
+      staffSeatAddons: store.staffSeatAddons,
+    },
     getDb(),
     store.timezone,
   );

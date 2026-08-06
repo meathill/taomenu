@@ -1,4 +1,4 @@
-import { listStoresForUser, type StoreRow } from '@taomenu/db';
+import { hasStaffStoreMembership, listStoresForUser, type StoreRow } from '@taomenu/db';
 import { getDb } from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { readStoreSlug, resolveActiveStore, withStore } from './active-store-utils';
@@ -9,6 +9,7 @@ export { readStoreSlug, resolveActiveStore, withStore };
 export type OwnerStoreSelection = {
   stores: StoreRow[];
   store: StoreRow | null;
+  hasStaffMembership: boolean;
   user: {
     id: string;
     name: string | null;
@@ -22,10 +23,15 @@ export async function getOwnerStoreSelection(
   const session = await getSession();
   if (!session?.user) return null;
 
-  const stores = await listStoresForUser(getDb(), session.user.id);
+  const db = getDb();
+  const [stores, hasStaffMembership] = await Promise.all([
+    listStoresForUser(db, session.user.id),
+    hasStaffStoreMembership(db, session.user.id),
+  ]);
   return {
     stores,
     store: resolveActiveStore(stores, requestedSlug),
+    hasStaffMembership,
     user: {
       id: session.user.id,
       name: session.user.name ?? null,

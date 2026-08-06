@@ -1,4 +1,5 @@
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { user } from './auth';
 import { stores } from './stores';
 
 export const terminalDevices = sqliteTable(
@@ -11,6 +12,7 @@ export const terminalDevices = sqliteTable(
     name: text('name').notNull(),
     credentialHash: text('credential_hash').notNull(),
     pairedByUserId: text('paired_by_user_id').notNull(),
+    staffUserId: text('staff_user_id').references(() => user.id, { onDelete: 'set null' }),
     pairedAt: integer('paired_at', { mode: 'timestamp_ms' }).notNull(),
     lastSeenAt: integer('last_seen_at', { mode: 'timestamp_ms' }),
     revokedAt: integer('revoked_at', { mode: 'timestamp_ms' }),

@@ -25,7 +25,7 @@ export async function requireOwnerStore(storeId: string): Promise<OwnerRequestCo
   }
   const db = getDb();
   const storeCtx = await resolveStoreContext(db, userId, storeId);
-  if (!storeCtx) {
+  if (storeCtx?.role !== 'owner') {
     return notFound();
   }
   return { userId, db, storeCtx };
@@ -34,14 +34,16 @@ export async function requireOwnerStore(storeId: string): Promise<OwnerRequestCo
 /** 操作订单的 API 同时接受店主会话和已配对终端凭证。 */
 export async function requireStoreActor(storeId: string): Promise<StoreActorContext | Response> {
   const userId = await requireUserId();
+  if (!userId) {
+    return unauthorized();
+  }
   const db = getDb();
-  if (userId) {
-    const storeCtx = await resolveStoreContext(db, userId, storeId);
-    if (!storeCtx) return notFound();
+  const storeCtx = await resolveStoreContext(db, userId, storeId);
+  if (storeCtx?.role === 'owner') {
     return { userId, db, storeCtx, actor: { type: 'owner', terminalId: null } };
   }
 
-  const terminal = await getTerminalSession();
+  const terminal = await getTerminalSession(userId);
   if (!terminal || terminal.storeCtx.storeId !== storeId) {
     return unauthorized();
   }

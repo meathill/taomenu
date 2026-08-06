@@ -33,17 +33,24 @@ export default async function TerminalPage({ searchParams }: TerminalPageProps) 
   let isPairedDevice = false;
   let deviceName: string | null = null;
 
-  if (session?.user) {
-    const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
-    if (!selection) redirect('/login?next=/terminal');
-    if (!selection.store) redirect('/app/onboarding');
-    store = selection.store;
-  } else {
-    const terminal = await getTerminalSession();
-    if (!terminal) redirect('/terminal/pair');
+  if (!session?.user) {
+    redirect('/login?next=/terminal');
+  }
+
+  const requestedStoreSlug = readStoreSlug(await searchParams);
+  const [selection, terminal] = await Promise.all([
+    getOwnerStoreSelection(requestedStoreSlug),
+    getTerminalSession(session.user.id),
+  ]);
+
+  if (terminal && !requestedStoreSlug) {
     store = await getStore(terminal.storeCtx, getDb());
     isPairedDevice = true;
     deviceName = terminal.device.name;
+  } else if (selection?.store) {
+    store = selection.store;
+  } else {
+    redirect('/terminal/pair');
   }
 
   if (!store) redirect('/terminal/pair');
@@ -65,7 +72,7 @@ export default async function TerminalPage({ searchParams }: TerminalPageProps) 
                 : t('subtitle')}
             </p>
           </div>
-          {session?.user ? (
+          {!isPairedDevice ? (
             <Link href={withStore('/app', store.slug)} className="text-sm font-bold text-jade-600">
               {t('backOwner')}
             </Link>

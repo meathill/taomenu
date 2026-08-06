@@ -31,7 +31,11 @@ export default async function StaffPage({ searchParams }: StaffPageProps) {
             {selection.store.plan === 'free' ? t('freeTerminalLimit') : t('proTerminalLimit')}
           </p>
         </header>
-        <StaffManager storeId={selection.store.id} />
+        <StaffManager
+          storeId={selection.store.id}
+          plan={selection.store.plan}
+          staffSeatAddons={selection.store.staffSeatAddons}
+        />
       </div>
     </PageMessages>
   );

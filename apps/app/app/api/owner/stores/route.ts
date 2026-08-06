@@ -1,4 +1,4 @@
-import { createStoreForOwner, listStoresForUser } from '@taomenu/db';
+import { createStoreForOwner, hasStaffStoreMembership, listStoresForUser } from '@taomenu/db';
 import { createStoreSchema } from '@taomenu/shared';
 import { badRequest, unauthorized } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
@@ -10,7 +10,8 @@ export async function GET() {
     return unauthorized();
   }
 
-  const stores = await listStoresForUser(getDb(), userId);
+  const db = getDb();
+  const stores = await listStoresForUser(db, userId);
   return Response.json({ stores });
 }
 
@@ -32,6 +33,12 @@ export async function POST(request: Request) {
     return badRequest(parsed.error.issues[0]?.message ?? 'Invalid body');
   }
 
-  const store = await createStoreForOwner(getDb(), userId, parsed.data);
+  const db = getDb();
+  const ownerStores = await listStoresForUser(db, userId);
+  if (ownerStores.length === 0 && (await hasStaffStoreMembership(db, userId))) {
+    return Response.json({ error: 'Staff accounts cannot create stores.' }, { status: 403 });
+  }
+
+  const store = await createStoreForOwner(db, userId, parsed.data);
   return Response.json({ store }, { status: 201 });
 }

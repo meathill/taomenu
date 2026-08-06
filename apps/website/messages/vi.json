@@ -29,15 +29,16 @@
     "freeName": "Free",
     "freePrice": "0 ₫",
     "freeDesc": "Đủ để một quán nhỏ vận hành hằng ngày.",
-    "freeF1": "1 thiết bị nhân viên",
+    "freeF1": "1 chỗ Staff (tổng cộng 2 chỗ gồm chủ quán)",
     "freeF2": "1 ngôn ngữ menu",
     "freeF3": "Tạo menu thủ công",
     "proName": "Pro",
     "proPrice": "149.000 ₫/tháng",
     "proDesc": "Cho quán bận, đa ngôn ngữ và nhập menu nhanh.",
-    "proF1": "Tối đa 5 thiết bị nhân viên",
+    "proF1": "4 chỗ Staff (tổng cộng 5 chỗ gồm chủ quán)",
     "proF2": "Tối đa 5 ngôn ngữ menu",
     "proF3": "Chụp menu / AI dịch / trợ lý giọng nói",
+    "staffAddOn": "Có thể mua thêm chỗ Staff riêng",
     "cta": "Bắt đầu với Free"
   },
   "footer": {

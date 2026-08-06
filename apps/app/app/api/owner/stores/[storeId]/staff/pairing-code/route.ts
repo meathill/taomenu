@@ -11,7 +11,7 @@ export async function POST(_request: Request, context: RouteContext) {
 
   const result = await createTerminalPairingCode(owner.storeCtx, owner.db);
   if ('error' in result) {
-    return badRequest('Staff device limit reached for this plan.');
+    return badRequest('TERMINAL_LIMIT');
   }
   return Response.json(result, { status: 201 });
 }

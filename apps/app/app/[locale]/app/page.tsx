@@ -45,6 +45,7 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
       userId: selection.user.id,
       role: 'owner',
       plan: store.plan,
+      staffSeatAddons: store.staffSeatAddons,
     },
     getDb(),
     store.timezone,

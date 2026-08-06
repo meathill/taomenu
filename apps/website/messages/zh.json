@@ -29,15 +29,16 @@
     "freeName": "Free",
     "freePrice": "0 ₫",
     "freeDesc": "足够小店日常运营。",
-    "freeF1": "1 个员工终端",
+    "freeF1": "1 个 Staff 席位（连同店主共 2 个席位）",
     "freeF2": "1 种菜单语言",
     "freeF3": "手工录入菜单",
     "proName": "Pro",
     "proPrice": "149,000 ₫/月",
     "proDesc": "适合忙碌门店：多语言菜单与更快上架。",
-    "proF1": "最多 5 个员工终端",
+    "proF1": "4 个 Staff 席位（连同店主共 5 个席位）",
     "proF2": "最多 5 种菜单语言",
     "proF3": "拍照导入 / AI 翻译 / 语音助手",
+    "staffAddOn": "Staff 席位可单独购买",
     "cta": "从 Free 开始"
   },
   "footer": {

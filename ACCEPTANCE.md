@@ -1,7 +1,8 @@
 # 验收清单（封闭试点前 · 当前可测范围）
 
-本清单对应 **Free 手工主路径**：开店 → 菜单 → 桌码/取餐码 → 顾客下单 → 终端处理 → Push。  
-**不在本次验收**：Pro/AI、多终端 DO 实时、Stripe、真邮件 OTP、打印机。
+本清单对应 **Free 手工主路径**：开店 → 菜单 → 桌码/取餐码 → 顾客下单 → Staff 配对 → 终端处理 → Push。
+
+**不在本次验收**：Pro/AI、多终端 DO 实时、打印机。
 
 ## 0. 准备
 
@@ -49,7 +50,12 @@ pnpm dev:website  # http://localhost:3000
 
 ## 6. 终端 + Push（关键）
 
-- [ ] `/terminal` 登录后可见新单
+- [ ] 店主在 `/app/staff` 生成一次性配对二维码
+- [ ] Staff 设备扫描二维码，未登录时先完成邮箱 OTP 登录
+- [ ] 登录后页面显示配对码；与店主页面核对一致，再填写设备名并点击「配对设备」
+- [ ] 配对成功后进入 `/terminal`，刷新页面仍要求 Staff 账号登录并可见新单
+- [ ] Free 默认 1 个 Staff 席位（店主不占 Staff 席位）；第 2 个 Staff 配对应被拒绝
+- [ ] `/app/staff` 可查看已配对设备并撤销设备
 - [ ] **安装 PWA**（iOS 必须加主屏幕）→ **Bật thông báo** → **Gửi thử** → **点击通知** 显示已验证
 - [ ] 顾客再下一单 → **约 2 秒内**锁屏/后台收到「Có đơn hàng mới」（无菜名金额）
 - [ ] 接单后状态推进：堂食 接受→已上菜；外带 接受→可取→已取
@@ -61,7 +67,13 @@ pnpm dev:website  # http://localhost:3000
 - [ ] `/app` 点「Tạm dừng」后顾客不能新下单
 - [ ] 「Mở lại」后恢复
 
-## 8. 边界（快速）
+## 8. Staff 席位订阅
+
+- [ ] 配置 Stripe Price ID、Restricted API Key 和 Webhook secret 后，店主可购买额外 Staff 席位
+- [ ] Checkout 完成且 Webhook 同步后，席位上限增加；新增席位可用于配对
+- [ ] 取消 Staff 席位订阅后，Webhook 将额外席位归零
+
+## 9. 边界（快速）
 
 - [ ] 重复 idempotency 不造第二单（同一 key 再 POST 返回 reused）
 - [ ] 未登录访问 `/app`、`/terminal` 跳登录

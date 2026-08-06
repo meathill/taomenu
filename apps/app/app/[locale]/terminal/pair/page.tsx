@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
+import { getSession } from '@/lib/session';
 import { getTerminalSession } from '@/lib/terminal-session';
 import { PairForm } from './pair-form';
 
@@ -9,9 +10,21 @@ export async function generateMetadata() {
   return { title: t('pairTitle') };
 }
 
-export default async function TerminalPairPage() {
+type TerminalPairPageProps = {
+  searchParams: Promise<{ code?: string | string[] }>;
+};
+
+export default async function TerminalPairPage({ searchParams }: TerminalPairPageProps) {
   const t = await getTranslations('terminal');
-  const terminal = await getTerminalSession();
+  const rawCode = (await searchParams).code;
+  const code = typeof rawCode === 'string' ? rawCode : (rawCode?.[0] ?? '');
+  const nextPath = code ? `/terminal/pair?code=${encodeURIComponent(code)}` : '/terminal/pair';
+  const session = await getSession();
+  if (!session?.user) {
+    redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+  }
+
+  const terminal = await getTerminalSession(session.user.id);
   if (terminal) redirect('/terminal');
 
   return (
@@ -21,7 +34,7 @@ export default async function TerminalPairPage() {
         <h1 className="mt-2 text-3xl font-black tracking-tight text-ink-900">{t('pairTitle')}</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('pairSubtitle')}</p>
         <div className="mt-8 rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <PairForm />
+          <PairForm code={code || null} />
         </div>
       </div>
     </PageMessages>

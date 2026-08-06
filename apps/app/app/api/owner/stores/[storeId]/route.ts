@@ -17,7 +17,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const { storeId } = await context.params;
   const db = getDb();
   const storeCtx = await resolveStoreContext(db, userId, storeId);
-  if (!storeCtx) {
+  if (storeCtx?.role !== 'owner') {
     return notFound();
   }
 
@@ -38,7 +38,7 @@ export async function PUT(request: Request, context: RouteContext) {
   const { storeId } = await context.params;
   const db = getDb();
   const storeCtx = await resolveStoreContext(db, userId, storeId);
-  if (!storeCtx) {
+  if (storeCtx?.role !== 'owner') {
     return notFound();
   }
 

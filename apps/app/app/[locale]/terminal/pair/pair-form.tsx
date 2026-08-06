@@ -4,9 +4,12 @@ import { useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
 
-export function PairForm() {
+type PairFormProps = {
+  code: string | null;
+};
+
+export function PairForm({ code }: PairFormProps) {
   const t = useTranslations('terminal');
-  const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -23,7 +26,15 @@ export function PairForm() {
       });
       const data = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) {
-        setError(data?.error || t('pairFailed'));
+        setError(
+          data?.error === 'TERMINAL_LIMIT'
+            ? t('pairSeatLimit')
+            : data?.error === 'STAFF_ALREADY_PAIRED'
+              ? t('pairAlreadyPaired')
+              : data?.error === 'OWNER_CANNOT_PAIR'
+                ? t('pairOwnerNotAllowed')
+                : t('pairFailed'),
+        );
         return;
       }
       window.location.assign('/terminal');
@@ -32,19 +43,19 @@ export function PairForm() {
     }
   }
 
+  if (!code) {
+    return <p className="text-sm leading-6 text-muted-foreground">{t('scanRequired')}</p>;
+  }
+
   return (
     <form onSubmit={(event) => void handleSubmit(event)} className="space-y-5">
-      <label className="block text-sm font-bold text-ink-900">
-        {t('pairCode')}
-        <input
-          value={code}
-          onChange={(event) => setCode(event.target.value)}
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          placeholder={t('pairCodeHint')}
-          className="mt-2 min-h-12 w-full rounded-xl border border-border px-3 text-lg font-bold tracking-[0.2em] outline-none ring-jade-600 focus:ring-2"
-        />
-      </label>
+      <div>
+        <p className="text-sm font-bold text-ink-900">{t('pairCode')}</p>
+        <p className="mt-2 rounded-xl border border-jade-600 bg-jade-50 px-3 py-3 text-center font-mono text-3xl font-black tracking-[0.18em] text-ink-900">
+          {code}
+        </p>
+        <p className="mt-2 text-xs leading-5 text-muted-foreground">{t('pairCodeConfirm')}</p>
+      </div>
       <label className="block text-sm font-bold text-ink-900">
         {t('deviceName')}
         <input
@@ -59,7 +70,7 @@ export function PairForm() {
       <Button
         type="submit"
         pending={busy}
-        disabled={!code.trim() || !name.trim()}
+        disabled={!name.trim()}
         className="min-h-12 w-full rounded-xl bg-jade-600 text-base font-bold text-white"
       >
         {t('pairDevice')}

@@ -24,10 +24,6 @@ function hasSessionCookie(request: NextRequest): boolean {
   });
 }
 
-function hasTerminalCredentialCookie(request: NextRequest): boolean {
-  return Boolean(request.cookies.get('taomenu_terminal_credential')?.value);
-}
-
 function readCountry(request: NextRequest): string | null {
   const cfCountry = (request as NextRequest & { cf?: { country?: string } }).cf?.country;
   if (cfCountry) {
@@ -82,7 +78,7 @@ export default function middleware(request: NextRequest) {
     pathname.startsWith('/terminal/')
   ) {
     const isPairingPage = pathname === '/terminal/pair';
-    if (!isPairingPage && !hasSessionCookie(request) && !hasTerminalCredentialCookie(request)) {
+    if (!isPairingPage && !hasSessionCookie(request)) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';
       loginUrl.searchParams.set('next', pathname);

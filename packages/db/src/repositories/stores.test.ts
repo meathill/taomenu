@@ -9,6 +9,7 @@ describe('getStoreIfMatches', () => {
       userId: 'user-1',
       role: 'owner',
       plan: 'free',
+      staffSeatAddons: 0,
     };
 
     const spyDb = {

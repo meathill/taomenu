@@ -15,4 +15,5 @@ export type StoreContext = {
   userId: string;
   role: StoreRole;
   plan: PlanId;
+  staffSeatAddons: number;
 };
