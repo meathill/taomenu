@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  ArrowLeftIcon,
-  CheckSquareIcon,
-  LockSimpleIcon,
-  PrinterIcon,
-  SquareIcon,
-} from '@phosphor-icons/react';
+import { ArrowLeftIcon, CheckSquareIcon, PrinterIcon, SquareIcon } from '@phosphor-icons/react';
 import type { PlanId } from '@taomenu/shared';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -15,8 +9,9 @@ import { Button } from '@/components/button';
 import { withStore } from '@/lib/active-store-utils';
 import { customerEntryUrl } from '../customer-url';
 import { QrCard } from '../qr-card';
-import { isTemplateAvailable, QR_CARD_TEMPLATES, type QrCardTemplateId } from '../qr-templates';
+import type { QrCardTemplateId } from '../qr-templates';
 import { defaultSelectedKeys, type PrintableEntry, toPrintableEntries } from './printable-entries';
+import { TemplatePreview } from './template-preview';
 
 type PrintSheetProps = {
   storeId: string;
@@ -25,6 +20,7 @@ type PrintSheetProps = {
   plan: PlanId;
   /** 门店面向顾客语言（baseLocale）的扫码提示语 */
   scanHint: string;
+  upgradeUrl: string;
 };
 
 type EntryRow = {
@@ -34,7 +30,14 @@ type EntryRow = {
   isActive: boolean;
 };
 
-export function PrintSheet({ storeId, storeSlug, storeName, plan, scanHint }: PrintSheetProps) {
+export function PrintSheet({
+  storeId,
+  storeSlug,
+  storeName,
+  plan,
+  scanHint,
+  upgradeUrl,
+}: PrintSheetProps) {
   const t = useTranslations('tables');
   const [entries, setEntries] = useState<PrintableEntry[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -98,42 +101,16 @@ export function PrintSheet({ storeId, storeSlug, storeName, plan, scanHint }: Pr
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('printSubtitle')}</p>
         </div>
 
-        <section className="space-y-2">
-          <h2 className="text-sm font-bold text-ink-900">{t('templateLabel')}</h2>
-          <div className="flex flex-wrap gap-2">
-            {QR_CARD_TEMPLATES.map((template) => {
-              const available = isTemplateAvailable(template, plan);
-              const isActive = template.id === templateId;
-              return (
-                <button
-                  key={template.id}
-                  type="button"
-                  disabled={!available}
-                  onClick={() => setTemplateId(template.id)}
-                  aria-pressed={isActive}
-                  className={[
-                    'inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold',
-                    isActive
-                      ? 'border-jade-600 bg-jade-600 text-white'
-                      : 'border-border bg-white text-ink-900',
-                    available ? '' : 'opacity-60',
-                  ].join(' ')}
-                >
-                  {available ? null : <LockSimpleIcon className="size-4" />}
-                  {t(template.nameKey)}
-                  {template.pro ? (
-                    <span className="rounded-md bg-gold-600 px-1.5 py-0.5 text-[10px] font-black uppercase text-white">
-                      {t('proBadge')}
-                    </span>
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
-          {plan === 'free' ? (
-            <p className="text-xs text-muted-foreground">{t('proTemplateLocked')}</p>
-          ) : null}
-        </section>
+        <TemplatePreview
+          storeName={storeName}
+          storeSlug={storeSlug}
+          plan={plan}
+          scanHint={scanHint}
+          qrAlt={t('qrAlt')}
+          upgradeUrl={upgradeUrl}
+          selectedTemplateId={templateId}
+          onSelectTemplate={setTemplateId}
+        />
 
         <section className="space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
