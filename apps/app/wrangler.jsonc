@@ -54,6 +54,7 @@
     "NEXT_PUBLIC_WEBSITE_URL": "https://menu.dyqr.me",
     "EMAIL_FROM": "noreply@dyqr.me",
     "EMAIL_FROM_NAME": "TaoMenu",
+    "STRIPE_STAFF_SEAT_PRICE_ID": "price_1U1U0FIl4ac8nxMLURDk4j6W",
     "VAPID_SUBJECT": "mailto:ops@dyqr.me"
   }
 }
