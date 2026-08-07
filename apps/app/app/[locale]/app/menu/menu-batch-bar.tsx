@@ -6,7 +6,7 @@ import { Button } from '@/components/button';
 type MenuBatchBarProps = {
   selectedCount: number;
   totalCount: number;
-  busy: boolean;
+  busyAction: string | null;
   onSelectAll: () => void;
   onSoldOut: (isSoldOut: boolean) => void;
   onAvailability: (isAvailable: boolean) => void;
@@ -15,7 +15,7 @@ type MenuBatchBarProps = {
 export function MenuBatchBar({
   selectedCount,
   totalCount,
-  busy,
+  busyAction,
   onSelectAll,
   onSoldOut,
   onAvailability,
@@ -34,7 +34,8 @@ export function MenuBatchBar({
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
-          pending={busy}
+          pending={busyAction === 'batchSoldOut'}
+          busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onSoldOut(true)}
           className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
@@ -43,7 +44,8 @@ export function MenuBatchBar({
         </Button>
         <Button
           type="button"
-          pending={busy}
+          pending={busyAction === 'batchSoldOut'}
+          busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onSoldOut(false)}
           className="min-h-11 rounded-xl border border-jade-600 px-3 text-xs font-bold text-jade-600"
@@ -52,7 +54,8 @@ export function MenuBatchBar({
         </Button>
         <Button
           type="button"
-          pending={busy}
+          pending={busyAction === 'batchAvailability'}
+          busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onAvailability(false)}
           className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
@@ -61,7 +64,8 @@ export function MenuBatchBar({
         </Button>
         <Button
           type="button"
-          pending={busy}
+          pending={busyAction === 'batchAvailability'}
+          busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onAvailability(true)}
           className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"

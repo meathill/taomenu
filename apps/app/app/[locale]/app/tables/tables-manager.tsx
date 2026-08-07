@@ -23,7 +23,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   const [editing, setEditing] = useState<{ type: QrEntryType; id: string } | null>(null);
   const [editingName, setEditingName] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [tableResponse, pointResponse] = await Promise.all([
@@ -49,7 +49,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
     event.preventDefault();
     const name = (type === 'table' ? tableName : pointName).trim();
     if (!name) return;
-    setBusy(true);
+    setBusyAction(`add-${type}`);
     setError(null);
     try {
       const response = await fetch(
@@ -69,7 +69,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       else setPointName('');
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -80,7 +80,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
 
   async function saveRename() {
     if (!editing || !editingName.trim()) return;
-    setBusy(true);
+    setBusyAction('rename');
     setError(null);
     const path =
       editing.type === 'table'
@@ -99,13 +99,13 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       setEditing(null);
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function toggleActive(type: QrEntryType, id: string, isActive: boolean) {
     if (isActive && !window.confirm(t('deactivateConfirm'))) return;
-    setBusy(true);
+    setBusyAction(`toggle-${type}-${id}`);
     setError(null);
     const path =
       type === 'table'
@@ -123,7 +123,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
       }
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -137,7 +137,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
         downloadFilename={qrDownloadFilename(storeSlug, entry.name)}
         isEditing={editing?.type === type && editing.id === entry.id}
         editingName={editingName}
-        busy={busy}
+        busyAction={busyAction}
         onEditingNameChange={setEditingName}
         onStartRename={() => startRename(type, entry.id, entry.name)}
         onSaveRename={() => void saveRename()}
@@ -170,7 +170,8 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           value={tableName}
           placeholder={t('tablePlaceholder')}
           addLabel={t('add')}
-          busy={busy}
+          pending={busyAction === 'add-table'}
+          busy={busyAction !== null}
           onChange={setTableName}
           onSubmit={(event) => void addEntry(event, 'table')}
         />
@@ -191,7 +192,8 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           value={pointName}
           placeholder={t('pickupPlaceholder')}
           addLabel={t('add')}
-          busy={busy}
+          pending={busyAction === 'add-point'}
+          busy={busyAction !== null}
           onChange={setPointName}
           onSubmit={(event) => void addEntry(event, 'point')}
         />

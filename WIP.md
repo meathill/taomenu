@@ -1,3 +1,17 @@
+# 按钮 loading 体验修复（2026-08-07）
+
+问题：一组按钮共享同一个 `busy` state 时，点其中一个，整组按钮全部显示 spinner。
+
+方案：
+- `Button` 组件新增 `busy` prop：组内其他按钮进行中时禁用但**不显示 spinner**；只有被点击的按钮传 `pending`
+- 各页面把共享的 `busy: boolean` 状态改为 `busyAction: string | null`，每个操作一个唯一 key（列表类用 `操作-id`），按钮传 `pending={busyAction === key}` + `busy={busyAction !== null}`
+
+涉及：login、terminal-board（ack/done）、notification-setup、staff-manager、tables-manager + qr-create-form + qr-entry-row、menu-editor + batch-bar / item-row / item-image / item-draft-form / modifiers-panel
+
+- [x] format / typecheck / test / build 全绿
+
+---
+
 # Tables & QR 改版（2026-08-04）
 
 - [x] token 模型改明文固定（迁移 0007 存量重置一次），删除轮换 API 与前端逻辑

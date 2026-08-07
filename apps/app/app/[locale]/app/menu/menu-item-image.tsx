@@ -19,8 +19,8 @@ type MenuItemImageProps = {
   storeId: string;
   itemId: string;
   imageKey: string | null;
-  busy: boolean;
-  onBusy: (busy: boolean) => void;
+  busyAction: string | null;
+  onBusyAction: (action: string | null) => void;
   onError: (message: string | null) => void;
   onChanged: () => Promise<void>;
 };
@@ -29,8 +29,8 @@ export function MenuItemImage({
   storeId,
   itemId,
   imageKey,
-  busy,
-  onBusy,
+  busyAction,
+  onBusyAction,
   onError,
   onChanged,
 }: MenuItemImageProps) {
@@ -39,7 +39,7 @@ export function MenuItemImage({
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
-    onBusy(true);
+    onBusyAction(`upload-${itemId}`);
     onError(null);
     try {
       const body = new FormData();
@@ -56,13 +56,13 @@ export function MenuItemImage({
       }
       await onChanged();
     } finally {
-      onBusy(false);
+      onBusyAction(null);
       if (inputRef.current) inputRef.current.value = '';
     }
   }
 
   async function handleRemove() {
-    onBusy(true);
+    onBusyAction(`remove-${itemId}`);
     onError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/image`, {
@@ -74,7 +74,7 @@ export function MenuItemImage({
       }
       await onChanged();
     } finally {
-      onBusy(false);
+      onBusyAction(null);
     }
   }
 
@@ -101,7 +101,8 @@ export function MenuItemImage({
       />
       <Button
         type="button"
-        pending={busy}
+        pending={busyAction === `upload-${itemId}`}
+        busy={busyAction !== null}
         iconOnly
         title={t('image')}
         aria-label={t('uploadImage')}
@@ -113,7 +114,8 @@ export function MenuItemImage({
       {imageKey ? (
         <Button
           type="button"
-          pending={busy}
+          pending={busyAction === `remove-${itemId}`}
+          busy={busyAction !== null}
           iconOnly
           title={t('removeImage')}
           aria-label={t('removeImage')}

@@ -59,7 +59,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   const t = useTranslations('menu');
   const [tree, setTree] = useState<MenuTree | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState('');
   const [itemDraft, setItemDraft] = useState<{
     categoryId: string;
@@ -106,7 +106,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   async function handleAddCategory(event: FormEvent) {
     event.preventDefault();
     if (!categoryName.trim()) return;
-    setBusy(true);
+    setBusyAction('addCategory');
     setError(null);
     try {
       const body: CreateCategoryBody = { name: categoryName.trim() };
@@ -123,7 +123,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       setCategoryName('');
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -136,7 +136,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       return;
     }
     const categoryId = itemDraft.categoryId;
-    setBusy(true);
+    setBusyAction('addItem');
     setError(null);
     try {
       const body: CreateItemBody = {
@@ -158,12 +158,12 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       setItemDraft({ categoryId, name: '', price: '' });
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function toggleSoldOut(itemId: string, isSoldOut: boolean) {
-    setBusy(true);
+    setBusyAction(`soldOut-${itemId}`);
     setError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}`, {
@@ -177,12 +177,12 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       }
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function handleCopyItem(itemId: string) {
-    setBusy(true);
+    setBusyAction(`copy-${itemId}`);
     setError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/copy`, {
@@ -194,13 +194,13 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       }
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function handleBatchSoldOut(isSoldOut: boolean) {
     if (selectedIds.size === 0) return;
-    setBusy(true);
+    setBusyAction('batchSoldOut');
     setError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
@@ -215,13 +215,13 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       exitSelectMode();
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function handleBatchAvailability(isAvailable: boolean) {
     if (selectedIds.size === 0) return;
-    setBusy(true);
+    setBusyAction('batchAvailability');
     setError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
@@ -236,12 +236,12 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       exitSelectMode();
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function handlePublish() {
-    setBusy(true);
+    setBusyAction('publish');
     setError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu`, {
@@ -259,7 +259,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       }
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -297,7 +297,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            disabled={busy || allItemIds.length === 0}
+            disabled={busyAction !== null || allItemIds.length === 0}
             onClick={() => {
               if (selectMode) exitSelectMode();
               else setSelectMode(true);
@@ -312,7 +312,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
           </button>
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === 'publish'}
+            busy={busyAction !== null}
             onClick={() => void handlePublish()}
             className="fixed inset-x-4 bottom-4 z-30 min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white shadow-lg lg:static lg:z-auto lg:shadow-none"
           >
@@ -325,7 +326,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         <MenuBatchBar
           selectedCount={selectedIds.size}
           totalCount={allItemIds.length}
-          busy={busy}
+          busyAction={busyAction}
           onSelectAll={() => setSelectedIds(new Set(allItemIds))}
           onSoldOut={(v) => void handleBatchSoldOut(v)}
           onAvailability={(v) => void handleBatchAvailability(v)}
@@ -363,7 +364,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
           />
           <Button
             type="submit"
-            pending={busy}
+            pending={busyAction === 'addCategory'}
+            busy={busyAction !== null}
             disabled={!categoryName.trim()}
             className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
@@ -403,8 +405,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                         storeId={storeId}
                         itemId={item.id}
                         imageKey={item.imageKey ?? null}
-                        busy={busy}
-                        onBusy={setBusy}
+                        busyAction={busyAction}
+                        onBusyAction={setBusyAction}
                         onError={setError}
                         onChanged={load}
                       />
@@ -413,7 +415,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                       <MenuItemRow
                         item={item}
                         label={labelForItem(item, baseLocale)}
-                        busy={busy}
+                        busyAction={busyAction}
                         selectMode={selectMode}
                         selected={selectedIds.has(item.id)}
                         modifierCount={item.modifierGroups?.length ?? 0}
@@ -431,8 +433,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                       itemName={labelForItem(item, baseLocale)}
                       baseLocale={baseLocale}
                       groups={item.modifierGroups ?? []}
-                      busy={busy}
-                      onBusy={setBusy}
+                      busyAction={busyAction}
+                      onBusyAction={setBusyAction}
                       onError={setError}
                       onChanged={load}
                       onClose={() => setModifiersItemId(null)}
@@ -448,7 +450,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
             {itemDraft?.categoryId === category.id && !selectMode ? (
               <MenuItemDraftForm
                 draft={itemDraft}
-                busy={busy}
+                busyAction={busyAction}
                 onChange={setItemDraft}
                 onCancel={() => setItemDraft(null)}
                 onSubmit={(e) => void handleAddItem(e)}

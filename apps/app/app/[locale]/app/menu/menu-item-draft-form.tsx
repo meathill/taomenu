@@ -12,7 +12,7 @@ type ItemDraft = {
 
 type MenuItemDraftFormProps = {
   draft: ItemDraft;
-  busy: boolean;
+  busyAction: string | null;
   onChange: (draft: ItemDraft) => void;
   onCancel: () => void;
   onSubmit: (event: FormEvent) => void;
@@ -20,7 +20,7 @@ type MenuItemDraftFormProps = {
 
 export function MenuItemDraftForm({
   draft,
-  busy,
+  busyAction,
   onChange,
   onCancel,
   onSubmit,
@@ -51,7 +51,8 @@ export function MenuItemDraftForm({
         </button>
         <Button
           type="submit"
-          pending={busy}
+          pending={busyAction === 'addItem'}
+          busy={busyAction !== null}
           className="min-h-12 flex-1 rounded-xl bg-jade-600 text-sm font-bold text-white"
         >
           {t('saveContinue')}

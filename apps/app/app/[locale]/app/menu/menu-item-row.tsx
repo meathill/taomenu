@@ -17,7 +17,7 @@ export type MenuItemView = {
 type MenuItemRowProps = {
   item: MenuItemView;
   label: string;
-  busy: boolean;
+  busyAction: string | null;
   selectMode: boolean;
   selected: boolean;
   modifierCount?: number;
@@ -30,7 +30,7 @@ type MenuItemRowProps = {
 export function MenuItemRow({
   item,
   label,
-  busy,
+  busyAction,
   selectMode,
   selected,
   modifierCount = 0,
@@ -69,7 +69,7 @@ export function MenuItemRow({
         <div className="flex shrink-0 gap-1.5">
           <Button
             type="button"
-            pending={busy}
+            busy={busyAction !== null}
             title={t('options')}
             aria-label={t('editOptions')}
             onClick={onEditModifiers}
@@ -80,7 +80,8 @@ export function MenuItemRow({
           </Button>
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === `copy-${item.id}`}
+            busy={busyAction !== null}
             iconOnly
             title={t('copy')}
             aria-label={t('copyItem')}
@@ -91,7 +92,8 @@ export function MenuItemRow({
           </Button>
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === `soldOut-${item.id}`}
+            busy={busyAction !== null}
             onClick={onToggleSoldOut}
             className={cn(
               'min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold',

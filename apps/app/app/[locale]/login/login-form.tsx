@@ -21,7 +21,7 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
 
   useEffect(() => {
     function loadProviders() {
@@ -47,7 +47,7 @@ export function LoginForm() {
 
   async function handleGoogle() {
     setError(null);
-    setIsPending(true);
+    setBusyAction('google');
     try {
       await authClient.signIn.social({
         provider: 'google',
@@ -55,14 +55,14 @@ export function LoginForm() {
       });
     } catch {
       setError(t('errorGoogle'));
-      setIsPending(false);
+      setBusyAction(null);
     }
   }
 
   async function handleSendOtp(event: FormEvent) {
     event.preventDefault();
     setError(null);
-    setIsPending(true);
+    setBusyAction('sendOtp');
     try {
       const result = await authClient.emailOtp.sendVerificationOtp({
         email: email.trim(),
@@ -76,14 +76,14 @@ export function LoginForm() {
     } catch {
       setError(t('errorSendOtp'));
     } finally {
-      setIsPending(false);
+      setBusyAction(null);
     }
   }
 
   async function handleVerifyOtp(event: FormEvent) {
     event.preventDefault();
     setError(null);
-    setIsPending(true);
+    setBusyAction('verifyOtp');
     try {
       const trimmedEmail = email.trim();
       const result = await authClient.signIn.emailOtp({
@@ -94,14 +94,14 @@ export function LoginForm() {
       });
       if (result.error) {
         setError(result.error.message || t('errorBadOtp'));
-        setIsPending(false);
+        setBusyAction(null);
         return;
       }
       // 不要用 SPA router.push：cookie 刚 Set 时 soft 导航可能读不到 session，会弹回 /login
       goAfterLogin();
     } catch {
       setError(t('errorBadOtp'));
-      setIsPending(false);
+      setBusyAction(null);
     }
   }
 
@@ -110,7 +110,8 @@ export function LoginForm() {
       {providers.google ? (
         <Button
           type="button"
-          pending={isPending}
+          pending={busyAction === 'google'}
+          busy={busyAction !== null}
           onClick={handleGoogle}
           className="min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm font-bold text-ink-900 hover:bg-muted"
         >
@@ -140,7 +141,8 @@ export function LoginForm() {
           />
           <Button
             type="submit"
-            pending={isPending}
+            pending={busyAction === 'sendOtp'}
+            busy={busyAction !== null}
             className="min-h-12 w-full rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]"
           >
             {t('sendOtp')}
@@ -167,14 +169,15 @@ export function LoginForm() {
           />
           <Button
             type="submit"
-            pending={isPending}
+            pending={busyAction === 'verifyOtp'}
+            busy={busyAction !== null}
             className="min-h-12 w-full rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]"
           >
             {t('signIn')}
           </Button>
           <button
             type="button"
-            disabled={isPending}
+            disabled={busyAction !== null}
             className="w-full py-2 text-sm font-semibold text-jade-600 disabled:opacity-60"
             onClick={() => {
               setStep('email');

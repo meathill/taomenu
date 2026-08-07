@@ -10,7 +10,7 @@
   "otp": "Mã OTP",
   "signIn": "Đăng nhập",
   "changeEmail": "Đổi email",
-  "hint": "OTP gửi qua email (Cloudflare Email). Dev chưa cấu hình EMAIL: xem log [taomenu-otp]. Google chỉ hiện khi đã cấu hình OAuth.",
+  "hint": "Mã sẽ được gửi qua email trong vài phút. Nếu không nhận được, hãy kiểm tra thư mục spam.",
   "errorGoogle": "Google đăng nhập thất bại.",
   "errorSendOtp": "Không gửi được mã OTP.",
   "errorBadOtp": "Mã OTP không đúng.",

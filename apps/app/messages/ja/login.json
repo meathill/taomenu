@@ -10,7 +10,7 @@
   "otp": "OTP コード",
   "signIn": "ログイン",
   "changeEmail": "メールを変更",
-  "hint": "OTP はメール（Cloudflare Email）で送信します。開発で EMAIL 未設定の場合はログの [taomenu-otp] を確認。Google は OAuth 設定時のみ表示。",
+  "hint": "コードは数分以内にメールで送信されます。届かない場合は迷惑メールフォルダをご確認ください。",
   "errorGoogle": "Google ログインに失敗しました。",
   "errorSendOtp": "OTP を送信できませんでした。",
   "errorBadOtp": "OTP が正しくありません。",

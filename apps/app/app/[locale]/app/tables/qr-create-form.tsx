@@ -7,6 +7,7 @@ type QrCreateFormProps = {
   value: string;
   placeholder: string;
   addLabel: string;
+  pending: boolean;
   busy: boolean;
   onChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -16,6 +17,7 @@ export function QrCreateForm({
   value,
   placeholder,
   addLabel,
+  pending,
   busy,
   onChange,
   onSubmit,
@@ -31,7 +33,8 @@ export function QrCreateForm({
       />
       <Button
         type="submit"
-        pending={busy}
+        pending={pending}
+        busy={busy}
         disabled={!value.trim()}
         className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
       >

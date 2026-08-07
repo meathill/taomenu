@@ -119,7 +119,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
   }
 
   async function transitionService(requestId: string, status: string) {
-    setBusyId(requestId);
+    setBusyId(`${requestId}-${status}`);
     try {
       const res = await fetch(
         `/api/owner/stores/${storeId}/service-requests/${requestId}/transition`,
@@ -205,7 +205,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   {req.status === 'open' ? (
                     <Button
                       type="button"
-                      pending={busyId === req.id}
+                      pending={busyId === `${req.id}-acknowledged`}
+                      busy={busyId !== null}
                       onClick={() => void transitionService(req.id, 'acknowledged')}
                       className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
                     >
@@ -214,7 +215,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   ) : null}
                   <Button
                     type="button"
-                    pending={busyId === req.id}
+                    pending={busyId === `${req.id}-resolved`}
+                    busy={busyId !== null}
                     onClick={() => void transitionService(req.id, 'resolved')}
                     className="min-h-11 flex-1 rounded-xl border border-border text-xs font-bold"
                   >

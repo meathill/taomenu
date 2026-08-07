@@ -27,8 +27,8 @@ type MenuModifiersPanelProps = {
   itemName: string;
   baseLocale: string;
   groups: ModifierGroupView[];
-  busy: boolean;
-  onBusy: (busy: boolean) => void;
+  busyAction: string | null;
+  onBusyAction: (action: string | null) => void;
   onError: (message: string | null) => void;
   onChanged: () => Promise<void>;
   onClose: () => void;
@@ -56,8 +56,8 @@ export function MenuModifiersPanel({
   itemName,
   baseLocale,
   groups,
-  busy,
-  onBusy,
+  busyAction,
+  onBusyAction,
   onError,
   onChanged,
   onClose,
@@ -75,7 +75,7 @@ export function MenuModifiersPanel({
   async function handleAddGroup(event: FormEvent) {
     event.preventDefault();
     if (!groupName.trim()) return;
-    onBusy(true);
+    onBusyAction('addGroup');
     onError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/modifier-groups`, {
@@ -96,12 +96,12 @@ export function MenuModifiersPanel({
       setGroupName('');
       await onChanged();
     } finally {
-      onBusy(false);
+      onBusyAction(null);
     }
   }
 
   async function handleDeleteGroup(groupId: string) {
-    onBusy(true);
+    onBusyAction(`delGroup-${groupId}`);
     onError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/modifier-groups/${groupId}`, {
@@ -113,7 +113,7 @@ export function MenuModifiersPanel({
       }
       await onChanged();
     } finally {
-      onBusy(false);
+      onBusyAction(null);
     }
   }
 
@@ -125,7 +125,7 @@ export function MenuModifiersPanel({
       onError(t('invalidOption'));
       return;
     }
-    onBusy(true);
+    onBusyAction(`saveOption-${optionDraft.groupId}`);
     onError(null);
     try {
       const res = await fetch(
@@ -147,12 +147,12 @@ export function MenuModifiersPanel({
       setOptionDraft(null);
       await onChanged();
     } finally {
-      onBusy(false);
+      onBusyAction(null);
     }
   }
 
   async function handleDeleteOption(modifierId: string) {
-    onBusy(true);
+    onBusyAction(`delOption-${modifierId}`);
     onError(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/modifiers/${modifierId}`, {
@@ -164,7 +164,7 @@ export function MenuModifiersPanel({
       }
       await onChanged();
     } finally {
-      onBusy(false);
+      onBusyAction(null);
     }
   }
 
@@ -199,7 +199,8 @@ export function MenuModifiersPanel({
               </div>
               <Button
                 type="button"
-                pending={busy}
+                pending={busyAction === `delGroup-${group.id}`}
+                busy={busyAction !== null}
                 className="text-xs font-bold text-brand-600"
                 onClick={() => void handleDeleteGroup(group.id)}
               >
@@ -222,7 +223,8 @@ export function MenuModifiersPanel({
                   </span>
                   <Button
                     type="button"
-                    pending={busy}
+                    pending={busyAction === `delOption-${option.id}`}
+                    busy={busyAction !== null}
                     className="text-xs font-bold text-brand-600"
                     onClick={() => void handleDeleteOption(option.id)}
                   >
@@ -256,7 +258,8 @@ export function MenuModifiersPanel({
                   </button>
                   <Button
                     type="submit"
-                    pending={busy}
+                    pending={busyAction === `saveOption-${optionDraft.groupId}`}
+                    busy={busyAction !== null}
                     className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
                   >
                     {t('saveOption')}
@@ -295,7 +298,8 @@ export function MenuModifiersPanel({
         </label>
         <Button
           type="submit"
-          pending={busy}
+          pending={busyAction === 'addGroup'}
+          busy={busyAction !== null}
           disabled={!groupName.trim()}
           className="min-h-11 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
         >

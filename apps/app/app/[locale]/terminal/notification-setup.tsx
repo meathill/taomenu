@@ -29,7 +29,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
   const [status, setStatus] = useState<Status>('loading');
   const [message, setMessage] = useState<string | null>(null);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<{
     prompt: () => Promise<void>;
   } | null>(null);
@@ -89,7 +89,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
   }, [refreshCapability, storeId, t]);
 
   async function enableNotifications() {
-    setBusy(true);
+    setBusyAction('enable');
     setMessage(null);
     try {
       const cap = refreshCapability();
@@ -142,13 +142,13 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       setMessage(t('pushEnabled'));
       void cap;
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
   async function sendTest() {
     if (!subscriptionId) return;
-    setBusy(true);
+    setBusyAction('test');
     setMessage(null);
     try {
       const res = await fetch(
@@ -162,7 +162,7 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
       }
       setMessage(t('pushTestSent'));
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -206,7 +206,8 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
         {(status === 'ready' || status === 'subscribed' || status === 'error') && (
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === 'enable'}
+            busy={busyAction !== null}
             onClick={() => void enableNotifications()}
             className="min-h-11 rounded-xl bg-jade-600 text-sm font-bold text-white"
           >
@@ -217,7 +218,8 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
         {(status === 'subscribed' || status === 'verified') && subscriptionId ? (
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === 'test'}
+            busy={busyAction !== null}
             onClick={() => void sendTest()}
             className="min-h-11 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
           >

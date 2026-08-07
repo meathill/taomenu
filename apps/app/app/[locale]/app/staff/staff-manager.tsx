@@ -45,7 +45,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
     url: string;
   } | null>(null);
   const [seatAddons, setSeatAddons] = useState(staffSeatAddons);
-  const [busy, setBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
   const [billingBusy, setBillingBusy] = useState(false);
   const [additionalSeats, setAdditionalSeats] = useState(1);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
   }, [load]);
 
   async function generateCode() {
-    setBusy(true);
+    setBusyAction('generate');
     setError(null);
     setCopied(false);
     try {
@@ -92,7 +92,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
         ).toString(),
       });
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -143,7 +143,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
 
   async function revoke(deviceId: string) {
     if (!window.confirm(t('revokeConfirm'))) return;
-    setBusy(true);
+    setBusyAction(`revoke-${deviceId}`);
     setError(null);
     try {
       const response = await fetch(`/api/owner/stores/${storeId}/staff/devices/${deviceId}`, {
@@ -155,7 +155,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
       }
       await load();
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -177,7 +177,8 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
           </div>
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === 'generate'}
+            busy={busyAction !== null}
             onClick={() => void generateCode()}
             className="min-h-12 shrink-0 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
@@ -299,7 +300,8 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
                 {device.status === 'active' ? (
                   <Button
                     type="button"
-                    pending={busy}
+                    pending={busyAction === `revoke-${device.id}`}
+                    busy={busyAction !== null}
                     onClick={() => void revoke(device.id)}
                     className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
                   >

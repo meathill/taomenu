@@ -27,7 +27,7 @@ type QrEntryRowProps = {
   downloadFilename: string;
   isEditing: boolean;
   editingName: string;
-  busy: boolean;
+  busyAction: string | null;
   onEditingNameChange: (name: string) => void;
   onStartRename: () => void;
   onSaveRename: () => void;
@@ -41,7 +41,7 @@ export function QrEntryRow({
   downloadFilename,
   isEditing,
   editingName,
-  busy,
+  busyAction,
   onEditingNameChange,
   onStartRename,
   onSaveRename,
@@ -74,7 +74,8 @@ export function QrEntryRow({
           />
           <Button
             type="button"
-            pending={busy}
+            pending={busyAction === 'rename'}
+            busy={busyAction !== null}
             onClick={onSaveRename}
             className="min-h-11 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white"
           >
@@ -150,7 +151,7 @@ export function QrEntryRow({
         ) : null}
         <Button
           type="button"
-          disabled={busy}
+          disabled={busyAction !== null}
           onClick={onStartRename}
           className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
         >
@@ -159,7 +160,7 @@ export function QrEntryRow({
         </Button>
         <Button
           type="button"
-          disabled={busy}
+          disabled={busyAction !== null}
           onClick={onToggleActive}
           className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
         >
