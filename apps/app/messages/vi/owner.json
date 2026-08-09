@@ -115,6 +115,7 @@
   "loadingStaff": "Đang tải thiết bị nhân viên…",
   "pairCodeFailed": "Không thể tạo mã ghép.",
   "staffSeatLimit": "Không còn chỗ Staff. Hãy mua thêm chỗ để tiếp tục.",
+  "staffSeatFullHint": "Tất cả chỗ Staff đã được dùng. Hãy thu hồi thiết bị cũ hoặc mua thêm chỗ trước khi ghép thiết bị mới.",
   "staffSeatsTitle": "Chỗ Staff",
   "staffSeatUsage": "Đang dùng {used}/{total} chỗ Staff",
   "additionalStaffSeats": "Chỗ thêm",

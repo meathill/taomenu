@@ -17,7 +17,18 @@
 - [x] 复制请求携带店主当前界面语言
 - [x] 所有复制出的翻译统一使用本次操作语言的后缀
 - [x] 补充测试并完成 format / typecheck / test / build
-- [ ] commit + push，等待部署并复验
+- [x] commit + push，等待部署并复验
+
+---
+
+# Staff 满席状态修复（2026-08-09）
+
+来源：版本 27 上线前对总 issue 店员配对项的逐条复核。
+
+- [x] 满席时禁用生成配对二维码
+- [x] 明确提示撤销旧设备或购买额外席位
+- [x] 补充测试并完成 format / typecheck / test / build
+- [ ] commit + push，等待部署
 
 ---
 

@@ -115,6 +115,7 @@
   "loadingStaff": "正在加载店员设备…",
   "pairCodeFailed": "配对码生成失败。",
   "staffSeatLimit": "没有可用的 Staff 席位，请购买额外席位后继续。",
+  "staffSeatFullHint": "Staff 席位已用完。请先撤销不再使用的设备，或购买额外席位后再配对。",
   "staffSeatsTitle": "Staff 席位",
   "staffSeatUsage": "已使用 {used} / {total} 个 Staff 席位",
   "additionalStaffSeats": "额外席位",

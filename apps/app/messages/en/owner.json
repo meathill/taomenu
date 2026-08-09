@@ -115,6 +115,7 @@
   "loadingStaff": "Loading staff devices…",
   "pairCodeFailed": "Could not generate a pairing code.",
   "staffSeatLimit": "No staff seats are available. Buy an additional seat to continue.",
+  "staffSeatFullHint": "All staff seats are in use. Revoke an old device or buy an additional seat before pairing another one.",
   "staffSeatsTitle": "Staff seats",
   "staffSeatUsage": "{used} of {total} staff seats in use",
   "additionalStaffSeats": "Additional seats",

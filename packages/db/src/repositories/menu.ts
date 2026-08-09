@@ -590,9 +590,7 @@ const COPY_SUFFIXES: Record<string, string> = {
 /** 复制菜品时按店主本次操作使用的界面语言追加后缀，并避免无限叠加。 */
 export function duplicatedItemName(name: string, locale: string): string {
   const suffix = COPY_SUFFIXES[locale] ?? COPY_SUFFIXES.en;
-  const existingSuffix = Object.values(COPY_SUFFIXES).find((candidate) =>
-    name.endsWith(candidate),
-  );
+  const existingSuffix = Object.values(COPY_SUFFIXES).find((candidate) => name.endsWith(candidate));
   const baseName = existingSuffix ? name.slice(0, -existingSuffix.length) : name;
   return `${baseName}${suffix}`;
 }

@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import { QrImage } from '../tables/qr-image';
 import { formatStaffDate } from './staff-date';
+import { hasAvailableStaffSeat } from './staff-seat';
 
 type Device = {
   id: string;
@@ -167,6 +168,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons, timeZone }: Staff
 
   const activeDeviceCount = devices.filter((device) => device.status === 'active').length;
   const staffSeatLimit = getStaffSeatLimit(plan, seatAddons);
+  const hasAvailableSeat = hasAvailableStaffSeat(activeDeviceCount, staffSeatLimit);
 
   return (
     <div className="space-y-6">
@@ -185,12 +187,18 @@ export function StaffManager({ storeId, plan, staffSeatAddons, timeZone }: Staff
             type="button"
             pending={busyAction === 'generate'}
             busy={isLoading || busyAction !== null}
+            disabled={!isLoading && !hasAvailableSeat}
             onClick={() => void generateCode()}
             className="min-h-12 shrink-0 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
             {t('generatePairingCode')}
           </Button>
         </div>
+        {!isLoading && !hasAvailableSeat ? (
+          <p className="mt-3 text-sm font-semibold text-brand-700" role="note">
+            {t('staffSeatFullHint')}
+          </p>
+        ) : null}
         {pairingCode ? (
           <div className="mt-5 grid gap-5 rounded-xl border border-jade-600 bg-white p-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-center">
             <div className="mx-auto rounded-xl border border-border bg-white p-2">
