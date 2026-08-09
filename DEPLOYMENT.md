@@ -1,6 +1,6 @@
 # TaoMenu 部署指南（Cloudflare）
 
-目标：把 monorepo 两个 OpenNext Worker 部署到 Cloudflare，并接通 **D1**、**Email Sending**、**Web Push VAPID**。
+目标：把 monorepo 两个 OpenNext Worker 和一个 Queue Worker 部署到 Cloudflare，并接通 **D1**、**R2**、**Queues**、**Email Sending**、**Web Push VAPID**。
 
 ## 架构
 
@@ -8,6 +8,7 @@
 |---|---|---|
 | `taomenu-website` | `apps/website` | 营销站 / SEO |
 | `taomenu-app` | `apps/app` | PWA、Auth、API、Push、业务 |
+| `taomenu-ai` | `apps/ai` | 菜单图片/PDF 识别 Queue consumer |
 
 生产域名：
 
@@ -63,6 +64,7 @@
 | `CRON_SECRET` | 可选，保护 `POST /api/internal/process-outbox` |
 | `STRIPE_SECRET_KEY` | Stripe 服务端 Restricted API Key（建议 `rk_`，仅支付 API） |
 | `STRIPE_WEBHOOK_SECRET` | Stripe Webhook 签名密钥 |
+| `OPENAI_API_KEY` | 仅供 `taomenu-ai` 调用 GPT-5.6 Luna，不配置在 app Worker |
 
 ### Cloudflare Bindings（不是 env 字符串）
 
@@ -73,6 +75,7 @@
 | `MEDIA` | `r2_buckets` | 菜品图片等媒体（bucket: `taomenu-media`） |
 | `ASSETS` | OpenNext 静态资源 | 自动 |
 | `WORKER_SELF_REFERENCE` | `services` | OpenNext 自引用 |
+| `AI_MENU_QUEUE` | `queues.producers` | app 投递菜单识别任务（queue: `taomenu-ai-menu`） |
 
 **不要**把 binding 写成 `NEXT_PUBLIC_`。  
 **不要**提交 `.dev.vars`、`.env`、真实 `database_id` 以外的密钥文件。
@@ -84,6 +87,7 @@
 ```bash
 pnpm --filter @taomenu/app cf-typegen
 pnpm --filter @taomenu/website cf-typegen
+pnpm --filter @taomenu/ai cf-typegen
 ```
 
 `typecheck` / `build` / `deploy` 脚本已内嵌 `cf-typegen`。  
@@ -133,6 +137,19 @@ npx wrangler r2 bucket create taomenu-media
 ```
 
 本地 `wrangler`/`next dev` 会用模拟 R2；生产需先创建真实 bucket。
+
+### 3.1 Queues（AI 菜单识别）
+
+首次部署前创建主队列和死信队列：
+
+```bash
+cd apps/ai
+npx wrangler queues create taomenu-ai-menu
+npx wrangler queues create taomenu-ai-menu-dead
+npx wrangler secret put OPENAI_API_KEY
+```
+
+`taomenu-app` 只有 producer binding；`taomenu-ai` 是 consumer，并共享 D1 `taomenu` 与 R2 `taomenu-media`。密钥只配置在 `taomenu-ai`。
 
 ### 4. Cloudflare Email Sending
 
@@ -235,6 +252,17 @@ https://app.menu.dyqr.me/api/billing/stripe/webhook
 
 website **无密钥、无 D1、无 Email binding**。
 
+### AI Worker（`apps/ai`）
+
+非敏感模型配置在 `apps/ai/wrangler.jsonc`；生产密钥交互式写入：
+
+```bash
+cd apps/ai
+npx wrangler secret put OPENAI_API_KEY
+```
+
+不要把 OpenAI key 放进 `apps/app`、wrangler `vars` 或任何 `.env.*.example`。
+
 ---
 
 ## 部署命令
@@ -247,6 +275,7 @@ pnpm install
 # 确认自定义域已绑到对应 Worker，再：
 pnpm --filter @taomenu/app deploy
 pnpm --filter @taomenu/website deploy
+pnpm --filter @taomenu/ai deploy
 ```
 
 等价于：`cf-typegen` → `run-with-wrangler-vars` 注入 vars → OpenNext build → deploy。
@@ -271,6 +300,7 @@ cd apps/website && npx wrangler domains add menu.dyqr.me
 3. 登录页发 OTP → 邮箱收到（检查 Spam；From `noreply@dyqr.me` 须 Email Sending enable）  
 4. 终端 `/terminal` Push 测试  
 5. `https://menu.dyqr.me` CTA 指向 `https://app.menu.dyqr.me/login`  
+6. Pro 门店上传一张无敏感信息的测试菜单，确认状态经过 queued / processing / needs_review，且应用后仍需单独发布
 
 ### Outbox 补扫（可选 Cron）
 
@@ -309,6 +339,7 @@ OTP：
 | 把 `VAPID_PRIVATE_JWK`、`BETTER_AUTH_SECRET` 放进 `NEXT_PUBLIC_*` 或 `vars` | 会进客户端或仓库 |
 | 用未 onboard 的域名作 `EMAIL_FROM` | `E_SENDER_NOT_VERIFIED` |
 | 在顾客页申请 Push | 产品边界 |
+| 把订单、顾客、付款数据发给 AI | AI 菜单导入只处理店主主动上传的菜单素材 |
 
 ---
 

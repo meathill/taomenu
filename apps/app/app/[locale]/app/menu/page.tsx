@@ -8,6 +8,7 @@ import {
   withStore,
 } from '@/lib/active-store';
 import { MenuEditor } from './menu-editor';
+import { MenuImportPanel } from './menu-import-panel';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,21 +48,21 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
             {t('viewOrders')}
           </a>
         </div>
-        <section className="flex flex-col gap-3 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <MenuImportPanel storeId={store.id} canUseAi={store.plan === 'pro'} />
+        <section className="flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-sm font-black text-ink-900">{t('proToolsTitle')}</h2>
+              <h2 className="text-sm font-black text-ink-900">{t('moreProToolsTitle')}</h2>
               <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
                 {t('comingSoon')}
               </span>
             </div>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('proToolsHint')}</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('moreProToolsHint')}</p>
           </div>
           <ul className="flex flex-wrap gap-1.5 text-xs font-semibold text-indigo-700">
-            <li className="rounded-full bg-white px-2.5 py-1">{t('photoImport')}</li>
-            <li className="rounded-full bg-white px-2.5 py-1">{t('aiTranslate')}</li>
-            <li className="rounded-full bg-white px-2.5 py-1">{t('voiceEntry')}</li>
-            <li className="rounded-full bg-white px-2.5 py-1">{t('photoEnhance')}</li>
+            <li className="rounded-full bg-paper-50 px-2.5 py-1">{t('aiTranslate')}</li>
+            <li className="rounded-full bg-paper-50 px-2.5 py-1">{t('voiceEntry')}</li>
+            <li className="rounded-full bg-paper-50 px-2.5 py-1">{t('photoEnhance')}</li>
           </ul>
         </section>
         <MenuEditor storeId={store.id} />

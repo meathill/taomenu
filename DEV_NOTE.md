@@ -7,7 +7,8 @@
 - `apps/website`：营销站与 SEO（生产 `menu.dyqr.me`，本地 :3000）
 - `apps/app`：PWA 产品面——店主/员工登录能力 + 顾客扫码公开页（生产 `app.menu.dyqr.me`，本地 :3001）
 - 顾客 `/m/*` 放在 `app` 并 `noindex`，不做门店发现 SEO
-- 不预建空的 realtime/ai/db 包；需要时再加
+- `apps/ai`：菜单识别 Queue consumer；只从 R2 读取导入素材，不暴露业务 API
+- 不预建空的 realtime 包；需要时再加
 - `packages/*` 直接导出 TypeScript 源码（`workspace:*` + Next `transpilePackages`），不强制 Vite 出 dist，减少双构建
 
 ## 认证与 D1（2026-07-28）
@@ -87,3 +88,12 @@
 - 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`
 - 顾客堂食页：状态刷新 + 叫人/结账；外带：取餐号 + 切回刷新
 - 桌码创建时本地生成 QR data URL（`qrcode` 包）
+
+## AI 菜单导入（2026-08-09）
+
+- Provider 边界使用版本化 `MenuImportOutput`；当前实现为 OpenAI Responses API + `gpt-5.6-luna`
+- 图片使用 `detail: original`，PDF 使用 `input_file` + `detail: high`；Structured Outputs 后仍用 Zod 二次校验
+- Web API 只负责 Pro 权益、文件校验、R2 和 Queue；模型请求由 `apps/ai` 异步消费
+- 识别结果按分类/菜品保存为 suggestion，逐项接受、编辑或拒绝后才可写入菜单草稿；不会自动发布
+- 成功识别并落库后删除 R2 原始素材；失败时保留素材以便重试
+- `OPENAI_API_KEY` 只存 `taomenu-ai` Worker secret；业务 app 不持有模型密钥

@@ -1,0 +1,38 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "taomenu-ai",
+  "main": "src/index.ts",
+  "account_id": "fdc63eeea83ae8f5234357308b9a638b",
+  "compatibility_date": "2026-08-09",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "taomenu",
+      "database_id": "a083eccb-3c8f-4bad-a751-b539b449a7a5",
+      "migrations_dir": "../../packages/db/migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "taomenu-media"
+    }
+  ],
+  "queues": {
+    "consumers": [
+      {
+        "queue": "taomenu-ai-menu",
+        "max_batch_size": 1,
+        "max_batch_timeout": 1,
+        "max_retries": 0,
+        "dead_letter_queue": "taomenu-ai-menu-dead"
+      }
+    ]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "OPENAI_MENU_MODEL": "gpt-5.6-luna"
+  }
+}

@@ -40,6 +40,14 @@
       "bucket_name": "taomenu-media"
     }
   ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "AI_MENU_QUEUE",
+        "queue": "taomenu-ai-menu"
+      }
+    ]
+  },
   "observability": {
     "enabled": true
   },

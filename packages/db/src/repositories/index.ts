@@ -29,6 +29,27 @@ export {
   updateItem,
 } from './menu';
 export {
+  applyMenuImport,
+  createMenuImport,
+  getLatestMenuImport,
+  type MenuImportSuggestionView,
+  queueMenuImport,
+  reviewMenuImport,
+} from './menu-ai';
+export {
+  MENU_AI_MODEL,
+  MENU_AI_PROMPT_VERSION,
+  MENU_AI_PROVIDER,
+  MENU_AI_SCHEMA_VERSION,
+  MenuImportError,
+} from './menu-ai-config';
+export {
+  failMenuImport,
+  getMenuImportJob,
+  markMenuImportProcessing,
+  saveMenuImportResult,
+} from './menu-ai-processing';
+export {
   copyModifiersToItem,
   createModifier,
   createModifierGroup,

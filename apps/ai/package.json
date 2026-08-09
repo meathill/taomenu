@@ -1,0 +1,23 @@
+{
+  "name": "@taomenu/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface AiWorkerEnv worker-configuration.d.ts",
+    "typecheck": "pnpm cf-typegen && tsc --noEmit",
+    "test": "vitest run",
+    "build": "pnpm cf-typegen && wrangler deploy --dry-run --outdir .wrangler-build",
+    "deploy": "pnpm cf-typegen && wrangler deploy"
+  },
+  "dependencies": {
+    "@taomenu/db": "workspace:*",
+    "@taomenu/shared": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.107.1"
+  }
+}

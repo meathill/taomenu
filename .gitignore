@@ -6,6 +6,7 @@ node_modules
 .next
 .open-next
 .wrangler
+.wrangler-build
 dist
 out
 coverage

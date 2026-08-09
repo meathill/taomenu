@@ -11,7 +11,7 @@
     "dev": "pnpm -r --parallel --filter @taomenu/website --filter @taomenu/app dev",
     "dev:website": "pnpm --filter @taomenu/website dev",
     "dev:app": "pnpm --filter @taomenu/app dev",
-    "build": "pnpm -r --filter @taomenu/website --filter @taomenu/app build",
+    "build": "pnpm -r --filter @taomenu/website --filter @taomenu/app --filter @taomenu/ai build",
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "pnpm -r --if-present typecheck",

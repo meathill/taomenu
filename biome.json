@@ -48,6 +48,7 @@
       "!**/.next",
       "!**/.open-next",
       "!**/.wrangler",
+      "!**/.wrangler-build",
       "!**/coverage",
       "!**/cloudflare-env.d.ts",
       "!**/worker-configuration.d.ts",
