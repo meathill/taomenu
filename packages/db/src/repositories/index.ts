@@ -82,6 +82,7 @@ export {
 export {
   canTransition,
   listActiveOrders,
+  listOrderWorkbench,
   transitionOrder,
 } from './staff-orders';
 export {

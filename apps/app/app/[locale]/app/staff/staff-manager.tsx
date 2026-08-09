@@ -39,6 +39,7 @@ function formatDate(value: string | null): string {
 export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerProps) {
   const t = useTranslations('owner');
   const [devices, setDevices] = useState<Device[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [pairingCode, setPairingCode] = useState<{
     code: string;
     expiresAt: string;
@@ -53,13 +54,22 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
   const [copied, setCopied] = useState(false);
 
   const load = useCallback(async () => {
-    const response = await fetch(`/api/owner/stores/${storeId}/staff/devices`);
-    if (!response.ok) {
+    try {
+      const response = await fetch(`/api/owner/stores/${storeId}/staff/devices`, {
+        cache: 'no-store',
+      });
+      if (!response.ok) {
+        setError(t('staffLoadFailed'));
+        return;
+      }
+      const data = (await response.json()) as { devices: Device[] };
+      setDevices(data.devices);
+      setError(null);
+    } catch {
       setError(t('staffLoadFailed'));
-      return;
+    } finally {
+      setIsLoading(false);
     }
-    const data = (await response.json()) as { devices: Device[] };
-    setDevices(data.devices);
   }, [storeId, t]);
 
   useEffect(() => {
@@ -178,7 +188,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
           <Button
             type="button"
             pending={busyAction === 'generate'}
-            busy={busyAction !== null}
+            busy={isLoading || busyAction !== null}
             onClick={() => void generateCode()}
             className="min-h-12 shrink-0 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
           >
@@ -233,9 +243,18 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-black text-ink-900">{t('staffSeatsTitle')}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t('staffSeatUsage', { used: activeDeviceCount, total: staffSeatLimit })}
-            </p>
+            {isLoading ? (
+              <div
+                role="status"
+                className="mt-2 h-4 w-48 animate-pulse rounded bg-paper-100 motion-reduce:animate-none"
+                aria-label={t('loadingStaff')}
+                aria-busy="true"
+              />
+            ) : (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t('staffSeatUsage', { used: activeDeviceCount, total: staffSeatLimit })}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
             <label className="text-xs font-bold text-ink-900">
@@ -254,6 +273,7 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
             <Button
               type="button"
               pending={billingBusy}
+              busy={isLoading}
               onClick={() => void buyAdditionalSeats()}
               className="min-h-11 rounded-xl bg-gold-600 px-4 text-sm font-bold text-white"
             >
@@ -271,7 +291,17 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{t('devicesSubtitle')}</p>
         </div>
-        {devices.length === 0 ? (
+        {isLoading ? (
+          <div
+            role="status"
+            className="space-y-3 rounded-2xl border border-border bg-white p-4"
+            aria-label={t('loadingStaff')}
+            aria-busy="true"
+          >
+            <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+            <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+          </div>
+        ) : devices.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-white p-5 text-sm text-muted-foreground">
             {t('noDevices')}
           </div>

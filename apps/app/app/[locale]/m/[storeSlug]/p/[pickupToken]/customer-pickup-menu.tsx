@@ -39,7 +39,9 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   } | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch(`/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu`);
+    const res = await fetch(`/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu`, {
+      cache: 'no-store',
+    });
     if (!res.ok) {
       setError(t('notFoundPickup'));
       return;
@@ -108,6 +110,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
       );
       const data = (await res.json()) as {
         error?: string;
+        code?: string;
         pickupNumber?: number | null;
         displayNumber?: number;
         subtotalAmount?: number;
@@ -115,7 +118,16 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         status?: string;
       };
       if (!res.ok || data.displayNumber === undefined) {
-        setError(data.error || t('orderFailed'));
+        if (data.code === 'PAUSED') {
+          setMenu((current) =>
+            current
+              ? { ...current, store: { ...current.store, acceptingPublicRequests: false } }
+              : current,
+          );
+          setError(t('pausedCart'));
+        } else {
+          setError(data.error || t('orderFailed'));
+        }
         return;
       }
       setResult({
@@ -172,6 +184,21 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
       window.removeEventListener('pageshow', refresh);
     };
   }, [result?.publicToken]);
+
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState === 'visible') void load();
+    }
+    function onPageShow() {
+      void load();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', onPageShow);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', onPageShow);
+    };
+  }, [load]);
 
   if (result) {
     return (
@@ -230,6 +257,9 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         <h1 className="text-xl font-extrabold text-ink-900">
           {menu.pickupPoint?.name ?? t('pickupMode')}
         </h1>
+        {!menu.store.acceptingPublicRequests ? (
+          <p className="mt-1 text-xs font-semibold text-brand-600">{t('paused')}</p>
+        ) : null}
       </header>
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
       <ul className="space-y-6 px-4 py-4">
@@ -243,7 +273,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                 <li key={item.id}>
                   <button
                     type="button"
-                    disabled={item.isSoldOut}
+                    disabled={item.isSoldOut || !menu.store.acceptingPublicRequests}
                     onClick={() => requestAddItem(item)}
                     className="flex min-h-14 w-full items-center justify-between rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
                   >
@@ -275,11 +305,34 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
       </ul>
       {cart.length > 0 ? (
         <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="mx-auto mb-3 max-w-lg">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
+              <p className="text-sm font-bold tabular-nums text-ink-900">{formatVnd(subtotal)}</p>
+            </div>
+            <ul className="mt-2 max-h-24 space-y-1 overflow-y-auto text-xs text-muted-foreground">
+              {cart.map((line) => (
+                <li key={line.lineKey} className="flex justify-between gap-3">
+                  <span className="min-w-0 truncate">
+                    {line.quantity}× {line.name}
+                  </span>
+                  <span className="shrink-0 tabular-nums">
+                    {formatVnd(line.priceAmount * line.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {!menu.store.acceptingPublicRequests ? (
+              <p className="mt-2 text-xs font-semibold text-brand-700" role="status">
+                {t('pausedCart')}
+              </p>
+            ) : null}
+          </div>
           <button
             type="button"
-            disabled={submitting}
+            disabled={submitting || !menu.store.acceptingPublicRequests}
             onClick={() => void submitOrder()}
-            className="min-h-12 w-full rounded-xl bg-brand-600 text-sm font-bold text-white"
+            className="mx-auto min-h-12 w-full max-w-lg rounded-xl bg-brand-600 text-sm font-bold text-white disabled:bg-paper-100 disabled:text-muted-foreground"
           >
             {submitting ? t('sending') : t('sendWithPrice', { price: formatVnd(subtotal) })}
           </button>

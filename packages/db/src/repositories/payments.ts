@@ -1,5 +1,11 @@
-import { and, eq, inArray, sql } from 'drizzle-orm';
-import { orders, type PaymentMethod, payments, tableSessions } from '../schema/tables-orders';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
+import {
+  diningTables,
+  orders,
+  type PaymentMethod,
+  payments,
+  tableSessions,
+} from '../schema/tables-orders';
 import type { Db, StoreContext } from '../types';
 
 function nowMs(): Date {
@@ -19,8 +25,18 @@ export async function recordOrderPayment(
   const order = orderRows[0];
   if (!order) return null;
 
-  const amount = input.amount ?? order.subtotalAmount;
-  if (!Number.isInteger(amount) || amount < 0) {
+  const paidRows = await db
+    .select({ total: sql<number>`coalesce(sum(${payments.amount}), 0)` })
+    .from(payments)
+    .where(and(eq(payments.storeId, ctx.storeId), eq(payments.orderId, order.id)));
+  const paidAmount = Number(paidRows[0]?.total ?? 0);
+  const remainingAmount = Math.max(0, order.subtotalAmount - paidAmount);
+  if (remainingAmount === 0) {
+    return { error: 'ALREADY_PAID' as const };
+  }
+
+  const amount = input.amount ?? remainingAmount;
+  if (!Number.isInteger(amount) || amount <= 0 || amount > remainingAmount) {
     return { error: 'INVALID_AMOUNT' as const };
   }
 
@@ -28,7 +44,7 @@ export async function recordOrderPayment(
   await db.insert(payments).values({
     id,
     storeId: ctx.storeId,
-    tableSessionId: null,
+    tableSessionId: order.tableSessionId,
     orderId: order.id,
     type: 'payment',
     method: input.method,
@@ -37,7 +53,7 @@ export async function recordOrderPayment(
     createdAt: nowMs(),
   });
 
-  return { ok: true as const, paymentId: id, amount };
+  return { ok: true as const, paymentId: id, amount, remainingAmount: remainingAmount - amount };
 }
 
 export async function recordSessionPayment(
@@ -90,10 +106,15 @@ export async function getSessionBalance(ctx: StoreContext, db: Db, tableSessionI
     );
 
   const ordered = sessionOrders.reduce((sum, o) => sum + o.subtotalAmount, 0);
+  const sessionOrderIds = sessionOrders.map((order) => order.id);
+  const linkedToSession =
+    sessionOrderIds.length > 0
+      ? or(eq(payments.tableSessionId, tableSessionId), inArray(payments.orderId, sessionOrderIds))
+      : eq(payments.tableSessionId, tableSessionId);
   const payRows = await db
     .select({ total: sql<number>`coalesce(sum(${payments.amount}), 0)` })
     .from(payments)
-    .where(and(eq(payments.storeId, ctx.storeId), eq(payments.tableSessionId, tableSessionId)));
+    .where(and(eq(payments.storeId, ctx.storeId), linkedToSession));
   const paid = Number(payRows[0]?.total ?? 0);
 
   return {
@@ -129,8 +150,10 @@ export async function listOpenSessions(ctx: StoreContext, db: Db) {
     .select({
       id: tableSessions.id,
       tableId: tableSessions.tableId,
+      tableName: diningTables.name,
       openedAt: tableSessions.openedAt,
     })
     .from(tableSessions)
+    .innerJoin(diningTables, eq(diningTables.id, tableSessions.tableId))
     .where(and(eq(tableSessions.storeId, ctx.storeId), eq(tableSessions.status, 'open')));
 }

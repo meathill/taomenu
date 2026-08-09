@@ -10,7 +10,7 @@ import { getOwnerOverview } from '@taomenu/db';
 import { formatVnd } from '@taomenu/shared';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
 import {
   getOwnerStoreSelection,
@@ -34,6 +34,7 @@ export async function generateMetadata() {
 
 export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps) {
   const t = await getTranslations('owner');
+  const locale = await getLocale();
   const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
   if (!selection) redirect('/login?next=/app');
   if (!selection.store) redirect('/app/onboarding');
@@ -66,6 +67,17 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
     picked_up: t('orderStatus_picked_up'),
     cancelled: t('orderStatus_cancelled'),
   };
+  const businessDate = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeZone: store.timezone,
+  }).format(new Date());
+  const recentOrderDateFormatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: store.timezone,
+  });
   const checklist = [
     {
       key: 'menu',
@@ -97,7 +109,7 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
     },
     {
       key: 'test',
-      done: false,
+      done: overview.recentOrders.length > 0,
       label: t('setupTest'),
       href: withStore('/app/orders', store.slug),
       icon: CheckCircleIcon,
@@ -145,7 +157,9 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
             <h2 id="today-title" className="text-lg font-black text-ink-900">
               {t('today')}
             </h2>
-            <span className="text-xs font-semibold text-muted-foreground">{store.timezone}</span>
+            <span className="text-xs font-semibold text-muted-foreground">
+              {businessDate} · {store.timezone}
+            </span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {[
@@ -257,7 +271,8 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
                     <div>
                       <p className="text-sm font-bold text-ink-900">#{order.displayNumber}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {orderStatusLabels[order.status] || order.status}
+                        {orderStatusLabels[order.status] || order.status} ·{' '}
+                        {recentOrderDateFormatter.format(order.createdAt)}
                       </p>
                     </div>
                     <p className="text-sm font-bold tabular-nums text-ink-900">

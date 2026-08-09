@@ -26,10 +26,11 @@ export function QrCreateForm({
     <form onSubmit={onSubmit} className="flex flex-col gap-2 sm:flex-row">
       <input
         value={value}
+        disabled={busy}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+        className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2 disabled:bg-paper-50 disabled:opacity-60"
       />
       <Button
         type="submit"

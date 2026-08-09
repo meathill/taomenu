@@ -112,6 +112,7 @@
   "revokeConfirm": "Revoke this device? It will stop accessing the staff terminal immediately.",
   "revokeFailed": "Could not revoke this device.",
   "staffLoadFailed": "Could not load staff devices.",
+  "loadingStaff": "Loading staff devices…",
   "pairCodeFailed": "Could not generate a pairing code.",
   "staffSeatLimit": "No staff seats are available. Buy an additional seat to continue.",
   "staffSeatsTitle": "Staff seats",

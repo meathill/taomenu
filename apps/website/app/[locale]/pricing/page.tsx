@@ -16,14 +16,24 @@ export default async function PricingPage({ params }: PricingPageProps) {
       name: t('freeName'),
       price: t('freePrice'),
       desc: t('freeDesc'),
-      features: [t('freeF1'), t('freeF2'), t('freeF3'), t('staffAddOn')],
+      features: [
+        { label: t('freeF1'), comingSoon: false },
+        { label: t('freeF2'), comingSoon: false },
+        { label: t('freeF3'), comingSoon: false },
+        { label: t('staffAddOn'), comingSoon: false },
+      ],
       highlight: false,
     },
     {
       name: t('proName'),
       price: t('proPrice'),
       desc: t('proDesc'),
-      features: [t('proF1'), t('proF2'), t('proF3'), t('staffAddOn')],
+      features: [
+        { label: t('proF1'), comingSoon: false },
+        { label: t('proF2'), comingSoon: false },
+        { label: t('proF3'), comingSoon: true },
+        { label: t('staffAddOn'), comingSoon: false },
+      ],
       highlight: true,
     },
   ];
@@ -52,9 +62,16 @@ export default async function PricingPage({ params }: PricingPageProps) {
             <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
             <ul className="mt-6 space-y-3">
               {plan.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-2 text-sm text-ink-900">
+                <li key={feature.label} className="flex items-start gap-2 text-sm text-ink-900">
                   <CheckIcon className="mt-0.5 size-5 shrink-0 text-jade-600" weight="bold" />
-                  <span>{feature}</span>
+                  <span>
+                    {feature.label}
+                    {feature.comingSoon ? (
+                      <span className="ml-2 inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
+                        {t('comingSoon')}
+                      </span>
+                    ) : null}
+                  </span>
                 </li>
               ))}
             </ul>

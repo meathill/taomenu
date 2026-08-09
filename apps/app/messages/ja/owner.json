@@ -112,6 +112,7 @@
   "revokeConfirm": "この端末を取り消しますか？すぐにスタッフ端末へアクセスできなくなります。",
   "revokeFailed": "端末を取り消せませんでした。",
   "staffLoadFailed": "スタッフ端末を読み込めませんでした。",
+  "loadingStaff": "スタッフ端末を読み込み中…",
   "pairCodeFailed": "ペアリングコードを作成できませんでした。",
   "staffSeatLimit": "利用できるスタッフ席がありません。追加席を購入してください。",
   "staffSeatsTitle": "スタッフ席",

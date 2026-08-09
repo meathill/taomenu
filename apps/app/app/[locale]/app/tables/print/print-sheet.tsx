@@ -45,19 +45,24 @@ export function PrintSheet({
   const [loadFailed, setLoadFailed] = useState(false);
 
   const load = useCallback(async () => {
-    const [tableResponse, pointResponse] = await Promise.all([
-      fetch(`/api/owner/stores/${storeId}/tables`),
-      fetch(`/api/owner/stores/${storeId}/pickup-points`),
-    ]);
-    if (!tableResponse.ok || !pointResponse.ok) {
+    setLoadFailed(false);
+    try {
+      const [tableResponse, pointResponse] = await Promise.all([
+        fetch(`/api/owner/stores/${storeId}/tables`, { cache: 'no-store' }),
+        fetch(`/api/owner/stores/${storeId}/pickup-points`, { cache: 'no-store' }),
+      ]);
+      if (!tableResponse.ok || !pointResponse.ok) {
+        setLoadFailed(true);
+        return;
+      }
+      const tableData = (await tableResponse.json()) as { tables: EntryRow[] };
+      const pointData = (await pointResponse.json()) as { pickupPoints: EntryRow[] };
+      const printable = toPrintableEntries(tableData.tables, pointData.pickupPoints);
+      setEntries(printable);
+      setSelected(defaultSelectedKeys(printable));
+    } catch {
       setLoadFailed(true);
-      return;
     }
-    const tableData = (await tableResponse.json()) as { tables: EntryRow[] };
-    const pointData = (await pointResponse.json()) as { pickupPoints: EntryRow[] };
-    const printable = toPrintableEntries(tableData.tables, pointData.pickupPoints);
-    setEntries(printable);
-    setSelected(defaultSelectedKeys(printable));
   }, [storeId]);
 
   useEffect(() => {
@@ -135,7 +140,20 @@ export function PrintSheet({
             ) : null}
           </div>
           {entries === null ? (
-            <p className="text-sm text-muted-foreground">{loadFailed ? t('loadFailed') : '…'}</p>
+            loadFailed ? (
+              <p className="text-sm text-brand-600">{t('loadFailed')}</p>
+            ) : (
+              <div
+                role="status"
+                className="flex flex-wrap gap-2"
+                aria-label={t('loading')}
+                aria-busy="true"
+              >
+                <div className="h-11 w-24 animate-pulse rounded-xl bg-paper-100 motion-reduce:animate-none" />
+                <div className="h-11 w-24 animate-pulse rounded-xl bg-paper-100 motion-reduce:animate-none" />
+                <div className="h-11 w-24 animate-pulse rounded-xl bg-paper-100 motion-reduce:animate-none" />
+              </div>
+            )
           ) : entries.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t('printEmpty')}</p>
           ) : (

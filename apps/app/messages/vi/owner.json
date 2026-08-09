@@ -112,6 +112,7 @@
   "revokeConfirm": "Thu hồi thiết bị này? Thiết bị sẽ mất quyền truy cập terminal ngay.",
   "revokeFailed": "Không thể thu hồi thiết bị.",
   "staffLoadFailed": "Không thể tải thiết bị nhân viên.",
+  "loadingStaff": "Đang tải thiết bị nhân viên…",
   "pairCodeFailed": "Không thể tạo mã ghép.",
   "staffSeatLimit": "Không còn chỗ Staff. Hãy mua thêm chỗ để tiếp tục.",
   "staffSeatsTitle": "Chỗ Staff",

@@ -1,6 +1,6 @@
 'use client';
 
-import { CopyIcon } from '@phosphor-icons/react';
+import { CopyIcon, TrashIcon } from '@phosphor-icons/react';
 import { formatVnd } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { useTranslations } from 'next-intl';
@@ -23,6 +23,7 @@ type MenuItemRowProps = {
   modifierCount?: number;
   onToggleSelect: () => void;
   onCopy: () => void;
+  onDelete: () => void;
   onToggleSoldOut: () => void;
   onEditModifiers: () => void;
 };
@@ -36,12 +37,13 @@ export function MenuItemRow({
   modifierCount = 0,
   onToggleSelect,
   onCopy,
+  onDelete,
   onToggleSoldOut,
   onEditModifiers,
 }: MenuItemRowProps) {
   const t = useTranslations('menu');
   return (
-    <div className="flex items-center justify-between gap-3 py-3">
+    <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         {selectMode ? (
           <input
@@ -66,7 +68,7 @@ export function MenuItemRow({
         </div>
       </div>
       {!selectMode ? (
-        <div className="flex shrink-0 gap-1.5">
+        <div className="flex max-w-full flex-wrap gap-1.5 sm:shrink-0 sm:justify-end">
           <Button
             type="button"
             busy={busyAction !== null}
@@ -89,6 +91,18 @@ export function MenuItemRow({
             className="size-11 rounded-xl border border-border text-ink-900"
           >
             <CopyIcon className="size-4" weight="bold" aria-hidden />
+          </Button>
+          <Button
+            type="button"
+            pending={busyAction === `delete-${item.id}`}
+            busy={busyAction !== null}
+            iconOnly
+            title={t('deleteItem')}
+            aria-label={t('deleteItem')}
+            onClick={onDelete}
+            className="size-11 rounded-xl border border-border text-brand-600"
+          >
+            <TrashIcon className="size-4" weight="bold" aria-hidden />
           </Button>
           <Button
             type="button"

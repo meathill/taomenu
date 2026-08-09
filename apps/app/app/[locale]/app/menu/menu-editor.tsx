@@ -59,6 +59,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   const t = useTranslations('menu');
   const [tree, setTree] = useState<MenuTree | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState('');
   const [itemDraft, setItemDraft] = useState<{
@@ -72,7 +73,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
 
   const load = useCallback(async () => {
     setError(null);
-    const res = await fetch(`/api/owner/stores/${storeId}/menu`);
+    const res = await fetch(`/api/owner/stores/${storeId}/menu`, { cache: 'no-store' });
     if (!res.ok) {
       setError(t('loadFailed'));
       return;
@@ -184,6 +185,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   async function handleCopyItem(itemId: string) {
     setBusyAction(`copy-${itemId}`);
     setError(null);
+    setMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/copy`, {
         method: 'POST',
@@ -193,6 +195,33 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         return;
       }
       await load();
+      setMessage(t('copyDone'));
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
+  async function handleDeleteItem(itemId: string, name: string) {
+    if (!window.confirm(t('deleteItemConfirm', { name }))) return;
+    setBusyAction(`delete-${itemId}`);
+    setError(null);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        setError(t('deleteItemFailed'));
+        return;
+      }
+      if (modifiersItemId === itemId) setModifiersItemId(null);
+      setSelectedIds((current) => {
+        const next = new Set(current);
+        next.delete(itemId);
+        return next;
+      });
+      await load();
+      setMessage(t('deleteItemDone'));
     } finally {
       setBusyAction(null);
     }
@@ -243,6 +272,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
   async function handlePublish() {
     setBusyAction('publish');
     setError(null);
+    setMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu`, {
         method: 'POST',
@@ -258,6 +288,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
         return;
       }
       await load();
+      setMessage(t('publishDone'));
     } finally {
       setBusyAction(null);
     }
@@ -334,6 +365,11 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
       ) : null}
 
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
+      {message ? (
+        <p className="text-sm font-semibold text-jade-700" role="status">
+          {message}
+        </p>
+      ) : null}
 
       {tree.categories.length === 0 ? (
         <section className="rounded-2xl border border-jade-600 bg-jade-50 p-5">
@@ -408,6 +444,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                         busyAction={busyAction}
                         onBusyAction={setBusyAction}
                         onError={setError}
+                        onMessage={setMessage}
                         onChanged={load}
                       />
                     ) : null}
@@ -421,6 +458,9 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                         modifierCount={item.modifierGroups?.length ?? 0}
                         onToggleSelect={() => toggleSelected(item.id)}
                         onCopy={() => void handleCopyItem(item.id)}
+                        onDelete={() =>
+                          void handleDeleteItem(item.id, labelForItem(item, baseLocale))
+                        }
                         onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
                         onEditModifiers={() => setModifiersItemId(item.id)}
                       />

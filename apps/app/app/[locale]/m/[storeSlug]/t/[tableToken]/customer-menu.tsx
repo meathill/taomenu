@@ -55,7 +55,9 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
 
   const loadMenu = useCallback(async () => {
     setError(null);
-    const res = await fetch(`/api/public/tables/${encodeURIComponent(tableToken)}/menu`);
+    const res = await fetch(`/api/public/tables/${encodeURIComponent(tableToken)}/menu`, {
+      cache: 'no-store',
+    });
     if (!res.ok) {
       setError(t('notFoundTable'));
       return;
@@ -95,6 +97,21 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       // ignore
     }
   }, [loadMenu, refreshOrder]);
+
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState === 'visible') void loadMenu();
+    }
+    function onPageShow() {
+      void loadMenu();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', onPageShow);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', onPageShow);
+    };
+  }, [loadMenu]);
 
   // 后台不轮询：切回前台 / pageshow / 下拉时刷新
   useEffect(() => {
@@ -170,12 +187,22 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       });
       const data = (await res.json()) as {
         error?: string;
+        code?: string;
         displayNumber?: number;
         publicToken?: string;
         subtotalAmount?: number;
       };
       if (!res.ok || data.displayNumber === undefined || !data.publicToken) {
-        setError(data.error || t('orderFailed'));
+        if (data.code === 'PAUSED') {
+          setMenu((current) =>
+            current
+              ? { ...current, store: { ...current.store, acceptingPublicRequests: false } }
+              : current,
+          );
+          setError(t('pausedCart'));
+        } else {
+          setError(data.error || t('orderFailed'));
+        }
         return;
       }
       setCart([]);
@@ -386,20 +413,35 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
 
       {cart.length > 0 ? (
         <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg">
-          <div className="mx-auto flex max-w-lg items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-ink-900">
-                {t('cartCount', { count: cart.reduce((n, l) => n + l.quantity, 0) })}
-              </p>
-              <p className="text-sm tabular-nums text-muted-foreground">{formatVnd(subtotal)}</p>
+          <div className="mx-auto max-w-lg space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
+              <p className="text-sm font-bold tabular-nums text-ink-900">{formatVnd(subtotal)}</p>
             </div>
+            <ul className="max-h-24 space-y-1 overflow-y-auto text-xs text-muted-foreground">
+              {cart.map((line) => (
+                <li key={line.lineKey} className="flex justify-between gap-3">
+                  <span className="min-w-0 truncate">
+                    {line.quantity}× {line.name}
+                  </span>
+                  <span className="shrink-0 tabular-nums">
+                    {formatVnd(line.priceAmount * line.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {!menu.store.acceptingPublicRequests ? (
+              <p className="text-xs font-semibold text-brand-700" role="status">
+                {t('pausedCart')}
+              </p>
+            ) : null}
             <button
               type="button"
-              disabled={submitting}
+              disabled={submitting || !menu.store.acceptingPublicRequests}
               onClick={() => void submitOrder()}
-              className="min-h-12 rounded-xl bg-brand-600 px-5 text-sm font-bold text-white disabled:opacity-60"
+              className="min-h-12 w-full rounded-xl bg-brand-600 px-5 text-sm font-bold text-white disabled:bg-paper-100 disabled:text-muted-foreground"
             >
-              {submitting ? t('sending') : t('sendOrder')}
+              {submitting ? t('sending') : t('sendWithPrice', { price: formatVnd(subtotal) })}
             </button>
           </div>
         </div>

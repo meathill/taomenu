@@ -11,6 +11,7 @@ import {
   XIcon,
 } from '@phosphor-icons/react';
 import type { StoreRow } from '@taomenu/db';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -63,9 +64,17 @@ function OwnerNavigation({
       <div className="border-b border-border/80 px-5 pb-5">
         <Link
           href={withStore('/app', activeStore.slug)}
-          className="text-lg font-black tracking-tight text-jade-600"
+          className="inline-flex items-center gap-2 text-lg font-black tracking-tight text-jade-600"
         >
-          TaoMenu
+          <Image
+            src="/brand/taomenu-mark.svg"
+            alt=""
+            aria-hidden="true"
+            width={32}
+            height={32}
+            className="size-8 rounded-lg"
+          />
+          <span>TaoMenu</span>
         </Link>
         <StoreSwitcher
           stores={stores}

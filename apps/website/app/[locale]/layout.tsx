@@ -26,6 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       template: `%s · TaoMenu`,
     },
     description: t('description'),
+    icons: {
+      icon: '/brand/taomenu-mark.svg',
+      apple: '/brand/taomenu-mark.svg',
+    },
     alternates: {
       languages: Object.fromEntries(LOCALES.map((code) => [code, `/${code}`])),
     },

@@ -18,6 +18,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   const t = useTranslations('tables');
   const [tables, setTables] = useState<QrEntry[]>([]);
   const [points, setPoints] = useState<QrEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [tableName, setTableName] = useState('');
   const [pointName, setPointName] = useState('');
   const [editing, setEditing] = useState<{ type: QrEntryType; id: string } | null>(null);
@@ -26,19 +27,25 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   const [busyAction, setBusyAction] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [tableResponse, pointResponse] = await Promise.all([
-      fetch(`/api/owner/stores/${storeId}/tables`),
-      fetch(`/api/owner/stores/${storeId}/pickup-points`),
-    ]);
-    if (tableResponse.ok) {
-      const data = (await tableResponse.json()) as { tables: QrEntry[] };
-      setTables(data.tables);
+    try {
+      const [tableResponse, pointResponse] = await Promise.all([
+        fetch(`/api/owner/stores/${storeId}/tables`, { cache: 'no-store' }),
+        fetch(`/api/owner/stores/${storeId}/pickup-points`, { cache: 'no-store' }),
+      ]);
+      if (tableResponse.ok) {
+        const data = (await tableResponse.json()) as { tables: QrEntry[] };
+        setTables(data.tables);
+      }
+      if (pointResponse.ok) {
+        const data = (await pointResponse.json()) as { pickupPoints: QrEntry[] };
+        setPoints(data.pickupPoints);
+      }
+      setError(!tableResponse.ok || !pointResponse.ok ? t('loadFailed') : null);
+    } catch {
+      setError(t('loadFailed'));
+    } finally {
+      setIsLoading(false);
     }
-    if (pointResponse.ok) {
-      const data = (await pointResponse.json()) as { pickupPoints: QrEntry[] };
-      setPoints(data.pickupPoints);
-    }
-    if (!tableResponse.ok || !pointResponse.ok) setError(t('loadFailed'));
   }, [storeId, t]);
 
   useEffect(() => {
@@ -171,13 +178,19 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           placeholder={t('tablePlaceholder')}
           addLabel={t('add')}
           pending={busyAction === 'add-table'}
-          busy={busyAction !== null}
+          busy={isLoading || busyAction !== null}
           onChange={setTableName}
           onSubmit={(event) => void addEntry(event, 'table')}
         />
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
-          {tables.map((table) => renderEntry('table', table))}
-          {tables.length === 0 ? (
+          {isLoading ? (
+            <li className="space-y-3 p-4" aria-label={t('loading')} aria-busy="true">
+              <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+              <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+            </li>
+          ) : null}
+          {!isLoading ? tables.map((table) => renderEntry('table', table)) : null}
+          {!isLoading && tables.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">{t('emptyTables')}</li>
           ) : null}
         </ul>
@@ -193,13 +206,18 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           placeholder={t('pickupPlaceholder')}
           addLabel={t('add')}
           pending={busyAction === 'add-point'}
-          busy={busyAction !== null}
+          busy={isLoading || busyAction !== null}
           onChange={setPointName}
           onSubmit={(event) => void addEntry(event, 'point')}
         />
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
-          {points.map((point) => renderEntry('point', point))}
-          {points.length === 0 ? (
+          {isLoading ? (
+            <li className="p-4" aria-label={t('loading')} aria-busy="true">
+              <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+            </li>
+          ) : null}
+          {!isLoading ? points.map((point) => renderEntry('point', point)) : null}
+          {!isLoading && points.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">{t('emptyPickup')}</li>
           ) : null}
         </ul>

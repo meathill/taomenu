@@ -22,6 +22,7 @@ type MenuItemImageProps = {
   busyAction: string | null;
   onBusyAction: (action: string | null) => void;
   onError: (message: string | null) => void;
+  onMessage: (message: string | null) => void;
   onChanged: () => Promise<void>;
 };
 
@@ -32,6 +33,7 @@ export function MenuItemImage({
   busyAction,
   onBusyAction,
   onError,
+  onMessage,
   onChanged,
 }: MenuItemImageProps) {
   const t = useTranslations('menu');
@@ -41,6 +43,7 @@ export function MenuItemImage({
     if (!file) return;
     onBusyAction(`upload-${itemId}`);
     onError(null);
+    onMessage(null);
     try {
       const body = new FormData();
       body.set('file', file);
@@ -55,6 +58,7 @@ export function MenuItemImage({
         return;
       }
       await onChanged();
+      onMessage(t('uploadDone'));
     } finally {
       onBusyAction(null);
       if (inputRef.current) inputRef.current.value = '';
@@ -64,6 +68,7 @@ export function MenuItemImage({
   async function handleRemove() {
     onBusyAction(`remove-${itemId}`);
     onError(null);
+    onMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/image`, {
         method: 'DELETE',
@@ -73,6 +78,7 @@ export function MenuItemImage({
         return;
       }
       await onChanged();
+      onMessage(t('removeImageDone'));
     } finally {
       onBusyAction(null);
     }

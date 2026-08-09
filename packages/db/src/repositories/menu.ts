@@ -580,13 +580,19 @@ export async function deleteItem(ctx: StoreContext, db: Db, itemId: string) {
   return true;
 }
 
-/** Free 手工建菜单：复制菜品时在名称后追加的后缀（避免无限叠加）。 */
-export function duplicatedItemName(name: string): string {
-  // 复制后缀写入菜单内容，语言归 baseLocale 管，不随 UI locale 变化
-  const suffix = ' (sao chép)';
-  if (name.endsWith(suffix)) {
+const COPY_SUFFIXES: Record<string, string> = {
+  en: ' (copy)',
+  vi: ' (bản sao)',
+  zh: '（副本）',
+  ja: '（コピー）',
+};
+
+/** 复制菜品时按该条翻译自己的 locale 追加后缀，并避免无限叠加。 */
+export function duplicatedItemName(name: string, locale: string): string {
+  if (Object.values(COPY_SUFFIXES).some((suffix) => name.endsWith(suffix))) {
     return name;
   }
+  const suffix = COPY_SUFFIXES[locale] ?? COPY_SUFFIXES.en;
   return `${name}${suffix}`;
 }
 
@@ -642,7 +648,7 @@ export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
       storeId: ctx.storeId,
       itemId: newItemId,
       locale: t.locale,
-      name: duplicatedItemName(t.name),
+      name: duplicatedItemName(t.name, t.locale),
       description: t.description,
       source: 'manual' as const,
       reviewStatus: 'reviewed' as const,

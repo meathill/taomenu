@@ -1,5 +1,6 @@
 {
   "title": "Tables & QR",
+  "loading": "Loading tables and pickup points…",
   "subtitle": "Each table or pickup point has one fixed QR code. Print it, stick it on the table, and it keeps working.",
   "tables": "Tables",
   "tablesHint": "Each active table has one customer entry point. Rename it when the layout changes — the QR code stays the same.",

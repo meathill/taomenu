@@ -1,7 +1,7 @@
 import { getOwnerOverview } from '@taomenu/db';
 import { formatVnd } from '@taomenu/shared';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
 import { getOwnerStoreSelection, readStoreSlug, type StoreSearchParams } from '@/lib/active-store';
 import { getDb } from '@/lib/db';
@@ -19,6 +19,7 @@ export async function generateMetadata() {
 
 export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps) {
   const t = await getTranslations('owner');
+  const locale = await getLocale();
   const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
   if (!selection) redirect('/login?next=/app/analytics');
   if (!selection.store) redirect('/app/onboarding');
@@ -34,6 +35,10 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
     getDb(),
     store.timezone,
   );
+  const businessDate = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeZone: store.timezone,
+  }).format(new Date());
 
   return (
     <PageMessages namespaces={['owner']}>
@@ -44,6 +49,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
           <p className="mt-2 text-sm text-muted-foreground">{t('analyticsSubtitle')}</p>
         </header>
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <p className="text-xs font-semibold text-muted-foreground sm:col-span-2 xl:col-span-4">
+            {businessDate} · {store.timezone}
+          </p>
           <div className="rounded-2xl border border-border bg-white p-5">
             <p className="text-sm font-semibold text-muted-foreground">{t('todayOrders')}</p>
             <p className="mt-2 text-3xl font-black tabular-nums text-ink-900">

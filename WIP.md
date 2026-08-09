@@ -1,3 +1,17 @@
+# 普通用户验收整改（2026-08-09）
+
+跟踪：[GitHub issue #1](https://github.com/meathill/taomenu/issues/1)
+
+- [x] 统一 Owner 页面加载与骨架屏，避免加载期间显示错误空状态
+- [x] 核对桌台、二维码打印和店员设备数据加载一致性
+- [x] 补齐订单收款、已上菜和关台闭环
+- [x] 修复暂停接单、订单刷新和规格复核体验
+- [x] 增加菜品删除并修复复制名称、本地化问题
+- [x] 为尚未实现的 Pro / AI 能力增加 `Coming soon` 标识
+- [x] format / typecheck / test / build
+
+---
+
 # 按钮 loading 体验修复（2026-08-07）
 
 问题：一组按钮共享同一个 `busy` state 时，点其中一个，整组按钮全部显示 spinner。

@@ -11,6 +11,8 @@ import {
 } from '@/lib/active-store';
 import { OnboardingForm } from './onboarding-form';
 
+export const dynamic = 'force-dynamic';
+
 type OnboardingPageProps = {
   searchParams: Promise<StoreSearchParams>;
 };

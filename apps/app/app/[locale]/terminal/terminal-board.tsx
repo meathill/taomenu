@@ -13,6 +13,8 @@ type OrderCard = {
   pickupNumber: number | null;
   tableId: string | null;
   subtotalAmount: number;
+  paidAmount: number;
+  remainingAmount: number;
   items: Array<{ name: string; quantity: number }>;
 };
 
@@ -26,6 +28,7 @@ type ServiceCard = {
 type SessionCard = {
   id: string;
   tableId: string;
+  tableName: string;
   balance: { ordered: number; paid: number; balance: number } | null;
 };
 
@@ -68,30 +71,38 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
   const [orders, setOrders] = useState<OrderCard[]>([]);
   const [requests, setRequests] = useState<ServiceCard[]>([]);
   const [sessions, setSessions] = useState<SessionCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [oRes, sRes, sessRes] = await Promise.all([
-      fetch(`/api/owner/stores/${storeId}/orders`),
-      fetch(`/api/owner/stores/${storeId}/service-requests`),
-      fetch(`/api/owner/stores/${storeId}/sessions`),
-    ]);
-    if (!oRes.ok) {
+    try {
+      const [oRes, sRes, sessRes] = await Promise.all([
+        fetch(`/api/owner/stores/${storeId}/orders`, { cache: 'no-store' }),
+        fetch(`/api/owner/stores/${storeId}/service-requests`, { cache: 'no-store' }),
+        fetch(`/api/owner/stores/${storeId}/sessions`, { cache: 'no-store' }),
+      ]);
+      if (!oRes.ok) {
+        setError(t('loadFailed'));
+        return;
+      }
+      const oData = (await oRes.json()) as { orders: OrderCard[] };
+      setOrders(oData.orders);
+      if (sRes.ok) {
+        const sData = (await sRes.json()) as { requests: ServiceCard[] };
+        setRequests(sData.requests);
+      }
+      if (sessRes.ok) {
+        const sessData = (await sessRes.json()) as { sessions: SessionCard[] };
+        setSessions(sessData.sessions);
+      }
+      setError(null);
+    } catch {
       setError(t('loadFailed'));
-      return;
+    } finally {
+      setIsLoading(false);
     }
-    const oData = (await oRes.json()) as { orders: OrderCard[] };
-    setOrders(oData.orders);
-    if (sRes.ok) {
-      const sData = (await sRes.json()) as { requests: ServiceCard[] };
-      setRequests(sData.requests);
-    }
-    if (sessRes.ok) {
-      const sessData = (await sessRes.json()) as { sessions: SessionCard[] };
-      setSessions(sessData.sessions);
-    }
-    setError(null);
   }, [storeId, t]);
 
   useEffect(() => {
@@ -102,6 +113,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
   async function transition(orderId: string, status: string) {
     setBusyId(orderId);
+    setError(null);
+    setMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/orders/${orderId}/transition`, {
         method: 'POST',
@@ -120,6 +133,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
   async function transitionService(requestId: string, status: string) {
     setBusyId(`${requestId}-${status}`);
+    setError(null);
+    setMessage(null);
     try {
       const res = await fetch(
         `/api/owner/stores/${storeId}/service-requests/${requestId}/transition`,
@@ -141,6 +156,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
   async function payOrder(orderId: string, amount: number) {
     setBusyId(`pay-${orderId}`);
+    setError(null);
+    setMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/payments`, {
         method: 'POST',
@@ -151,6 +168,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
         setError(t('paymentFailed'));
         return;
       }
+      setMessage(t('paymentRecorded'));
       await load();
     } finally {
       setBusyId(null);
@@ -159,6 +177,8 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
 
   async function closeSession(sessionId: string) {
     setBusyId(`close-${sessionId}`);
+    setError(null);
+    setMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/sessions/${sessionId}/close`, {
         method: 'POST',
@@ -172,6 +192,17 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
         );
         return;
       }
+      setMessage(t('tableClosed'));
+      await load();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function refresh() {
+    setBusyId('refresh');
+    setError(null);
+    try {
       await load();
     } finally {
       setBusyId(null);
@@ -181,6 +212,11 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
   return (
     <div className="space-y-6">
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
+      {message ? (
+        <p className="text-sm font-semibold text-jade-700" role="status">
+          {message}
+        </p>
+      ) : null}
 
       {requests.length > 0 ? (
         <section className="space-y-2">
@@ -234,15 +270,27 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
           <p className="text-sm text-muted-foreground">
             {t('openOrders', { count: orders.length })}
           </p>
-          <button
+          <Button
             type="button"
-            onClick={() => void load()}
-            className="text-sm font-semibold text-jade-600"
+            pending={busyId === 'refresh'}
+            busy={busyId !== null}
+            onClick={() => void refresh()}
+            className="min-h-10 rounded-lg px-2 text-sm font-semibold text-jade-600"
           >
             {t('refresh')}
-          </button>
+          </Button>
         </div>
-        {orders.length === 0 ? (
+        {isLoading ? (
+          <div
+            role="status"
+            className="space-y-3 rounded-2xl border border-border bg-white p-4"
+            aria-label={t('loading')}
+            aria-busy="true"
+          >
+            <div className="h-24 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+            <div className="h-24 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+          </div>
+        ) : orders.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-white p-10 text-center">
             <p className="text-4xl font-extrabold tabular-nums text-gold-600">0</p>
             <p className="mt-2 text-sm font-semibold text-ink-900">{t('noOrdersTitle')}</p>
@@ -293,19 +341,21 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                         {t(action.labelKey)}
                       </Button>
                     ) : null}
-                    {(order.status === 'served' ||
+                    {order.remainingAmount > 0 &&
+                    (order.status === 'served' ||
                       order.status === 'picked_up' ||
                       order.status === 'ready_for_pickup' ||
-                      order.status === 'accepted') && (
+                      order.status === 'accepted') ? (
                       <Button
                         type="button"
                         pending={busyId === `pay-${order.id}`}
-                        onClick={() => void payOrder(order.id, order.subtotalAmount)}
+                        busy={busyId !== null}
+                        onClick={() => void payOrder(order.id, order.remainingAmount)}
                         className="min-h-11 w-full rounded-xl border border-border text-xs font-bold"
                       >
-                        {t('recordCash')}
+                        {t('recordCashAmount', { amount: formatVnd(order.remainingAmount) })}
                       </Button>
-                    )}
+                    ) : null}
                   </div>
                 </li>
               );
@@ -314,28 +364,46 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
         )}
       </section>
 
-      {sessions.some((s) => (s.balance?.balance ?? 0) <= 0) ? (
+      {sessions.length > 0 ? (
         <section className="space-y-2">
           <h2 className="text-sm font-bold text-ink-900">{t('closeSection')}</h2>
           <ul className="space-y-2">
-            {sessions
-              .filter((s) => s.balance && s.balance.balance <= 0)
-              .map((s) => (
-                <li
-                  key={s.id}
-                  className="flex items-center justify-between rounded-xl border border-border bg-white px-4 py-3"
-                >
-                  <span className="text-sm">{t('sessionLabel', { id: s.id.slice(0, 8) })}</span>
+            {sessions.map((session) => (
+              <li
+                key={session.id}
+                className="flex flex-col gap-3 rounded-xl border border-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="text-sm font-bold text-ink-900">
+                    {t('tableSessionLabel', { name: session.tableName })}
+                  </p>
+                  {session.balance ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t('sessionBalance', {
+                        ordered: formatVnd(session.balance.ordered),
+                        paid: formatVnd(session.balance.paid),
+                        balance: formatVnd(session.balance.balance),
+                      })}
+                    </p>
+                  ) : null}
+                </div>
+                {session.balance && session.balance.balance <= 0 ? (
                   <Button
                     type="button"
-                    pending={busyId === `close-${s.id}`}
-                    onClick={() => void closeSession(s.id)}
+                    pending={busyId === `close-${session.id}`}
+                    busy={busyId !== null}
+                    onClick={() => void closeSession(session.id)}
                     className="min-h-10 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white"
                   >
                     {t('closeTable')}
                   </Button>
-                </li>
-              ))}
+                ) : session.balance ? (
+                  <span className="text-xs font-bold text-brand-700">
+                    {t('balanceDue', { amount: formatVnd(session.balance.balance) })}
+                  </span>
+                ) : null}
+              </li>
+            ))}
           </ul>
         </section>
       ) : null}

@@ -1,5 +1,6 @@
 {
   "title": "Bàn & mã QR",
+  "loading": "Đang tải bàn và điểm lấy món…",
   "subtitle": "Mỗi bàn hoặc điểm lấy món có một mã QR cố định. In ra và dán lên bàn là dùng được lâu dài.",
   "tables": "Bàn",
   "tablesHint": "Mỗi bàn đang hoạt động có một điểm vào cho khách. Có thể đổi tên khi bố trí thay đổi — mã QR không đổi.",

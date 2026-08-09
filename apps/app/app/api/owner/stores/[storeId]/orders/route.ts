@@ -1,4 +1,4 @@
-import { listActiveOrders } from '@taomenu/db';
+import { listOrderWorkbench } from '@taomenu/db';
 import { isErrorResponse, requireStoreActor } from '@/lib/owner-context';
 
 type RouteContext = { params: Promise<{ storeId: string }> };
@@ -9,6 +9,6 @@ export async function GET(_request: Request, context: RouteContext) {
   const owner = await requireStoreActor(storeId);
   if (isErrorResponse(owner)) return owner;
 
-  const orders = await listActiveOrders(owner.storeCtx, owner.db);
+  const orders = await listOrderWorkbench(owner.storeCtx, owner.db);
   return Response.json({ orders });
 }

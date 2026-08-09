@@ -112,6 +112,7 @@
   "revokeConfirm": "撤销这台设备？它会立即失去员工终端访问权限。",
   "revokeFailed": "设备撤销失败。",
   "staffLoadFailed": "店员设备加载失败。",
+  "loadingStaff": "正在加载店员设备…",
   "pairCodeFailed": "配对码生成失败。",
   "staffSeatLimit": "没有可用的 Staff 席位，请购买额外席位后继续。",
   "staffSeatsTitle": "Staff 席位",
