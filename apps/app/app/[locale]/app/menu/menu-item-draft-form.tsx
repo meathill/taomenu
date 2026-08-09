@@ -80,7 +80,7 @@ export function MenuItemDraftForm({
     recognition.continuous = false;
     recognition.onresult = (event) => {
       const transcript = event.results[0]?.[0]?.transcript ?? '';
-      const parsed = parseVoiceMenuDraft(transcript);
+      const parsed = parseVoiceMenuDraft(transcript, currency);
       onChange({
         ...draft,
         name: parsed.name || draft.name,

@@ -49,6 +49,7 @@ async function processMenuImport(env: AiWorkerEnv, importId: string) {
     const result = await provider.extractMenu({
       assets,
       expectedLocale: job.menuImport.sourceLocale,
+      currency: job.storeCurrency,
     });
     await saveMenuImportResult(db, importId, result.output, result.usage);
     await Promise.all(

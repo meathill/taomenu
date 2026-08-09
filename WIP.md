@@ -11,12 +11,17 @@ currency_options，应用运行时不拉取 Stripe 价格。
 - [x] Step 3：价格输入按币种处理小数（菜单编辑 + AI 导入）
   - 新增 `sanitizeCurrencyInput`，输入框 onChange 按币种过滤；0 位小数币种行为与旧版完全一致
   - 价格文案 `priceVnd` → `price`（`Price ({currency})`），VND 门店展示不变
-  - 遗留：AI 识别提示词仍写死「integer VND」，2 位小数币种的照片导入价格语义待 Step 4 之后处理
+  - 遗留：AI 识别提示词写死「integer VND」的问题已在 Step 4.5 解决
 - [x] Step 4：stores.currency 可编辑（schema / repo / settings UI + 提示文案）
   - create/update store schema 加 `currency` 枚举，settings 把币种从只读区移进表单
   - onboarding 第二步加币种选择（默认 VND，随草稿存 localStorage）
   - 切换币种不换算已有价格与历史订单金额，页面常显提示；有 Stripe 订阅时追加警告
-- [ ] Step 4.5：AI 菜单识别按门店币种解析价格（apps/ai 提示词写死 VND，需透传 currency）
+- [x] Step 4.5：AI 菜单识别按门店币种解析价格
+  - 币种不进队列消息：`getMenuImportJob` join `stores` 带出 `storeCurrency`，AI worker 直接读 D1，
+    旧队列消息（只有 importId）天然兼容，也不会因门店改币种而读到过期值
+  - `buildPriceInstructions` 按小数位生成提示：0 位保持「integer 值 + 35k → 35000」，
+    2 位明确「返回最小单位整数，5.99 USD → 599」；`currency` 字段仍只记录到 usageJson，不做阻断
+  - AI 翻译（只传 name/description）与图片美化不涉及金额，未改动
 - [ ] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示
 - [ ] Step 6：website 定价页按 locale 币种渲染 + JSON-LD
 - [ ] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾

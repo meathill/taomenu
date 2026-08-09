@@ -23,6 +23,17 @@ describe('越南语菜单语音草稿', () => {
     });
   });
 
+  it('2 位小数币种保留价格小数', () => {
+    expect(parseVoiceMenuDraft('Phở bò giá 5,99', 'USD')).toMatchObject({
+      name: 'Phở bò',
+      price: '5.99',
+    });
+    // VND 维持取整行为
+    expect(parseVoiceMenuDraft('Phở bò giá 5,99', 'VND')).toMatchObject({
+      price: '6',
+    });
+  });
+
   it('没有说价格时保留转写文本并等待手工补价', () => {
     expect(parseVoiceMenuDraft('Bánh mì đặc biệt')).toEqual({
       name: 'Bánh mì đặc biệt',

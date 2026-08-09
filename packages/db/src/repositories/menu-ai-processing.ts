@@ -2,19 +2,26 @@ import type { MenuImportOutput } from '@taomenu/shared';
 import { and, asc, eq } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
 import { menuImportAssets, menuImportSuggestions, menuImports } from '../schema/menu-ai';
+import { stores } from '../schema/stores';
 import type { Db } from '../types';
 import { MenuImportError } from './menu-ai-config';
 
+/** 一并带出门店币种：AI worker 没有 StoreContext，识别提示词需要按币种生成 */
 export async function getMenuImportJob(db: Db, importId: string) {
-  const imports = await db.select().from(menuImports).where(eq(menuImports.id, importId)).limit(1);
-  const menuImport = imports[0];
-  if (!menuImport) return null;
+  const rows = await db
+    .select({ menuImport: menuImports, storeCurrency: stores.currency })
+    .from(menuImports)
+    .innerJoin(stores, eq(stores.id, menuImports.storeId))
+    .where(eq(menuImports.id, importId))
+    .limit(1);
+  const row = rows[0];
+  if (!row) return null;
   const assets = await db
     .select()
     .from(menuImportAssets)
     .where(eq(menuImportAssets.importId, importId))
     .orderBy(asc(menuImportAssets.pageOrder));
-  return { menuImport, assets };
+  return { menuImport: row.menuImport, storeCurrency: row.storeCurrency, assets };
 }
 
 export async function markMenuImportProcessing(db: Db, importId: string) {

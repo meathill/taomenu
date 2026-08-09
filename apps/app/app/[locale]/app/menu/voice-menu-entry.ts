@@ -1,3 +1,5 @@
+import { getCurrencyDecimals } from '@taomenu/shared';
+
 const VIETNAMESE_DIGITS: Record<string, number> = {
   không: 0,
   một: 1,
@@ -64,12 +66,15 @@ function parseVietnameseNumber(input: string): number | null {
   return Math.max(1, thousands) * 1000 + remainder;
 }
 
-function parseNumericPrice(input: string): number | null {
+function parseNumericPrice(input: string, decimals: number): number | null {
   const match = input.match(/(\d+(?:[.,]\d+)?)\s*(nghìn|ngàn|k)?\s*(?:đồng)?\s*$/iu);
   if (!match) return null;
   const numeric = Number(match[1]?.replace(',', '.'));
   if (!Number.isFinite(numeric)) return null;
-  return Math.round(numeric * (match[2] ? 1000 : 1));
+  const scaled = numeric * (match[2] ? 1000 : 1);
+  // 2 位小数币种保留小数，交给价格输入框按主单位解析
+  const factor = 10 ** decimals;
+  return Math.round(scaled * factor) / factor;
 }
 
 export type VoiceMenuDraft = {
@@ -78,7 +83,7 @@ export type VoiceMenuDraft = {
   transcript: string;
 };
 
-export function parseVoiceMenuDraft(transcript: string): VoiceMenuDraft {
+export function parseVoiceMenuDraft(transcript: string, currency = 'VND'): VoiceMenuDraft {
   const cleaned = transcript.trim().replace(/[.!?]+$/u, '');
   const marker = cleaned.toLocaleLowerCase('vi').lastIndexOf(' giá ');
   if (marker < 0) {
@@ -90,7 +95,9 @@ export function parseVoiceMenuDraft(transcript: string): VoiceMenuDraft {
     .trim()
     .replace(/[,;]+$/u, '');
   const pricePhrase = cleaned.slice(marker + 5).trim();
-  const price = parseNumericPrice(pricePhrase) ?? parseVietnameseNumber(pricePhrase);
+  const price =
+    parseNumericPrice(pricePhrase, getCurrencyDecimals(currency)) ??
+    parseVietnameseNumber(pricePhrase);
   return {
     name,
     price: price === null ? '' : String(price),

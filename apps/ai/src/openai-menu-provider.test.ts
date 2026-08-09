@@ -1,5 +1,43 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createOpenAiMenuProvider } from './openai-menu-provider';
+import { buildPriceInstructions, createOpenAiMenuProvider } from './openai-menu-provider';
+
+const EXTRACT_RESPONSE = {
+  status: 'completed',
+  output: [
+    {
+      type: 'message',
+      content: [
+        {
+          type: 'output_text',
+          text: JSON.stringify({
+            detectedLocale: 'vi',
+            currency: 'VND',
+            categories: [{ name: 'Món chính', description: null, confidence: 1, items: [] }],
+            warnings: [],
+          }),
+        },
+      ],
+    },
+  ],
+};
+
+/** 跑一次识别，返回发给模型的提示词文本 */
+async function captureExtractPrompt(currency?: string | null): Promise<string> {
+  let prompt = '';
+  const provider = createOpenAiMenuProvider({
+    apiKey: 'test-key',
+    model: 'gpt-5.6-luna',
+    fetcher: (async (_url: string | URL | Request, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as {
+        input: Array<{ content: Array<{ type: string; text?: string }> }>;
+      };
+      prompt = body.input[0]?.content.find((part) => part.type === 'input_text')?.text ?? '';
+      return Response.json(EXTRACT_RESPONSE);
+    }) as typeof fetch,
+  });
+  await provider.extractMenu({ assets: [], expectedLocale: 'vi', currency });
+  return prompt;
+}
 
 describe('OpenAI Luna 菜单 provider', () => {
   it('图片使用 original，PDF 使用 high，并要求 structured output', async () => {
@@ -48,6 +86,31 @@ describe('OpenAI Luna 菜单 provider', () => {
     });
     expect(result.output.detectedLocale).toBe('vi');
     expect(fetcher).toHaveBeenCalledOnce();
+  });
+
+  it('按币种小数位生成金额指令', () => {
+    expect(buildPriceInstructions('VND').join('\n')).toContain('integer VND value');
+    expect(buildPriceInstructions('JPY').join('\n')).toContain('integer JPY value');
+    expect(buildPriceInstructions('JPY').join('\n')).toContain('35k');
+
+    const usd = buildPriceInstructions('USD').join('\n');
+    expect(usd).toContain('minor unit (1 USD = 100 minor units)');
+    expect(usd).toContain('5.99 USD must be returned as 599');
+    expect(usd).not.toContain('35k');
+
+    expect(buildPriceInstructions('CNY').join('\n')).toContain('1 CNY = 100 minor units');
+  });
+
+  it('识别提示词跟随门店币种，缺失币种回落 VND', async () => {
+    const usdPrompt = await captureExtractPrompt('USD');
+    expect(usdPrompt).toContain('5.99 USD must be returned as 599');
+    expect(usdPrompt).toContain('the store currency is USD');
+    expect(usdPrompt).not.toContain('VND');
+
+    // 旧队列消息/历史数据没有币种时不能失败，按 VND 处理
+    const legacyPrompt = await captureExtractPrompt(undefined);
+    expect(legacyPrompt).toContain('integer VND value');
+    expect(legacyPrompt).toContain('35k');
   });
 
   it('拒绝不完整响应，避免写入半份草稿', async () => {
