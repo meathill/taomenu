@@ -3,7 +3,7 @@
 import { SquaresFourIcon } from '@phosphor-icons/react';
 import type { CreateCategoryBody, CreateItemBody } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
 import { MenuBatchBar } from './menu-batch-bar';
@@ -57,6 +57,7 @@ function labelForItem(item: MenuTree['categories'][number]['items'][number], bas
 
 export function MenuEditor({ storeId }: MenuEditorProps) {
   const t = useTranslations('menu');
+  const locale = useLocale();
   const [tree, setTree] = useState<MenuTree | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -189,6 +190,8 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/copy`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locale }),
       });
       if (!res.ok) {
         setError(t('copyFailed'));

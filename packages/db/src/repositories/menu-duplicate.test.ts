@@ -3,16 +3,16 @@ import type { StoreContext } from '../types';
 import { batchUpdateItemAvailability, duplicatedItemName } from './menu';
 
 describe('duplicatedItemName', () => {
-  it('按翻译语言追加复制后缀', () => {
+  it('按本次操作指定的界面语言追加复制后缀', () => {
     expect(duplicatedItemName('Phở bò', 'vi')).toBe('Phở bò (bản sao)');
     expect(duplicatedItemName('Rice', 'en')).toBe('Rice (copy)');
     expect(duplicatedItemName('米饭', 'zh')).toBe('米饭（副本）');
     expect(duplicatedItemName('ご飯', 'ja')).toBe('ご飯（コピー）');
   });
 
-  it('已有后缀时不叠加', () => {
+  it('已有后缀时替换为本次操作语言而不是叠加', () => {
     expect(duplicatedItemName('Phở bò (bản sao)', 'vi')).toBe('Phở bò (bản sao)');
-    expect(duplicatedItemName('米饭（副本）', 'en')).toBe('米饭（副本）');
+    expect(duplicatedItemName('米饭 (bản sao)', 'zh')).toBe('米饭（副本）');
   });
 });
 

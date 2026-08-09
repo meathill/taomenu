@@ -587,19 +587,25 @@ const COPY_SUFFIXES: Record<string, string> = {
   ja: '（コピー）',
 };
 
-/** 复制菜品时按该条翻译自己的 locale 追加后缀，并避免无限叠加。 */
+/** 复制菜品时按店主本次操作使用的界面语言追加后缀，并避免无限叠加。 */
 export function duplicatedItemName(name: string, locale: string): string {
-  if (Object.values(COPY_SUFFIXES).some((suffix) => name.endsWith(suffix))) {
-    return name;
-  }
   const suffix = COPY_SUFFIXES[locale] ?? COPY_SUFFIXES.en;
-  return `${name}${suffix}`;
+  const existingSuffix = Object.values(COPY_SUFFIXES).find((candidate) =>
+    name.endsWith(candidate),
+  );
+  const baseName = existingSuffix ? name.slice(0, -existingSuffix.length) : name;
+  return `${baseName}${suffix}`;
 }
 
 /**
  * 复制菜品（含全部 locale 翻译与规格组）。售罄状态重置为可售。
  */
-export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
+export async function duplicateItem(
+  ctx: StoreContext,
+  db: Db,
+  itemId: string,
+  copyLocale?: string,
+) {
   const sourceRows = await db
     .select()
     .from(menuItems)
@@ -648,7 +654,7 @@ export async function duplicateItem(ctx: StoreContext, db: Db, itemId: string) {
       storeId: ctx.storeId,
       itemId: newItemId,
       locale: t.locale,
-      name: duplicatedItemName(t.name, t.locale),
+      name: duplicatedItemName(t.name, copyLocale ?? t.locale),
       description: t.description,
       source: 'manual' as const,
       reviewStatus: 'reviewed' as const,
