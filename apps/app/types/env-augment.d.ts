@@ -20,6 +20,8 @@ interface CloudflareEnv {
   /** Stripe restricted API key used only by server-side billing routes. */
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
+  /** Stripe recurring Price ID for the Pro plan. */
+  STRIPE_PRO_PRICE_ID?: string;
   /** Stripe recurring Price ID for one additional staff seat. */
   STRIPE_STAFF_SEAT_PRICE_ID?: string;
   NEXT_PUBLIC_APP_URL?: string;

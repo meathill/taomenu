@@ -65,6 +65,8 @@
   "moreProToolsHint": "これらのツールは現在準備中です。",
   "importProHint": "Pro では、メニュー写真や PDF を編集可能な下書きに変換できます。自動公開はされません。",
   "importPrivacyHint": "選択したファイルは認識のため一度 OpenAI に送信されます。適用前に各品名と価格を確認してください。",
+  "importMonthlyUsage": "今月の取込使用数：{used} / {limit}",
+  "importMonthlyLimitReached": "今月のメニュー取込上限に達しました。翌月にリセットされます。",
   "importChooseFile": "写真を撮る、または PDF を選ぶ",
   "importFileHint": "JPEG、PNG、WebP、PDF（最大 12 MB）",
   "importStart": "AI 下書きを作成",

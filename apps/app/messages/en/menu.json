@@ -65,6 +65,8 @@
   "moreProToolsHint": "These tools are still being prepared.",
   "importProHint": "Upgrade to Pro to turn a menu photo or PDF into an editable draft. Nothing is published automatically.",
   "importPrivacyHint": "The selected file is sent to OpenAI once for recognition. Review every item and price before applying it to your draft.",
+  "importMonthlyUsage": "{used} of {limit} imports used this month",
+  "importMonthlyLimitReached": "You have used all menu imports for this month. The allowance resets next month.",
   "importChooseFile": "Take a photo or choose a PDF",
   "importFileHint": "JPEG, PNG, WebP or PDF, up to 12 MB",
   "importStart": "Create AI draft",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { verifyStripeWebhookSignature } from './stripe';
+import { isSubscriptionUsable, verifyStripeWebhookSignature } from './stripe';
 
 async function signature(payload: string, secret: string, timestamp: number): Promise<string> {
   const key = await crypto.subtle.importKey(
@@ -48,5 +48,15 @@ describe('Stripe webhook signature verification', () => {
     await expect(
       verifyStripeWebhookSignature(payload, `t=${timestamp},v1=${digest}`, secret, timestamp + 301),
     ).resolves.toBe(false);
+  });
+});
+
+describe('Stripe subscription entitlement', () => {
+  it.each(['active', 'trialing', 'past_due'])('%s 暂时保留已购买权益', (status) => {
+    expect(isSubscriptionUsable(status)).toBe(true);
+  });
+
+  it.each(['incomplete', 'unpaid', 'canceled', null])('%s 不授予 Pro 权益', (status) => {
+    expect(isSubscriptionUsable(status)).toBe(false);
   });
 });

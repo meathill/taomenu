@@ -25,6 +25,8 @@ export const stores = sqliteTable(
     planExpiresAt: integer('plan_expires_at', { mode: 'timestamp_ms' }),
     staffSeatAddons: integer('staff_seat_addons').notNull().default(0),
     stripeCustomerId: text('stripe_customer_id'),
+    stripePlanSubscriptionId: text('stripe_plan_subscription_id'),
+    stripePlanItemId: text('stripe_plan_item_id'),
     stripeStaffSeatSubscriptionId: text('stripe_staff_seat_subscription_id'),
     stripeStaffSeatItemId: text('stripe_staff_seat_item_id'),
     menuVersion: integer('menu_version').notNull().default(0),

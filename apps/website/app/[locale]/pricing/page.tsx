@@ -17,10 +17,10 @@ export default async function PricingPage({ params }: PricingPageProps) {
       price: t('freePrice'),
       desc: t('freeDesc'),
       features: [
-        { label: t('freeF1'), comingSoon: false },
-        { label: t('freeF2'), comingSoon: false },
-        { label: t('freeF3'), comingSoon: false },
-        { label: t('staffAddOn'), comingSoon: false },
+        { label: t('freeF1'), status: 'available' },
+        { label: t('freeF2'), status: 'available' },
+        { label: t('freeF3'), status: 'available' },
+        { label: t('staffAddOn'), status: 'available' },
       ],
       highlight: false,
     },
@@ -29,10 +29,14 @@ export default async function PricingPage({ params }: PricingPageProps) {
       price: t('proPrice'),
       desc: t('proDesc'),
       features: [
-        { label: t('proF1'), comingSoon: false },
-        { label: t('proF2'), comingSoon: false },
-        { label: t('proF3'), comingSoon: true },
-        { label: t('staffAddOn'), comingSoon: false },
+        { label: t('proF1'), status: 'available' },
+        { label: t('proF2'), status: 'available' },
+        { label: t('proImport'), status: 'available' },
+        { label: t('proQr'), status: 'available' },
+        { label: t('proTranslation'), status: 'comingSoon' },
+        { label: t('proVoice'), status: 'comingSoon' },
+        { label: t('proEnhance'), status: 'comingSoon' },
+        { label: t('staffAddOn'), status: 'available' },
       ],
       highlight: true,
     },
@@ -66,7 +70,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
                   <CheckIcon className="mt-0.5 size-5 shrink-0 text-jade-600" weight="bold" />
                   <span>
                     {feature.label}
-                    {feature.comingSoon ? (
+                    {feature.status === 'comingSoon' ? (
                       <span className="ml-2 inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
                         {t('comingSoon')}
                       </span>
@@ -84,6 +88,22 @@ export default async function PricingPage({ params }: PricingPageProps) {
           </article>
         ))}
       </div>
+
+      <section className="mt-10 rounded-2xl border border-border bg-white p-6 sm:p-8">
+        <h2 className="text-2xl font-extrabold text-ink-900">{t('aiHowTitle')}</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
+          {t('aiHowSubtitle')}
+        </p>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {(['aiInput', 'aiOutput', 'aiReview'] as const).map((key) => (
+            <article key={key} className="rounded-xl bg-paper-50 p-4">
+              <h3 className="font-bold text-ink-900">{t(`${key}Title`)}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(`${key}Body`)}</p>
+            </article>
+          ))}
+        </div>
+        <p className="mt-5 text-sm font-semibold text-ink-900">{t('aiLimit')}</p>
+      </section>
     </div>
   );
 }

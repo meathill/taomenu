@@ -5,7 +5,7 @@ import {
   menuImportItemSchema,
   type ReviewMenuImportBody,
 } from '@taomenu/shared';
-import { and, asc, desc, eq, inArray } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
 import { z } from 'zod';
 import {
@@ -52,12 +52,32 @@ function assertAiImportAllowed(ctx: StoreContext) {
   }
 }
 
+function currentUtcMonthStart(now = new Date()): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
+export async function getMenuImportUsage(ctx: StoreContext, db: Db) {
+  assertAiImportAllowed(ctx);
+  const limit = getPlanLimits(ctx.plan).maxAiMenuImportsPerMonth;
+  const rows = await db
+    .select({ value: count() })
+    .from(menuImports)
+    .where(
+      and(eq(menuImports.storeId, ctx.storeId), gte(menuImports.createdAt, currentUtcMonthStart())),
+    );
+  return { used: rows[0]?.value ?? 0, limit };
+}
+
 export async function createMenuImport(
   ctx: StoreContext,
   db: Db,
   input: { importId?: string; r2Key: string; mimeType: string; sizeBytes: number },
 ) {
   assertAiImportAllowed(ctx);
+  const usage = await getMenuImportUsage(ctx, db);
+  if (usage.used >= usage.limit) {
+    throw new MenuImportError('MONTHLY_LIMIT_REACHED', 'Monthly AI menu import limit reached');
+  }
   const importId = input.importId ?? crypto.randomUUID();
   const createdAt = new Date();
   await db.batch([

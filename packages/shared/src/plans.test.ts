@@ -8,6 +8,7 @@ describe('getPlanLimits', () => {
     expect(free.maxMenuLocales).toBe(1);
     expect(free.canUseAiMenuImport).toBe(false);
     expect(free.canUseProQrTemplates).toBe(false);
+    expect(free.maxAiMenuImportsPerMonth).toBe(0);
   });
 
   it('pro 包含 4 个 staff 席位（加上店主共 5 个席位）', () => {
@@ -17,6 +18,7 @@ describe('getPlanLimits', () => {
     expect(pro.canUseAiMenuImport).toBe(true);
     expect(pro.canUseVoiceAssistant).toBe(true);
     expect(pro.canUseProQrTemplates).toBe(true);
+    expect(pro.maxAiMenuImportsPerMonth).toBe(20);
   });
 
   it('额外购买席位叠加在套餐基础席位上', () => {

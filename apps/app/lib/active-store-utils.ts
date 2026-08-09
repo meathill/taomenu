@@ -1,5 +1,6 @@
 export type StoreSearchParams = {
   store?: string | string[];
+  billing?: string | string[];
 };
 
 export function resolveActiveStore<T extends { slug: string }>(

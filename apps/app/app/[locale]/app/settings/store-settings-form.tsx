@@ -8,9 +8,10 @@ import { Button } from '@/components/button';
 type StoreSettingsFormProps = {
   store: StoreRow;
   upgradeUrl: string;
+  billingStatus?: string;
 };
 
-export function StoreSettingsForm({ store, upgradeUrl }: StoreSettingsFormProps) {
+export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSettingsFormProps) {
   const t = useTranslations('owner');
   const [name, setName] = useState(store.name);
   const [serviceMode, setServiceMode] = useState(store.serviceMode);
@@ -21,6 +22,33 @@ export function StoreSettingsForm({ store, upgradeUrl }: StoreSettingsFormProps)
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [billingBusy, setBillingBusy] = useState(false);
+
+  async function openBilling(path: 'pro/checkout' | 'portal') {
+    setBillingBusy(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const response = await fetch(`/api/owner/stores/${store.id}/billing/${path}`, {
+        method: 'POST',
+      });
+      const data = (await response.json().catch(() => null)) as {
+        error?: string;
+        url?: string;
+      } | null;
+      if (!response.ok || !data?.url) {
+        setError(
+          data?.error === 'BILLING_NOT_CONFIGURED'
+            ? t('billingNotConfigured')
+            : t('planBillingFailed'),
+        );
+        return;
+      }
+      window.location.assign(data.url);
+    } finally {
+      setBillingBusy(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -116,21 +144,74 @@ export function StoreSettingsForm({ store, upgradeUrl }: StoreSettingsFormProps)
         <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('readOnlyHint')}</p>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-violet-600/30 bg-violet-600/5 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-lg font-black text-ink-900">{t('upgradeTitle')}</h2>
-          <p className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
-            {t('upgradeSubtitle')}
-          </p>
+      <section className="rounded-2xl border border-violet-600/30 bg-violet-600/5 p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-lg font-black text-ink-900">
+                {store.plan === 'pro' ? t('proActiveTitle') : t('upgradeTitle')}
+              </h2>
+              <span className="rounded-full bg-violet-600 px-2.5 py-1 text-xs font-black text-white">
+                PRO
+              </span>
+            </div>
+            <p className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
+              {store.plan === 'pro' ? t('proActiveSubtitle') : t('upgradeSubtitle')}
+            </p>
+          </div>
+          <p className="shrink-0 text-xl font-black tabular-nums text-ink-900">{t('proPrice')}</p>
         </div>
-        <a
-          href={upgradeUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-violet-600 px-5 text-sm font-bold text-white hover:bg-violet-600/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2"
-        >
-          {t('viewPlans')}
-        </a>
+
+        <ul className="mt-5 grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
+          <li>✓ {t('proBenefitStaff')}</li>
+          <li>✓ {t('proBenefitLanguages')}</li>
+          <li>✓ {t('proBenefitImport')}</li>
+          <li>✓ {t('proBenefitQr')}</li>
+          <li className="text-muted-foreground">○ {t('proBenefitTranslationSoon')}</li>
+          <li className="text-muted-foreground">○ {t('proBenefitVoiceSoon')}</li>
+        </ul>
+        <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('aiReviewRule')}</p>
+
+        {billingStatus === 'success' ? (
+          <p className="mt-4 text-sm font-semibold text-jade-700" role="status">
+            {t('planBillingSuccess')}
+          </p>
+        ) : null}
+        {billingStatus === 'cancel' ? (
+          <p className="mt-4 text-sm font-semibold text-muted-foreground" role="status">
+            {t('planBillingCancelled')}
+          </p>
+        ) : null}
+
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+          {store.plan === 'free' ? (
+            <Button
+              type="button"
+              pending={billingBusy}
+              onClick={() => void openBilling('pro/checkout')}
+              className="min-h-12 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white"
+            >
+              {t('upgradeNow')}
+            </Button>
+          ) : store.stripeCustomerId ? (
+            <Button
+              type="button"
+              pending={billingBusy}
+              onClick={() => void openBilling('portal')}
+              className="min-h-12 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white"
+            >
+              {t('manageBilling')}
+            </Button>
+          ) : null}
+          <a
+            href={upgradeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-12 items-center justify-center rounded-xl border border-violet-600/30 px-5 text-sm font-bold text-violet-700"
+          >
+            {t('viewPlanDetails')}
+          </a>
+        </div>
       </section>
 
       {error ? <p className="text-sm font-semibold text-brand-600">{error}</p> : null}

@@ -8,18 +8,20 @@ const WEBHOOK_TOLERANCE_SECONDS = 5 * 60;
 export type StripeConfig = {
   secretKey: string;
   webhookSecret: string;
-  staffSeatPriceId: string;
+  staffSeatPriceId?: string;
+  proPriceId?: string;
 };
 
 export function getStripeConfig(): StripeConfig | null {
   const env = getEnv();
-  if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET || !env.STRIPE_STAFF_SEAT_PRICE_ID) {
+  if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET) {
     return null;
   }
   return {
     secretKey: env.STRIPE_SECRET_KEY,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
     staffSeatPriceId: env.STRIPE_STAFF_SEAT_PRICE_ID,
+    proPriceId: env.STRIPE_PRO_PRICE_ID,
   };
 }
 
@@ -70,6 +72,7 @@ export async function createStaffSeatCheckoutSession(
     quantity: number;
   },
 ): Promise<{ url: string }> {
+  if (!config.staffSeatPriceId) throw new StripeRequestError(503);
   const encodedStore = encodeURIComponent(input.storeSlug);
   const params = new URLSearchParams();
   params.set('mode', 'subscription');
@@ -101,6 +104,59 @@ export async function createStaffSeatCheckoutSession(
     throw new StripeRequestError(502);
   }
   return { url: data.url };
+}
+
+export async function createProCheckoutSession(
+  config: StripeConfig,
+  input: {
+    storeId: string;
+    storeSlug: string;
+    ownerEmail: string;
+    stripeCustomerId: string | null;
+  },
+): Promise<{ url: string }> {
+  if (!config.proPriceId) throw new StripeRequestError(503);
+  const encodedStore = encodeURIComponent(input.storeSlug);
+  const params = new URLSearchParams();
+  params.set('mode', 'subscription');
+  params.set('line_items[0][price]', config.proPriceId);
+  params.set('line_items[0][quantity]', '1');
+  params.set('client_reference_id', input.storeId);
+  params.set('metadata[storeId]', input.storeId);
+  params.set('metadata[kind]', 'pro_plan');
+  params.set('subscription_data[metadata][storeId]', input.storeId);
+  params.set('subscription_data[metadata][kind]', 'pro_plan');
+  params.set(
+    'success_url',
+    joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=success`),
+  );
+  params.set(
+    'cancel_url',
+    joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=cancel`),
+  );
+  if (input.stripeCustomerId) params.set('customer', input.stripeCustomerId);
+  else params.set('customer_email', input.ownerEmail);
+
+  const data = await stripeRequest(config, '/checkout/sessions', params);
+  if (!data.url) throw new StripeRequestError(502);
+  return { url: data.url };
+}
+
+export async function createBillingPortalSession(
+  config: StripeConfig,
+  input: { stripeCustomerId: string; storeSlug: string },
+): Promise<{ url: string }> {
+  const encodedStore = encodeURIComponent(input.storeSlug);
+  const params = new URLSearchParams();
+  params.set('customer', input.stripeCustomerId);
+  params.set('return_url', joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}`));
+  const data = await stripeRequest(config, '/billing_portal/sessions', params);
+  if (!data.url) throw new StripeRequestError(502);
+  return { url: data.url };
+}
+
+export function isSubscriptionUsable(status: string | null): boolean {
+  return status === 'active' || status === 'trialing' || status === 'past_due';
 }
 
 export async function updateStaffSeatSubscriptionItem(

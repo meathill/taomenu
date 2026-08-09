@@ -19,7 +19,8 @@ export async function generateMetadata() {
 export default async function SettingsPage({ searchParams }: SettingsPageProps) {
   const t = await getTranslations('owner');
   const locale = await getLocale();
-  const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
+  const resolvedSearchParams = await searchParams;
+  const selection = await getOwnerStoreSelection(readStoreSlug(resolvedSearchParams));
   if (!selection) redirect('/login?next=/app/settings');
   if (!selection.store) redirect('/app/onboarding');
 
@@ -34,6 +35,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         <StoreSettingsForm
           store={selection.store}
           upgradeUrl={joinPublicUrl(getPublicWebsiteUrl(), `/${locale}/pricing`)}
+          billingStatus={
+            Array.isArray(resolvedSearchParams.billing)
+              ? resolvedSearchParams.billing[0]
+              : resolvedSearchParams.billing
+          }
         />
       </div>
     </PageMessages>

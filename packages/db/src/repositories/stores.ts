@@ -59,6 +59,8 @@ export async function createStoreForOwner(
     planExpiresAt: null,
     staffSeatAddons: 0,
     stripeCustomerId: null,
+    stripePlanSubscriptionId: null,
+    stripePlanItemId: null,
     stripeStaffSeatSubscriptionId: null,
     stripeStaffSeatItemId: null,
     menuVersion: 0,
@@ -152,6 +154,8 @@ export async function listStoresForUser(db: Db, userId: string): Promise<StoreRo
       planExpiresAt: stores.planExpiresAt,
       staffSeatAddons: stores.staffSeatAddons,
       stripeCustomerId: stores.stripeCustomerId,
+      stripePlanSubscriptionId: stores.stripePlanSubscriptionId,
+      stripePlanItemId: stores.stripePlanItemId,
       stripeStaffSeatSubscriptionId: stores.stripeStaffSeatSubscriptionId,
       stripeStaffSeatItemId: stores.stripeStaffSeatItemId,
       menuVersion: stores.menuVersion,
@@ -216,6 +220,37 @@ export async function updateStaffSeatBilling(
   if (input.stripeStaffSeatItemId !== undefined) {
     patch.stripeStaffSeatItemId = input.stripeStaffSeatItemId;
   }
+
+  await db.update(stores).set(patch).where(eq(stores.id, storeId));
+}
+
+export type PlanBillingUpdate = {
+  plan: PlanId;
+  stripeCustomerId?: string | null;
+  stripePlanSubscriptionId?: string | null;
+  stripePlanItemId?: string | null;
+};
+
+export async function updatePlanBilling(
+  db: Db,
+  storeId: string,
+  input: PlanBillingUpdate,
+): Promise<void> {
+  const patch: {
+    plan: PlanId;
+    stripeCustomerId?: string | null;
+    stripePlanSubscriptionId?: string | null;
+    stripePlanItemId?: string | null;
+    updatedAt: Date;
+  } = {
+    plan: input.plan,
+    updatedAt: nowMs(),
+  };
+  if (input.stripeCustomerId !== undefined) patch.stripeCustomerId = input.stripeCustomerId;
+  if (input.stripePlanSubscriptionId !== undefined) {
+    patch.stripePlanSubscriptionId = input.stripePlanSubscriptionId;
+  }
+  if (input.stripePlanItemId !== undefined) patch.stripePlanItemId = input.stripePlanItemId;
 
   await db.update(stores).set(patch).where(eq(stores.id, storeId));
 }

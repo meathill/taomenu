@@ -26,6 +26,7 @@ export function MenuImportPanel({
   const t = useTranslations('menu');
   const locale = useLocale();
   const [view, setView] = useState<ImportView | null>(null);
+  const [usage, setUsage] = useState({ used: 0, limit: 20 });
   const [file, setFile] = useState<File | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +41,13 @@ export function MenuImportPanel({
       setError(t('importLoadFailed'));
       return;
     }
-    const nextView = (await response.json()) as ImportView | null;
+    const data = (await response.json()) as {
+      view: ImportView | null;
+      usage: { used: number; limit: number };
+    };
+    const nextView = data.view;
     setView(nextView);
+    setUsage(data.usage);
     if (nextView?.menuImport.status === 'needs_review') {
       setDraft(createReviewDraft(nextView.suggestions));
     }
@@ -143,6 +149,7 @@ export function MenuImportPanel({
     if (code === 'TOO_LARGE') return t('importTooLarge');
     if (code === 'UNSUPPORTED_TYPE') return t('importUnsupported');
     if (code === 'BAD_MAGIC' || code === 'EMPTY') return t('importInvalidFile');
+    if (code === 'MONTHLY_LIMIT_REACHED') return t('importMonthlyLimitReached');
     return t('importUploadFailed');
   }
 
@@ -244,6 +251,7 @@ export function MenuImportPanel({
         </span>
       </div>
       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('importPrivacyHint')}</p>
+      <p className="mt-1 text-xs font-semibold text-indigo-700">{t('importMonthlyUsage', usage)}</p>
 
       {status === 'queued' || status === 'processing' ? (
         <div className="mt-4" role="status" aria-live="polite">
@@ -332,7 +340,7 @@ export function MenuImportPanel({
             type="submit"
             pending={busyAction === 'upload'}
             busy={busyAction !== null}
-            disabled={!file}
+            disabled={!file || usage.used >= usage.limit}
             className="min-h-12 w-full rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
           >
             {t('importStart')}

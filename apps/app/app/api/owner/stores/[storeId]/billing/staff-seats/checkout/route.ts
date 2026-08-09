@@ -36,7 +36,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const config = getStripeConfig();
-  if (!config) {
+  if (!config?.staffSeatPriceId) {
     return Response.json({ error: 'BILLING_NOT_CONFIGURED' }, { status: 503 });
   }
 

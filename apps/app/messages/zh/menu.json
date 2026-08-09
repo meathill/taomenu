@@ -65,6 +65,8 @@
   "moreProToolsHint": "这些工具还在准备中。",
   "importProHint": "升级 Pro 后，可把菜单照片或 PDF 转成可编辑草稿；系统不会自动发布。",
   "importPrivacyHint": "所选文件会发送给 OpenAI 做一次识别。写入草稿前，请逐项核对菜名和价格。",
+  "importMonthlyUsage": "本月已使用 {used} / {limit} 次识别",
+  "importMonthlyLimitReached": "本月菜单识别额度已用完，下月会自动恢复。",
   "importChooseFile": "拍照或选择 PDF",
   "importFileHint": "支持 JPEG、PNG、WebP、PDF，最大 12MB",
   "importStart": "生成 AI 草稿",

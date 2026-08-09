@@ -1,4 +1,9 @@
-import { createMenuImport, getLatestMenuImport, MenuImportError } from '@taomenu/db';
+import {
+  createMenuImport,
+  getLatestMenuImport,
+  getMenuImportUsage,
+  MenuImportError,
+} from '@taomenu/db';
 import { getPlanLimits } from '@taomenu/shared';
 import { badRequest } from '@/lib/api-error';
 import { getEnv } from '@/lib/cf';
@@ -14,7 +19,11 @@ export async function GET(_request: Request, context: RouteContext) {
   if (!getPlanLimits(owner.storeCtx.plan).canUseAiMenuImport) {
     return Response.json({ error: 'PRO_REQUIRED' }, { status: 403 });
   }
-  return Response.json(await getLatestMenuImport(owner.storeCtx, owner.db));
+  const [view, usage] = await Promise.all([
+    getLatestMenuImport(owner.storeCtx, owner.db),
+    getMenuImportUsage(owner.storeCtx, owner.db),
+  ]);
+  return Response.json({ view, usage });
 }
 
 export async function POST(request: Request, context: RouteContext) {
@@ -58,7 +67,10 @@ export async function POST(request: Request, context: RouteContext) {
   } catch (error) {
     await env.MEDIA.delete(r2Key).catch(() => undefined);
     if (error instanceof MenuImportError) {
-      return Response.json({ error: error.code }, { status: 403 });
+      return Response.json(
+        { error: error.code },
+        { status: error.code === 'MONTHLY_LIMIT_REACHED' ? 429 : 403 },
+      );
     }
     throw error;
   }

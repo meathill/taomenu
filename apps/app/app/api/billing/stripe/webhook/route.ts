@@ -1,7 +1,7 @@
-import { updateStaffSeatBilling } from '@taomenu/db';
+import { updatePlanBilling, updateStaffSeatBilling } from '@taomenu/db';
 import { badRequest } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
-import { getStripeConfig, verifyStripeWebhookSignature } from '@/lib/stripe';
+import { getStripeConfig, isSubscriptionUsable, verifyStripeWebhookSignature } from '@/lib/stripe';
 
 type StripeObject = Record<string, unknown>;
 
@@ -41,7 +41,21 @@ function readSubscriptionItem(object: StripeObject): {
 
 async function handleCheckoutCompleted(object: StripeObject): Promise<void> {
   const metadata = readMetadata(object);
-  if (metadata.kind !== 'staff_seats' || !metadata.storeId) return;
+  if (!metadata.storeId) return;
+
+  if (metadata.kind === 'pro_plan') {
+    const subscriptionId = readString(object.subscription);
+    const customerId = readString(object.customer);
+    if (!subscriptionId) return;
+    await updatePlanBilling(getDb(), metadata.storeId, {
+      plan: 'pro',
+      stripeCustomerId: customerId,
+      stripePlanSubscriptionId: subscriptionId,
+    });
+    return;
+  }
+
+  if (metadata.kind !== 'staff_seats') return;
 
   const quantity = Number(metadata.staffSeatQuantity);
   const subscriptionId = readString(object.subscription);
@@ -57,12 +71,25 @@ async function handleCheckoutCompleted(object: StripeObject): Promise<void> {
 
 async function handleSubscriptionEvent(object: StripeObject, deleted: boolean): Promise<void> {
   const metadata = readMetadata(object);
-  if (metadata.kind !== 'staff_seats' || !metadata.storeId) return;
+  if (!metadata.storeId) return;
 
   const subscriptionItem = readSubscriptionItem(object);
   const customerId = readString(object.customer);
   const subscriptionId = readString(object.id);
   if (!subscriptionId) return;
+
+  if (metadata.kind === 'pro_plan') {
+    const status = readString(object.status);
+    await updatePlanBilling(getDb(), metadata.storeId, {
+      plan: !deleted && isSubscriptionUsable(status) ? 'pro' : 'free',
+      stripeCustomerId: customerId,
+      stripePlanSubscriptionId: deleted ? null : subscriptionId,
+      stripePlanItemId: deleted ? null : subscriptionItem.id,
+    });
+    return;
+  }
+
+  if (metadata.kind !== 'staff_seats') return;
 
   if (deleted) {
     await updateStaffSeatBilling(getDb(), metadata.storeId, {
@@ -75,7 +102,7 @@ async function handleSubscriptionEvent(object: StripeObject, deleted: boolean): 
   }
 
   const status = readString(object.status);
-  const usable = status === 'active' || status === 'trialing' || status === 'past_due';
+  const usable = isSubscriptionUsable(status);
   await updateStaffSeatBilling(getDb(), metadata.storeId, {
     staffSeatAddons: usable ? subscriptionItem.quantity : 0,
     stripeCustomerId: customerId,

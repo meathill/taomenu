@@ -65,6 +65,8 @@
   "moreProToolsHint": "Các công cụ này vẫn đang được chuẩn bị.",
   "importProHint": "Nâng cấp Pro để biến ảnh hoặc PDF menu thành bản nháp có thể chỉnh sửa. Hệ thống không tự xuất bản.",
   "importPrivacyHint": "File đã chọn sẽ được gửi một lần tới OpenAI để nhận diện. Hãy kiểm tra từng món và giá trước khi áp dụng.",
+  "importMonthlyUsage": "Đã dùng {used}/{limit} lượt nhập trong tháng này",
+  "importMonthlyLimitReached": "Bạn đã dùng hết lượt nhập menu tháng này. Hạn mức sẽ được đặt lại vào tháng sau.",
   "importChooseFile": "Chụp ảnh hoặc chọn PDF",
   "importFileHint": "JPEG, PNG, WebP hoặc PDF, tối đa 12 MB",
   "importStart": "Tạo bản nháp AI",
