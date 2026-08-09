@@ -23,8 +23,8 @@ describe('BILLING_PRICES', () => {
   it('getBillingPrice 返回配置价格', () => {
     expect(getBillingPrice('pro_plan', 'VND')).toBe(149_000);
     expect(getBillingPrice('pro_plan', 'USD')).toBe(599);
-    expect(getBillingPrice('staff_seat', 'JPY')).toBe(300);
-    expect(getBillingPrice('staff_seat', 'CNY')).toBe(1_400);
+    expect(getBillingPrice('staff_seat', 'JPY')).toBe(750);
+    expect(getBillingPrice('staff_seat', 'CNY')).toBe(3_500);
   });
 
   it('席位价格低于 Pro 套餐价格', () => {

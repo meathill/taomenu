@@ -10,7 +10,7 @@ export type BillingProduct = (typeof BILLING_PRODUCTS)[number];
 /** 月付价格。VND/JPY 为整数主单位，USD/CNY 为分。 */
 export const BILLING_PRICES: Record<BillingProduct, Record<BillingCurrency, number>> = {
   pro_plan: { VND: 149_000, USD: 599, JPY: 900, CNY: 4_200 },
-  staff_seat: { VND: 49_000, USD: 199, JPY: 300, CNY: 1_400 },
+  staff_seat: { VND: 125_000, USD: 498, JPY: 750, CNY: 3_500 },
 };
 
 export function getBillingPrice(product: BillingProduct, currency: BillingCurrency): number {
