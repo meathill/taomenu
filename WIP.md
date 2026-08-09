@@ -1,24 +1,3 @@
-# AI 菜单导入 MVP（2026-08-09）
-
-目标：Pro 店主上传菜单照片或 PDF，经 GPT-5.6 Luna 生成结构化草稿，逐项确认后写入现有菜单草稿；AI 结果绝不自动发布。
-
-- [x] 固化导入 schema、文件校验、Pro 权益和状态机测试
-- [x] 新增 menu import / asset / suggestion 数据表与 repository
-- [x] 新增 R2 上传、开始识别、查询状态、审核和应用 API
-- [x] 新增独立 AI Queue Worker 与 OpenAI provider adapter
-- [x] 把菜单页 Coming soon 入口升级为可操作导入与审核界面
-- [x] 更新四语文案与部署文档
-- [x] format / typecheck / test / build
-- [ ] 说明生产迁移影响，获授权后 migrate / deploy / commit / push / 线上复验
-- [x] 修复生产验收发现的 Pro 页面仍显示 Free 方案说明
-- [x] 创建生产 Pro 临时店并完成照片上传、Queue 消费链路验证
-- [x] 修复识别失败时直接暴露 `OPENAI_HTTP_*` 内部错误码的问题
-- [x] 更新生产 OpenAI 密钥后重试 Luna，审核并应用识别草稿
-- [ ] 空菜单首次导入时采用检测到的内容语言；已有菜单语言不匹配时阻止错误落库
-- [ ] 清理临时店及关联 D1 / R2 数据，更新 issue 与 TODO
-
----
-
 # 生产验收后续整改（2026-08-09）
 
 来源：提交 `ec3028f` 部署后的普通用户回归。
@@ -49,7 +28,7 @@
 - [x] 满席时禁用生成配对二维码
 - [x] 明确提示撤销旧设备或购买额外席位
 - [x] 补充测试并完成 format / typecheck / test / build
-- [ ] commit + push，等待部署
+- [x] commit + push，等待部署
 
 ---
 
