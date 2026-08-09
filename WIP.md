@@ -12,7 +12,11 @@ currency_options，应用运行时不拉取 Stripe 价格。
   - 新增 `sanitizeCurrencyInput`，输入框 onChange 按币种过滤；0 位小数币种行为与旧版完全一致
   - 价格文案 `priceVnd` → `price`（`Price ({currency})`），VND 门店展示不变
   - 遗留：AI 识别提示词仍写死「integer VND」，2 位小数币种的照片导入价格语义待 Step 4 之后处理
-- [ ] Step 4：stores.currency 可编辑（schema / repo / settings UI + 提示文案）
+- [x] Step 4：stores.currency 可编辑（schema / repo / settings UI + 提示文案）
+  - create/update store schema 加 `currency` 枚举，settings 把币种从只读区移进表单
+  - onboarding 第二步加币种选择（默认 VND，随草稿存 localStorage）
+  - 切换币种不换算已有价格与历史订单金额，页面常显提示；有 Stripe 订阅时追加警告
+- [ ] Step 4.5：AI 菜单识别按门店币种解析价格（apps/ai 提示词写死 VND，需透传 currency）
 - [ ] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示
 - [ ] Step 6：website 定价页按 locale 币种渲染 + JSON-LD
 - [ ] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾

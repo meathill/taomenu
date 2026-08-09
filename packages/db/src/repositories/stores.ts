@@ -112,6 +112,7 @@ export type UpdateStoreInput = {
   serviceMode?: ServiceMode;
   timezone?: string;
   acceptingPublicRequests?: boolean;
+  currency?: string;
 };
 
 export async function updateStore(
@@ -132,6 +133,7 @@ export async function updateStore(
       serviceMode: input.serviceMode ?? current.serviceMode,
       timezone: input.timezone ?? current.timezone,
       acceptingPublicRequests: input.acceptingPublicRequests ?? current.acceptingPublicRequests,
+      currency: input.currency ?? current.currency,
       updatedAt,
     })
     .where(eq(stores.id, ctx.storeId));

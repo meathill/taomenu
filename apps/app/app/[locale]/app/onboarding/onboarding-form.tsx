@@ -1,6 +1,11 @@
 'use client';
 
-import { type CreateStoreBody, SERVICE_MODES } from '@taomenu/shared';
+import {
+  BILLING_CURRENCIES,
+  type CreateStoreBody,
+  SERVICE_MODES,
+  toBillingCurrency,
+} from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
@@ -8,27 +13,33 @@ import { Button } from '@/components/button';
 
 const DRAFT_KEY = 'taomenu.onboarding.draft';
 
+type StoreCurrency = NonNullable<CreateStoreBody['currency']>;
+
 type Draft = {
   name: string;
   serviceMode: CreateStoreBody['serviceMode'];
+  currency: StoreCurrency;
 };
+
+const EMPTY_DRAFT: Draft = { name: '', serviceMode: 'table_service', currency: 'VND' };
 
 function loadDraft(): Draft {
   if (typeof window === 'undefined') {
-    return { name: '', serviceMode: 'table_service' };
+    return EMPTY_DRAFT;
   }
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
     if (!raw) {
-      return { name: '', serviceMode: 'table_service' };
+      return EMPTY_DRAFT;
     }
     const parsed = JSON.parse(raw) as Partial<Draft>;
     return {
-      name: parsed.name ?? '',
-      serviceMode: parsed.serviceMode ?? 'table_service',
+      name: parsed.name ?? EMPTY_DRAFT.name,
+      serviceMode: parsed.serviceMode ?? EMPTY_DRAFT.serviceMode,
+      currency: toBillingCurrency(parsed.currency),
     };
   } catch {
-    return { name: '', serviceMode: 'table_service' };
+    return EMPTY_DRAFT;
   }
 }
 
@@ -38,6 +49,7 @@ export function OnboardingForm() {
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState('');
   const [serviceMode, setServiceMode] = useState<CreateStoreBody['serviceMode']>('table_service');
+  const [currency, setCurrency] = useState<StoreCurrency>('VND');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [ready, setReady] = useState(false);
@@ -46,6 +58,7 @@ export function OnboardingForm() {
     const draft = loadDraft();
     setName(draft.name);
     setServiceMode(draft.serviceMode);
+    setCurrency(draft.currency);
     setReady(true);
   }, []);
 
@@ -53,9 +66,9 @@ export function OnboardingForm() {
     if (!ready) {
       return;
     }
-    const draft: Draft = { name, serviceMode };
+    const draft: Draft = { name, serviceMode, currency };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  }, [name, serviceMode, ready]);
+  }, [name, serviceMode, currency, ready]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -71,6 +84,7 @@ export function OnboardingForm() {
           timezone: 'Asia/Ho_Chi_Minh',
           // 菜单内容默认语言跟当前 UI 语言一致
           baseLocale: locale,
+          currency,
         } satisfies CreateStoreBody),
       });
       if (!res.ok) {
@@ -154,6 +168,22 @@ export function OnboardingForm() {
               {t('counterHint')}
             </p>
           ) : null}
+          <label className="block text-sm font-semibold text-ink-900" htmlFor="store-currency">
+            {t('currency')}
+          </label>
+          <select
+            id="store-currency"
+            value={currency}
+            onChange={(event) => setCurrency(event.target.value as StoreCurrency)}
+            className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
+          >
+            {BILLING_CURRENCIES.map((code) => (
+              <option key={code} value={code}>
+                {code}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">{t('currencyHint')}</p>
           <div className="flex gap-2">
             <button
               type="button"

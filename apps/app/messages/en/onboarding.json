@@ -15,6 +15,8 @@
   "modeHybridTitle": "Hybrid",
   "modeHybridDesc": "Both table service and takeaway / counter pickup.",
   "counterHint": "Shops with few or no seats do not need table numbers. Next you only need a pickup code.",
+  "currency": "Currency",
+  "currencyHint": "Used for menu prices and billing. You can change it later in settings.",
   "createStore": "Create store",
   "errorCreate": "Could not create the store."
 }

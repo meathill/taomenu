@@ -1,6 +1,7 @@
 'use client';
 
 import type { StoreRow } from '@taomenu/db';
+import { BILLING_CURRENCIES, type BillingCurrency, toBillingCurrency } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
@@ -16,6 +17,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
   const [name, setName] = useState(store.name);
   const [serviceMode, setServiceMode] = useState(store.serviceMode);
   const [timezone, setTimezone] = useState(store.timezone);
+  const [currency, setCurrency] = useState<BillingCurrency>(toBillingCurrency(store.currency));
   const [acceptingPublicRequests, setAcceptingPublicRequests] = useState(
     store.acceptingPublicRequests,
   );
@@ -23,6 +25,10 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [billingBusy, setBillingBusy] = useState(false);
+  // 已有 Stripe 订阅时，改币种不会影响既有扣款，需要额外提示
+  const hasSubscription = Boolean(
+    store.stripePlanSubscriptionId || store.stripeStaffSeatSubscriptionId,
+  );
 
   async function openBilling(path: 'pro/checkout' | 'portal') {
     setBillingBusy(true);
@@ -59,7 +65,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
       const response = await fetch(`/api/owner/stores/${store.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, serviceMode, timezone, acceptingPublicRequests }),
+        body: JSON.stringify({ name, serviceMode, timezone, currency, acceptingPublicRequests }),
       });
       if (!response.ok) {
         setError(t('settingsSaveFailed'));
@@ -104,7 +110,27 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
               className="mt-2 min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
             />
           </label>
+          <label className="block text-sm font-bold text-ink-900">
+            {t('currency')}
+            <select
+              value={currency}
+              onChange={(event) => setCurrency(event.target.value as BillingCurrency)}
+              className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base outline-none ring-jade-600 focus:ring-2"
+            >
+              {BILLING_CURRENCIES.map((code) => (
+                <option key={code} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
+        <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('currencyChangeHint')}</p>
+        {hasSubscription ? (
+          <p className="mt-2 rounded-xl bg-brand-50 px-3 py-2 text-xs leading-5 text-brand-700">
+            {t('currencyBillingHint')}
+          </p>
+        ) : null}
       </section>
 
       <section className="rounded-2xl border border-border bg-white p-5">
@@ -127,10 +153,6 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
           <div>
             <dt className="text-muted-foreground">{t('planLabel')}</dt>
             <dd className="mt-1 font-bold text-ink-900">{store.plan.toUpperCase()}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">{t('currency')}</dt>
-            <dd className="mt-1 font-bold text-ink-900">{store.currency}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">{t('baseLanguage')}</dt>

@@ -15,6 +15,8 @@
   "modeHybridTitle": "ハイブリッド",
   "modeHybridDesc": "店内とテイクアウト／カウンターの両方。",
   "counterHint": "席が少ない・ない店は卓番号は不要です。次は受取コードだけで大丈夫です。",
+  "currency": "通貨",
+  "currencyHint": "メニュー価格と請求に使います。後から設定で変更できます。",
   "createStore": "店舗を作成",
   "errorCreate": "店舗を作成できませんでした。"
 }
