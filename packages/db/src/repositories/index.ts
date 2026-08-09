@@ -51,6 +51,20 @@ export {
   saveMenuImportResult,
 } from './menu-ai-processing';
 export {
+  applyMenuTranslation,
+  buildMenuTranslationInput,
+  createMenuTranslation,
+  getLatestMenuTranslation,
+  getMenuTranslationUsage,
+  reviewMenuTranslation,
+} from './menu-translation';
+export {
+  failMenuTranslation,
+  getMenuTranslationJob,
+  markMenuTranslationProcessing,
+  saveMenuTranslationResult,
+} from './menu-translation-processing';
+export {
   copyModifiersToItem,
   createModifier,
   createModifierGroup,

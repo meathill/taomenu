@@ -1,7 +1,11 @@
 import {
   MENU_IMPORT_JSON_SCHEMA,
+  MENU_TRANSLATION_JSON_SCHEMA,
   type MenuImportOutput,
+  type MenuTranslationInputEntity,
+  type MenuTranslationOutput,
   menuImportOutputSchema,
+  menuTranslationOutputSchema,
 } from '@taomenu/shared';
 import { z } from 'zod';
 
@@ -15,6 +19,11 @@ export type MenuAiProvider = {
     assets: MenuImportAssetInput[];
     expectedLocale?: string | null;
   }): Promise<{ output: MenuImportOutput; usage: unknown }>;
+  translateMenu(input: {
+    sourceLocale: string;
+    targetLocale: string;
+    entities: MenuTranslationInputEntity[];
+  }): Promise<{ output: MenuTranslationOutput; usage: unknown }>;
 };
 
 type OpenAiMenuProviderOptions = {
@@ -123,6 +132,52 @@ export function createOpenAiMenuProvider(options: OpenAiMenuProviderOptions): Me
       }
       const parsedResponse = openAiResponseSchema.parse(await response.json());
       const output = menuImportOutputSchema.parse(JSON.parse(extractOutputText(parsedResponse)));
+      return { output, usage: parsedResponse.usage ?? null };
+    },
+    async translateMenu(input) {
+      const response = await fetcher('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${options.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: options.model,
+          store: false,
+          max_output_tokens: 16_000,
+          input: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'input_text',
+                  text: [
+                    `Translate restaurant menu content from ${input.sourceLocale} to ${input.targetLocale}.`,
+                    'Preserve every entityType and entityId exactly and return every input entity once.',
+                    'Translate names and descriptions naturally for restaurant guests. Do not add claims, ingredients, prices, or details absent from the source.',
+                    'Keep common dish names recognizable when a literal translation would be misleading.',
+                    JSON.stringify(input.entities),
+                  ].join('\n'),
+                },
+              ],
+            },
+          ],
+          text: {
+            format: {
+              type: 'json_schema',
+              name: 'taomenu_menu_translation',
+              strict: true,
+              schema: MENU_TRANSLATION_JSON_SCHEMA,
+            },
+          },
+        }),
+        signal: AbortSignal.timeout(120_000),
+      });
+      if (!response.ok) throw new Error(`OPENAI_HTTP_${response.status}`);
+      const parsedResponse = openAiResponseSchema.parse(await response.json());
+      const output = menuTranslationOutputSchema.parse(
+        JSON.parse(extractOutputText(parsedResponse)),
+      );
       return { output, usage: parsedResponse.usage ?? null };
     },
   };

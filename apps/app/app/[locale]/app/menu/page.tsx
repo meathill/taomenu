@@ -10,6 +10,7 @@ import {
 import { MenuEditor } from './menu-editor';
 import { MenuImportPanel } from './menu-import-panel';
 import { getMenuSubtitleKey } from './menu-page-copy';
+import { MenuTranslationPanel } from './menu-translation-panel';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +55,11 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
           baseLocale={store.baseLocale}
           canUseAi={store.plan === 'pro'}
         />
+        <MenuTranslationPanel
+          storeId={store.id}
+          baseLocale={store.baseLocale}
+          canUseAi={store.plan === 'pro'}
+        />
         <section className="flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
@@ -62,9 +68,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
             <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('moreProToolsHint')}</p>
           </div>
           <ul className="flex flex-wrap gap-1.5 text-xs font-semibold text-indigo-700">
-            <li className="rounded-full bg-paper-50 px-2.5 py-1">
-              {t('aiTranslate')} · {t('comingSoon')}
-            </li>
+            <li className="rounded-full bg-paper-50 px-2.5 py-1">{t('aiTranslate')} · Pro</li>
             <li className="rounded-full bg-indigo-100 px-2.5 py-1">{t('voiceEntry')} · Pro</li>
             <li className="rounded-full bg-paper-50 px-2.5 py-1">
               {t('photoEnhance')} · {t('comingSoon')}

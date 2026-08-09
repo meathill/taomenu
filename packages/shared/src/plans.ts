@@ -11,6 +11,7 @@ export type PlanLimits = {
   canUseVoiceAssistant: boolean;
   canUseProQrTemplates: boolean;
   maxAiMenuImportsPerMonth: number;
+  maxAiTranslationsPerMonth: number;
 };
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
@@ -22,6 +23,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseVoiceAssistant: false,
     canUseProQrTemplates: false,
     maxAiMenuImportsPerMonth: 0,
+    maxAiTranslationsPerMonth: 0,
   },
   pro: {
     maxStaffTerminals: 4,
@@ -31,6 +33,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseVoiceAssistant: true,
     canUseProQrTemplates: true,
     maxAiMenuImportsPerMonth: 20,
+    maxAiTranslationsPerMonth: 20,
   },
 };
 

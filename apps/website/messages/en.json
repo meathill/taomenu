@@ -40,7 +40,7 @@
     "proF3": "AI menu tools",
     "proImport": "20 photo or PDF menu imports per month",
     "proQr": "Premium QR templates",
-    "proTranslation": "AI menu translation",
+    "proTranslation": "20 reviewed AI menu translations per month",
     "proVoice": "Vietnamese voice entry",
     "proEnhance": "AI dish photo enhancement",
     "comingSoon": "Coming soon",
@@ -54,7 +54,7 @@
     "aiOutputBody": "Editable categories, item names, prices, options, translations or image previews — never a live menu automatically.",
     "aiReviewTitle": "You confirm",
     "aiReviewBody": "Review uncertain text, prices and changes. Applying an AI draft still does not publish it.",
-    "aiLimit": "Current Pro allowance: 20 photo/PDF menu imports per store each month. Failed and retried imports count when a new file is uploaded."
+    "aiLimit": "Current monthly Pro allowance per store: 20 photo/PDF menu imports and 20 AI translation jobs. Uploading a new file or starting a new translation counts once."
   },
   "footer": {
     "tagline": "QR ordering software for small restaurants.",

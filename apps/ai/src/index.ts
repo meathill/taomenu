@@ -1,13 +1,19 @@
 import {
   createDb,
   failMenuImport,
+  failMenuTranslation,
   getMenuImportJob,
+  getMenuTranslationJob,
   markMenuImportProcessing,
+  markMenuTranslationProcessing,
   saveMenuImportResult,
+  saveMenuTranslationResult,
 } from '@taomenu/db';
 import { createOpenAiMenuProvider } from './openai-menu-provider';
 
-type MenuImportQueueMessage = { importId: string };
+type AiQueueMessage =
+  | { type?: 'menu_import'; importId: string }
+  | { type: 'menu_translation'; translationId: string };
 
 function errorCode(error: unknown): string {
   if (!(error instanceof Error)) return 'AI_UNKNOWN_ERROR';
@@ -56,6 +62,30 @@ async function processMenuImport(env: AiWorkerEnv, importId: string) {
   }
 }
 
+async function processMenuTranslation(env: AiWorkerEnv, translationId: string) {
+  const db = createDb(env.DB);
+  const claimed = await markMenuTranslationProcessing(db, translationId);
+  if (!claimed) return;
+  try {
+    const job = await getMenuTranslationJob(db, translationId);
+    if (!job || job.entities.length === 0) throw new Error('TRANSLATION_INPUT_MISSING');
+    const provider = createOpenAiMenuProvider({
+      apiKey: env.OPENAI_API_KEY,
+      model: env.OPENAI_MENU_MODEL,
+    });
+    const result = await provider.translateMenu({
+      sourceLocale: job.job.sourceLocale,
+      targetLocale: job.job.targetLocale,
+      entities: job.entities,
+    });
+    await saveMenuTranslationResult(db, translationId, result.output, result.usage);
+  } catch (error) {
+    const code = errorCode(error);
+    console.error(JSON.stringify({ event: 'menu_translation_failed', translationId, code }));
+    await failMenuTranslation(db, translationId, code);
+  }
+}
+
 export default {
   async fetch() {
     return new Response('Not found', { status: 404 });
@@ -63,7 +93,12 @@ export default {
   async queue(batch, env) {
     for (const message of batch.messages) {
       const body = message.body;
-      if (!body || typeof body.importId !== 'string') {
+      if (body?.type === 'menu_translation' && typeof body.translationId === 'string') {
+        await processMenuTranslation(env, body.translationId);
+        message.ack();
+        continue;
+      }
+      if (!body || !('importId' in body) || typeof body.importId !== 'string') {
         message.ack();
         continue;
       }
@@ -71,4 +106,4 @@ export default {
       message.ack();
     }
   },
-} satisfies ExportedHandler<AiWorkerEnv, MenuImportQueueMessage>;
+} satisfies ExportedHandler<AiWorkerEnv, AiQueueMessage>;

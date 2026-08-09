@@ -33,7 +33,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
         { label: t('proF2'), status: 'available' },
         { label: t('proImport'), status: 'available' },
         { label: t('proQr'), status: 'available' },
-        { label: t('proTranslation'), status: 'comingSoon' },
+        { label: t('proTranslation'), status: 'available' },
         { label: t('proVoice'), status: 'available' },
         { label: t('proEnhance'), status: 'comingSoon' },
         { label: t('staffAddOn'), status: 'available' },

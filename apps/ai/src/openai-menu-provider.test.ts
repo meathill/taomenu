@@ -63,4 +63,57 @@ describe('OpenAI Luna 菜单 provider', () => {
     });
     await expect(provider.extractMenu({ assets: [] })).rejects.toThrow('OPENAI_INCOMPLETE');
   });
+
+  it('翻译时保留实体 id 并使用 structured output', async () => {
+    const fetcher = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as {
+        text: { format: { name: string; strict: boolean } };
+      };
+      expect(body.text.format).toMatchObject({
+        name: 'taomenu_menu_translation',
+        strict: true,
+      });
+      return Response.json({
+        status: 'completed',
+        output: [
+          {
+            type: 'message',
+            content: [
+              {
+                type: 'output_text',
+                text: JSON.stringify({
+                  translations: [
+                    {
+                      entityType: 'item',
+                      entityId: '00000000-0000-4000-8000-000000000001',
+                      name: 'Beef pho',
+                      description: null,
+                    },
+                  ],
+                }),
+              },
+            ],
+          },
+        ],
+      });
+    });
+    const provider = createOpenAiMenuProvider({
+      apiKey: 'test-key',
+      model: 'gpt-5.6-luna',
+      fetcher: fetcher as typeof fetch,
+    });
+    const result = await provider.translateMenu({
+      sourceLocale: 'vi',
+      targetLocale: 'en',
+      entities: [
+        {
+          entityType: 'item',
+          entityId: '00000000-0000-4000-8000-000000000001',
+          name: 'Phở bò',
+          description: null,
+        },
+      ],
+    });
+    expect(result.output.translations[0]?.name).toBe('Beef pho');
+  });
 });

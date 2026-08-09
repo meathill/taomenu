@@ -167,7 +167,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
           <li>✓ {t('proBenefitLanguages')}</li>
           <li>✓ {t('proBenefitImport')}</li>
           <li>✓ {t('proBenefitQr')}</li>
-          <li className="text-muted-foreground">○ {t('proBenefitTranslationSoon')}</li>
+          <li>✓ {t('proBenefitTranslation')}</li>
           <li>✓ {t('proBenefitVoice')}</li>
         </ul>
         <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('aiReviewRule')}</p>

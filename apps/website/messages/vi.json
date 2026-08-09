@@ -40,7 +40,7 @@
     "proF3": "Công cụ menu AI",
     "proImport": "20 lượt nhập menu bằng ảnh hoặc PDF mỗi tháng",
     "proQr": "Mẫu QR cao cấp",
-    "proTranslation": "Dịch menu bằng AI",
+    "proTranslation": "20 lượt dịch menu AI có kiểm tra mỗi tháng",
     "proVoice": "Nhập giọng nói tiếng Việt",
     "proEnhance": "Làm đẹp ảnh món ăn bằng AI",
     "comingSoon": "Sắp ra mắt",
@@ -54,7 +54,7 @@
     "aiOutputBody": "Danh mục, tên món, giá, lựa chọn, bản dịch hoặc ảnh xem trước có thể chỉnh sửa — không tự đưa lên menu thật.",
     "aiReviewTitle": "Bạn xác nhận",
     "aiReviewBody": "Kiểm tra chữ, giá và thay đổi chưa chắc chắn. Áp dụng bản nháp AI vẫn chưa xuất bản menu.",
-    "aiLimit": "Hạn mức Pro hiện tại: 20 lượt nhập menu ảnh/PDF cho mỗi quán mỗi tháng. Tải file mới để thử lại cũng tính một lượt."
+    "aiLimit": "Hạn mức Pro mỗi tháng cho mỗi quán: 20 lượt nhập menu ảnh/PDF và 20 lượt dịch AI. Mỗi file mới hoặc lần dịch mới tính một lượt."
   },
   "footer": {
     "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",
