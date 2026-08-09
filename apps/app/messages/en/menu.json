@@ -1,6 +1,7 @@
 {
   "title": "Menu",
   "subtitle": "Enter items by hand. Free plan: 1 language ({locale}).",
+  "subtitlePro": "Edit your {locale} menu, review the draft, then publish when ready.",
   "loading": "Loading menu…",
   "loadFailed": "Could not load menu.",
   "published": "Published",

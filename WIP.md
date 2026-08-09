@@ -10,6 +10,7 @@
 - [x] 更新四语文案与部署文档
 - [x] format / typecheck / test / build
 - [ ] 说明生产迁移影响，获授权后 migrate / deploy / commit / push / 线上复验
+- [x] 修复生产验收发现的 Pro 页面仍显示 Free 方案说明
 
 ---
 

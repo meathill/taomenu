@@ -1,6 +1,7 @@
 {
   "title": "Menu",
   "subtitle": "Nhập tay từng món. Free: 1 ngôn ngữ ({locale}).",
+  "subtitlePro": "Chỉnh sửa menu {locale}, kiểm tra bản nháp rồi mới xuất bản.",
   "loading": "Đang tải menu…",
   "loadFailed": "Không tải được menu.",
   "published": "Đã xuất bản",

@@ -9,6 +9,7 @@ import {
 } from '@/lib/active-store';
 import { MenuEditor } from './menu-editor';
 import { MenuImportPanel } from './menu-import-panel';
+import { getMenuSubtitleKey } from './menu-page-copy';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +39,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
           <div>
             <h1 className="mt-1 text-2xl font-extrabold text-ink-900">{t('title')}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {t('subtitle', { locale: baseLanguageName })}
+              {t(getMenuSubtitleKey(store.plan), { locale: baseLanguageName })}
             </p>
           </div>
           <a

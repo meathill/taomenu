@@ -1,6 +1,7 @@
 {
   "title": "菜单",
   "subtitle": "逐个手动录入。Free 方案：1 种语言（{locale}）。",
+  "subtitlePro": "编辑 {locale} 菜单，核对草稿后再发布。",
   "loading": "菜单加载中…",
   "loadFailed": "无法加载菜单。",
   "published": "已发布",
