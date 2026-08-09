@@ -20,7 +20,7 @@
   "emptyItems": "该分类下还没有菜品。",
   "addItem": "添加菜品",
   "itemName": "菜品名称",
-  "priceVnd": "价格（VND）",
+  "price": "价格（{currency}）",
   "saveContinue": "保存并继续",
   "cancel": "取消",
   "invalidNamePrice": "名称或价格无效。",

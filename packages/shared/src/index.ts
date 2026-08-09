@@ -8,6 +8,7 @@ export {
   minorAmountToDecimalString,
   minorAmountToInput,
   parseCurrencyInput,
+  sanitizeCurrencyInput,
   toBillingCurrency,
 } from './currency';
 export {

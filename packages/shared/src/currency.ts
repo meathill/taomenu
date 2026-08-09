@@ -83,6 +83,24 @@ export function parseCurrencyInput(raw: string, currency: string): number | null
   return Number.isSafeInteger(minor) && minor >= 0 ? minor : null;
 }
 
+/**
+ * 输入框 onChange 的温和过滤：只剔除不可能出现在金额里的字符，不做补全或纠错。
+ * 0 位小数：剥离所有非数字字符（与旧版 `replace(/\D/g, '')` 完全一致）。
+ * 2 位小数：只保留数字与一个小数点，小数部分截到该币种的位数；`.5` 补成 `0.5`。
+ */
+export function sanitizeCurrencyInput(raw: string, currency: string): string {
+  const decimals = getCurrencyDecimals(currency);
+  if (decimals === 0) {
+    return raw.replace(/\D/g, '');
+  }
+
+  const [integer = '', ...fractions] = raw.replace(/[^\d.]/g, '').split('.');
+  if (fractions.length === 0) {
+    return integer;
+  }
+  return `${integer || '0'}.${fractions.join('').slice(0, decimals)}`;
+}
+
 /** 最小单位整数 → 主单位字符串，用于回填输入框，保证与 parseCurrencyInput 可往返 */
 export function minorAmountToInput(amount: number, currency: string): string {
   return minorAmountToDecimalString(amount, currency);

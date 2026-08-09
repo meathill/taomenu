@@ -8,6 +8,7 @@ import {
   minorAmountToDecimalString,
   minorAmountToInput,
   parseCurrencyInput,
+  sanitizeCurrencyInput,
   toBillingCurrency,
 } from './currency';
 
@@ -61,6 +62,37 @@ describe('parseCurrencyInput', () => {
     expect(parseCurrencyInput('5.9.9', 'USD')).toBeNull();
     expect(parseCurrencyInput('-5', 'USD')).toBeNull();
     expect(parseCurrencyInput('5,99', 'USD')).toBeNull();
+  });
+});
+
+describe('sanitizeCurrencyInput', () => {
+  it('0 位小数币种行为与旧版 replace(/\\D/g, "") 完全一致', () => {
+    expect(sanitizeCurrencyInput('149000', 'VND')).toBe('149000');
+    expect(sanitizeCurrencyInput('149.000', 'VND')).toBe('149000');
+    expect(sanitizeCurrencyInput('12a3-4', 'VND')).toBe('1234');
+    expect(sanitizeCurrencyInput('', 'VND')).toBe('');
+    expect(sanitizeCurrencyInput('5.99', 'JPY')).toBe('599');
+  });
+
+  it('2 位小数币种允许输入过程中的小数点', () => {
+    expect(sanitizeCurrencyInput('5', 'USD')).toBe('5');
+    expect(sanitizeCurrencyInput('5.', 'USD')).toBe('5.');
+    expect(sanitizeCurrencyInput('5.9', 'USD')).toBe('5.9');
+    expect(sanitizeCurrencyInput('5.99', 'CNY')).toBe('5.99');
+  });
+
+  it('2 位小数币种剔除多余字符、多余小数点与超长小数', () => {
+    expect(sanitizeCurrencyInput('5,9a9', 'USD')).toBe('599');
+    expect(sanitizeCurrencyInput('5.9.9', 'USD')).toBe('5.99');
+    expect(sanitizeCurrencyInput('5.999', 'USD')).toBe('5.99');
+    expect(sanitizeCurrencyInput('-5.99', 'USD')).toBe('5.99');
+    expect(sanitizeCurrencyInput('.5', 'USD')).toBe('0.5');
+  });
+
+  it('过滤结果始终能被 parseCurrencyInput 接受（除去输入中间态）', () => {
+    for (const raw of ['5.99', '0.5', '12', '5,99']) {
+      expect(parseCurrencyInput(sanitizeCurrencyInput(raw, 'USD'), 'USD')).not.toBeNull();
+    }
   });
 });
 

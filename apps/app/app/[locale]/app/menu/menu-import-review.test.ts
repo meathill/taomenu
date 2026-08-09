@@ -22,7 +22,7 @@ function makeSuggestion(overrides: Partial<Suggestion>): Suggestion {
 
 describe('AI 菜单导入审核草稿', () => {
   it('预选有明确价格且未拒绝的建议', () => {
-    const draft = createReviewDraft([makeSuggestion({})]);
+    const draft = createReviewDraft([makeSuggestion({})], 'VND');
     expect(draft['suggestion-1']).toMatchObject({
       selected: true,
       name: 'Phở bò',
@@ -30,14 +30,25 @@ describe('AI 菜单导入审核草稿', () => {
     });
   });
 
+  it('两位小数币种按主单位回填价格', () => {
+    const draft = createReviewDraft(
+      [makeSuggestion({ value: { name: 'Latte', description: null, priceAmount: 599 } })],
+      'USD',
+    );
+    expect(draft['suggestion-1']?.priceAmount).toBe('5.99');
+  });
+
   it('不预选缺少价格或已经拒绝的建议', () => {
-    const draft = createReviewDraft([
-      makeSuggestion({
-        id: 'missing-price',
-        value: { name: '时价鱼', description: null, priceAmount: null },
-      }),
-      makeSuggestion({ id: 'rejected', decision: 'rejected' }),
-    ]);
+    const draft = createReviewDraft(
+      [
+        makeSuggestion({
+          id: 'missing-price',
+          value: { name: '时价鱼', description: null, priceAmount: null },
+        }),
+        makeSuggestion({ id: 'rejected', decision: 'rejected' }),
+      ],
+      'VND',
+    );
     expect(draft['missing-price']?.selected).toBe(false);
     expect(draft.rejected?.selected).toBe(false);
   });

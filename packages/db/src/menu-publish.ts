@@ -83,7 +83,7 @@ export function validateMenuForPublish(input: {
       if (!Number.isInteger(item.priceAmount) || item.priceAmount < 0) {
         issues.push({
           code: 'INVALID_PRICE',
-          message: 'Item price must be non-negative integer VND',
+          message: 'Item price must be a non-negative integer in the store currency minor unit',
           entityId: item.id,
         });
       }

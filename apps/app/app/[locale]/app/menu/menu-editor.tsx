@@ -1,7 +1,7 @@
 'use client';
 
 import { SquaresFourIcon } from '@phosphor-icons/react';
-import type { CreateCategoryBody, CreateItemBody } from '@taomenu/shared';
+import { type CreateCategoryBody, type CreateItemBody, parseCurrencyInput } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -140,8 +140,8 @@ export function MenuEditor({
   async function handleAddItem(event: FormEvent) {
     event.preventDefault();
     if (!itemDraft) return;
-    const priceAmount = Number(itemDraft.price.replace(/\D/g, ''));
-    if (!itemDraft.name.trim() || !Number.isFinite(priceAmount)) {
+    const priceAmount = parseCurrencyInput(itemDraft.price, currency);
+    if (!itemDraft.name.trim() || priceAmount === null) {
       setError(t('invalidNamePrice'));
       return;
     }
@@ -504,6 +504,7 @@ export function MenuEditor({
             {itemDraft?.categoryId === category.id && !selectMode ? (
               <MenuItemDraftForm
                 draft={itemDraft}
+                currency={currency}
                 busyAction={busyAction}
                 onChange={setItemDraft}
                 onCancel={() => setItemDraft(null)}

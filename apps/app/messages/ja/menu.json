@@ -20,7 +20,7 @@
   "emptyItems": "このカテゴリに品目はありません。",
   "addItem": "品目を追加",
   "itemName": "品名",
-  "priceVnd": "価格（VND）",
+  "price": "価格（{currency}）",
   "saveContinue": "保存して次へ",
   "cancel": "キャンセル",
   "invalidNamePrice": "名前または価格が無効です。",

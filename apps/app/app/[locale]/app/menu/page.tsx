@@ -53,6 +53,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
         <MenuImportPanel
           storeId={store.id}
           baseLocale={store.baseLocale}
+          currency={store.currency}
           canUseAi={store.plan === 'pro'}
         />
         <MenuTranslationPanel

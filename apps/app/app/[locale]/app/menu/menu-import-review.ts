@@ -1,3 +1,5 @@
+import { minorAmountToInput } from '@taomenu/shared';
+
 export type Suggestion = {
   id: string;
   entityType: 'category' | 'item';
@@ -45,7 +47,8 @@ export type ReviewDraft = Record<
   }
 >;
 
-export function createReviewDraft(suggestions: Suggestion[]): ReviewDraft {
+/** AI 返回的价格是最小单位整数，回填成当前币种主单位字符串供店主编辑 */
+export function createReviewDraft(suggestions: Suggestion[], currency: string): ReviewDraft {
   return Object.fromEntries(
     suggestions.map((suggestion) => [
       suggestion.id,
@@ -56,7 +59,7 @@ export function createReviewDraft(suggestions: Suggestion[]): ReviewDraft {
         priceAmount:
           suggestion.value.priceAmount === undefined || suggestion.value.priceAmount === null
             ? ''
-            : String(suggestion.value.priceAmount),
+            : minorAmountToInput(suggestion.value.priceAmount, currency),
         value: suggestion.value,
       },
     ]),

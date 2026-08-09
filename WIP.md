@@ -8,7 +8,10 @@ currency_options，应用运行时不拉取 Stripe 价格。
 - [x] Step 1：shared 币种+定价配置（currency.ts / pricing.ts + 测试）
 - [x] Step 2：formatCurrency 全量迁移，public-menu 下发 currency，删 formatVnd
   - 金额格式化改为跟随界面语言（原先硬编码 `vi-VN`）：vi 显示不变，en/zh/ja 千分位由 `.` 变 `,`
-- [ ] Step 3：价格输入按币种处理小数（菜单编辑 + AI 导入）
+- [x] Step 3：价格输入按币种处理小数（菜单编辑 + AI 导入）
+  - 新增 `sanitizeCurrencyInput`，输入框 onChange 按币种过滤；0 位小数币种行为与旧版完全一致
+  - 价格文案 `priceVnd` → `price`（`Price ({currency})`），VND 门店展示不变
+  - 遗留：AI 识别提示词仍写死「integer VND」，2 位小数币种的照片导入价格语义待 Step 4 之后处理
 - [ ] Step 4：stores.currency 可编辑（schema / repo / settings UI + 提示文案）
 - [ ] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示
 - [ ] Step 6：website 定价页按 locale 币种渲染 + JSON-LD

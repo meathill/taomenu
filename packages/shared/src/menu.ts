@@ -18,7 +18,7 @@ export const createItemSchema = z.object({
   categoryId: z.string().uuid(),
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(1000).optional(),
-  /** 整数 VND，最小 0 */
+  /** 最小单位整数（币种 0/2 位小数，见 currency.ts），最小 0 */
   priceAmount: z.number().int().min(0).max(100_000_000),
   locale: z.string().trim().min(2).max(16).optional(),
 });
@@ -58,7 +58,7 @@ export const updateModifierGroupSchema = z.object({
 
 export const createModifierSchema = z.object({
   name: z.string().trim().min(1).max(80),
-  /** 相对菜品基价的加价（可为 0 或负，MVP 允许 0+） */
+  /** 相对菜品基价的加价，最小单位整数（币种 0/2 位小数，见 currency.ts）；MVP 只允许 0+ */
   priceDeltaAmount: z.number().int().min(0).max(100_000_000).optional(),
   locale: z.string().trim().min(2).max(16).optional(),
 });

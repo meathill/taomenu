@@ -1,6 +1,11 @@
 'use client';
 
-import { formatCurrency } from '@taomenu/shared';
+import {
+  formatCurrency,
+  getCurrencyDecimals,
+  parseCurrencyInput,
+  sanitizeCurrencyInput,
+} from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
@@ -67,6 +72,7 @@ export function MenuModifiersPanel({
   const t = useTranslations('menu');
   const tCommon = useTranslations('common');
   const locale = useLocale();
+  const hasDecimals = getCurrencyDecimals(currency) > 0;
   const [groupName, setGroupName] = useState('');
   const [groupRequired, setGroupRequired] = useState(true);
   const [optionDraft, setOptionDraft] = useState<{
@@ -123,8 +129,11 @@ export function MenuModifiersPanel({
   async function handleAddOption(event: FormEvent) {
     event.preventDefault();
     if (!optionDraft) return;
-    const priceDeltaAmount = Number(optionDraft.delta.replace(/\D/g, '') || '0');
-    if (!optionDraft.name.trim() || !Number.isFinite(priceDeltaAmount)) {
+    // 留空视为不加价，与旧版 `... || '0'` 一致；加价只允许 0+，负号在输入阶段已被过滤
+    const priceDeltaAmount = optionDraft.delta.trim()
+      ? parseCurrencyInput(optionDraft.delta, currency)
+      : 0;
+    if (!optionDraft.name.trim() || priceDeltaAmount === null) {
       onError(t('invalidOption'));
       return;
     }
@@ -246,9 +255,14 @@ export function MenuModifiersPanel({
                 />
                 <input
                   value={optionDraft.delta}
-                  onChange={(e) => setOptionDraft({ ...optionDraft, delta: e.target.value })}
+                  onChange={(e) =>
+                    setOptionDraft({
+                      ...optionDraft,
+                      delta: sanitizeCurrencyInput(e.target.value, currency),
+                    })
+                  }
                   placeholder={t('priceDelta')}
-                  inputMode="numeric"
+                  inputMode={hasDecimals ? 'decimal' : 'numeric'}
                   className="min-h-11 w-full rounded-xl border border-border px-3 text-sm tabular-nums outline-none ring-jade-600 focus:ring-2"
                 />
                 <div className="flex gap-2">

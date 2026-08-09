@@ -1,7 +1,7 @@
 'use client';
 
 import { CameraIcon, FilePdfIcon, SparkleIcon } from '@phosphor-icons/react';
-import { doLocalesShareLanguage } from '@taomenu/shared';
+import { doLocalesShareLanguage, parseCurrencyInput } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
@@ -17,10 +17,12 @@ import { MenuImportReviewList } from './menu-import-review-list';
 export function MenuImportPanel({
   storeId,
   baseLocale,
+  currency,
   canUseAi,
 }: {
   storeId: string;
   baseLocale: string;
+  currency: string;
   canUseAi: boolean;
 }) {
   const t = useTranslations('menu');
@@ -49,9 +51,9 @@ export function MenuImportPanel({
     setView(nextView);
     setUsage(data.usage);
     if (nextView?.menuImport.status === 'needs_review') {
-      setDraft(createReviewDraft(nextView.suggestions));
+      setDraft(createReviewDraft(nextView.suggestions, currency));
     }
-  }, [canUseAi, storeId, t]);
+  }, [canUseAi, currency, storeId, t]);
 
   useEffect(() => {
     void load();
@@ -173,9 +175,10 @@ export function MenuImportPanel({
     setBusyAction('apply');
     setError(null);
     try {
+      // 审核框里填的是当前币种主单位，提交前换算成最小单位整数
       const suggestions = view.suggestions.map((suggestion) => {
         const row = draft[suggestion.id]!;
-        const priceAmount = row.priceAmount ? Number(row.priceAmount) : null;
+        const priceAmount = parseCurrencyInput(row.priceAmount, currency);
         const value = {
           ...row.value,
           name: row.name.trim(),
@@ -188,14 +191,15 @@ export function MenuImportPanel({
           ...(row.selected ? { value } : {}),
         };
       });
-      if (
-        view.suggestions.some(
-          (suggestion) =>
-            draft[suggestion.id]?.selected &&
-            (!draft[suggestion.id]?.name.trim() ||
-              (suggestion.entityType === 'item' && !draft[suggestion.id]?.priceAmount)),
-        )
-      ) {
+      const hasInvalidRow = view.suggestions.some((suggestion) => {
+        const row = draft[suggestion.id];
+        if (!row?.selected) return false;
+        if (!row.name.trim()) return true;
+        return (
+          suggestion.entityType === 'item' && parseCurrencyInput(row.priceAmount, currency) === null
+        );
+      });
+      if (hasInvalidRow) {
         setError(t('importReviewRequired'));
         return;
       }
@@ -302,6 +306,7 @@ export function MenuImportPanel({
           <MenuImportReviewList
             groups={suggestionsByCategory}
             draft={draft}
+            currency={currency}
             isApplying={busyAction === 'apply'}
             isBusy={busyAction !== null}
             isApplyDisabled={Boolean(hasLocaleMismatch && view?.hasExistingCategories)}

@@ -20,7 +20,7 @@
   "emptyItems": "No items in this category.",
   "addItem": "Add item",
   "itemName": "Item name",
-  "priceVnd": "Price (VND)",
+  "price": "Price ({currency})",
   "saveContinue": "Save & next",
   "cancel": "Cancel",
   "invalidNamePrice": "Name or price is invalid.",

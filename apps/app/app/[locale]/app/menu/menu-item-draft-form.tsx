@@ -1,6 +1,7 @@
 'use client';
 
 import { MicrophoneIcon, StopCircleIcon } from '@phosphor-icons/react';
+import { getCurrencyDecimals, sanitizeCurrencyInput } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useRef, useState } from 'react';
 import { Button } from '@/components/button';
@@ -33,6 +34,7 @@ type ItemDraft = {
 
 type MenuItemDraftFormProps = {
   draft: ItemDraft;
+  currency: string;
   busyAction: string | null;
   onChange: (draft: ItemDraft) => void;
   onCancel: () => void;
@@ -42,6 +44,7 @@ type MenuItemDraftFormProps = {
 
 export function MenuItemDraftForm({
   draft,
+  currency,
   busyAction,
   onChange,
   onCancel,
@@ -49,6 +52,7 @@ export function MenuItemDraftForm({
   canUseVoiceAssistant,
 }: MenuItemDraftFormProps) {
   const t = useTranslations('menu');
+  const hasDecimals = getCurrencyDecimals(currency) > 0;
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState<string | null>(null);
@@ -138,9 +142,11 @@ export function MenuItemDraftForm({
       />
       <input
         value={draft.price}
-        onChange={(e) => onChange({ ...draft, price: e.target.value })}
-        placeholder={t('priceVnd')}
-        inputMode="numeric"
+        onChange={(e) =>
+          onChange({ ...draft, price: sanitizeCurrencyInput(e.target.value, currency) })
+        }
+        placeholder={t('price', { currency })}
+        inputMode={hasDecimals ? 'decimal' : 'numeric'}
         className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base tabular-nums outline-none ring-jade-600 focus:ring-2"
       />
       <div className="flex gap-2">

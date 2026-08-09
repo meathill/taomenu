@@ -20,7 +20,7 @@
   "emptyItems": "Chưa có món trong nhóm này.",
   "addItem": "Thêm món",
   "itemName": "Tên món",
-  "priceVnd": "Giá (VND)",
+  "price": "Giá ({currency})",
   "saveContinue": "Lưu & tiếp",
   "cancel": "Hủy",
   "invalidNamePrice": "Tên và giá không hợp lệ.",

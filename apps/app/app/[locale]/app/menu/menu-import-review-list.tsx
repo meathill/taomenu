@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircleIcon } from '@phosphor-icons/react';
+import { formatCurrency, getCurrencyDecimals, sanitizeCurrencyInput } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 import type { ReviewDraft, SuggestionGroup } from './menu-import-review';
@@ -8,6 +9,7 @@ import type { ReviewDraft, SuggestionGroup } from './menu-import-review';
 type MenuImportReviewListProps = {
   groups: SuggestionGroup[];
   draft: ReviewDraft;
+  currency: string;
   isApplying: boolean;
   isBusy: boolean;
   isApplyDisabled: boolean;
@@ -19,6 +21,7 @@ type MenuImportReviewListProps = {
 export function MenuImportReviewList({
   groups,
   draft,
+  currency,
   isApplying,
   isBusy,
   isApplyDisabled,
@@ -28,7 +31,7 @@ export function MenuImportReviewList({
 }: MenuImportReviewListProps) {
   const t = useTranslations('menu');
   const locale = useLocale();
-  const priceFormatter = new Intl.NumberFormat(locale);
+  const hasDecimals = getCurrencyDecimals(currency) > 0;
 
   return (
     <div className="mt-4 space-y-3">
@@ -88,14 +91,16 @@ export function MenuImportReviewList({
                     aria-label={t('itemName')}
                   />
                   <input
-                    inputMode="numeric"
+                    inputMode={hasDecimals ? 'decimal' : 'numeric'}
                     value={draft[item.id]?.priceAmount ?? ''}
                     onChange={(event) =>
-                      onUpdate(item.id, { priceAmount: event.target.value.replace(/\D/g, '') })
+                      onUpdate(item.id, {
+                        priceAmount: sanitizeCurrencyInput(event.target.value, currency),
+                      })
                     }
                     placeholder={t('importConfirmPrice')}
                     className="min-h-10 min-w-0 rounded-lg border border-border px-2 text-right text-base"
-                    aria-label={t('priceVnd')}
+                    aria-label={t('price', { currency })}
                   />
                   <textarea
                     value={draft[item.id]?.description ?? ''}
@@ -117,7 +122,7 @@ export function MenuImportReviewList({
                           {modifierGroup.modifiers
                             .map((modifier) =>
                               modifier.priceDeltaAmount > 0
-                                ? `${modifier.name} (+${priceFormatter.format(modifier.priceDeltaAmount)})`
+                                ? `${modifier.name} (+${formatCurrency(modifier.priceDeltaAmount, currency, locale)})`
                                 : modifier.name,
                             )
                             .join(' · ')}
