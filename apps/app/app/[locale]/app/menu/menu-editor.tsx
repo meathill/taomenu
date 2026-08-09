@@ -37,6 +37,7 @@ type MenuTree = {
 
 type MenuEditorProps = {
   storeId: string;
+  canUseVoiceAssistant: boolean;
 };
 
 function labelForCategory(category: MenuTree['categories'][number], baseLocale: string): string {
@@ -55,7 +56,7 @@ function labelForItem(item: MenuTree['categories'][number]['items'][number], bas
   );
 }
 
-export function MenuEditor({ storeId }: MenuEditorProps) {
+export function MenuEditor({ storeId, canUseVoiceAssistant }: MenuEditorProps) {
   const t = useTranslations('menu');
   const locale = useLocale();
   const [tree, setTree] = useState<MenuTree | null>(null);
@@ -497,6 +498,7 @@ export function MenuEditor({ storeId }: MenuEditorProps) {
                 onChange={setItemDraft}
                 onCancel={() => setItemDraft(null)}
                 onSubmit={(e) => void handleAddItem(e)}
+                canUseVoiceAssistant={canUseVoiceAssistant}
               />
             ) : null}
           </li>
