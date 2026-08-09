@@ -51,6 +51,18 @@ export {
   saveMenuImportResult,
 } from './menu-ai-processing';
 export {
+  applyMenuImageEnhancement,
+  cancelMenuImageEnhancement,
+  createMenuImageEnhancement,
+  failMenuImageEnhancement,
+  getLatestMenuImageEnhancement,
+  getMenuImageEnhancementJob,
+  getMenuImageEnhancementUsage,
+  markMenuImageEnhancementProcessing,
+  restoreMenuImageEnhancement,
+  saveMenuImageEnhancementResult,
+} from './menu-image-enhancement';
+export {
   applyMenuTranslation,
   buildMenuTranslationInput,
   createMenuTranslation,

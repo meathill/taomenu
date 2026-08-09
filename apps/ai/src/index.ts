@@ -1,19 +1,25 @@
 import {
   createDb,
+  failMenuImageEnhancement,
   failMenuImport,
   failMenuTranslation,
+  getMenuImageEnhancementJob,
   getMenuImportJob,
   getMenuTranslationJob,
+  markMenuImageEnhancementProcessing,
   markMenuImportProcessing,
   markMenuTranslationProcessing,
+  saveMenuImageEnhancementResult,
   saveMenuImportResult,
   saveMenuTranslationResult,
 } from '@taomenu/db';
+import { createOpenAiImageProvider } from './openai-image-provider';
 import { createOpenAiMenuProvider } from './openai-menu-provider';
 
 type AiQueueMessage =
   | { type?: 'menu_import'; importId: string }
-  | { type: 'menu_translation'; translationId: string };
+  | { type: 'menu_translation'; translationId: string }
+  | { type: 'menu_image_enhancement'; enhancementId: string };
 
 function errorCode(error: unknown): string {
   if (!(error instanceof Error)) return 'AI_UNKNOWN_ERROR';
@@ -86,6 +92,42 @@ async function processMenuTranslation(env: AiWorkerEnv, translationId: string) {
   }
 }
 
+async function processMenuImageEnhancement(env: AiWorkerEnv, enhancementId: string) {
+  const db = createDb(env.DB);
+  const claimed = await markMenuImageEnhancementProcessing(db, enhancementId);
+  if (!claimed) return;
+  let previewImageKey: string | null = null;
+  try {
+    const job = await getMenuImageEnhancementJob(db, enhancementId);
+    if (!job) throw new Error('IMAGE_ENHANCEMENT_JOB_MISSING');
+    const source = await env.MEDIA.get(job.sourceImageKey);
+    if (!source) throw new Error('SOURCE_IMAGE_MISSING');
+    const provider = createOpenAiImageProvider({
+      apiKey: env.OPENAI_API_KEY,
+      model: env.OPENAI_IMAGE_MODEL,
+    });
+    const result = await provider.enhanceDishPhoto({
+      mimeType: source.httpMetadata?.contentType ?? 'image/jpeg',
+      bytes: new Uint8Array(await source.arrayBuffer()),
+    });
+    previewImageKey = `menu-enhancements/${job.storeId}/${job.itemId}/${job.id}.jpeg`;
+    await env.MEDIA.put(previewImageKey, result.bytes, {
+      httpMetadata: { contentType: 'image/jpeg' },
+      customMetadata: {
+        storeId: job.storeId,
+        itemId: job.itemId,
+        sourceImageKey: job.sourceImageKey,
+      },
+    });
+    await saveMenuImageEnhancementResult(db, enhancementId, previewImageKey, result.usage);
+  } catch (error) {
+    if (previewImageKey) await env.MEDIA.delete(previewImageKey).catch(() => undefined);
+    const code = errorCode(error);
+    console.error(JSON.stringify({ event: 'menu_image_enhancement_failed', enhancementId, code }));
+    await failMenuImageEnhancement(db, enhancementId, code);
+  }
+}
+
 export default {
   async fetch() {
     return new Response('Not found', { status: 404 });
@@ -95,6 +137,11 @@ export default {
       const body = message.body;
       if (body?.type === 'menu_translation' && typeof body.translationId === 'string') {
         await processMenuTranslation(env, body.translationId);
+        message.ack();
+        continue;
+      }
+      if (body?.type === 'menu_image_enhancement' && typeof body.enhancementId === 'string') {
+        await processMenuImageEnhancement(env, body.enhancementId);
         message.ack();
         continue;
       }

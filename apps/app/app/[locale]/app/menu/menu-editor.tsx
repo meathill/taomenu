@@ -38,6 +38,7 @@ type MenuTree = {
 type MenuEditorProps = {
   storeId: string;
   canUseVoiceAssistant: boolean;
+  canUseImageEnhancement: boolean;
 };
 
 function labelForCategory(category: MenuTree['categories'][number], baseLocale: string): string {
@@ -56,7 +57,11 @@ function labelForItem(item: MenuTree['categories'][number]['items'][number], bas
   );
 }
 
-export function MenuEditor({ storeId, canUseVoiceAssistant }: MenuEditorProps) {
+export function MenuEditor({
+  storeId,
+  canUseVoiceAssistant,
+  canUseImageEnhancement,
+}: MenuEditorProps) {
   const t = useTranslations('menu');
   const locale = useLocale();
   const [tree, setTree] = useState<MenuTree | null>(null);
@@ -445,6 +450,7 @@ export function MenuEditor({ storeId, canUseVoiceAssistant }: MenuEditorProps) {
                         storeId={storeId}
                         itemId={item.id}
                         imageKey={item.imageKey ?? null}
+                        canUseImageEnhancement={canUseImageEnhancement}
                         busyAction={busyAction}
                         onBusyAction={setBusyAction}
                         onError={setError}

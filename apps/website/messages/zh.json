@@ -42,7 +42,7 @@
     "proQr": "高级二维码模板",
     "proTranslation": "每月 20 次可审核的 AI 菜单翻译",
     "proVoice": "越南语语音录入",
-    "proEnhance": "AI 菜品图片美化",
+    "proEnhance": "每月 10 次可审核的 AI 菜品图片预览",
     "comingSoon": "即将推出",
     "staffAddOn": "Staff 席位可单独购买",
     "cta": "从 Free 开始",
@@ -54,7 +54,7 @@
     "aiOutputBody": "可编辑的分类、菜名、价格、规格、翻译或图片预览，不会自动变成线上菜单。",
     "aiReviewTitle": "你来确认",
     "aiReviewBody": "核对不确定文字、价格和改动。应用 AI 草稿后仍需另行发布。",
-    "aiLimit": "当前每店 Pro 月度额度：20 次照片/PDF 菜单识别和 20 次 AI 翻译。上传新文件或发起新翻译各计一次。"
+    "aiLimit": "当前每店 Pro 月度额度：20 次照片/PDF 菜单识别、20 次 AI 翻译和 10 次菜品图片预览。每次发起新任务计一次。"
   },
   "footer": {
     "tagline": "面向小餐厅的扫码点餐软件。",

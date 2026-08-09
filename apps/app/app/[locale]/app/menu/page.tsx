@@ -70,12 +70,14 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
           <ul className="flex flex-wrap gap-1.5 text-xs font-semibold text-indigo-700">
             <li className="rounded-full bg-paper-50 px-2.5 py-1">{t('aiTranslate')} · Pro</li>
             <li className="rounded-full bg-indigo-100 px-2.5 py-1">{t('voiceEntry')} · Pro</li>
-            <li className="rounded-full bg-paper-50 px-2.5 py-1">
-              {t('photoEnhance')} · {t('comingSoon')}
-            </li>
+            <li className="rounded-full bg-indigo-100 px-2.5 py-1">{t('photoEnhance')} · Pro</li>
           </ul>
         </section>
-        <MenuEditor storeId={store.id} canUseVoiceAssistant={store.plan === 'pro'} />
+        <MenuEditor
+          storeId={store.id}
+          canUseVoiceAssistant={store.plan === 'pro'}
+          canUseImageEnhancement={store.plan === 'pro'}
+        />
       </div>
     </PageMessages>
   );

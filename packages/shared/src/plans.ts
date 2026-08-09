@@ -8,10 +8,12 @@ export type PlanLimits = {
   maxMenuLocales: number;
   canUseAiMenuImport: boolean;
   canUseAiTranslation: boolean;
+  canUseAiImageEnhancement: boolean;
   canUseVoiceAssistant: boolean;
   canUseProQrTemplates: boolean;
   maxAiMenuImportsPerMonth: number;
   maxAiTranslationsPerMonth: number;
+  maxAiImageEnhancementsPerMonth: number;
 };
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
@@ -20,20 +22,24 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     maxMenuLocales: 1,
     canUseAiMenuImport: false,
     canUseAiTranslation: false,
+    canUseAiImageEnhancement: false,
     canUseVoiceAssistant: false,
     canUseProQrTemplates: false,
     maxAiMenuImportsPerMonth: 0,
     maxAiTranslationsPerMonth: 0,
+    maxAiImageEnhancementsPerMonth: 0,
   },
   pro: {
     maxStaffTerminals: 4,
     maxMenuLocales: 5,
     canUseAiMenuImport: true,
     canUseAiTranslation: true,
+    canUseAiImageEnhancement: true,
     canUseVoiceAssistant: true,
     canUseProQrTemplates: true,
     maxAiMenuImportsPerMonth: 20,
     maxAiTranslationsPerMonth: 20,
+    maxAiImageEnhancementsPerMonth: 10,
   },
 };
 
