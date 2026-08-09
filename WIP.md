@@ -11,6 +11,10 @@
 - [x] format / typecheck / test / build
 - [ ] 说明生产迁移影响，获授权后 migrate / deploy / commit / push / 线上复验
 - [x] 修复生产验收发现的 Pro 页面仍显示 Free 方案说明
+- [x] 创建生产 Pro 临时店并完成照片上传、Queue 消费链路验证
+- [x] 修复识别失败时直接暴露 `OPENAI_HTTP_*` 内部错误码的问题
+- [ ] 更新生产 OpenAI 密钥后重试 Luna，审核并应用识别草稿
+- [ ] 清理临时店及关联 D1 / R2 数据，更新 issue 与 TODO
 
 ---
 

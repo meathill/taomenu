@@ -4,6 +4,7 @@ import { CameraIcon, FilePdfIcon, SparkleIcon } from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
+import { getMenuImportFailureKey } from './menu-import-failure';
 import {
   createReviewDraft,
   type ImportView,
@@ -242,7 +243,9 @@ export function MenuImportPanel({ storeId, canUseAi }: { storeId: string; canUse
       {status === 'failed' ? (
         <div className="mt-4 rounded-xl border border-brand-200 bg-white p-3">
           <p className="text-sm font-semibold text-brand-600">{t('importFailed')}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{view?.menuImport.errorCode}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t(getMenuImportFailureKey(view?.menuImport.errorCode ?? null))}
+          </p>
           <Button
             type="button"
             pending={busyAction === 'retry'}
