@@ -1,3 +1,21 @@
+# Stripe 收尾 + 多币种计费（2026-08-09）
+
+跟踪：[GitHub issue #1](https://github.com/meathill/taomenu/issues/1) 最后两项。
+完整方案见批准计划；要点：VND/USD/JPY/CNY 四币种，显示与结算依据 stores.currency，
+价格唯一事实来源在 `packages/shared/src/pricing.ts`，推送脚本同步到 Stripe Price
+currency_options，应用运行时不拉取 Stripe 价格。
+
+- [x] Step 1：shared 币种+定价配置（currency.ts / pricing.ts + 测试）
+- [ ] Step 2：formatCurrency 全量迁移，public-menu 下发 currency，删 formatVnd
+- [ ] Step 3：价格输入按币种处理小数（菜单编辑 + AI 导入）
+- [ ] Step 4：stores.currency 可编辑（schema / repo / settings UI + 提示文案）
+- [ ] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示
+- [ ] Step 6：website 定价页按 locale 币种渲染 + JSON-LD
+- [ ] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾
+- [ ] 人工验收：Stripe test mode 走通 checkout / webhook / portal，生产回归
+
+---
+
 # GitHub issue #1 剩余 Pro / AI 能力（2026-08-09）
 
 目标：在不自动发布、不覆盖店主已确认数据的前提下，尽量完成 #1 中仍未交付的付费价值点，并逐项上线验收。
