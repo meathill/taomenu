@@ -62,21 +62,35 @@ async function stripeRequest(
   return data;
 }
 
-export async function createStaffSeatCheckoutSession(
-  config: StripeConfig,
-  input: {
-    storeId: string;
-    storeSlug: string;
-    ownerEmail: string;
-    stripeCustomerId: string | null;
-    quantity: number;
-  },
-): Promise<{ url: string }> {
-  if (!config.staffSeatPriceId) throw new StripeRequestError(503);
+type CheckoutInputBase = {
+  storeId: string;
+  storeSlug: string;
+  ownerEmail: string;
+  stripeCustomerId: string | null;
+  /** 门店计费币种，Stripe 侧由多币种 Price 的 currency_options 承接 */
+  currency: string;
+};
+
+export type StaffSeatCheckoutInput = CheckoutInputBase & { quantity: number };
+
+export type ProCheckoutInput = CheckoutInputBase;
+
+function setCheckoutCustomer(params: URLSearchParams, input: CheckoutInputBase): void {
+  if (input.stripeCustomerId) {
+    params.set('customer', input.stripeCustomerId);
+  } else {
+    params.set('customer_email', input.ownerEmail);
+  }
+}
+
+export function buildStaffSeatCheckoutParams(
+  input: StaffSeatCheckoutInput & { priceId: string },
+): URLSearchParams {
   const encodedStore = encodeURIComponent(input.storeSlug);
   const params = new URLSearchParams();
   params.set('mode', 'subscription');
-  params.set('line_items[0][price]', config.staffSeatPriceId);
+  params.set('currency', input.currency.toLowerCase());
+  params.set('line_items[0][price]', input.priceId);
   params.set('line_items[0][quantity]', String(input.quantity));
   params.set('client_reference_id', input.storeId);
   params.set('metadata[storeId]', input.storeId);
@@ -93,33 +107,18 @@ export async function createStaffSeatCheckoutSession(
     'cancel_url',
     joinPublicUrl(getPublicAppUrl(), `/app/staff?store=${encodedStore}&billing=cancel`),
   );
-  if (input.stripeCustomerId) {
-    params.set('customer', input.stripeCustomerId);
-  } else {
-    params.set('customer_email', input.ownerEmail);
-  }
-
-  const data = await stripeRequest(config, '/checkout/sessions', params);
-  if (!data.url) {
-    throw new StripeRequestError(502);
-  }
-  return { url: data.url };
+  setCheckoutCustomer(params, input);
+  return params;
 }
 
-export async function createProCheckoutSession(
-  config: StripeConfig,
-  input: {
-    storeId: string;
-    storeSlug: string;
-    ownerEmail: string;
-    stripeCustomerId: string | null;
-  },
-): Promise<{ url: string }> {
-  if (!config.proPriceId) throw new StripeRequestError(503);
+export function buildProCheckoutParams(
+  input: ProCheckoutInput & { priceId: string },
+): URLSearchParams {
   const encodedStore = encodeURIComponent(input.storeSlug);
   const params = new URLSearchParams();
   params.set('mode', 'subscription');
-  params.set('line_items[0][price]', config.proPriceId);
+  params.set('currency', input.currency.toLowerCase());
+  params.set('line_items[0][price]', input.priceId);
   params.set('line_items[0][quantity]', '1');
   params.set('client_reference_id', input.storeId);
   params.set('metadata[storeId]', input.storeId);
@@ -134,8 +133,30 @@ export async function createProCheckoutSession(
     'cancel_url',
     joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=cancel`),
   );
-  if (input.stripeCustomerId) params.set('customer', input.stripeCustomerId);
-  else params.set('customer_email', input.ownerEmail);
+  setCheckoutCustomer(params, input);
+  return params;
+}
+
+export async function createStaffSeatCheckoutSession(
+  config: StripeConfig,
+  input: StaffSeatCheckoutInput,
+): Promise<{ url: string }> {
+  if (!config.staffSeatPriceId) throw new StripeRequestError(503);
+  const params = buildStaffSeatCheckoutParams({ ...input, priceId: config.staffSeatPriceId });
+
+  const data = await stripeRequest(config, '/checkout/sessions', params);
+  if (!data.url) {
+    throw new StripeRequestError(502);
+  }
+  return { url: data.url };
+}
+
+export async function createProCheckoutSession(
+  config: StripeConfig,
+  input: ProCheckoutInput,
+): Promise<{ url: string }> {
+  if (!config.proPriceId) throw new StripeRequestError(503);
+  const params = buildProCheckoutParams({ ...input, priceId: config.proPriceId });
 
   const data = await stripeRequest(config, '/checkout/sessions', params);
   if (!data.url) throw new StripeRequestError(502);

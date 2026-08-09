@@ -7,7 +7,13 @@ import {
   ShieldCheckIcon,
   TrashIcon,
 } from '@phosphor-icons/react';
-import { getStaffSeatLimit, type PlanId } from '@taomenu/shared';
+import {
+  formatCurrency,
+  getBillingPrice,
+  getStaffSeatLimit,
+  type PlanId,
+  toBillingCurrency,
+} from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
@@ -30,9 +36,16 @@ type StaffManagerProps = {
   plan: PlanId;
   staffSeatAddons: number;
   timeZone: string;
+  currency: string;
 };
 
-export function StaffManager({ storeId, plan, staffSeatAddons, timeZone }: StaffManagerProps) {
+export function StaffManager({
+  storeId,
+  plan,
+  staffSeatAddons,
+  timeZone,
+  currency,
+}: StaffManagerProps) {
   const t = useTranslations('owner');
   const locale = useLocale();
   const [devices, setDevices] = useState<Device[]>([]);
@@ -169,6 +182,12 @@ export function StaffManager({ storeId, plan, staffSeatAddons, timeZone }: Staff
   const activeDeviceCount = devices.filter((device) => device.status === 'active').length;
   const staffSeatLimit = getStaffSeatLimit(plan, seatAddons);
   const hasAvailableSeat = hasAvailableStaffSeat(activeDeviceCount, staffSeatLimit);
+  const billingCurrency = toBillingCurrency(currency);
+  const seatPrice = formatCurrency(
+    getBillingPrice('staff_seat', billingCurrency),
+    billingCurrency,
+    locale,
+  );
 
   return (
     <div className="space-y-6">
@@ -288,6 +307,9 @@ export function StaffManager({ storeId, plan, staffSeatAddons, timeZone }: Staff
             </Button>
           </div>
         </div>
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          {t('seatPriceHint', { price: seatPrice })}
+        </p>
       </section>
 
       <section className="space-y-3" aria-labelledby="devices-title">

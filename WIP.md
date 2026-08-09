@@ -22,7 +22,14 @@ currency_options，应用运行时不拉取 Stripe 价格。
   - `buildPriceInstructions` 按小数位生成提示：0 位保持「integer 值 + 35k → 35000」，
     2 位明确「返回最小单位整数，5.99 USD → 599」；`currency` 字段仍只记录到 usageJson，不做阻断
   - AI 翻译（只传 name/description）与图片美化不涉及金额，未改动
-- [ ] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示
+- [x] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示
+  - `buildProCheckoutParams` / `buildStaffSeatCheckoutParams` 抽成纯函数，参数只多一个小写 `currency`，
+    不写 `payment_method_types`（写死会让 Stripe 无法按币种协商支付方式），单测直接断言不用 mock fetch
+  - 两个 checkout 路由传 `toBillingCurrency(store.currency)`；已有 subscription item 只改 quantity 的分支
+    不涉及币种（订阅币种已锁定），未改动
+  - `owner.proPrice` / 新增 `owner.seatPriceHint` 改为 `{price}` 占位符，价格由
+    `formatCurrency(getBillingPrice(...))` 按门店币种 + UI locale 现算
+  - 价格展示读已保存的 `store.currency`，不跟随设置表单里未保存的选择，避免与实际扣款币种不一致
 - [ ] Step 6：website 定价页按 locale 币种渲染 + JSON-LD
 - [ ] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾
 - [ ] 人工验收：Stripe test mode 走通 checkout / webhook / portal，生产回归

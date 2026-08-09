@@ -1,8 +1,14 @@
 'use client';
 
 import type { StoreRow } from '@taomenu/db';
-import { BILLING_CURRENCIES, type BillingCurrency, toBillingCurrency } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import {
+  BILLING_CURRENCIES,
+  type BillingCurrency,
+  formatCurrency,
+  getBillingPrice,
+  toBillingCurrency,
+} from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -14,6 +20,7 @@ type StoreSettingsFormProps = {
 
 export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSettingsFormProps) {
   const t = useTranslations('owner');
+  const locale = useLocale();
   const [name, setName] = useState(store.name);
   const [serviceMode, setServiceMode] = useState(store.serviceMode);
   const [timezone, setTimezone] = useState(store.timezone);
@@ -28,6 +35,13 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
   // 已有 Stripe 订阅时，改币种不会影响既有扣款，需要额外提示
   const hasSubscription = Boolean(
     store.stripePlanSubscriptionId || store.stripeStaffSeatSubscriptionId,
+  );
+  // 结算按已保存的门店币种进行，所以价格展示也用 store.currency 而非未保存的表单值
+  const billingCurrency = toBillingCurrency(store.currency);
+  const proPrice = formatCurrency(
+    getBillingPrice('pro_plan', billingCurrency),
+    billingCurrency,
+    locale,
   );
 
   async function openBilling(path: 'pro/checkout' | 'portal') {
@@ -181,7 +195,9 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
               {store.plan === 'pro' ? t('proActiveSubtitle') : t('upgradeSubtitle')}
             </p>
           </div>
-          <p className="shrink-0 text-xl font-black tabular-nums text-ink-900">{t('proPrice')}</p>
+          <p className="shrink-0 text-xl font-black tabular-nums text-ink-900">
+            {t('proPrice', { price: proPrice })}
+          </p>
         </div>
 
         <ul className="mt-5 grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
