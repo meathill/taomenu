@@ -37,7 +37,16 @@ currency_options，应用运行时不拉取 Stripe 价格。
     改 `{price}` 占位符，席位价顺带展示在两档套餐的功能列表里
   - 首页 JSON-LD `offers` 由单个 Offer 扩成数组（Free + Pro），价格用
     `minorAmountToDecimalString`，`priceCurrency` 跟随 locale
-- [ ] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾
+- [x] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾
+  - `scripts/sync-stripe-prices.ts`（`pnpm stripe:prices:check` / `stripe:prices:sync`）把
+    `BILLING_PRICES` 覆盖式推到 Stripe Price 的 `currency_options`，校验 active / 月付 /
+    默认币种金额；默认币种金额不可改，不一致直接报错要求新建 Price
+  - 凭据优先级 `process.env` → `apps/app/.dev.vars` → `apps/app/wrangler.jsonc` 的 vars，
+    secret 不从 vars 取，所有输出对 `sk_`/`rk_` 做打码
+  - Node 原生跑 TS 不给无扩展名相对导入补 `.ts`，脚本用 `module.registerHooks` 兜住，
+    从而直接复用 `packages/shared` 的价格配置，不复制常量
+  - `STRIPE_PRO_PRICE_ID` 以空串占位进 wrangler vars（空串按未配置处理），
+    `.dev.vars.example` / `.env.production.example` / DEPLOYMENT.md 同步补齐
 - [ ] 人工验收：Stripe test mode 走通 checkout / webhook / portal，生产回归
 
 ---

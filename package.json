@@ -15,7 +15,9 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test"
+    "test": "pnpm -r --if-present test",
+    "stripe:prices:check": "node scripts/sync-stripe-prices.ts --check",
+    "stripe:prices:sync": "node scripts/sync-stripe-prices.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.3",

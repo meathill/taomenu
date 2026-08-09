@@ -51,6 +51,7 @@
 | `VAPID_PUBLIC_KEY` | Web Push 公钥（经 API 下发到终端，不是密钥） |
 | `VAPID_SUBJECT` | VAPID contact，如 `mailto:ops@dyqr.me` |
 | `GOOGLE_CLIENT_ID` | Google OAuth 客户端 ID（可公开） |
+| `STRIPE_PRO_PRICE_ID` | Pro 套餐月付 recurring Price ID（空串＝未开通，升级入口给配置提示） |
 | `STRIPE_STAFF_SEAT_PRICE_ID` | 一个额外 Staff 席位的 recurring Price ID |
 | `NEXT_PUBLIC_*` | 同上；生产为 `menu.dyqr.me` / `app.menu.dyqr.me` |
 
@@ -225,6 +226,7 @@ npx wrangler secret put STRIPE_WEBHOOK_SECRET
   "VAPID_PUBLIC_KEY": "<your-public-key>",
   "VAPID_SUBJECT": "mailto:ops@dyqr.me",
   "GOOGLE_CLIENT_ID": "<optional>",
+  "STRIPE_PRO_PRICE_ID": "price_<pro>",
   "STRIPE_STAFF_SEAT_PRICE_ID": "price_<staff-seat>"
 }
 ```
@@ -240,6 +242,37 @@ https://app.menu.dyqr.me/api/billing/stripe/webhook
 服务端会校验 `Stripe-Signature`，并将额外 Staff 席位同步到门店。
 
 也可复制 `apps/app/.env.production.example` → `.env.production` 覆盖构建时的 `process.env`（优先级高于 wrangler vars 注入）。
+
+### 多币种价格维护
+
+价格的唯一事实来源是 `packages/shared/src/pricing.ts`（VND / USD / JPY / CNY，均为**最小单位整数**：
+VND、JPY 无小数，USD、CNY 以分计）。应用运行时**从不**读取 Stripe 价格，Stripe 侧只需要
+`currency_options` 与本地一致，Checkout 才能按门店币种结算。
+
+改价流程：
+
+```bash
+# 1. 改 packages/shared/src/pricing.ts
+# 2. 看 Stripe 与本地的差异（只读，有漂移 exit 1）
+pnpm stripe:prices:check
+# 3. 覆盖式推送到 Stripe（幂等）
+pnpm stripe:prices:sync
+# 4. 提交代码
+```
+
+脚本按 `process.env` → `apps/app/.dev.vars` → `apps/app/wrangler.jsonc` 的 `vars` 顺序取
+`STRIPE_SECRET_KEY` / `STRIPE_PRO_PRICE_ID` / `STRIPE_STAFF_SEAT_PRICE_ID`（secret 不从 wrangler.jsonc 取）。
+对生产执行时用生产 key：`STRIPE_SECRET_KEY=rk_live_... pnpm stripe:prices:sync`。
+
+约束：
+
+- 两个 Price 必须是 **active 的月付订阅**（`type=recurring`、`interval=month`），脚本会校验。
+- Price 的**默认币种及其金额创建后不可修改**，只有 `currency_options` 能更新。默认币种建议用
+  **VND**（主力市场）。若默认币种金额与 `pricing.ts` 不一致，脚本会直接报错——此时只能在 Dashboard
+  新建 Price，并更新 `STRIPE_PRO_PRICE_ID` / `STRIPE_STAFF_SEAT_PRICE_ID`，老订阅不受影响。
+- 同一 Stripe Customer 的**币种在首笔订阅后锁定**。门店改币种不会改变已有订阅的扣款币种，
+  也不换算历史金额；需要换币种收款的老客户必须先取消订阅，再以新币种重新订阅。
+- 推送是覆盖式的：`currency_options` 里多出来的币种会被移除，只保留 `BILLING_CURRENCIES` 四种。
 
 ### website（`apps/website`）
 

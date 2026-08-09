@@ -19,8 +19,11 @@ VAPID_PUBLIC_KEY=BBtp7659cmZ6zDUHP0juspCmN4Z105iWDb9FNqHj2UO9vt_5YMVId9MKFXtWC-C
 VAPID_SUBJECT=mailto:ops@dyqr.me
 EMAIL_FROM=noreply@dyqr.me
 EMAIL_FROM_NAME=TaoMenu
+# Stripe Price ID for the recurring Pro plan (monthly). 未配置时 Pro 升级入口显示未开通。
+# STRIPE_PRO_PRICE_ID=
 # Stripe Price ID for one recurring staff seat.
 # STRIPE_STAFF_SEAT_PRICE_ID=
+# 两个 Price 的多币种金额由 `pnpm stripe:prices:sync` 从 packages/shared/src/pricing.ts 推送
 
 # 本地无真实 Email 时：强制只打日志（默认无 EMAIL binding 也会 log）
 # EMAIL_DEV_LOG_ONLY=1
