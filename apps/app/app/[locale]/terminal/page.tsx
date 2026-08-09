@@ -79,7 +79,7 @@ export default async function TerminalPage({ searchParams }: TerminalPageProps) 
           ) : null}
         </header>
 
-        <TerminalBoard storeId={store.id} />
+        <TerminalBoard storeId={store.id} currency={store.currency} />
 
         <details className="mt-6 rounded-2xl border border-border bg-white p-4">
           <summary className="cursor-pointer list-none text-sm font-bold text-ink-900">

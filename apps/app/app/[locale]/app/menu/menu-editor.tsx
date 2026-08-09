@@ -37,6 +37,7 @@ type MenuTree = {
 
 type MenuEditorProps = {
   storeId: string;
+  currency: string;
   canUseVoiceAssistant: boolean;
   canUseImageEnhancement: boolean;
 };
@@ -59,6 +60,7 @@ function labelForItem(item: MenuTree['categories'][number]['items'][number], bas
 
 export function MenuEditor({
   storeId,
+  currency,
   canUseVoiceAssistant,
   canUseImageEnhancement,
 }: MenuEditorProps) {
@@ -461,6 +463,7 @@ export function MenuEditor({
                     <div className="min-w-0 flex-1">
                       <MenuItemRow
                         item={item}
+                        currency={currency}
                         label={labelForItem(item, baseLocale)}
                         busyAction={busyAction}
                         selectMode={selectMode}
@@ -481,6 +484,7 @@ export function MenuEditor({
                       storeId={storeId}
                       itemId={item.id}
                       itemName={labelForItem(item, baseLocale)}
+                      currency={currency}
                       baseLocale={baseLocale}
                       groups={item.modifierGroups ?? []}
                       busyAction={busyAction}

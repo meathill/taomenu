@@ -10,13 +10,10 @@ import {
   parseCurrencyInput,
   toBillingCurrency,
 } from './currency';
-import { formatVnd } from './menu';
 
 describe('formatCurrency', () => {
-  it('VND 输出与旧版 formatVnd 完全一致', () => {
-    expect(formatCurrency(149000, 'VND', 'vi-VN')).toBe(formatVnd(149000, 'vi-VN'));
+  it('VND 输出与旧版 formatVnd 完全一致：千分位点 + 普通空格 + ₫', () => {
     expect(formatCurrency(149000, 'VND', 'vi-VN')).toBe('149.000 ₫');
-    expect(formatCurrency(0, 'VND', 'vi-VN')).toBe(formatVnd(0, 'vi-VN'));
     expect(formatCurrency(0, 'VND', 'vi-VN')).toBe('0 ₫');
   });
 

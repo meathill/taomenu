@@ -30,6 +30,7 @@ export type PublicMenuPayload = {
     id: string;
     slug: string;
     name: string;
+    currency: string;
     baseLocale: string;
     menuVersion: number;
     acceptingPublicRequests: boolean;
@@ -77,6 +78,7 @@ export async function getPublishedMenuForStore(
         id: store.id,
         slug: store.slug,
         name: store.name,
+        currency: store.currency,
         baseLocale: store.baseLocale,
         menuVersion: store.menuVersion,
         acceptingPublicRequests: store.acceptingPublicRequests,
@@ -105,6 +107,7 @@ export async function getPublishedMenuForStore(
         id: store.id,
         slug: store.slug,
         name: store.name,
+        currency: store.currency,
         baseLocale: store.baseLocale,
         menuVersion: store.menuVersion,
         acceptingPublicRequests: store.acceptingPublicRequests,
@@ -167,6 +170,7 @@ export async function getPublishedMenuForStore(
       id: store.id,
       slug: store.slug,
       name: store.name,
+      currency: store.currency,
       baseLocale: store.baseLocale,
       menuVersion: store.menuVersion,
       acceptingPublicRequests: store.acceptingPublicRequests,

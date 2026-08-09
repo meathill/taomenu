@@ -7,7 +7,7 @@ import {
   WarningCircleIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import { getOwnerOverview } from '@taomenu/db';
-import { formatVnd } from '@taomenu/shared';
+import { formatCurrency } from '@taomenu/shared';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
@@ -170,12 +170,12 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
               },
               {
                 label: t('todayOrderValue'),
-                value: formatVnd(overview.stats.todayOrderValue),
+                value: formatCurrency(overview.stats.todayOrderValue, store.currency, locale),
                 tone: 'bg-white',
               },
               {
                 label: t('todayRecordedPayment'),
-                value: formatVnd(overview.stats.todayRecordedPayment),
+                value: formatCurrency(overview.stats.todayRecordedPayment, store.currency, locale),
                 tone: 'bg-white',
               },
               {
@@ -276,7 +276,7 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
                       </p>
                     </div>
                     <p className="text-sm font-bold tabular-nums text-ink-900">
-                      {formatVnd(order.amount)}
+                      {formatCurrency(order.amount, store.currency, locale)}
                     </p>
                   </li>
                 ))}

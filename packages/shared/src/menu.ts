@@ -79,8 +79,3 @@ export type CreateModifierGroupBody = z.infer<typeof createModifierGroupSchema>;
 export type UpdateModifierGroupBody = z.infer<typeof updateModifierGroupSchema>;
 export type CreateModifierBody = z.infer<typeof createModifierSchema>;
 export type UpdateModifierBody = z.infer<typeof updateModifierSchema>;
-
-/** 展示用 VND：149000 → "149.000 ₫" */
-export function formatVnd(amount: number, locale = 'vi-VN'): string {
-  return `${new Intl.NumberFormat(locale).format(amount)} ₫`;
-}

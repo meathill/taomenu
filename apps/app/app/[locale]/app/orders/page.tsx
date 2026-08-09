@@ -29,7 +29,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           <h1 className="mt-1 text-2xl font-black tracking-tight text-ink-900">{t('orders')}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t('ordersSubtitle')}</p>
         </header>
-        <TerminalBoard storeId={selection.store.id} />
+        <TerminalBoard storeId={selection.store.id} currency={selection.store.currency} />
       </div>
     </PageMessages>
   );

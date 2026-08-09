@@ -1,7 +1,7 @@
 'use client';
 
-import { formatVnd } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import { formatCurrency } from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 export type PublicModifierOption = {
@@ -39,6 +39,7 @@ export type CartLineSelection = {
 
 type ModifierPickerProps = {
   item: PublicMenuItem;
+  currency: string;
   onCancel: () => void;
   onConfirm: (selection: Omit<CartLineSelection, 'quantity'>) => void;
 };
@@ -48,9 +49,10 @@ export function cartLineKey(menuItemId: string, modifierIds: string[]): string {
   return `${menuItemId}:${sorted.join(',')}`;
 }
 
-export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProps) {
+export function ModifierPicker({ item, currency, onCancel, onConfirm }: ModifierPickerProps) {
   const t = useTranslations('customer');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
   const [selectedByGroup, setSelectedByGroup] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     for (const group of item.modifierGroups) {
@@ -137,7 +139,7 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
           <div>
             <h2 className="text-lg font-extrabold text-ink-900">{item.name}</h2>
             <p className="text-sm tabular-nums text-muted-foreground">
-              {formatVnd(item.priceAmount)}
+              {formatCurrency(item.priceAmount, currency, locale)}
             </p>
           </div>
           <button type="button" className="text-sm font-bold text-ink-900" onClick={onCancel}>
@@ -172,7 +174,7 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
                         <span>{option.name}</span>
                         <span className="tabular-nums text-muted-foreground">
                           {option.priceDeltaAmount > 0
-                            ? `+${formatVnd(option.priceDeltaAmount)}`
+                            ? `+${formatCurrency(option.priceDeltaAmount, currency, locale)}`
                             : '—'}
                         </span>
                       </button>
@@ -199,7 +201,7 @@ export function ModifierPicker({ item, onCancel, onConfirm }: ModifierPickerProp
             className="min-h-12 flex-1 rounded-xl bg-brand-600 text-sm font-bold text-white"
             onClick={handleConfirm}
           >
-            {t('addWithPrice', { price: formatVnd(unitPrice) })}
+            {t('addWithPrice', { price: formatCurrency(unitPrice, currency, locale) })}
           </button>
         </div>
       </div>

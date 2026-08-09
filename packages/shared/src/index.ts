@@ -21,7 +21,6 @@ export {
   createItemSchema,
   createModifierGroupSchema,
   createModifierSchema,
-  formatVnd,
   type UpdateCategoryBody,
   type UpdateItemBody,
   type UpdateModifierBody,

@@ -1,7 +1,7 @@
 'use client';
 
-import { formatVnd } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
 import {
@@ -12,7 +12,7 @@ import {
 } from '../../../modifier-picker';
 
 type MenuPayload = {
-  store: { name: string; acceptingPublicRequests: boolean; menuVersion: number };
+  store: { name: string; currency: string; acceptingPublicRequests: boolean; menuVersion: number };
   table?: { name: string };
   categories: Array<{
     id: string;
@@ -44,6 +44,7 @@ const ORDER_STATUS_KEYS: Record<string, string> = {
 
 export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const t = useTranslations('customer');
+  const locale = useLocale();
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -137,6 +138,9 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
     () => cart.reduce((sum, line) => sum + line.priceAmount * line.quantity, 0),
     [cart],
   );
+
+  // 订单状态页可能先于菜单渲染（从 localStorage 恢复订单），此时按 VND 回落
+  const currency = toBillingCurrency(menu?.store.currency);
 
   function requestAddItem(item: PublicMenuItem) {
     if (item.isSoldOut) return;
@@ -275,7 +279,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
           })()}
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          {t('submittedHint', { total: formatVnd(order.subtotalAmount) })}
+          {t('submittedHint', { total: formatCurrency(order.subtotalAmount, currency, locale) })}
         </p>
         <ul className="mt-4 space-y-1 text-sm">
           {order.items.map((item) => (
@@ -395,7 +399,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
                             {item.name}
                           </span>
                           <span className="text-sm tabular-nums text-muted-foreground">
-                            {formatVnd(item.priceAmount)}
+                            {formatCurrency(item.priceAmount, currency, locale)}
                             {item.isSoldOut ? ` · ${t('soldOut')}` : ''}
                             {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
                           </span>
@@ -416,7 +420,9 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
           <div className="mx-auto max-w-lg space-y-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
-              <p className="text-sm font-bold tabular-nums text-ink-900">{formatVnd(subtotal)}</p>
+              <p className="text-sm font-bold tabular-nums text-ink-900">
+                {formatCurrency(subtotal, currency, locale)}
+              </p>
             </div>
             <ul className="max-h-24 space-y-1 overflow-y-auto text-xs text-muted-foreground">
               {cart.map((line) => (
@@ -425,7 +431,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
                     {line.quantity}× {line.name}
                   </span>
                   <span className="shrink-0 tabular-nums">
-                    {formatVnd(line.priceAmount * line.quantity)}
+                    {formatCurrency(line.priceAmount * line.quantity, currency, locale)}
                   </span>
                 </li>
               ))}
@@ -441,7 +447,9 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
               onClick={() => void submitOrder()}
               className="min-h-12 w-full rounded-xl bg-brand-600 px-5 text-sm font-bold text-white disabled:bg-paper-100 disabled:text-muted-foreground"
             >
-              {submitting ? t('sending') : t('sendWithPrice', { price: formatVnd(subtotal) })}
+              {submitting
+                ? t('sending')
+                : t('sendWithPrice', { price: formatCurrency(subtotal, currency, locale) })}
             </button>
           </div>
         </div>
@@ -450,6 +458,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       {picking ? (
         <ModifierPicker
           item={picking}
+          currency={currency}
           onCancel={() => setPicking(null)}
           onConfirm={commitSelection}
         />

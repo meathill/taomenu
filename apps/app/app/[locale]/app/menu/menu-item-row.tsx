@@ -1,9 +1,9 @@
 'use client';
 
 import { CopyIcon, TrashIcon } from '@phosphor-icons/react';
-import { formatVnd } from '@taomenu/shared';
+import { formatCurrency } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 
 export type MenuItemView = {
@@ -16,6 +16,7 @@ export type MenuItemView = {
 
 type MenuItemRowProps = {
   item: MenuItemView;
+  currency: string;
   label: string;
   busyAction: string | null;
   selectMode: boolean;
@@ -30,6 +31,7 @@ type MenuItemRowProps = {
 
 export function MenuItemRow({
   item,
+  currency,
   label,
   busyAction,
   selectMode,
@@ -42,6 +44,7 @@ export function MenuItemRow({
   onEditModifiers,
 }: MenuItemRowProps) {
   const t = useTranslations('menu');
+  const locale = useLocale();
   return (
     <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -57,7 +60,7 @@ export function MenuItemRow({
         <div className="min-w-0">
           <p className="truncate font-semibold text-ink-900">{label}</p>
           <p className="text-sm tabular-nums text-muted-foreground">
-            {formatVnd(item.priceAmount)}
+            {formatCurrency(item.priceAmount, currency, locale)}
             {item.isSoldOut ? (
               <span className="ml-2 font-semibold text-brand-600">{t('soldOut')}</span>
             ) : null}

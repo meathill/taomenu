@@ -1,7 +1,7 @@
 'use client';
 
-import { formatVnd } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import { formatCurrency } from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -34,6 +34,7 @@ type SessionCard = {
 
 type TerminalBoardProps = {
   storeId: string;
+  currency: string;
 };
 
 type ActionKey = 'accept' | 'served' | 'readyPickup' | 'pickedUp';
@@ -66,8 +67,9 @@ const REQUEST_STATUS_KEYS: Record<string, string> = {
   acknowledged: 'reqStatusAcknowledged',
 };
 
-export function TerminalBoard({ storeId }: TerminalBoardProps) {
+export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
   const t = useTranslations('terminal');
+  const locale = useLocale();
   const [orders, setOrders] = useState<OrderCard[]>([]);
   const [requests, setRequests] = useState<ServiceCard[]>([]);
   const [sessions, setSessions] = useState<SessionCard[]>([]);
@@ -187,7 +189,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
       if (!res.ok) {
         setError(
           data.error === 'BALANCE_REMAINING'
-            ? t('balanceDue', { amount: formatVnd(data.balance ?? 0) })
+            ? t('balanceDue', { amount: formatCurrency(data.balance ?? 0, currency, locale) })
             : data.error || t('closeFailed'),
         );
         return;
@@ -319,7 +321,7 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                       </p>
                     </div>
                     <p className="text-sm font-bold tabular-nums">
-                      {formatVnd(order.subtotalAmount)}
+                      {formatCurrency(order.subtotalAmount, currency, locale)}
                     </p>
                   </div>
                   <ul className="mt-3 space-y-1 text-sm text-ink-900">
@@ -353,7 +355,9 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                         onClick={() => void payOrder(order.id, order.remainingAmount)}
                         className="min-h-11 w-full rounded-xl border border-border text-xs font-bold"
                       >
-                        {t('recordCashAmount', { amount: formatVnd(order.remainingAmount) })}
+                        {t('recordCashAmount', {
+                          amount: formatCurrency(order.remainingAmount, currency, locale),
+                        })}
                       </Button>
                     ) : null}
                   </div>
@@ -380,9 +384,9 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   {session.balance ? (
                     <p className="mt-1 text-xs text-muted-foreground">
                       {t('sessionBalance', {
-                        ordered: formatVnd(session.balance.ordered),
-                        paid: formatVnd(session.balance.paid),
-                        balance: formatVnd(session.balance.balance),
+                        ordered: formatCurrency(session.balance.ordered, currency, locale),
+                        paid: formatCurrency(session.balance.paid, currency, locale),
+                        balance: formatCurrency(session.balance.balance, currency, locale),
                       })}
                     </p>
                   ) : null}
@@ -399,7 +403,9 @@ export function TerminalBoard({ storeId }: TerminalBoardProps) {
                   </Button>
                 ) : session.balance ? (
                   <span className="text-xs font-bold text-brand-700">
-                    {t('balanceDue', { amount: formatVnd(session.balance.balance) })}
+                    {t('balanceDue', {
+                      amount: formatCurrency(session.balance.balance, currency, locale),
+                    })}
                   </span>
                 ) : null}
               </li>

@@ -1,5 +1,5 @@
 import { getOwnerOverview } from '@taomenu/db';
-import { formatVnd } from '@taomenu/shared';
+import { formatCurrency } from '@taomenu/shared';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
@@ -61,7 +61,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
           <div className="rounded-2xl border border-border bg-white p-5">
             <p className="text-sm font-semibold text-muted-foreground">{t('todayOrderValue')}</p>
             <p className="mt-2 text-2xl font-black tabular-nums text-ink-900">
-              {formatVnd(overview.stats.todayOrderValue)}
+              {formatCurrency(overview.stats.todayOrderValue, store.currency, locale)}
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-white p-5">
@@ -69,7 +69,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
               {t('todayRecordedPayment')}
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums text-ink-900">
-              {formatVnd(overview.stats.todayRecordedPayment)}
+              {formatCurrency(overview.stats.todayRecordedPayment, store.currency, locale)}
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-gold-50 p-5">

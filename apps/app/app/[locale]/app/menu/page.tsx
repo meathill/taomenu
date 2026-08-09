@@ -75,6 +75,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
         </section>
         <MenuEditor
           storeId={store.id}
+          currency={store.currency}
           canUseVoiceAssistant={store.plan === 'pro'}
           canUseImageEnhancement={store.plan === 'pro'}
         />

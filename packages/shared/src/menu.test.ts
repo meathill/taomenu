@@ -4,15 +4,7 @@ import {
   createItemSchema,
   createModifierGroupSchema,
   createModifierSchema,
-  formatVnd,
 } from './menu';
-
-describe('formatVnd', () => {
-  it('格式化整数越南盾', () => {
-    expect(formatVnd(149000)).toBe('149.000 ₫');
-    expect(formatVnd(0)).toBe('0 ₫');
-  });
-});
 
 describe('createItemSchema', () => {
   it('拒绝小数价格', () => {

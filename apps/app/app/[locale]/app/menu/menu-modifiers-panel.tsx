@@ -1,7 +1,7 @@
 'use client';
 
-import { formatVnd } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import { formatCurrency } from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
 
@@ -25,6 +25,7 @@ type MenuModifiersPanelProps = {
   storeId: string;
   itemId: string;
   itemName: string;
+  currency: string;
   baseLocale: string;
   groups: ModifierGroupView[];
   busyAction: string | null;
@@ -54,6 +55,7 @@ export function MenuModifiersPanel({
   storeId,
   itemId,
   itemName,
+  currency,
   baseLocale,
   groups,
   busyAction,
@@ -64,6 +66,7 @@ export function MenuModifiersPanel({
 }: MenuModifiersPanelProps) {
   const t = useTranslations('menu');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
   const [groupName, setGroupName] = useState('');
   const [groupRequired, setGroupRequired] = useState(true);
   const [optionDraft, setOptionDraft] = useState<{
@@ -214,7 +217,7 @@ export function MenuModifiersPanel({
                     {optionLabel(option, baseLocale)}
                     {option.priceDeltaAmount > 0 ? (
                       <span className="ml-1 text-muted-foreground">
-                        +{formatVnd(option.priceDeltaAmount)}
+                        +{formatCurrency(option.priceDeltaAmount, currency, locale)}
                       </span>
                     ) : null}
                     {!option.isAvailable ? (

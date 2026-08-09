@@ -6,7 +6,8 @@
 currency_options，应用运行时不拉取 Stripe 价格。
 
 - [x] Step 1：shared 币种+定价配置（currency.ts / pricing.ts + 测试）
-- [ ] Step 2：formatCurrency 全量迁移，public-menu 下发 currency，删 formatVnd
+- [x] Step 2：formatCurrency 全量迁移，public-menu 下发 currency，删 formatVnd
+  - 金额格式化改为跟随界面语言（原先硬编码 `vi-VN`）：vi 显示不变，en/zh/ja 千分位由 `.` 变 `,`
 - [ ] Step 3：价格输入按币种处理小数（菜单编辑 + AI 导入）
 - [ ] Step 4：stores.currency 可编辑（schema / repo / settings UI + 提示文案）
 - [ ] Step 5：Checkout 传 currency + app 端 Pro/席位价格展示

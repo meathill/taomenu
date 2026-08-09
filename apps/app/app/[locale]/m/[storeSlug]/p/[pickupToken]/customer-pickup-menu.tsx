@@ -1,7 +1,7 @@
 'use client';
 
-import { formatVnd } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
 import {
@@ -12,7 +12,7 @@ import {
 } from '../../../modifier-picker';
 
 type MenuPayload = {
-  store: { name: string; acceptingPublicRequests: boolean };
+  store: { name: string; currency: string; acceptingPublicRequests: boolean };
   pickupPoint?: { name: string };
   categories: Array<{
     id: string;
@@ -25,6 +25,7 @@ type CartLine = CartLineSelection & { quantity: number };
 
 export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const t = useTranslations('customer');
+  const locale = useLocale();
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -57,6 +58,9 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     () => cart.reduce((sum, line) => sum + line.priceAmount * line.quantity, 0),
     [cart],
   );
+
+  // 下单结果页在菜单请求失败时仍会渲染，此时按 VND 回落
+  const currency = toBillingCurrency(menu?.store.currency);
 
   function requestAddItem(item: PublicMenuItem) {
     if (item.isSoldOut) return;
@@ -219,7 +223,9 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                 : t('statusSubmitted')}
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          {t('pickupSubmittedHint', { total: formatVnd(result.subtotalAmount) })}
+          {t('pickupSubmittedHint', {
+            total: formatCurrency(result.subtotalAmount, currency, locale),
+          })}
         </p>
         <button
           type="button"
@@ -290,7 +296,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                       <span className="min-w-0">
                         <span className="block truncate font-semibold">{item.name}</span>
                         <span className="text-sm tabular-nums text-muted-foreground">
-                          {formatVnd(item.priceAmount)}
+                          {formatCurrency(item.priceAmount, currency, locale)}
                           {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
                         </span>
                       </span>
@@ -308,7 +314,9 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           <div className="mx-auto mb-3 max-w-lg">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
-              <p className="text-sm font-bold tabular-nums text-ink-900">{formatVnd(subtotal)}</p>
+              <p className="text-sm font-bold tabular-nums text-ink-900">
+                {formatCurrency(subtotal, currency, locale)}
+              </p>
             </div>
             <ul className="mt-2 max-h-24 space-y-1 overflow-y-auto text-xs text-muted-foreground">
               {cart.map((line) => (
@@ -317,7 +325,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                     {line.quantity}× {line.name}
                   </span>
                   <span className="shrink-0 tabular-nums">
-                    {formatVnd(line.priceAmount * line.quantity)}
+                    {formatCurrency(line.priceAmount * line.quantity, currency, locale)}
                   </span>
                 </li>
               ))}
@@ -334,13 +342,16 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
             onClick={() => void submitOrder()}
             className="mx-auto min-h-12 w-full max-w-lg rounded-xl bg-brand-600 text-sm font-bold text-white disabled:bg-paper-100 disabled:text-muted-foreground"
           >
-            {submitting ? t('sending') : t('sendWithPrice', { price: formatVnd(subtotal) })}
+            {submitting
+              ? t('sending')
+              : t('sendWithPrice', { price: formatCurrency(subtotal, currency, locale) })}
           </button>
         </div>
       ) : null}
       {picking ? (
         <ModifierPicker
           item={picking}
+          currency={currency}
           onCancel={() => setPicking(null)}
           onConfirm={commitSelection}
         />
