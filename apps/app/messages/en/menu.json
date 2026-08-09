@@ -78,6 +78,8 @@
   "importRetry": "Try again",
   "importReviewTitle": "Review the AI draft",
   "importReviewHint": "Uncheck anything you do not want. Low-confidence and missing prices need extra attention.",
+  "importLanguageWillChange": "Detected {detected}, different from your current {base} menu. Because this menu is empty, applying the draft will set {detected} as its main language.",
+  "importLanguageMismatchExisting": "This file is in {detected}, but your existing menu uses {base}. Importing another source language into an existing menu is not supported yet. Use a {base} file.",
   "importCategoryName": "Category name",
   "importDescription": "Description (optional)",
   "importSelectItem": "Select {name}",

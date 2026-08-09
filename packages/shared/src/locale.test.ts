@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_LOCALE,
+  doLocalesShareLanguage,
+  getPrimaryLanguage,
   isLocale,
   matchLocaleFromAcceptLanguage,
   matchLocaleFromCountry,
@@ -8,6 +10,12 @@ import {
 } from './locale';
 
 describe('locale', () => {
+  it('比较菜单 BCP-47 locale 时忽略地区差异', () => {
+    expect(getPrimaryLanguage('vi-VN')).toBe('vi');
+    expect(doLocalesShareLanguage('vi', 'vi-VN')).toBe(true);
+    expect(doLocalesShareLanguage('en', 'vi-VN')).toBe(false);
+  });
+
   it('DEFAULT_LOCALE 为 en', () => {
     expect(DEFAULT_LOCALE).toBe('en');
     expect(isLocale('en')).toBe(true);

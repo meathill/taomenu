@@ -31,6 +31,7 @@ export type ImportView = {
     errorCode: string | null;
   };
   suggestions: Suggestion[];
+  hasExistingCategories: boolean;
 };
 
 export type ReviewDraft = Record<

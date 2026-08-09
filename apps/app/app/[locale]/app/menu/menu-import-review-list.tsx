@@ -10,6 +10,7 @@ type MenuImportReviewListProps = {
   draft: ReviewDraft;
   isApplying: boolean;
   isBusy: boolean;
+  isApplyDisabled: boolean;
   onUpdate: (id: string, patch: Partial<ReviewDraft[string]>) => void;
   onToggleCategory: (group: SuggestionGroup, selected: boolean) => void;
   onApply: () => void;
@@ -20,6 +21,7 @@ export function MenuImportReviewList({
   draft,
   isApplying,
   isBusy,
+  isApplyDisabled,
   onUpdate,
   onToggleCategory,
   onApply,
@@ -138,6 +140,7 @@ export function MenuImportReviewList({
         type="button"
         pending={isApplying}
         busy={isBusy}
+        disabled={isApplyDisabled}
         onClick={onApply}
         className="min-h-12 w-full rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
       >

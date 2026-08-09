@@ -25,6 +25,18 @@ export function isLocale(value: string | null | undefined): value is Locale {
   return Boolean(value && (LOCALES as readonly string[]).includes(value));
 }
 
+export function getPrimaryLanguage(locale: string): string {
+  try {
+    return new Intl.Locale(locale).language.toLowerCase();
+  } catch {
+    return (locale.trim().split(/[-_]/)[0] ?? locale).toLowerCase();
+  }
+}
+
+export function doLocalesShareLanguage(first: string, second: string): boolean {
+  return getPrimaryLanguage(first) === getPrimaryLanguage(second);
+}
+
 /**
  * 解析 Accept-Language，返回第一个支持的 locale。
  * 支持 en-US → en、zh-CN / zh-Hans → zh、ja-JP → ja 等。

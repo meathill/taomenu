@@ -49,7 +49,11 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
             {t('viewOrders')}
           </a>
         </div>
-        <MenuImportPanel storeId={store.id} canUseAi={store.plan === 'pro'} />
+        <MenuImportPanel
+          storeId={store.id}
+          baseLocale={store.baseLocale}
+          canUseAi={store.plan === 'pro'}
+        />
         <section className="flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">

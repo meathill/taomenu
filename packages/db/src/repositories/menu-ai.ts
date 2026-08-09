@@ -19,6 +19,7 @@ import {
   modifierTranslations,
 } from '../schema/menu';
 import { menuImportAssets, menuImportSuggestions, menuImports } from '../schema/menu-ai';
+import { stores } from '../schema/stores';
 import type { Db, StoreContext } from '../types';
 import { ensureStoreMenu } from './menu';
 import {
@@ -28,6 +29,7 @@ import {
   MENU_AI_SCHEMA_VERSION,
   MenuImportError,
 } from './menu-ai-config';
+import { resolveMenuImportTargetLocale } from './menu-ai-locale';
 
 const categorySuggestionSchema = menuImportCategorySchema.omit({ items: true, confidence: true });
 const itemSuggestionSchema = menuImportItemSchema.omit({ confidence: true }).extend({
@@ -131,7 +133,12 @@ export async function getLatestMenuImport(ctx: StoreContext, db: Db) {
     )
     .orderBy(asc(menuImportSuggestions.entityType), asc(menuImportSuggestions.id));
   const suggestions = rows.map(parseSuggestionRow);
-  return { menuImport, suggestions };
+  const existingCategories = await db
+    .select({ id: menuCategories.id })
+    .from(menuCategories)
+    .where(eq(menuCategories.storeId, ctx.storeId))
+    .limit(1);
+  return { menuImport, suggestions, hasExistingCategories: existingCategories.length > 0 };
 }
 
 function parseSuggestionRow(
@@ -245,9 +252,39 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
     .from(menuCategories)
     .where(and(eq(menuCategories.storeId, ctx.storeId), eq(menuCategories.menuId, menu.id)));
   const categoryRows = accepted.filter((row) => row.entityType === 'category');
+  const detectedLocale = categoryRows[0]?.locale ?? menuImport.sourceLocale;
+  if (!detectedLocale) {
+    throw new MenuImportError('LOCALE_REQUIRED', 'Import has no detected locale');
+  }
+  const storeRows = await db
+    .select({ baseLocale: stores.baseLocale })
+    .from(stores)
+    .where(eq(stores.id, ctx.storeId))
+    .limit(1);
+  const baseLocale = storeRows[0]?.baseLocale ?? 'vi';
+  const localeResolution = resolveMenuImportTargetLocale({
+    baseLocale,
+    detectedLocale,
+    hasExistingCategories: currentCategoryCount.length > 0,
+  });
+  if (!localeResolution) {
+    throw new MenuImportError(
+      'LOCALE_MISMATCH',
+      'Import language does not match the existing menu language',
+    );
+  }
   const acceptedCategoryKeys = new Set(categoryRows.map((row) => row.temporaryEntityKey));
   const now = new Date();
   const statements: BatchItem<'sqlite'>[] = [];
+
+  if (localeResolution.shouldAdoptAsBaseLocale) {
+    statements.push(
+      db
+        .update(stores)
+        .set({ baseLocale: localeResolution.targetLocale, updatedAt: now })
+        .where(eq(stores.id, ctx.storeId)),
+    );
+  }
 
   categoryRows.forEach((row, categoryIndex) => {
     const category = categorySuggestionSchema.parse(JSON.parse(row.suggestedValueJson));
@@ -265,7 +302,7 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
         id: crypto.randomUUID(),
         storeId: ctx.storeId,
         categoryId: row.temporaryEntityKey,
-        locale: row.locale,
+        locale: localeResolution.targetLocale,
         name: category.name,
         description: category.description,
         source: 'ai',
@@ -308,7 +345,7 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
         id: crypto.randomUUID(),
         storeId: ctx.storeId,
         itemId: row.temporaryEntityKey,
-        locale: row.locale,
+        locale: localeResolution.targetLocale,
         name: item.name,
         description: item.description,
         source: 'ai',
@@ -334,7 +371,7 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
           id: crypto.randomUUID(),
           storeId: ctx.storeId,
           modifierGroupId: groupId,
-          locale: row.locale,
+          locale: localeResolution.targetLocale,
           name: group.name,
         }),
       );
@@ -353,7 +390,7 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
             id: crypto.randomUUID(),
             storeId: ctx.storeId,
             modifierId,
-            locale: row.locale,
+            locale: localeResolution.targetLocale,
             name: option.name,
             source: 'ai',
             reviewStatus: 'reviewed',

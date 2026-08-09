@@ -67,6 +67,8 @@ export const APP_NAME = 'TaoMenu';
 export {
   COUNTRY_TO_LOCALE,
   DEFAULT_LOCALE,
+  doLocalesShareLanguage,
+  getPrimaryLanguage,
   isLocale,
   LOCALE_LABELS,
   LOCALES,

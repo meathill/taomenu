@@ -78,6 +78,8 @@
   "importRetry": "もう一度試す",
   "importReviewTitle": "AI 下書きを確認",
   "importReviewHint": "不要な内容は選択を外してください。信頼度が低い項目や価格未確認の項目は特に確認が必要です。",
+  "importLanguageWillChange": "{detected}を検出しました。現在のメニュー言語は{base}です。メニューが空のため、下書きを適用すると主言語が{detected}に変更されます。",
+  "importLanguageMismatchExisting": "このファイルは{detected}ですが、既存メニューは{base}です。既存メニューへの別言語の取り込みにはまだ対応していません。{base}のファイルを使用してください。",
   "importCategoryName": "カテゴリ名",
   "importDescription": "説明（任意）",
   "importSelectItem": "{name}を選択",

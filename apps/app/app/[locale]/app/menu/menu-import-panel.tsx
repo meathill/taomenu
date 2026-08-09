@@ -1,7 +1,8 @@
 'use client';
 
 import { CameraIcon, FilePdfIcon, SparkleIcon } from '@phosphor-icons/react';
-import { useTranslations } from 'next-intl';
+import { doLocalesShareLanguage } from '@taomenu/shared';
+import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
 import { getMenuImportFailureKey } from './menu-import-failure';
@@ -13,8 +14,17 @@ import {
 } from './menu-import-review';
 import { MenuImportReviewList } from './menu-import-review-list';
 
-export function MenuImportPanel({ storeId, canUseAi }: { storeId: string; canUseAi: boolean }) {
+export function MenuImportPanel({
+  storeId,
+  baseLocale,
+  canUseAi,
+}: {
+  storeId: string;
+  baseLocale: string;
+  canUseAi: boolean;
+}) {
   const t = useTranslations('menu');
+  const locale = useLocale();
   const [view, setView] = useState<ImportView | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
@@ -65,6 +75,17 @@ export function MenuImportPanel({ storeId, canUseAi }: { storeId: string; canUse
     }
     return [...groups.values()];
   }, [view?.suggestions]);
+  const detectedLocale = view?.suggestions[0]?.locale ?? null;
+  const hasLocaleMismatch = Boolean(
+    detectedLocale && !doLocalesShareLanguage(baseLocale, detectedLocale),
+  );
+  const languageNames = useMemo(() => {
+    const names = new Intl.DisplayNames([locale], { type: 'language' });
+    return {
+      base: names.of(baseLocale) ?? baseLocale,
+      detected: detectedLocale ? (names.of(detectedLocale) ?? detectedLocale) : '',
+    };
+  }, [baseLocale, detectedLocale, locale]);
 
   async function handleUpload(event: FormEvent) {
     event.preventDefault();
@@ -259,15 +280,28 @@ export function MenuImportPanel({ storeId, canUseAi }: { storeId: string; canUse
       ) : null}
 
       {status === 'needs_review' ? (
-        <MenuImportReviewList
-          groups={suggestionsByCategory}
-          draft={draft}
-          isApplying={busyAction === 'apply'}
-          isBusy={busyAction !== null}
-          onUpdate={updateDraft}
-          onToggleCategory={toggleCategory}
-          onApply={() => void handleApply()}
-        />
+        <>
+          {hasLocaleMismatch ? (
+            <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold leading-5 text-amber-800">
+              {t(
+                view?.hasExistingCategories
+                  ? 'importLanguageMismatchExisting'
+                  : 'importLanguageWillChange',
+                languageNames,
+              )}
+            </p>
+          ) : null}
+          <MenuImportReviewList
+            groups={suggestionsByCategory}
+            draft={draft}
+            isApplying={busyAction === 'apply'}
+            isBusy={busyAction !== null}
+            isApplyDisabled={Boolean(hasLocaleMismatch && view?.hasExistingCategories)}
+            onUpdate={updateDraft}
+            onToggleCategory={toggleCategory}
+            onApply={() => void handleApply()}
+          />
+        </>
       ) : null}
 
       {status === 'applied' ? (

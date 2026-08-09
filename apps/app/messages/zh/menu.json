@@ -78,6 +78,8 @@
   "importRetry": "重新识别",
   "importReviewTitle": "核对 AI 草稿",
   "importReviewHint": "取消勾选不需要的内容；低置信度和缺少价格的项目需要重点核对。",
+  "importLanguageWillChange": "识别到{detected}，与当前菜单的{base}不同。由于菜单还是空的，应用草稿后会把主要菜单语言改为{detected}。",
+  "importLanguageMismatchExisting": "文件内容是{detected}，但现有菜单使用{base}。暂不支持向已有菜单导入另一种源语言，请改用{base}菜单文件。",
   "importCategoryName": "分类名称",
   "importDescription": "说明（可选）",
   "importSelectItem": "选择{name}",
