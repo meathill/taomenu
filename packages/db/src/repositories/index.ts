@@ -153,6 +153,10 @@ export {
   updateStore,
 } from './stores';
 export {
+  claimStripeWebhookEvent,
+  releaseStripeWebhookEvent,
+} from './stripe-webhook-events';
+export {
   createTerminalPairingCode,
   getTerminalByCredential,
   isPairingCodeExpired,

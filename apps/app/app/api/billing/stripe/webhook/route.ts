@@ -1,11 +1,18 @@
-import { updatePlanBilling, updateStaffSeatBilling } from '@taomenu/db';
+import {
+  claimStripeWebhookEvent,
+  releaseStripeWebhookEvent,
+  updatePlanBilling,
+  updateStaffSeatBilling,
+} from '@taomenu/db';
 import { badRequest } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
 import { getStripeConfig, isSubscriptionUsable, verifyStripeWebhookSignature } from '@/lib/stripe';
+import { handleStripeEventOnce } from '@/lib/stripe-webhook';
 
 type StripeObject = Record<string, unknown>;
 
 type StripeEvent = {
+  id?: string;
   type: string;
   data?: { object?: StripeObject };
 };
@@ -111,6 +118,18 @@ async function handleSubscriptionEvent(object: StripeObject, deleted: boolean): 
   });
 }
 
+async function dispatchEvent(type: string, object: StripeObject): Promise<void> {
+  if (type === 'checkout.session.completed') {
+    await handleCheckoutCompleted(object);
+  } else if (type === 'customer.subscription.created') {
+    await handleSubscriptionEvent(object, false);
+  } else if (type === 'customer.subscription.updated') {
+    await handleSubscriptionEvent(object, false);
+  } else if (type === 'customer.subscription.deleted') {
+    await handleSubscriptionEvent(object, true);
+  }
+}
+
 export async function POST(request: Request) {
   const config = getStripeConfig();
   if (!config) {
@@ -134,15 +153,23 @@ export async function POST(request: Request) {
   const object = event.data?.object;
   if (!object) return Response.json({ received: true });
 
-  if (event.type === 'checkout.session.completed') {
-    await handleCheckoutCompleted(object);
-  } else if (event.type === 'customer.subscription.created') {
-    await handleSubscriptionEvent(object, false);
-  } else if (event.type === 'customer.subscription.updated') {
-    await handleSubscriptionEvent(object, false);
-  } else if (event.type === 'customer.subscription.deleted') {
-    await handleSubscriptionEvent(object, true);
+  const eventId = readString(event.id);
+  // 理论上不会发生：没有 event.id 就无从去重，维持原有行为直接处理
+  if (!eventId) {
+    await dispatchEvent(event.type, object);
+    return Response.json({ received: true });
   }
+
+  // 处理失败会抛出（走 Next 默认 500），Stripe 重投时占位已释放，可以重新处理
+  const db = getDb();
+  await handleStripeEventOnce(
+    eventId,
+    {
+      claim: (id) => claimStripeWebhookEvent(db, id),
+      release: (id) => releaseStripeWebhookEvent(db, id),
+    },
+    () => dispatchEvent(event.type, object),
+  );
 
   return Response.json({ received: true });
 }

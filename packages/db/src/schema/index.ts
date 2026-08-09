@@ -5,5 +5,6 @@ export * from './menu-image-enhancement';
 export * from './menu-translation';
 export * from './push';
 export * from './stores';
+export * from './stripe-webhook-events';
 export * from './tables-orders';
 export * from './terminal';

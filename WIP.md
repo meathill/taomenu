@@ -53,6 +53,13 @@ currency_options，应用运行时不拉取 Stripe 价格。
   - 已配置且 active 的月付 Price 直接跳过；读不到（多为另一个 mode 的 ID）则新建并提示换 env
   - 凭据解析、`redact`、`stripeRequest`、表格输出等抽到 `scripts/stripe-common.ts` 与同步脚本共用，
     `registerHooks` 补 `.ts` 扩展名的钩子必须在入口脚本各自注册（要早于动态 import shared）
+- [x] Step 9：webhook 事件幂等去重
+  - 新增 `stripe_webhook_events` 表（migration 0013），`event_id` 主键即去重键，
+    `claimStripeWebhookEvent` 用 `ON CONFLICT DO NOTHING ... RETURNING` 按插入行数判定首次/重复
+  - 处理抛错时 best-effort `releaseStripeWebhookEvent` 删占位再原样抛出，
+    保证走 Next 默认 500 后 Stripe 重投仍会处理；释放失败不掩盖原错误
+  - 编排逻辑抽成 `apps/app/lib/stripe-webhook.ts` 的 `handleStripeEventOnce`（可注入去重存储）便于单测；
+    路由里现有分流逻辑原样保留，只是收进 `dispatchEvent`
 - [ ] 人工验收：Stripe test mode 走通 checkout / webhook / portal，生产回归
 
 ---
