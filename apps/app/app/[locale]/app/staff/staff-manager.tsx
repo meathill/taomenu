@@ -8,10 +8,11 @@ import {
   TrashIcon,
 } from '@phosphor-icons/react';
 import { getStaffSeatLimit, type PlanId } from '@taomenu/shared';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import { QrImage } from '../tables/qr-image';
+import { formatStaffDate } from './staff-date';
 
 type Device = {
   id: string;
@@ -27,17 +28,12 @@ type StaffManagerProps = {
   storeId: string;
   plan: PlanId;
   staffSeatAddons: number;
+  timeZone: string;
 };
 
-function formatDate(value: string | null): string {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(
-    new Date(value),
-  );
-}
-
-export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerProps) {
+export function StaffManager({ storeId, plan, staffSeatAddons, timeZone }: StaffManagerProps) {
   const t = useTranslations('owner');
+  const locale = useLocale();
   const [devices, setDevices] = useState<Device[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [pairingCode, setPairingCode] = useState<{
@@ -226,7 +222,9 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
                 </a>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                {t('pairCodeExpiry', { time: formatDate(pairingCode.expiresAt) })}
+                {t('pairCodeExpiry', {
+                  time: formatStaffDate(pairingCode.expiresAt, locale, timeZone),
+                })}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">{t('pairCodeInstruction')}</p>
             </div>
@@ -320,7 +318,9 @@ export function StaffManager({ storeId, plan, staffSeatAddons }: StaffManagerPro
                     <p className="truncate text-sm font-bold text-ink-900">{device.name}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {device.status === 'active' ? t('deviceActive') : t('deviceRevoked')} ·{' '}
-                      {t('lastSeen', { time: formatDate(device.lastSeenAt) })}
+                      {t('lastSeen', {
+                        time: formatStaffDate(device.lastSeenAt, locale, timeZone),
+                      })}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {device.pushEnabled ? t('pushReady') : t('pushNotReady')}

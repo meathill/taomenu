@@ -1,3 +1,15 @@
+# 生产验收后续整改（2026-08-09）
+
+来源：提交 `ec3028f` 部署后的普通用户回归。
+
+- [x] Service Worker 不再缓存登录页、店主页面或 RSC 响应
+- [x] 升级静态缓存版本，清理已存在的旧页面缓存
+- [x] 店员设备日期按当前界面语言和门店时区显示
+- [x] 补充回归测试并完成 format / typecheck / test / build
+- [ ] commit + push，等待部署并复验
+
+---
+
 # 普通用户验收整改（2026-08-09）
 
 跟踪：[GitHub issue #1](https://github.com/meathill/taomenu/issues/1)

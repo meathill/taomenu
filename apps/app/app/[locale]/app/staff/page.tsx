@@ -35,6 +35,7 @@ export default async function StaffPage({ searchParams }: StaffPageProps) {
           storeId={selection.store.id}
           plan={selection.store.plan}
           staffSeatAddons={selection.store.staffSeatAddons}
+          timeZone={selection.store.timezone}
         />
       </div>
     </PageMessages>

@@ -1,8 +1,6 @@
-/* TaoMenu Service Worker — PWA 缓存壳 + Web Push 接单提醒 */
-const CACHE = 'taomenu-shell-v1';
+/* TaoMenu Service Worker — 静态资源缓存 + Web Push 接单提醒 */
+const CACHE = 'taomenu-static-v2';
 const SHELL = [
-  '/',
-  '/terminal',
   '/manifest.webmanifest',
   '/brand/taomenu-mark.svg',
   '/icons/icon-192.png',
@@ -32,9 +30,15 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (url.pathname.startsWith('/api/')) return;
-  // 顾客菜单页不走 SW 缓存业务数据
-  if (url.pathname.startsWith('/m/')) return;
+  const isStaticAsset =
+    url.origin === self.location.origin &&
+    (url.pathname === '/manifest.webmanifest' ||
+      url.pathname.startsWith('/_next/static/') ||
+      url.pathname.startsWith('/brand/') ||
+      url.pathname.startsWith('/icons/'));
+
+  // 登录后页面、顾客菜单、RSC 和 API 都可能包含实时或用户数据，必须直接走网络。
+  if (!isStaticAsset) return;
 
   event.respondWith(
     caches.match(request).then((cached) => {
