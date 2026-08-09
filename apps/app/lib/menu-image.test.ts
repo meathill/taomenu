@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildMenuImageKey,
   isValidMenuImageKey,
+  isValidPublicMenuMediaKey,
   publicMediaPath,
   validateMenuImageBytes,
 } from './menu-image';
@@ -20,6 +21,19 @@ describe('menu image key', () => {
   it('拒绝路径穿越', () => {
     expect(isValidMenuImageKey('menu/../secret.jpg')).toBe(false);
     expect(isValidMenuImageKey(`menu/${storeId}/${itemId}/x.exe`)).toBe(false);
+  });
+
+  it('只公开符合约定的 AI 图片预览 key', () => {
+    const jobId = '00000000-0000-4000-8000-000000000003';
+    expect(isValidPublicMenuMediaKey(`menu-enhancements/${storeId}/${itemId}/${jobId}.jpeg`)).toBe(
+      true,
+    );
+    expect(isValidPublicMenuMediaKey(`menu-enhancements/${storeId}/${itemId}/../x.jpeg`)).toBe(
+      false,
+    );
+    expect(isValidPublicMenuMediaKey(`menu-enhancements/${storeId}/${itemId}/${jobId}.exe`)).toBe(
+      false,
+    );
   });
 
   it('public path 分段编码', () => {

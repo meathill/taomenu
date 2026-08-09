@@ -6,9 +6,15 @@ export type MenuImageMime = (typeof MENU_IMAGE_MIME)[number];
 
 const KEY_RE =
   /^menu\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpe?g|png|webp)$/i;
+const ENHANCEMENT_KEY_RE =
+  /^menu-enhancements\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.jpeg$/i;
 
 export function isValidMenuImageKey(key: string): boolean {
   return KEY_RE.test(key);
+}
+
+export function isValidPublicMenuMediaKey(key: string): boolean {
+  return isValidMenuImageKey(key) || ENHANCEMENT_KEY_RE.test(key);
 }
 
 export function extensionForMime(mime: string): 'jpg' | 'png' | 'webp' | null {

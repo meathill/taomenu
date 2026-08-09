@@ -1,14 +1,14 @@
 import { notFound } from '@/lib/api-error';
 import { getEnv } from '@/lib/cf';
-import { contentTypeForKey, isValidMenuImageKey } from '@/lib/menu-image';
+import { contentTypeForKey, isValidPublicMenuMediaKey } from '@/lib/menu-image';
 
 type RouteContext = { params: Promise<{ path: string[] }> };
 
-/** 公开读菜品图：仅允许 `menu/{storeId}/{itemId}/{file}` 形态的 key。 */
+/** 公开读菜品原图或 AI 预览：只允许两种严格 UUID 路径。 */
 export async function GET(_request: Request, context: RouteContext) {
   const { path } = await context.params;
   const key = path.map(decodeURIComponent).join('/');
-  if (!isValidMenuImageKey(key)) {
+  if (!isValidPublicMenuMediaKey(key)) {
     return notFound();
   }
 
