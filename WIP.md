@@ -30,7 +30,13 @@ currency_options，应用运行时不拉取 Stripe 价格。
   - `owner.proPrice` / 新增 `owner.seatPriceHint` 改为 `{price}` 占位符，价格由
     `formatCurrency(getBillingPrice(...))` 按门店币种 + UI locale 现算
   - 价格展示读已保存的 `store.currency`，不跟随设置表单里未保存的选择，避免与实际扣款币种不一致
-- [ ] Step 6：website 定价页按 locale 币种渲染 + JSON-LD
+- [x] Step 6：website 定价页按 locale 币种渲染 + JSON-LD
+  - `getBillingCurrencyForLocale(locale)` 决定展示币种，Free/Pro/席位价一律由
+    `formatCurrency(getBillingPrice(...))` 现算，website 不再有硬编码金额
+  - `freePrice` 文案直接删除（纯金额无措辞，由代码渲染）；`proPrice` / `staffAddOn`
+    改 `{price}` 占位符，席位价顺带展示在两档套餐的功能列表里
+  - 首页 JSON-LD `offers` 由单个 Offer 扩成数组（Free + Pro），价格用
+    `minorAmountToDecimalString`，`priceCurrency` 跟随 locale
 - [ ] Step 7：sync-stripe-prices 脚本 + STRIPE_PRO_PRICE_ID env 收尾
 - [ ] 人工验收：Stripe test mode 走通 checkout / webhook / portal，生产回归
 

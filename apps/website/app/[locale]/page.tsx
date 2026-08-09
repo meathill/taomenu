@@ -1,4 +1,9 @@
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import {
+  getBillingCurrencyForLocale,
+  getBillingPrice,
+  minorAmountToDecimalString,
+} from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { getAppSignupUrl } from '@/lib/site';
@@ -11,6 +16,9 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('home');
+
+  // 结构化数据的报价也按界面语言映射币种，与定价页保持一致
+  const currency = getBillingCurrencyForLocale(locale);
 
   const features = [
     { title: t('feature1Title'), body: t('feature1Body') },
@@ -69,11 +77,20 @@ export default async function HomePage({ params }: HomePageProps) {
             name: 'TaoMenu',
             applicationCategory: 'BusinessApplication',
             operatingSystem: 'Web',
-            offers: {
-              '@type': 'Offer',
-              price: '0',
-              priceCurrency: 'VND',
-            },
+            offers: [
+              {
+                '@type': 'Offer',
+                name: 'Free',
+                price: minorAmountToDecimalString(0, currency),
+                priceCurrency: currency,
+              },
+              {
+                '@type': 'Offer',
+                name: 'Pro',
+                price: minorAmountToDecimalString(getBillingPrice('pro_plan', currency), currency),
+                priceCurrency: currency,
+              },
+            ],
             description: t('subtitle'),
           }),
         }}

@@ -1,4 +1,5 @@
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr';
+import { formatCurrency, getBillingCurrencyForLocale, getBillingPrice } from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getAppSignupUrl } from '@/lib/site';
 
@@ -6,27 +7,47 @@ type PricingPageProps = {
   params: Promise<{ locale: string }>;
 };
 
+type PlanFeature = {
+  label: string;
+  status: 'available' | 'comingSoon';
+};
+
+type PlanCard = {
+  name: string;
+  price: string;
+  desc: string;
+  features: PlanFeature[];
+  highlight: boolean;
+};
+
 export default async function PricingPage({ params }: PricingPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('pricing');
 
-  const plans = [
+  // 定价按界面语言映射币种展示，唯一事实来源在 @taomenu/shared
+  const currency = getBillingCurrencyForLocale(locale);
+  const freePrice = formatCurrency(0, currency, locale);
+  const proPrice = formatCurrency(getBillingPrice('pro_plan', currency), currency, locale);
+  const staffSeatPrice = formatCurrency(getBillingPrice('staff_seat', currency), currency, locale);
+  const staffAddOn = t('staffAddOn', { price: staffSeatPrice });
+
+  const plans: PlanCard[] = [
     {
       name: t('freeName'),
-      price: t('freePrice'),
+      price: freePrice,
       desc: t('freeDesc'),
       features: [
         { label: t('freeF1'), status: 'available' },
         { label: t('freeF2'), status: 'available' },
         { label: t('freeF3'), status: 'available' },
-        { label: t('staffAddOn'), status: 'available' },
+        { label: staffAddOn, status: 'available' },
       ],
       highlight: false,
     },
     {
       name: t('proName'),
-      price: t('proPrice'),
+      price: t('proPrice', { price: proPrice }),
       desc: t('proDesc'),
       features: [
         { label: t('proF1'), status: 'available' },
@@ -36,7 +57,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
         { label: t('proTranslation'), status: 'available' },
         { label: t('proVoice'), status: 'available' },
         { label: t('proEnhance'), status: 'available' },
-        { label: t('staffAddOn'), status: 'available' },
+        { label: staffAddOn, status: 'available' },
       ],
       highlight: true,
     },
