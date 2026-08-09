@@ -9,10 +9,15 @@
  * 方向永远是「本地配置 → Stripe」，应用运行时不读 Stripe 价格。
  * Stripe 限制：Price 的默认币种与其金额创建后不可修改，只有 currency_options 可更新。
  */
-import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {
+  printTable,
+  redact,
+  resolveConfig,
+  SHARED_SRC,
+  STRIPE_API_VERSION,
+  stripeRequest,
+} from './stripe-common.ts';
 
 // Node 原生跑 TS 时不会给无扩展名的相对导入补 .ts，而 shared 包内部就是这种写法。
 registerHooks({
@@ -28,14 +33,6 @@ registerHooks({
   },
 });
 
-const STRIPE_API_URL = 'https://api.stripe.com/v1';
-const STRIPE_API_VERSION = '2026-04-22.dahlia';
-
-const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const DEV_VARS_PATH = resolve(REPO_ROOT, 'apps/app/.dev.vars');
-const WRANGLER_PATH = resolve(REPO_ROOT, 'apps/app/wrangler.jsonc');
-const SHARED_SRC = resolve(REPO_ROOT, 'packages/shared/src');
-
 type CurrencyModule = { BILLING_CURRENCIES: readonly string[] };
 type PricingModule = { BILLING_PRICES: Record<string, Record<string, number>> };
 
@@ -47,64 +44,6 @@ const TARGETS = [
   { product: 'staff_seat', envKey: 'STRIPE_STAFF_SEAT_PRICE_ID', label: '额外 Staff 席位' },
 ] as const;
 
-/** KEY=VALUE 文本（.dev.vars 风格）：跳过注释与空行，剥掉包裹引号，空值当作未配置 */
-function readKeyValueFile(path: string): Record<string, string> {
-  if (!existsSync(path)) return {};
-  const values: Record<string, string> = {};
-  for (const line of readFileSync(path, 'utf8').split('\n')) {
-    if (line.trimStart().startsWith('#')) continue;
-    const matched = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=(.*)$/.exec(line);
-    if (!matched) continue;
-    const value = matched[2].trim().replace(/^(['"])(.*)\1$/, '$2');
-    if (value !== '') values[matched[1]] = value;
-  }
-  return values;
-}
-
-/** wrangler.jsonc 的 vars（JSONC 有行注释和尾逗号，做容错） */
-function readWranglerVars(path: string): Record<string, string> {
-  if (!existsSync(path)) return {};
-  const text = readFileSync(path, 'utf8')
-    .replace(/^\s*\/\/.*$/gm, '')
-    .replace(/,(\s*[}\]])/g, '$1');
-  const config = JSON.parse(text) as { vars?: Record<string, unknown> };
-  const vars: Record<string, string> = {};
-  for (const [key, value] of Object.entries(config.vars ?? {})) {
-    if (typeof value === 'string' && value !== '') vars[key] = value;
-  }
-  return vars;
-}
-
-type Resolved = { value: string; source: string };
-
-/** 凭据优先级：process.env → apps/app/.dev.vars → apps/app/wrangler.jsonc 的 vars */
-function resolveConfig(): Record<string, Resolved | undefined> {
-  const keys = ['STRIPE_SECRET_KEY', ...TARGETS.map((target) => target.envKey)];
-  const needFallback = keys.some((key) => !process.env[key]);
-  const devVars = needFallback ? readKeyValueFile(DEV_VARS_PATH) : {};
-  const wranglerVars = needFallback ? readWranglerVars(WRANGLER_PATH) : {};
-
-  const resolved: Record<string, Resolved | undefined> = {};
-  for (const key of keys) {
-    // secret 不从 wrangler.jsonc 取：那里只放非密钥配置
-    const fromWrangler = key === 'STRIPE_SECRET_KEY' ? '' : wranglerVars[key];
-    resolved[key] = [
-      { value: process.env[key] ?? '', source: '环境变量' },
-      { value: devVars[key] ?? '', source: 'apps/app/.dev.vars' },
-      { value: fromWrangler ?? '', source: 'apps/app/wrangler.jsonc' },
-    ].find((candidate) => candidate.value !== '');
-  }
-  return resolved;
-}
-
-/** 保证任何输出都不含 secret：先剔除完整 key，再把残留的 sk_/rk_ 串打码 */
-function redact(text: string, secretKey: string): string {
-  return text
-    .split(secretKey)
-    .join('***')
-    .replace(/\b(sk|rk)_[A-Za-z0-9_]+/g, '$1_***');
-}
-
 type StripePrice = {
   id?: string;
   active?: boolean;
@@ -114,50 +53,6 @@ type StripePrice = {
   recurring?: { interval?: string } | null;
   currency_options?: Record<string, { unit_amount?: number | null }>;
 };
-
-async function stripeRequest(
-  path: string,
-  secretKey: string,
-  body?: URLSearchParams,
-): Promise<StripePrice> {
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${secretKey}`,
-    'Stripe-Version': STRIPE_API_VERSION,
-  };
-  if (body) headers['Content-Type'] = 'application/x-www-form-urlencoded';
-
-  const response = await fetch(`${STRIPE_API_URL}${path}`, {
-    method: body ? 'POST' : 'GET',
-    headers,
-    body,
-  });
-  const data = (await response.json().catch(() => ({}))) as StripePrice & {
-    error?: { message?: string };
-  };
-  if (!response.ok) {
-    throw new Error(redact(data.error?.message ?? `Stripe HTTP ${response.status}`, secretKey));
-  }
-  return data;
-}
-
-/** 终端里 CJK 占两列，padEnd 只按字符数补，需自己算宽度 */
-function displayWidth(text: string): number {
-  let width = 0;
-  for (const char of text) width += char.codePointAt(0)! > 0x2e7f ? 2 : 1;
-  return width;
-}
-
-function printTable(rows: string[][]): void {
-  const widths = rows[0].map((_, column) =>
-    Math.max(...rows.map((row) => displayWidth(row[column]))),
-  );
-  for (const row of rows) {
-    const line = row
-      .map((cell, column) => cell + ' '.repeat(widths[column] - displayWidth(cell)))
-      .join('   ');
-    console.log(`    ${line.trimEnd()}`);
-  }
-}
 
 type DiffRow = { currency: string; remote: number | null; local: number | null; status: string };
 
@@ -231,12 +126,13 @@ async function pushCurrencyOptions(
 ): Promise<string> {
   const path = `/prices/${encodeURIComponent(priceId)}`;
   try {
-    await stripeRequest(path, secretKey, buildUpdateBody(local));
+    await stripeRequest<StripePrice>(path, secretKey, buildUpdateBody(local));
     return '已同步';
   } catch (error) {
     // 文档未明确默认币种能否重复出现在 currency_options；被拒时去掉它再试一次
     // （默认币种金额本就不可改，且上面已校验与本地一致）。
-    await stripeRequest(path, secretKey, buildUpdateBody(local, defaultCurrency)).catch(() => {
+    const retryBody = buildUpdateBody(local, defaultCurrency);
+    await stripeRequest<StripePrice>(path, secretKey, retryBody).catch(() => {
       throw error;
     });
     return `已同步（默认币种 ${defaultCurrency} 被 Stripe 拒绝写入 currency_options，已跳过）`;
@@ -252,7 +148,7 @@ async function handleTarget(
   const local = BILLING_PRICES[target.product];
   console.log(`\n[${target.label}] ${target.envKey}=${priceId}`);
 
-  const price = await stripeRequest(
+  const price = await stripeRequest<StripePrice>(
     `/prices/${encodeURIComponent(priceId)}?expand[]=currency_options`,
     secretKey,
   );
@@ -296,7 +192,7 @@ async function main(): Promise<void> {
   }
   const checkOnly = args.includes('--check');
 
-  const config = resolveConfig();
+  const config = resolveConfig(['STRIPE_SECRET_KEY', ...TARGETS.map((target) => target.envKey)]);
   const secret = config.STRIPE_SECRET_KEY;
   if (!secret) {
     console.error('缺少 STRIPE_SECRET_KEY。可任选一种方式提供：');

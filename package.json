@@ -16,6 +16,7 @@
     "format": "biome check --write .",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
+    "stripe:products:create": "node scripts/create-stripe-products.ts",
     "stripe:prices:check": "node scripts/sync-stripe-prices.ts --check",
     "stripe:prices:sync": "node scripts/sync-stripe-prices.ts"
   },

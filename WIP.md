@@ -47,6 +47,12 @@ currency_options，应用运行时不拉取 Stripe 价格。
     从而直接复用 `packages/shared` 的价格配置，不复制常量
   - `STRIPE_PRO_PRICE_ID` 以空串占位进 wrangler vars（空串按未配置处理），
     `.dev.vars.example` / `.env.production.example` / DEPLOYMENT.md 同步补齐
+- [x] Step 8：建品脚本 `scripts/create-stripe-products.ts`（`pnpm stripe:products:create`）
+  - 一键创建两个订阅 Product + 月付 Price，默认币种 VND，创建时即带全 4 币种 `currency_options`；
+    金额只读 `BILLING_PRICES`，两边 `metadata[taomenu_product]` 打标便于 Dashboard 溯源
+  - 已配置且 active 的月付 Price 直接跳过；读不到（多为另一个 mode 的 ID）则新建并提示换 env
+  - 凭据解析、`redact`、`stripeRequest`、表格输出等抽到 `scripts/stripe-common.ts` 与同步脚本共用，
+    `registerHooks` 补 `.ts` 扩展名的钩子必须在入口脚本各自注册（要早于动态 import shared）
 - [ ] 人工验收：Stripe test mode 走通 checkout / webhook / portal，生产回归
 
 ---
