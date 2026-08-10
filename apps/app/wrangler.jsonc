@@ -65,6 +65,9 @@
     // 空串按未配置处理（升级入口显示未开通）；生产 Price 建好后填入
     "STRIPE_PRO_PRICE_ID": "price_1U2YcYIl4ac8nxMLazjcqCiW",
     "STRIPE_STAFF_SEAT_PRICE_ID": "price_1U1U0FIl4ac8nxMLURDk4j6W",
-    "VAPID_SUBJECT": "mailto:ops@dyqr.me"
+    "VAPID_SUBJECT": "mailto:ops@dyqr.me",
+    // root 管理员邮箱（/admin 入口）。空串按未配置处理：admin 后台对所有人 404。
+    // 部署前填入真实邮箱；不是密钥，但同名 secret 会被本文件的值覆盖，别两边都配。
+    "ADMIN_EMAIL": ""
   }
 }

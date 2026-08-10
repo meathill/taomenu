@@ -1,5 +1,7 @@
 import {
   claimStripeWebhookEvent,
+  findStoreByStripeCustomerId,
+  recordAgentRevenueForStore,
   releaseStripeWebhookEvent,
   updatePlanBilling,
   updateStaffSeatBilling,
@@ -7,19 +9,19 @@ import {
 import { badRequest } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
 import { getStripeConfig, isSubscriptionUsable, verifyStripeWebhookSignature } from '@/lib/stripe';
+import {
+  parsePaidInvoice,
+  readString,
+  resolveAgentRevenueKind,
+  type StripeObject,
+} from '@/lib/stripe-invoice-attribution';
 import { handleStripeEventOnce } from '@/lib/stripe-webhook';
-
-type StripeObject = Record<string, unknown>;
 
 type StripeEvent = {
   id?: string;
   type: string;
   data?: { object?: StripeObject };
 };
-
-function readString(value: unknown): string | null {
-  return typeof value === 'string' && value.length > 0 ? value : null;
-}
 
 function readMetadata(object: StripeObject): Record<string, string> {
   const metadata = object.metadata;
@@ -118,6 +120,28 @@ async function handleSubscriptionEvent(object: StripeObject, deleted: boolean): 
   });
 }
 
+/**
+ * 已支付发票记入代理商收入流水。
+ * 找不到门店（非本系统客户、门店已停用）直接返回而不抛错——抛错会让 Stripe 无限重投。
+ * 幂等双保险：外层 handleStripeEventOnce + agent_revenue_events.stripe_invoice_id 唯一索引。
+ */
+async function handleInvoicePaid(object: StripeObject): Promise<void> {
+  const invoice = parsePaidInvoice(object);
+  if (!invoice) return;
+
+  const db = getDb();
+  const store = await findStoreByStripeCustomerId(db, invoice.stripeCustomerId);
+  if (!store) return;
+
+  await recordAgentRevenueForStore(db, {
+    storeId: store.id,
+    stripeInvoiceId: invoice.stripeInvoiceId,
+    amountMinor: invoice.amountMinor,
+    currency: invoice.currency,
+    kind: resolveAgentRevenueKind(invoice.subscriptionId, store),
+  });
+}
+
 async function dispatchEvent(type: string, object: StripeObject): Promise<void> {
   if (type === 'checkout.session.completed') {
     await handleCheckoutCompleted(object);
@@ -127,6 +151,8 @@ async function dispatchEvent(type: string, object: StripeObject): Promise<void> 
     await handleSubscriptionEvent(object, false);
   } else if (type === 'customer.subscription.deleted') {
     await handleSubscriptionEvent(object, true);
+  } else if (type === 'invoice.paid') {
+    await handleInvoicePaid(object);
   }
 }
 

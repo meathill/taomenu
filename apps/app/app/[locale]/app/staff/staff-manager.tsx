@@ -17,7 +17,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
-import { QrImage } from '../tables/qr-image';
+import { QrImage } from '@/components/qr-image';
 import { formatStaffDate } from './staff-date';
 import { hasAvailableStaffSeat } from './staff-seat';
 

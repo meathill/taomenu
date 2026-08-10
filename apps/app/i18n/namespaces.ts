@@ -10,6 +10,8 @@ export const MESSAGE_NAMESPACES = [
   'tables',
   'terminal',
   'customer',
+  'admin',
+  'agent',
 ] as const;
 
 export type MessageNamespace = (typeof MESSAGE_NAMESPACES)[number];

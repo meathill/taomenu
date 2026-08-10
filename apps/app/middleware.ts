@@ -2,6 +2,12 @@ import { resolveUiLocale } from '@taomenu/shared';
 import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import {
+  normalizeRefCode,
+  REF_COOKIE_MAX_AGE_SECONDS,
+  REF_COOKIE_NAME,
+  REF_QUERY_PARAM,
+} from './lib/ref-click';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -49,8 +55,30 @@ function applyLocaleCookie(response: NextResponse, locale: string) {
 }
 
 /**
+ * 代理商归因：`?ref=CODE` 合法且当前没有 tm_ref 时落 30 天 cookie（首触优先，不覆盖）。
+ * 刻意不设 domain（host-only）：.dyqr.me 根域上还有另一个 better-auth 站点，共享 cookie 会互相污染。
+ * middleware 里不碰 D1，点击上报走 /api/public/ref-click。
+ */
+function applyRefCookie(request: NextRequest, response: NextResponse): void {
+  const code = normalizeRefCode(request.nextUrl.searchParams.get(REF_QUERY_PARAM));
+  if (!code || request.cookies.get(REF_COOKIE_NAME)?.value) {
+    return;
+  }
+
+  response.cookies.set(REF_COOKIE_NAME, code, {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    secure: request.nextUrl.protocol === 'https:',
+    maxAge: REF_COOKIE_MAX_AGE_SECONDS,
+  });
+}
+
+/**
  * 1. 语言：cookie → Accept-Language → CF 国家 → en（写入 NEXT_LOCALE）
- * 2. 鉴权：/app、/terminal 未登录 → /login?next=…
+ * 2. 鉴权：/app、/admin、/agent、/terminal 未登录 → /login?next=…
+ *    （只粗判 cookie，真鉴权在 layout / API 层的 requireAdmin / requireAgent）
+ * 3. 归因：?ref=CODE → tm_ref cookie
  * 产品面 localePrefix: never，路径不变。
  */
 export default function middleware(request: NextRequest) {
@@ -74,6 +102,8 @@ export default function middleware(request: NextRequest) {
 
   if (
     pathname.startsWith('/app') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/agent') ||
     pathname === '/terminal' ||
     pathname.startsWith('/terminal/')
   ) {
@@ -84,6 +114,7 @@ export default function middleware(request: NextRequest) {
       loginUrl.searchParams.set('next', pathname);
       const response = NextResponse.redirect(loginUrl);
       applyLocaleCookie(response, locale);
+      applyRefCookie(request, response);
       return response;
     }
   }
@@ -92,6 +123,7 @@ export default function middleware(request: NextRequest) {
   if (!hasLocaleCookie) {
     applyLocaleCookie(response, locale);
   }
+  applyRefCookie(request, response);
   return response;
 }
 

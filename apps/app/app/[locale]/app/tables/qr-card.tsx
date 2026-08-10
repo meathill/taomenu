@@ -1,4 +1,4 @@
-import { QrImage } from './qr-image';
+import { QrImage } from '@/components/qr-image';
 import type { QrCardTemplateId } from './qr-templates';
 
 export type QrCardProps = {

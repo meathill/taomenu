@@ -3,9 +3,11 @@ import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { RefPassthrough } from '@/components/ref-passthrough';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { routing } from '@/i18n/routing';
+import { getPublicAppUrl } from '@/lib/site';
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -48,6 +50,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <html lang={locale}>
       <body className="min-h-dvh bg-paper-50 text-ink-900 antialiased">
+        <RefPassthrough appUrl={getPublicAppUrl()} />
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-dvh flex-col">
             <SiteHeader />

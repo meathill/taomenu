@@ -1,3 +1,39 @@
+# 代理商系统（2026-08-10）
+
+完整计划见 `~/.claude/plans/1-admin-root-synthetic-pinwheel.md`。
+
+## 需求摘要
+
+- admin 后台（/admin）：root 由 `ADMIN_EMAIL` env 判定，复用现有 Better Auth 登录
+- admin 手动创建代理商（name + email），生成 8 位推广 code、两种推广链接与二维码：
+  - `menu.dyqr.me/?ref=CODE`（营销站落地，站内 CTA 透传）
+  - `app.menu.dyqr.me/login?ref=CODE`（直达注册）
+- 归因：user 级、首触优先不覆盖、30 天 `tm_ref` cookie；归因用户名下所有店铺都算该代理商
+- 代理商后台（/agent）：现有登录体系，session email 匹配 agents 表
+- 统计：点击量、注册商家数（明细）、Pro 转化、订阅金额（invoice.paid 流水）
+- 不做自动结算/分账/防刷/多级代理
+
+## 任务分解
+
+- [x] 阶段 1：db — schema/agents.ts、0014_agents.sql、repositories/agents.ts（+统计）、findStoreByStripeCustomerId、vitest
+- [x] 阶段 2：app 归因链路 — middleware tm_ref cookie、/api/public/ref-click、ref-tracker、lib/referral.ts、auth.ts databaseHooks
+- [x] 阶段 3：Stripe — webhook invoice.paid → agent_revenue_events
+- [x] 阶段 4：admin 后台 — ADMIN_EMAIL、lib/admin.ts、/admin 页面+API、qr-image 移位、middleware 守卫、admin.json
+- [x] 阶段 5：代理商后台 — lib/agent-session.ts、/agent 页面、agent.json
+- [x] 阶段 6：website — ref-passthrough.tsx 挂 layout（ref 契约收口到 @taomenu/shared/ref）
+- [x] 回归：format、typecheck、vitest（421 例）、双端 build 全绿
+- [ ] 部署待办：Stripe Dashboard 给 webhook 勾选 invoice.paid、生产 wrangler vars 填 ADMIN_EMAIL
+
+## 关键设计决策（供各阶段执行时对齐）
+
+- agent ↔ user 按小写 email 匹配，不用 userId 外键
+- agents repository 以 db 为首参，显式跨租户（不走 StoreContext，不放宽 resolveStoreContext）
+- 付费转化现算（referrals→store_members(owner)→stores.plan），只有收入流水落表
+- 点击去重：UNIQUE(agent_id, day, visitor_hash)，visitor_hash = sha256(ip|ua|day|code)，不存 PII
+- agent_referrals 以 user_id 为主键 + onConflictDoNothing 保证首触
+
+---
+
 # GitHub issue #1 剩余 Pro / AI 能力（2026-08-09）
 
 目标：在不自动发布、不覆盖店主已确认数据的前提下，尽量完成 #1 中仍未交付的付费价值点，并逐项上线验收。

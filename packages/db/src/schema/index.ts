@@ -1,3 +1,4 @@
+export * from './agents';
 export * from './auth';
 export * from './menu';
 export * from './menu-ai';

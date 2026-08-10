@@ -174,6 +174,23 @@ export async function listStoresForUser(db: Db, userId: string): Promise<StoreRo
     );
 }
 
+/**
+ * Stripe webhook 跨租户例外：invoice 事件只带 customer id，
+ * 没有已鉴权的门店上下文，只能按 stripe_customer_id 反查。
+ * 仅供 webhook 使用，不要在店主 / 店员路径调用。
+ */
+export async function findStoreByStripeCustomerId(
+  db: Db,
+  customerId: string,
+): Promise<StoreRow | null> {
+  const rows = await db
+    .select()
+    .from(stores)
+    .where(and(eq(stores.stripeCustomerId, customerId), eq(stores.isActive, true)))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
 export async function hasStaffStoreMembership(db: Db, userId: string): Promise<boolean> {
   const rows = await db
     .select({ id: storeMembers.id })

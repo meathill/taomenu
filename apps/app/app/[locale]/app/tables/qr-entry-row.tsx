@@ -11,7 +11,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/button';
-import { useQrDataUrl } from './qr-image';
+import { useQrDataUrl } from '@/components/qr-image';
 
 export type QrEntry = {
   id: string;

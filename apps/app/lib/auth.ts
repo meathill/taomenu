@@ -7,24 +7,11 @@ import { getEnv } from '@/lib/cf';
 import { getDb } from '@/lib/db';
 import { sendOtpEmail } from '@/lib/email';
 import { getAuthBaseUrl } from '@/lib/public-url';
+import { attributeSignupFromCookie } from '@/lib/referral';
+import { extractRequestHeaders } from '@/lib/request-headers';
 
 function hasGoogleOAuth(env: CloudflareEnv): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
-}
-
-/** better-auth emailOTP 第二参是 endpoint ctx，从中取请求头用于邮件语言。 */
-function extractRequestHeaders(ctx: unknown): Headers | null {
-  if (!ctx || typeof ctx !== 'object') {
-    return null;
-  }
-  const record = ctx as Record<string, unknown>;
-  if (record.request instanceof Request) {
-    return record.request.headers;
-  }
-  if (record.headers instanceof Headers) {
-    return record.headers;
-  }
-  return null;
 }
 
 /** 按请求构建 Better Auth（D1 绑定来自 Cloudflare 运行时，不能模块级单例）。 */
@@ -65,6 +52,14 @@ export function getAuth() {
       accountLinking: {
         enabled: true,
         trustedProviders: ['google'],
+      },
+    },
+    databaseHooks: {
+      user: {
+        create: {
+          // emailOTP 与 Google OAuth 两条注册路径都会走到这里；内部整体 try/catch，不阻断注册
+          after: (user, ctx) => attributeSignupFromCookie(user.id, ctx),
+        },
       },
     },
     advanced: {

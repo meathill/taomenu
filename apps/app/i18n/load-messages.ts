@@ -28,6 +28,10 @@ async function importNamespace(
       return ((await import(`../messages/${locale}/terminal.json`)) as LocaleModule).default;
     case 'customer':
       return ((await import(`../messages/${locale}/customer.json`)) as LocaleModule).default;
+    case 'admin':
+      return ((await import(`../messages/${locale}/admin.json`)) as LocaleModule).default;
+    case 'agent':
+      return ((await import(`../messages/${locale}/agent.json`)) as LocaleModule).default;
     default: {
       const _exhaustive: never = ns;
       return _exhaustive;

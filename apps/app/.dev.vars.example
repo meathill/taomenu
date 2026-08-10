@@ -19,6 +19,9 @@ VAPID_PUBLIC_KEY=BBtp7659cmZ6zDUHP0juspCmN4Z105iWDb9FNqHj2UO9vt_5YMVId9MKFXtWC-C
 VAPID_SUBJECT=mailto:ops@dyqr.me
 EMAIL_FROM=noreply@dyqr.me
 EMAIL_FROM_NAME=TaoMenu
+# root 管理员邮箱：与登录 session 的 email 相等（忽略大小写）才能进 /admin。
+# 留空 = 未配置，/admin 对所有人返回 404。本地填自己的邮箱即可。
+ADMIN_EMAIL=
 # Stripe Price ID for the recurring Pro plan (monthly). 未配置时 Pro 升级入口显示未开通。
 # STRIPE_PRO_PRICE_ID=
 # Stripe Price ID for one recurring staff seat.
