@@ -68,6 +68,7 @@
     "VAPID_SUBJECT": "mailto:ops@dyqr.me",
     // root 管理员邮箱（/admin 入口）。空串按未配置处理：admin 后台对所有人 404。
     // 部署前填入真实邮箱；不是密钥，但同名 secret 会被本文件的值覆盖，别两边都配。
-    "ADMIN_EMAIL": ""
+    "ADMIN_EMAIL": "meathill@gmail.com",
+    "GOOGLE_CLIENT_ID": "553490336811-udqj51378bbp7pbdhv10ie683i3tsu3f.apps.googleusercontent.com"
   }
 }
