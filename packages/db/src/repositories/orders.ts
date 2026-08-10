@@ -12,13 +12,10 @@ import {
   pickupNumberSequences,
   tableSessions,
 } from '../schema/tables-orders';
+import { nowMs } from '../time';
 import type { Db } from '../types';
 import { loadModifierGroupsForItems } from './modifiers';
 import { enqueueOrderSubmittedNotification } from './push';
-
-function nowMs(): Date {
-  return new Date();
-}
 
 export type CreateCustomerOrderInput = {
   storeId: string;

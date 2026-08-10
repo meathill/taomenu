@@ -9,11 +9,8 @@ import {
 } from '../schema/push';
 import { stores } from '../schema/stores';
 import { orders } from '../schema/tables-orders';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
-
-function nowMs(): Date {
-  return new Date();
-}
 
 export type SaveSubscriptionInput = {
   subjectType: PushSubjectType;

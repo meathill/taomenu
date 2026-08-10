@@ -1,16 +1,13 @@
 'use client';
 
-import { SquaresFourIcon } from '@phosphor-icons/react';
 import { type CreateCategoryBody, type CreateItemBody, parseCurrencyInput } from '@taomenu/shared';
-import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
 import { MenuBatchBar } from './menu-batch-bar';
-import { MenuItemDraftForm } from './menu-item-draft-form';
-import { MenuItemImage } from './menu-item-image';
-import { MenuItemRow } from './menu-item-row';
-import { MenuModifiersPanel, type ModifierGroupView } from './menu-modifiers-panel';
+import { MenuCategoryCard } from './menu-category-card';
+import { MenuEditorHeader } from './menu-editor-header';
+import type { ModifierGroupView } from './menu-modifiers-panel';
 
 type MenuTree = {
   menu: {
@@ -42,21 +39,11 @@ type MenuEditorProps = {
   canUseImageEnhancement: boolean;
 };
 
-function labelForCategory(category: MenuTree['categories'][number], baseLocale: string): string {
-  return (
-    category.translations.find((t) => t.locale === baseLocale)?.name ||
-    category.translations[0]?.name ||
-    '—'
-  );
-}
-
-function labelForItem(item: MenuTree['categories'][number]['items'][number], baseLocale: string) {
-  return (
-    item.translations.find((t) => t.locale === baseLocale)?.name ||
-    item.translations[0]?.name ||
-    '—'
-  );
-}
+type ItemDraft = {
+  categoryId: string;
+  name: string;
+  price: string;
+};
 
 export function MenuEditor({
   storeId,
@@ -71,11 +58,7 @@ export function MenuEditor({
   const [message, setMessage] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState('');
-  const [itemDraft, setItemDraft] = useState<{
-    categoryId: string;
-    name: string;
-    price: string;
-  } | null>(null);
+  const [itemDraft, setItemDraft] = useState<ItemDraft | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [modifiersItemId, setModifiersItemId] = useState<string | null>(null);
@@ -325,44 +308,18 @@ export function MenuEditor({
 
   return (
     <div className="space-y-6 pb-24 lg:pb-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 lg:sticky lg:top-4 lg:z-20 lg:bg-paper-50/95 lg:py-3 lg:backdrop-blur-sm">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            {t('status')}{' '}
-            <span className="font-semibold text-ink-900">
-              {tree.menu.status === 'published' ? t('published') : t('draft')}
-            </span>
-            {' · '}
-            {t('version', { version: tree.menu.menuVersion })}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            disabled={busyAction !== null || allItemIds.length === 0}
-            onClick={() => {
-              if (selectMode) exitSelectMode();
-              else setSelectMode(true);
-            }}
-            className={cn(
-              'inline-flex min-h-12 items-center gap-1.5 rounded-xl border px-3 text-sm font-bold disabled:opacity-60',
-              selectMode ? 'border-jade-600 text-jade-600' : 'border-border text-ink-900',
-            )}
-          >
-            <SquaresFourIcon className="size-4" weight="bold" aria-hidden />
-            {selectMode ? t('cancelSelect') : t('selectMany')}
-          </button>
-          <Button
-            type="button"
-            pending={busyAction === 'publish'}
-            busy={busyAction !== null}
-            onClick={() => void handlePublish()}
-            className="fixed inset-x-4 bottom-4 z-30 min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white shadow-lg lg:static lg:z-auto lg:shadow-none"
-          >
-            {t('publish')}
-          </Button>
-        </div>
-      </div>
+      <MenuEditorHeader
+        status={tree.menu.status}
+        version={tree.menu.menuVersion}
+        busyAction={busyAction}
+        selectMode={selectMode}
+        canPublish={allItemIds.length > 0}
+        onToggleSelect={() => {
+          if (selectMode) exitSelectMode();
+          else setSelectMode(true);
+        }}
+        onPublish={() => void handlePublish()}
+      />
 
       {selectMode ? (
         <MenuBatchBar
@@ -427,92 +384,33 @@ export function MenuEditor({
 
       <ul className="space-y-4">
         {tree.categories.map((category) => (
-          <li key={category.id} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-bold text-ink-900">
-                {labelForCategory(category, baseLocale)}
-              </h2>
-              {!selectMode ? (
-                <button
-                  type="button"
-                  className="text-sm font-semibold text-jade-600"
-                  onClick={() => setItemDraft({ categoryId: category.id, name: '', price: '' })}
-                >
-                  {t('addItem')}
-                </button>
-              ) : null}
-            </div>
-
-            <ul className="mt-3 divide-y divide-border">
-              {category.items.map((item) => (
-                <li key={item.id}>
-                  <div className="flex items-start gap-2">
-                    {!selectMode ? (
-                      <MenuItemImage
-                        storeId={storeId}
-                        itemId={item.id}
-                        imageKey={item.imageKey ?? null}
-                        canUseImageEnhancement={canUseImageEnhancement}
-                        busyAction={busyAction}
-                        onBusyAction={setBusyAction}
-                        onError={setError}
-                        onMessage={setMessage}
-                        onChanged={load}
-                      />
-                    ) : null}
-                    <div className="min-w-0 flex-1">
-                      <MenuItemRow
-                        item={item}
-                        currency={currency}
-                        label={labelForItem(item, baseLocale)}
-                        busyAction={busyAction}
-                        selectMode={selectMode}
-                        selected={selectedIds.has(item.id)}
-                        modifierCount={item.modifierGroups?.length ?? 0}
-                        onToggleSelect={() => toggleSelected(item.id)}
-                        onCopy={() => void handleCopyItem(item.id)}
-                        onDelete={() =>
-                          void handleDeleteItem(item.id, labelForItem(item, baseLocale))
-                        }
-                        onToggleSoldOut={() => void toggleSoldOut(item.id, item.isSoldOut)}
-                        onEditModifiers={() => setModifiersItemId(item.id)}
-                      />
-                    </div>
-                  </div>
-                  {modifiersItemId === item.id && !selectMode ? (
-                    <MenuModifiersPanel
-                      storeId={storeId}
-                      itemId={item.id}
-                      itemName={labelForItem(item, baseLocale)}
-                      currency={currency}
-                      baseLocale={baseLocale}
-                      groups={item.modifierGroups ?? []}
-                      busyAction={busyAction}
-                      onBusyAction={setBusyAction}
-                      onError={setError}
-                      onChanged={load}
-                      onClose={() => setModifiersItemId(null)}
-                    />
-                  ) : null}
-                </li>
-              ))}
-              {category.items.length === 0 ? (
-                <li className="py-3 text-sm text-muted-foreground">{t('emptyItems')}</li>
-              ) : null}
-            </ul>
-
-            {itemDraft?.categoryId === category.id && !selectMode ? (
-              <MenuItemDraftForm
-                draft={itemDraft}
-                currency={currency}
-                busyAction={busyAction}
-                onChange={setItemDraft}
-                onCancel={() => setItemDraft(null)}
-                onSubmit={(e) => void handleAddItem(e)}
-                canUseVoiceAssistant={canUseVoiceAssistant}
-              />
-            ) : null}
-          </li>
+          <MenuCategoryCard
+            key={category.id}
+            category={category}
+            baseLocale={baseLocale}
+            currency={currency}
+            storeId={storeId}
+            canUseImageEnhancement={canUseImageEnhancement}
+            canUseVoiceAssistant={canUseVoiceAssistant}
+            busyAction={busyAction}
+            selectMode={selectMode}
+            selectedIds={selectedIds}
+            itemDraft={itemDraft}
+            modifiersItemId={modifiersItemId}
+            onAddItem={(categoryId) => setItemDraft({ categoryId, name: '', price: '' })}
+            onToggleSelect={toggleSelected}
+            onCopy={(itemId) => void handleCopyItem(itemId)}
+            onDelete={(itemId, name) => void handleDeleteItem(itemId, name)}
+            onToggleSoldOut={(itemId, isSoldOut) => void toggleSoldOut(itemId, isSoldOut)}
+            onEditModifiers={setModifiersItemId}
+            onBusyAction={setBusyAction}
+            onError={setError}
+            onMessage={setMessage}
+            onChangeItemDraft={setItemDraft}
+            onSubmitItem={(e) => void handleAddItem(e)}
+            onCloseModifiers={() => setModifiersItemId(null)}
+            onChanged={load}
+          />
         ))}
       </ul>
     </div>

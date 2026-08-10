@@ -3,13 +3,15 @@
 import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { publicMediaPath } from '@/lib/menu-image';
 import {
   type CartLineSelection,
   cartLineKey,
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
+import { addToCart, type CartLine, cartSubtotal } from './customer-cart';
+import { CustomerMenuList } from './customer-menu-list';
+import { CustomerOrderView, type OrderStatusView } from './customer-order-view';
 
 type MenuPayload = {
   store: { name: string; currency: string; acceptingPublicRequests: boolean; menuVersion: number };
@@ -21,25 +23,8 @@ type MenuPayload = {
   }>;
 };
 
-type CartLine = CartLineSelection & { quantity: number };
-
-type OrderStatusView = {
-  displayNumber: number;
-  publicToken: string;
-  subtotalAmount: number;
-  status: string;
-  items: Array<{ name: string; quantity: number; lineTotalAmount: number }>;
-};
-
 type CustomerMenuProps = {
   tableToken: string;
-};
-
-const ORDER_STATUS_KEYS: Record<string, string> = {
-  submitted: 'statusSubmitted',
-  accepted: 'statusAccepted',
-  served: 'statusServed',
-  cancelled: 'statusCancelled',
 };
 
 export function CustomerMenu({ tableToken }: CustomerMenuProps) {
@@ -134,17 +119,13 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
     };
   }, [order?.publicToken, refreshOrder]);
 
-  const subtotal = useMemo(
-    () => cart.reduce((sum, line) => sum + line.priceAmount * line.quantity, 0),
-    [cart],
-  );
+  const subtotal = useMemo(() => cartSubtotal(cart), [cart]);
 
   // 订单状态页可能先于菜单渲染（从 localStorage 恢复订单），此时按 VND 回落
   const currency = toBillingCurrency(menu?.store.currency);
 
   function requestAddItem(item: PublicMenuItem) {
-    if (item.isSoldOut) return;
-    if ((item.modifierGroups?.length ?? 0) > 0) {
+    if (item.modifierGroups && item.modifierGroups.length > 0) {
       setPicking(item);
       return;
     }
@@ -158,15 +139,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   }
 
   function commitSelection(selection: Omit<CartLineSelection, 'quantity'>) {
-    setCart((prev) => {
-      const existing = prev.find((l) => l.lineKey === selection.lineKey);
-      if (existing) {
-        return prev.map((l) =>
-          l.lineKey === selection.lineKey ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
-        );
-      }
-      return [...prev, { ...selection, quantity: 1 }];
-    });
+    setCart((prev) => addToCart(prev, selection));
     setPicking(null);
   }
 
@@ -267,65 +240,16 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
 
   if (order && !cart.length) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-8">
-        <p className="text-sm font-semibold text-brand-600">{menu?.store.name ?? 'TaoMenu'}</p>
-        <h1 className="mt-2 text-3xl font-extrabold tabular-nums text-ink-900">
-          #{order.displayNumber}
-        </h1>
-        <p className="mt-2 text-base font-bold text-ink-900">
-          {(() => {
-            const key = ORDER_STATUS_KEYS[order.status];
-            return key ? t(key) : order.status;
-          })()}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t('submittedHint', { total: formatCurrency(order.subtotalAmount, currency, locale) })}
-        </p>
-        <ul className="mt-4 space-y-1 text-sm">
-          {order.items.map((item) => (
-            <li key={`${item.name}-${item.quantity}`}>
-              {item.quantity}× {item.name}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-6 grid gap-2">
-          <button
-            type="button"
-            className="min-h-12 rounded-xl border border-border text-sm font-bold"
-            onClick={() => void refreshOrder(order.publicToken)}
-          >
-            {t('refreshStatus')}
-          </button>
-          <button
-            type="button"
-            className="min-h-12 rounded-xl bg-brand-600 text-sm font-bold text-white"
-            onClick={() => setOrder(null)}
-          >
-            {t('orderMore')}
-          </button>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              disabled={svcBusy}
-              onClick={() => void sendService('call_staff')}
-              className="min-h-12 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
-            >
-              {t('callStaffShort')}
-            </button>
-            <button
-              type="button"
-              disabled={svcBusy}
-              onClick={() => void sendService('request_bill')}
-              className="min-h-12 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
-            >
-              {t('requestBill')}
-            </button>
-          </div>
-          {svcMsg ? (
-            <p className="text-center text-xs font-medium text-jade-600">{svcMsg}</p>
-          ) : null}
-        </div>
-      </div>
+      <CustomerOrderView
+        order={order}
+        storeName={menu?.store.name ?? 'TaoMenu'}
+        currency={currency}
+        svcBusy={svcBusy}
+        svcMsg={svcMsg}
+        onRefresh={() => void refreshOrder(order.publicToken)}
+        onOrderMore={() => setOrder(null)}
+        onSendService={(type) => void sendService(type)}
+      />
     );
   }
 
@@ -335,85 +259,19 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
 
   return (
     <div className="mx-auto min-h-dvh max-w-lg pb-28">
-      <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
-        <p className="text-sm font-semibold text-brand-600">{menu.store.name}</p>
-        <h1 className="text-xl font-extrabold text-ink-900">
-          {menu.table ? t('tableLabel', { name: menu.table.name }) : t('menu')}
-        </h1>
-        {!menu.store.acceptingPublicRequests ? (
-          <p className="mt-1 text-xs font-semibold text-brand-600">{t('paused')}</p>
-        ) : null}
-        <div className="mt-3 flex gap-2">
-          <button
-            type="button"
-            disabled={svcBusy}
-            onClick={() => void sendService('call_staff')}
-            className="min-h-10 flex-1 rounded-xl border border-border text-xs font-bold"
-          >
-            {t('callStaff')}
-          </button>
-          <button
-            type="button"
-            disabled={svcBusy}
-            onClick={() => void sendService('request_bill')}
-            className="min-h-10 flex-1 rounded-xl border border-border text-xs font-bold"
-          >
-            {t('requestBill')}
-          </button>
-        </div>
-        {svcMsg ? <p className="mt-2 text-xs font-medium text-jade-600">{svcMsg}</p> : null}
-      </header>
+      <CustomerMenuList
+        storeName={menu.store.name}
+        tableName={menu.table?.name}
+        acceptingPublicRequests={menu.store.acceptingPublicRequests}
+        categories={menu.categories}
+        currency={currency}
+        svcBusy={svcBusy}
+        svcMsg={svcMsg}
+        onSendService={(type) => void sendService(type)}
+        onPickItem={requestAddItem}
+      />
 
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
-
-      {menu.categories.length === 0 ? (
-        <p className="px-4 py-8 text-sm text-muted-foreground">{t('menuUnpublished')}</p>
-      ) : (
-        <ul className="space-y-6 px-4 py-4">
-          {menu.categories.map((category) => (
-            <li key={category.id}>
-              <h2 className="mb-2 text-sm font-bold tracking-wide text-terracotta-600 uppercase">
-                {category.name}
-              </h2>
-              <ul className="space-y-2">
-                {category.items.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      disabled={item.isSoldOut || !menu.store.acceptingPublicRequests}
-                      onClick={() => requestAddItem(item)}
-                      className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        {item.imageKey ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={publicMediaPath(item.imageKey)}
-                            alt=""
-                            className="size-12 shrink-0 rounded-xl object-cover"
-                            loading="lazy"
-                          />
-                        ) : null}
-                        <span className="min-w-0">
-                          <span className="block truncate font-semibold text-ink-900">
-                            {item.name}
-                          </span>
-                          <span className="text-sm tabular-nums text-muted-foreground">
-                            {formatCurrency(item.priceAmount, currency, locale)}
-                            {item.isSoldOut ? ` · ${t('soldOut')}` : ''}
-                            {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
-                          </span>
-                        </span>
-                      </span>
-                      <span className="text-sm font-bold text-brand-600">+</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-      )}
 
       {cart.length > 0 ? (
         <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg">

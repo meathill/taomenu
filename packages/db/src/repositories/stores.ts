@@ -3,6 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { storeMembers, stores } from '../schema';
 import type { ServiceMode } from '../schema/stores';
 import { slugifyStoreName, withSlugSuffix } from '../slug';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
 
 export type StoreRow = typeof stores.$inferSelect;
@@ -14,10 +15,6 @@ export type CreateStoreInput = {
   baseLocale?: string;
   currency?: string;
 };
-
-function nowMs(): Date {
-  return new Date();
-}
 
 async function allocateUniqueSlug(db: Db, name: string): Promise<string> {
   const base = slugifyStoreName(name);

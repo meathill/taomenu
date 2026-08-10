@@ -3,12 +3,9 @@ import { generateToken, hashToken } from '../crypto-token';
 import { stores } from '../schema/stores';
 import type { ServiceRequestStatus, ServiceRequestType } from '../schema/tables-orders';
 import { diningTables, serviceRequests, tableSessions } from '../schema/tables-orders';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
 import { enqueueNotification } from './push';
-
-function nowMs(): Date {
-  return new Date();
-}
 
 export type CreateServiceRequestInput = {
   storeId: string;

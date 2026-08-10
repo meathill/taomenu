@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { StoreContext } from '../types';
-import { batchUpdateItemAvailability, duplicatedItemName } from './menu';
+import { batchUpdateItemAvailability, duplicatedItemName } from './menu-items';
 
 describe('duplicatedItemName', () => {
   it('按本次操作指定的界面语言追加复制后缀', () => {

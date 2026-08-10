@@ -8,6 +8,7 @@ import {
   terminalDevices,
   terminalPairingCodes,
 } from '../schema';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
 
 const PAIRING_CODE_TTL_MS = 10 * 60 * 1000;
@@ -24,10 +25,6 @@ export type TerminalDeviceView = {
 };
 
 export type PairingCodeResult = { code: string; expiresAt: Date } | { error: 'TERMINAL_LIMIT' };
-
-function nowMs(): Date {
-  return new Date();
-}
 
 function generatePairingCode(): string {
   const values = new Uint32Array(1);

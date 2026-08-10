@@ -6,6 +6,7 @@ import {
 } from '@taomenu/shared';
 import { and, asc, count, desc, eq, gte, inArray } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
+import { assertPlanFeature } from '../plan-features';
 import {
   menuCategoryTranslations,
   menuItemTranslations,
@@ -13,22 +14,13 @@ import {
   modifierTranslations,
 } from '../schema/menu';
 import { menuTranslationJobs, menuTranslationSuggestions } from '../schema/menu-translation';
+import { currentUtcMonthStart } from '../time';
 import type { Db, StoreContext } from '../types';
 import { getMenuTree, listMenuLocales } from './menu';
 import { MenuImportError } from './menu-ai-config';
 
-function assertTranslationAllowed(ctx: StoreContext) {
-  if (!getPlanLimits(ctx.plan).canUseAiTranslation) {
-    throw new MenuImportError('PRO_REQUIRED', 'AI translation requires Pro');
-  }
-}
-
-function currentUtcMonthStart(now = new Date()): Date {
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-}
-
 export async function getMenuTranslationUsage(ctx: StoreContext, db: Db) {
-  assertTranslationAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiTranslation', 'AI translation requires Pro');
   const limit = getPlanLimits(ctx.plan).maxAiTranslationsPerMonth;
   const rows = await db
     .select({ value: count() })
@@ -127,7 +119,7 @@ export async function buildMenuTranslationInput(
 }
 
 export async function createMenuTranslation(ctx: StoreContext, db: Db, targetLocale: string) {
-  assertTranslationAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiTranslation', 'AI translation requires Pro');
   const usage = await getMenuTranslationUsage(ctx, db);
   if (usage.used >= usage.limit) {
     throw new MenuImportError('MONTHLY_LIMIT_REACHED', 'Monthly AI translation limit reached');
@@ -153,7 +145,7 @@ export async function createMenuTranslation(ctx: StoreContext, db: Db, targetLoc
 }
 
 export async function getLatestMenuTranslation(ctx: StoreContext, db: Db) {
-  assertTranslationAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiTranslation', 'AI translation requires Pro');
   const jobs = await db
     .select()
     .from(menuTranslationJobs)
@@ -181,7 +173,7 @@ export async function reviewMenuTranslation(
   jobId: string,
   input: ReviewMenuTranslationBody,
 ) {
-  assertTranslationAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiTranslation', 'AI translation requires Pro');
   const jobs = await db
     .select({ id: menuTranslationJobs.id, status: menuTranslationJobs.status })
     .from(menuTranslationJobs)
@@ -230,7 +222,7 @@ export async function reviewMenuTranslation(
 }
 
 export async function applyMenuTranslation(ctx: StoreContext, db: Db, jobId: string) {
-  assertTranslationAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiTranslation', 'AI translation requires Pro');
   const jobs = await db
     .select()
     .from(menuTranslationJobs)

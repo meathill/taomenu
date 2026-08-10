@@ -10,13 +10,6 @@ export {
   updatePickupPoint,
 } from './dining';
 export {
-  batchUpdateItemAvailability,
-  createCategory,
-  createItem,
-  deleteCategory,
-  deleteItem,
-  duplicatedItemName,
-  duplicateItem,
   ensureStoreMenu,
   getMenuTree,
   listMenuLocales,
@@ -24,18 +17,12 @@ export {
   type MenuTreeCategory,
   MenuValidationError,
   publishMenu,
-  setItemImageKey,
-  updateCategory,
-  updateItem,
 } from './menu';
 export {
-  applyMenuImport,
   createMenuImport,
   getLatestMenuImport,
   getMenuImportUsage,
-  type MenuImportSuggestionView,
   queueMenuImport,
-  reviewMenuImport,
 } from './menu-ai';
 export {
   MENU_AI_MODEL,
@@ -51,6 +38,11 @@ export {
   saveMenuImportResult,
 } from './menu-ai-processing';
 export {
+  createCategory,
+  deleteCategory,
+  updateCategory,
+} from './menu-categories';
+export {
   applyMenuImageEnhancement,
   cancelMenuImageEnhancement,
   createMenuImageEnhancement,
@@ -62,6 +54,20 @@ export {
   restoreMenuImageEnhancement,
   saveMenuImageEnhancementResult,
 } from './menu-image-enhancement';
+export {
+  applyMenuImport,
+  type MenuImportSuggestionView,
+  reviewMenuImport,
+} from './menu-import-review';
+export {
+  batchUpdateItemAvailability,
+  createItem,
+  deleteItem,
+  duplicatedItemName,
+  duplicateItem,
+  setItemImageKey,
+  updateItem,
+} from './menu-items';
 export {
   applyMenuTranslation,
   buildMenuTranslationInput,

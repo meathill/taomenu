@@ -99,3 +99,28 @@
 - `OPENAI_API_KEY` 只存 `taomenu-ai` Worker secret；业务 app 不持有模型密钥
 - BCP-47 地区标签按主语言比较：`vi` 与 `vi-VN` 视为同语言，并统一写入门店 `baseLocale`
 - 空菜单首次导入其他语言时，审核页明确提示并采用检测语言作为 `baseLocale`；已有菜单则阻止混入另一种源语言
+
+## Stripe 与多币种计费（2026-08-10）
+
+- 支持 VND/USD/JPY/CNY；`stores.currency` 决定显示与结算币种，金额一律最小单位整数存储
+  （VND/JPY 0 位小数，USD/CNY 2 位）；`packages/shared/src/currency.ts` + `pricing.ts` 是唯一事实来源
+- 价格推送方向永远是「代码 → Stripe」，运行时从不拉取 Stripe 价格：改 `pricing.ts` 数字 →
+  `pnpm stripe:prices:sync` 覆盖式写 Price 的 `currency_options` → 提交代码
+- Stripe 限制：Price 默认币种与其金额创建后不可改，只有 `currency_options` 可更新；
+  同一 Stripe Customer 首笔订阅后订阅币种锁定，换币种后新订阅需先取消原订阅
+- `scripts/stripe-common.ts` 提供凭据解析（env → `.dev.vars` → `wrangler.jsonc` vars，
+  secret 不从 vars 取）、`redact`、`stripeRequest`；两个入口脚本
+  （`sync-stripe-prices.ts` / `create-stripe-products.ts`）各自 `module.registerHooks`
+  给无扩展名相对导入补 `.ts`，因为 Node 原生跑 TS 不会自动补，需早于动态 import shared
+- Checkout Session 显式传小写 `currency` 参数选结算币种；**不传** `payment_method_types`
+  （写死会锁死 Stripe 的动态支付方式协商）
+- `STRIPE_PRO_PRICE_ID` 配置前以空串占位即视为未配置；key/secret 只进 `apps/app/.dev.vars` 与 secret
+- 历史订单不存币种快照，切换门店币种后统计按新币种重新解释（已知限制，非 bug）
+
+## Stripe webhook 幂等去重（2026-08-09）
+
+- `stripe_webhook_events` 表（migration 0013），`event_id` 主键即去重键
+- `claimStripeWebhookEvent` 用 `ON CONFLICT DO NOTHING ... RETURNING` 按插入行数判定首次/重复
+- 处理抛错时 best-effort `releaseStripeWebhookEvent` 删占位再原样抛出（释放失败不掩盖原错误），
+  保证 Stripe 重投仍会处理
+- 编排逻辑在 `apps/app/lib/stripe-webhook.ts` 的 `handleStripeEventOnce`（可注入去重存储）便于单测

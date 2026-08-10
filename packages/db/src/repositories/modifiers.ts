@@ -6,11 +6,8 @@ import {
   modifiers,
   modifierTranslations,
 } from '../schema/menu';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
-
-function nowMs(): Date {
-  return new Date();
-}
 
 export type MenuModifierOption = {
   id: string;

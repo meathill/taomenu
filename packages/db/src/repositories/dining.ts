@@ -1,11 +1,8 @@
 import { and, asc, eq } from 'drizzle-orm';
 import { generateToken } from '../crypto-token';
 import { diningTables, pickupPoints } from '../schema/tables-orders';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
-
-function nowMs(): Date {
-  return new Date();
-}
 
 export type DiningTableView = {
   id: string;

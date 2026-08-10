@@ -1,22 +1,14 @@
 import { getPlanLimits } from '@taomenu/shared';
 import { and, count, desc, eq, gte, inArray } from 'drizzle-orm';
+import { assertPlanFeature } from '../plan-features';
 import { menuItems } from '../schema/menu';
 import { menuImageEnhancementJobs } from '../schema/menu-image-enhancement';
+import { currentUtcMonthStart } from '../time';
 import type { Db, StoreContext } from '../types';
 import { MenuImportError } from './menu-ai-config';
 
-function assertImageEnhancementAllowed(ctx: StoreContext) {
-  if (!getPlanLimits(ctx.plan).canUseAiImageEnhancement) {
-    throw new MenuImportError('PRO_REQUIRED', 'AI image enhancement requires Pro');
-  }
-}
-
-function currentUtcMonthStart(now = new Date()): Date {
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-}
-
 export async function getMenuImageEnhancementUsage(ctx: StoreContext, db: Db) {
-  assertImageEnhancementAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiImageEnhancement', 'AI image enhancement requires Pro');
   const limit = getPlanLimits(ctx.plan).maxAiImageEnhancementsPerMonth;
   const rows = await db
     .select({ value: count() })
@@ -31,7 +23,7 @@ export async function getMenuImageEnhancementUsage(ctx: StoreContext, db: Db) {
 }
 
 export async function getLatestMenuImageEnhancement(ctx: StoreContext, db: Db, itemId: string) {
-  assertImageEnhancementAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiImageEnhancement', 'AI image enhancement requires Pro');
   const jobs = await db
     .select()
     .from(menuImageEnhancementJobs)
@@ -47,7 +39,7 @@ export async function getLatestMenuImageEnhancement(ctx: StoreContext, db: Db, i
 }
 
 export async function createMenuImageEnhancement(ctx: StoreContext, db: Db, itemId: string) {
-  assertImageEnhancementAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiImageEnhancement', 'AI image enhancement requires Pro');
   const usage = await getMenuImageEnhancementUsage(ctx, db);
   if (usage.used >= usage.limit) {
     throw new MenuImportError(
@@ -173,7 +165,7 @@ export async function applyMenuImageEnhancement(
   itemId: string,
   jobId: string,
 ) {
-  assertImageEnhancementAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiImageEnhancement', 'AI image enhancement requires Pro');
   const job = await getOwnedJob(ctx, db, itemId, jobId);
   if (job?.status !== 'needs_review' || !job.previewImageKey) {
     throw new MenuImportError('INVALID_STATUS', 'Image enhancement is not ready for review');
@@ -205,7 +197,7 @@ export async function cancelMenuImageEnhancement(
   itemId: string,
   jobId: string,
 ) {
-  assertImageEnhancementAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiImageEnhancement', 'AI image enhancement requires Pro');
   const job = await getOwnedJob(ctx, db, itemId, jobId);
   if (job?.status !== 'needs_review') {
     throw new MenuImportError('INVALID_STATUS', 'Image enhancement cannot be cancelled');
@@ -223,7 +215,7 @@ export async function restoreMenuImageEnhancement(
   itemId: string,
   jobId: string,
 ) {
-  assertImageEnhancementAllowed(ctx);
+  assertPlanFeature(ctx, 'canUseAiImageEnhancement', 'AI image enhancement requires Pro');
   const job = await getOwnedJob(ctx, db, itemId, jobId);
   if (job?.status !== 'applied' || !job.previewImageKey) {
     throw new MenuImportError('INVALID_STATUS', 'Enhanced image is not currently applied');

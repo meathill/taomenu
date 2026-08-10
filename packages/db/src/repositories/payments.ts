@@ -6,11 +6,8 @@ import {
   payments,
   tableSessions,
 } from '../schema/tables-orders';
+import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
-
-function nowMs(): Date {
-  return new Date();
-}
 
 export async function recordOrderPayment(
   ctx: StoreContext,
