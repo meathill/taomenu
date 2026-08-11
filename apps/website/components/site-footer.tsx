@@ -13,6 +13,8 @@ export async function SiteFooter() {
     { href: '/contact-us' as const, label: t('contact') },
   ];
 
+  const externalLinks = [{ href: 'https://firstlook.tools', label: 'First Look' }];
+
   const legalLinks = [
     { href: '/privacy' as const, label: t('privacy') },
     { href: '/terms' as const, label: t('terms') },
@@ -37,6 +39,16 @@ export async function SiteFooter() {
                 >
                   {item.label}
                 </Link>
+              </li>
+            ))}
+            {externalLinks.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  className="text-sm font-semibold text-muted-foreground hover:text-brand-700"
+                >
+                  {item.label}
+                </a>
               </li>
             ))}
           </ul>
