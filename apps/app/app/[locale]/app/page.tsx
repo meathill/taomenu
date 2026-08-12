@@ -11,6 +11,7 @@ import { formatCurrency } from '@taomenu/shared';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { NavigationSpinner } from '@/components/navigation-spinner';
 import { PageMessages } from '@/components/page-messages';
 import {
   getOwnerStoreSelection,
@@ -239,6 +240,7 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
                     {!done ? (
                       <span className="text-xs font-bold text-jade-600">{t('start')}</span>
                     ) : null}
+                    <NavigationSpinner />
                   </Link>
                 </li>
               ))}
@@ -258,6 +260,7 @@ export default async function OwnerHomePage({ searchParams }: OwnerHomePageProps
                 className="text-sm font-bold text-jade-600"
               >
                 {t('viewAll')}
+                <NavigationSpinner className="ml-1 inline-block" />
               </Link>
             </div>
             {overview.recentOrders.length === 0 ? (

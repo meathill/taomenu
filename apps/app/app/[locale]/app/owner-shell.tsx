@@ -17,6 +17,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { type ComponentType, type ReactNode, useState } from 'react';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { NavigationSpinner } from '@/components/navigation-spinner';
 import { resolveActiveStore, withStore } from '@/lib/active-store-utils';
 import { signOut } from '@/lib/auth-client';
 import { StoreSwitcher } from './store-switcher';
@@ -105,6 +106,7 @@ function OwnerNavigation({
                 >
                   <Icon className="size-5 shrink-0" weight={isActive ? 'fill' : 'duotone'} />
                   {label}
+                  <NavigationSpinner className="ml-auto size-5" />
                 </Link>
               </li>
             );
@@ -122,6 +124,7 @@ function OwnerNavigation({
         >
           <GearSixIcon className="size-5 shrink-0" weight="duotone" />
           {t('settings')}
+          <NavigationSpinner className="ml-auto size-5" />
         </Link>
       </nav>
     </>

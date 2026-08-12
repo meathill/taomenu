@@ -124,3 +124,11 @@
 - 处理抛错时 best-effort `releaseStripeWebhookEvent` 删占位再原样抛出（释放失败不掩盖原错误），
   保证 Stripe 重投仍会处理
 - 编排逻辑在 `apps/app/lib/stripe-webhook.ts` 的 `handleStripeEventOnce`（可注入去重存储）便于单测
+
+## 页面加载与导航反馈（2026-08-12）
+
+- owner 页面都是 `force-dynamic`，但**读 cookies/headers（`getSession` → `headers()`）的路由本就自动动态渲染**，`force-dynamic` 是冗余显式声明，删掉行为不变
+- 路由级 `loading.tsx` 是 Suspense fallback：**整页加载（刷新/硬导航）时必生效**；但「点击链接」走客户端软导航（segment cache 导航 + `<Link>` 默认 prefetch），缓存命中时直接渲染缓存 shell 并后台补数据，**loading 边界可能不显示**——表现为「点击 → 空窗 → 跳转」
+- 客户端导航的即时反馈要用 `useLinkStatus`（`next/link`，`useOptimistic` 实现，点击瞬间 pending 即 true）：
+  `components/navigation-spinner.tsx` 作为 `<Link>` 子组件使用，pending 时渲染 spinner
+- 手写 `<Suspense fallback>` 包裹 DB 查询与 loading.tsx 机制相同，软导航下同样不可靠
