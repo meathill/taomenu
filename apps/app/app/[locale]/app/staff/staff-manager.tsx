@@ -16,6 +16,7 @@ import {
 } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
+import { AsyncAlertDialog } from '@/components/async-alert-dialog';
 import { Button } from '@/components/button';
 import { QrImage } from '@/components/qr-image';
 import { formatStaffDate } from './staff-date';
@@ -62,6 +63,7 @@ export function StaffManager({
   const [error, setError] = useState<string | null>(null);
   const [billingMessage, setBillingMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [revokeTarget, setRevokeTarget] = useState<Device | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -162,7 +164,6 @@ export function StaffManager({
   }
 
   async function revoke(deviceId: string) {
-    if (!window.confirm(t('revokeConfirm'))) return;
     setBusyAction(`revoke-${deviceId}`);
     setError(null);
     try {
@@ -170,8 +171,7 @@ export function StaffManager({
         method: 'DELETE',
       });
       if (!response.ok) {
-        setError(t('revokeFailed'));
-        return;
+        throw new Error(t('revokeFailed'));
       }
       await load();
     } finally {
@@ -360,9 +360,8 @@ export function StaffManager({
                 {device.status === 'active' ? (
                   <Button
                     type="button"
-                    pending={busyAction === `revoke-${device.id}`}
                     busy={busyAction !== null}
-                    onClick={() => void revoke(device.id)}
+                    onClick={() => setRevokeTarget(device)}
                     className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
                   >
                     <TrashIcon className="size-4" />
@@ -374,6 +373,20 @@ export function StaffManager({
           </ul>
         )}
       </section>
+      <AsyncAlertDialog
+        open={revokeTarget !== null}
+        title={t('revokeDevice')}
+        description={t('revokeConfirm')}
+        cancelLabel={t('cancel')}
+        confirmLabel={t('revokeDevice')}
+        onOpenChange={(open) => {
+          if (!open) setRevokeTarget(null);
+        }}
+        onConfirm={async () => {
+          if (!revokeTarget) return;
+          await revoke(revokeTarget.id);
+        }}
+      />
     </div>
   );
 }

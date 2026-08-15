@@ -48,5 +48,6 @@
   "maxTag": "tối đa {max}",
   "modifierMinError": "Chọn {name} (tối thiểu {min}).",
   "modifierMaxError": "{name}: tối đa {max}.",
-  "addWithPrice": "Thêm · {price}"
+  "addWithPrice": "Thêm · {price}",
+  "menuLanguage": "Ngôn ngữ menu"
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { SparkleIcon, TranslateIcon } from '@phosphor-icons/react';
-import { doLocalesShareLanguage } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
@@ -30,32 +29,25 @@ type TranslationView = {
 
 type TranslationDraft = Record<string, { selected: boolean; name: string; description: string }>;
 
-const TARGET_LOCALES = ['vi', 'en', 'zh', 'ja'] as const;
-
 export function MenuTranslationPanel({
   storeId,
-  baseLocale,
+  targetLocale,
   canUseAi,
 }: {
   storeId: string;
-  baseLocale: string;
+  targetLocale: string;
   canUseAi: boolean;
 }) {
   const t = useTranslations('menu');
   const locale = useLocale();
   const [view, setView] = useState<TranslationView | null>(null);
   const [usage, setUsage] = useState({ used: 0, limit: 20 });
-  const [targetLocale, setTargetLocale] = useState('en');
   const [draft, setDraft] = useState<TranslationDraft>({});
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const languageNames = useMemo(
     () => new Intl.DisplayNames([locale], { type: 'language' }),
     [locale],
-  );
-  const targets = useMemo(
-    () => TARGET_LOCALES.filter((candidate) => !doLocalesShareLanguage(baseLocale, candidate)),
-    [baseLocale],
   );
 
   const load = useCallback(async () => {
@@ -102,12 +94,6 @@ export function MenuTranslationPanel({
     }, 4000);
     return () => window.clearInterval(timer);
   }, [load, view?.job.status]);
-
-  useEffect(() => {
-    if (!targets.includes(targetLocale as (typeof TARGET_LOCALES)[number])) {
-      setTargetLocale(targets[0] ?? 'en');
-    }
-  }, [targetLocale, targets]);
 
   function errorMessage(code?: string) {
     if (code === 'NOTHING_TO_TRANSLATE') return t('translationNothingMissing');
@@ -198,7 +184,7 @@ export function MenuTranslationPanel({
     );
   }
 
-  const status = view?.job.status;
+  const status = view?.job.targetLocale === targetLocale ? view.job.status : undefined;
   return (
     <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
       <div className="flex items-center gap-2">
@@ -304,24 +290,13 @@ export function MenuTranslationPanel({
 
       {!status || status === 'failed' || status === 'applied' ? (
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-          <select
-            value={targetLocale}
-            onChange={(event) => setTargetLocale(event.target.value)}
-            className="min-h-12 flex-1 rounded-xl border border-border bg-white px-3 text-sm font-semibold"
-          >
-            {targets.map((candidate) => (
-              <option key={candidate} value={candidate}>
-                {languageNames.of(candidate) ?? candidate}
-              </option>
-            ))}
-          </select>
           <Button
             type="button"
             pending={busyAction === 'create'}
             busy={busyAction !== null}
             disabled={usage.used >= usage.limit}
             onClick={() => void createTranslation()}
-            className="min-h-12 rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+            className="min-h-12 w-full rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
           >
             {t('translationCreate')}
           </Button>

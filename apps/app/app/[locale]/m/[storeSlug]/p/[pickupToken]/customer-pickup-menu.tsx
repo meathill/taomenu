@@ -1,6 +1,7 @@
 'use client';
 
 import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
@@ -10,8 +11,11 @@ import {
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
+import { CustomerLanguageSelect } from '../../customer-language-select';
 
 type MenuPayload = {
+  availableLocales: string[];
+  resolvedLocale: string;
   store: { name: string; currency: string; acceptingPublicRequests: boolean };
   pickupPoint?: { name: string };
   categories: Array<{
@@ -26,6 +30,9 @@ type CartLine = CartLineSelection & { quantity: number };
 export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const t = useTranslations('customer');
   const locale = useLocale();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedLocale = searchParams.get('locale') ?? locale;
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -40,15 +47,22 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   } | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch(`/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(
+      `/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu?locale=${encodeURIComponent(requestedLocale)}`,
+      { cache: 'no-store' },
+    );
     if (!res.ok) {
       setError(t('notFoundPickup'));
       return;
     }
     setMenu((await res.json()) as MenuPayload);
-  }, [pickupToken, t]);
+  }, [pickupToken, requestedLocale, t]);
+
+  function changeMenuLocale(nextLocale: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('locale', nextLocale);
+    router.replace(`?${params.toString()}`);
+  }
 
   useEffect(() => {
     void load();
@@ -259,10 +273,19 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   return (
     <div className="mx-auto min-h-dvh max-w-lg pb-28">
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
-        <p className="text-sm font-semibold text-brand-600">{menu.store.name}</p>
-        <h1 className="text-xl font-extrabold text-ink-900">
-          {menu.pickupPoint?.name ?? t('pickupMode')}
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-brand-600">{menu.store.name}</p>
+            <h1 className="text-xl font-extrabold text-ink-900">
+              {menu.pickupPoint?.name ?? t('pickupMode')}
+            </h1>
+          </div>
+          <CustomerLanguageSelect
+            availableLocales={menu.availableLocales}
+            resolvedLocale={menu.resolvedLocale}
+            onChange={changeMenuLocale}
+          />
+        </div>
         {!menu.store.acceptingPublicRequests ? (
           <p className="mt-1 text-xs font-semibold text-brand-600">{t('paused')}</p>
         ) : null}

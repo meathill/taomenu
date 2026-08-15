@@ -143,5 +143,6 @@
   "billingNotConfigured": "決済がまだ設定されていません。",
   "billingSyncPending": "前回の購入を同期中です。しばらくしてから再試行してください。",
   "billingFailed": "スタッフ席を更新できませんでした。",
-  "billingUpdated": "スタッフ席を更新しました。"
+  "billingUpdated": "スタッフ席を更新しました。",
+  "cancel": "キャンセル"
 }

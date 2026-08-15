@@ -1,6 +1,7 @@
 'use client';
 
 import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -14,6 +15,8 @@ import { CustomerMenuList } from './customer-menu-list';
 import { CustomerOrderView, type OrderStatusView } from './customer-order-view';
 
 type MenuPayload = {
+  availableLocales: string[];
+  resolvedLocale: string;
   store: { name: string; currency: string; acceptingPublicRequests: boolean; menuVersion: number };
   table?: { name: string };
   categories: Array<{
@@ -30,6 +33,9 @@ type CustomerMenuProps = {
 export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const t = useTranslations('customer');
   const locale = useLocale();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedLocale = searchParams.get('locale') ?? locale;
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -41,15 +47,22 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
 
   const loadMenu = useCallback(async () => {
     setError(null);
-    const res = await fetch(`/api/public/tables/${encodeURIComponent(tableToken)}/menu`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(
+      `/api/public/tables/${encodeURIComponent(tableToken)}/menu?locale=${encodeURIComponent(requestedLocale)}`,
+      { cache: 'no-store' },
+    );
     if (!res.ok) {
       setError(t('notFoundTable'));
       return;
     }
     setMenu((await res.json()) as MenuPayload);
-  }, [tableToken, t]);
+  }, [requestedLocale, tableToken, t]);
+
+  function changeMenuLocale(nextLocale: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('locale', nextLocale);
+    router.replace(`?${params.toString()}`);
+  }
 
   const refreshOrder = useCallback(async (publicToken: string) => {
     const res = await fetch(`/api/public/orders/${encodeURIComponent(publicToken)}`);
@@ -265,6 +278,9 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         acceptingPublicRequests={menu.store.acceptingPublicRequests}
         categories={menu.categories}
         currency={currency}
+        availableLocales={menu.availableLocales}
+        resolvedLocale={menu.resolvedLocale}
+        onLocaleChange={changeMenuLocale}
         svcBusy={svcBusy}
         svcMsg={svcMsg}
         onSendService={(type) => void sendService(type)}

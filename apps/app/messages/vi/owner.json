@@ -143,5 +143,6 @@
   "billingNotConfigured": "Thanh toán chưa được cấu hình.",
   "billingSyncPending": "Đơn mua trước đang được đồng bộ. Hãy thử lại sau ít phút.",
   "billingFailed": "Không thể cập nhật chỗ Staff.",
-  "billingUpdated": "Đã cập nhật chỗ Staff."
+  "billingUpdated": "Đã cập nhật chỗ Staff.",
+  "cancel": "Hủy"
 }

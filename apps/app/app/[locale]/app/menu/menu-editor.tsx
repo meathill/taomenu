@@ -1,76 +1,67 @@
 'use client';
 
-import { type CreateCategoryBody, type CreateItemBody, parseCurrencyInput } from '@taomenu/shared';
+import { CameraIcon, FolderPlusIcon, PlusIcon, TranslateIcon } from '@phosphor-icons/react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/button';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AsyncAlertDialog } from '@/components/async-alert-dialog';
 import { MenuBatchBar } from './menu-batch-bar';
 import { MenuCategoryCard } from './menu-category-card';
+import { MenuCategoryDrawer } from './menu-category-drawer';
 import { MenuEditorHeader } from './menu-editor-header';
-import type { ModifierGroupView } from './menu-modifiers-panel';
-
-type MenuTree = {
-  menu: {
-    id: string;
-    status: string;
-    menuVersion: number;
-    baseLocale: string;
-  };
-  categories: Array<{
-    id: string;
-    isAvailable: boolean;
-    translations: Array<{ locale: string; name: string }>;
-    items: Array<{
-      id: string;
-      priceAmount: number;
-      isAvailable: boolean;
-      isSoldOut: boolean;
-      imageKey: string | null;
-      translations: Array<{ locale: string; name: string }>;
-      modifierGroups: ModifierGroupView[];
-    }>;
-  }>;
-};
+import { MenuImportDrawer } from './menu-import-drawer';
+import { MenuItemDrawer } from './menu-item-drawer';
+import { MenuLanguageDrawer } from './menu-language-drawer';
+import { MenuProTools } from './menu-pro-tools';
+import type { MenuTree } from './menu-types';
 
 type MenuEditorProps = {
   storeId: string;
   currency: string;
-  canUseVoiceAssistant: boolean;
-  canUseImageEnhancement: boolean;
+  activeMenuLocale: string;
+  isPro: boolean;
+  initialHideProTools: boolean;
+  upgradeHref: string;
 };
 
-type ItemDraft = {
-  categoryId: string;
-  name: string;
-  price: string;
-};
+type DeleteTarget = { id: string; name: string };
 
 export function MenuEditor({
   storeId,
   currency,
-  canUseVoiceAssistant,
-  canUseImageEnhancement,
+  activeMenuLocale,
+  isPro,
+  initialHideProTools,
+  upgradeHref,
 }: MenuEditorProps) {
   const t = useTranslations('menu');
-  const locale = useLocale();
+  const interfaceLocale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [tree, setTree] = useState<MenuTree | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
-  const [categoryName, setCategoryName] = useState('');
-  const [itemDraft, setItemDraft] = useState<ItemDraft | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
-  const [modifiersItemId, setModifiersItemId] = useState<string | null>(null);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [itemDrawerOpen, setItemDrawerOpen] = useState(false);
+  const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [initialCategoryId, setInitialCategoryId] = useState<string | undefined>();
+  const [editingCategoryId, setEditingCategoryId] = useState<string | undefined>();
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
-    const res = await fetch(`/api/owner/stores/${storeId}/menu`, { cache: 'no-store' });
-    if (!res.ok) {
+    const response = await fetch(`/api/owner/stores/${storeId}/menu`, { cache: 'no-store' });
+    if (!response.ok) {
       setError(t('loadFailed'));
       return;
     }
-    setTree((await res.json()) as MenuTree);
+    setTree((await response.json()) as MenuTree);
   }, [storeId, t]);
 
   useEffect(() => {
@@ -78,13 +69,20 @@ export function MenuEditor({
   }, [load]);
 
   const allItemIds = useMemo(
-    () => tree?.categories.flatMap((c) => c.items.map((i) => i.id)) ?? [],
+    () => tree?.categories.flatMap((category) => category.items.map((item) => item.id)) ?? [],
     [tree],
+  );
+  const editingItem = useMemo(
+    () =>
+      tree?.categories
+        .flatMap((category) => category.items)
+        .find((item) => item.id === editingItemId) ?? null,
+    [editingItemId, tree],
   );
 
   function toggleSelected(itemId: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
+    setSelectedIds((current) => {
+      const next = new Set(current);
       if (next.has(itemId)) next.delete(itemId);
       else next.add(itemId);
       return next;
@@ -96,193 +94,123 @@ export function MenuEditor({
     setSelectedIds(new Set());
   }
 
-  async function handleAddCategory(event: FormEvent) {
-    event.preventDefault();
-    if (!categoryName.trim()) return;
-    setBusyAction('addCategory');
-    setError(null);
-    try {
-      const body: CreateCategoryBody = { name: categoryName.trim() };
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/categories`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error || t('addCategoryFailed'));
-        return;
-      }
-      setCategoryName('');
-      await load();
-    } finally {
-      setBusyAction(null);
-    }
+  function openNewItem(categoryId?: string) {
+    setEditingItemId(null);
+    setInitialCategoryId(categoryId);
+    setItemDrawerOpen(true);
   }
 
-  async function handleAddItem(event: FormEvent) {
-    event.preventDefault();
-    if (!itemDraft) return;
-    const priceAmount = parseCurrencyInput(itemDraft.price, currency);
-    if (!itemDraft.name.trim() || priceAmount === null) {
-      setError(t('invalidNamePrice'));
-      return;
-    }
-    const categoryId = itemDraft.categoryId;
-    setBusyAction('addItem');
-    setError(null);
-    try {
-      const body: CreateItemBody = {
-        categoryId,
-        name: itemDraft.name.trim(),
-        priceAmount,
-      };
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error || t('addItemFailed'));
-        return;
-      }
-      // 保存并继续：保留分类，清空名称/价格便于连录
-      setItemDraft({ categoryId, name: '', price: '' });
-      await load();
-    } finally {
-      setBusyAction(null);
-    }
+  function openEditItem(itemId: string) {
+    setEditingItemId(itemId);
+    setInitialCategoryId(
+      tree?.categories.find((category) => category.items.some((item) => item.id === itemId))?.id,
+    );
+    setItemDrawerOpen(true);
   }
 
-  async function toggleSoldOut(itemId: string, isSoldOut: boolean) {
-    setBusyAction(`soldOut-${itemId}`);
+  function selectMenuLocale(locale: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (locale === tree?.menu.baseLocale) params.delete('menuLocale');
+    else params.set('menuLocale', locale);
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+    setLanguageOpen(false);
+  }
+
+  async function updateItem(itemId: string, body: Record<string, unknown>, action: string) {
+    setBusyAction(action);
     setError(null);
     try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}`, {
+      const response = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isSoldOut: !isSoldOut }),
+        body: JSON.stringify(body),
       });
-      if (!res.ok) {
-        setError(t('soldOutFailed'));
-        return;
-      }
+      if (!response.ok) throw new Error(t('soldOutFailed'));
       await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('soldOutFailed'));
     } finally {
       setBusyAction(null);
     }
   }
 
-  async function handleCopyItem(itemId: string) {
+  async function copyItem(itemId: string) {
     setBusyAction(`copy-${itemId}`);
     setError(null);
     setMessage(null);
     try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/copy`, {
+      const response = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/copy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locale }),
+        body: JSON.stringify({ locale: interfaceLocale }),
       });
-      if (!res.ok) {
-        setError(t('copyFailed'));
-        return;
-      }
+      if (!response.ok) throw new Error(t('copyFailed'));
       await load();
       setMessage(t('copyDone'));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('copyFailed'));
     } finally {
       setBusyAction(null);
     }
   }
 
-  async function handleDeleteItem(itemId: string, name: string) {
-    if (!window.confirm(t('deleteItemConfirm', { name }))) return;
-    setBusyAction(`delete-${itemId}`);
-    setError(null);
-    setMessage(null);
-    try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        setError(t('deleteItemFailed'));
-        return;
-      }
-      if (modifiersItemId === itemId) setModifiersItemId(null);
-      setSelectedIds((current) => {
-        const next = new Set(current);
-        next.delete(itemId);
-        return next;
-      });
-      await load();
-      setMessage(t('deleteItemDone'));
-    } finally {
-      setBusyAction(null);
-    }
+  async function deleteItem() {
+    if (!deleteTarget) return;
+    const response = await fetch(`/api/owner/stores/${storeId}/menu/items/${deleteTarget.id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error(t('deleteItemFailed'));
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      next.delete(deleteTarget.id);
+      return next;
+    });
+    await load();
+    setMessage(t('deleteItemDone'));
   }
 
-  async function handleBatchSoldOut(isSoldOut: boolean) {
+  async function batchUpdate(body: Record<string, unknown>, action: string) {
     if (selectedIds.size === 0) return;
-    setBusyAction('batchSoldOut');
+    setBusyAction(action);
     setError(null);
     try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
+      const response = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemIds: [...selectedIds], isSoldOut }),
+        body: JSON.stringify({ itemIds: [...selectedIds], ...body }),
       });
-      if (!res.ok) {
-        setError(t('batchFailed'));
-        return;
-      }
+      if (!response.ok) throw new Error(t('batchFailed'));
       exitSelectMode();
       await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('batchFailed'));
     } finally {
       setBusyAction(null);
     }
   }
 
-  async function handleBatchAvailability(isAvailable: boolean) {
-    if (selectedIds.size === 0) return;
-    setBusyAction('batchAvailability');
-    setError(null);
-    try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemIds: [...selectedIds], isAvailable }),
-      });
-      if (!res.ok) {
-        setError(t('batchFailed'));
-        return;
-      }
-      exitSelectMode();
-      await load();
-    } finally {
-      setBusyAction(null);
-    }
-  }
-
-  async function handlePublish() {
+  async function publishMenu() {
     setBusyAction('publish');
     setError(null);
     setMessage(null);
     try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu`, {
+      const response = await fetch(`/api/owner/stores/${storeId}/menu`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'publish' }),
       });
-      const data = (await res.json().catch(() => null)) as {
+      const data = (await response.json().catch(() => null)) as {
         error?: string;
         issues?: Array<{ message: string }>;
       } | null;
-      if (!res.ok) {
-        setError(data?.issues?.[0]?.message || data?.error || t('publishFailed'));
-        return;
+      if (!response.ok) {
+        throw new Error(data?.issues?.[0]?.message || data?.error || t('publishFailed'));
       }
       await load();
       setMessage(t('publishDone'));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('publishFailed'));
     } finally {
       setBusyAction(null);
     }
@@ -291,35 +219,76 @@ export function MenuEditor({
   if (!tree) {
     return (
       <div className="rounded-2xl border border-border bg-white p-6">
-        {error ? (
-          <p className="text-sm text-brand-600">{error}</p>
-        ) : (
-          <div className="animate-pulse space-y-3" role="status" aria-live="polite">
-            <div className="h-4 w-32 rounded bg-paper-50" />
-            <div className="h-12 rounded-xl bg-paper-50" />
-            <div className="h-24 rounded-xl bg-paper-50" />
-          </div>
-        )}
+        {error ? <p className="text-sm text-brand-600">{error}</p> : <p>{t('loading')}</p>}
       </div>
     );
   }
 
   const baseLocale = tree.menu.baseLocale;
+  const languageName =
+    new Intl.DisplayNames([interfaceLocale], { type: 'language' }).of(activeMenuLocale) ??
+    activeMenuLocale;
 
   return (
-    <div className="space-y-6 pb-24 lg:pb-0">
+    <div className="space-y-5 pb-24 lg:pb-0">
       <MenuEditorHeader
         status={tree.menu.status}
         version={tree.menu.menuVersion}
         busyAction={busyAction}
         selectMode={selectMode}
         canPublish={allItemIds.length > 0}
-        onToggleSelect={() => {
-          if (selectMode) exitSelectMode();
-          else setSelectMode(true);
-        }}
-        onPublish={() => void handlePublish()}
+        onToggleSelect={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+        onPublish={() => void publishMenu()}
       />
+
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        <button
+          type="button"
+          onClick={() => setLanguageOpen(true)}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
+        >
+          <TranslateIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+          {languageName}
+        </button>
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
+        >
+          <CameraIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+          {t('photoImport')}
+        </button>
+        {activeMenuLocale === baseLocale ? (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCategoryId(undefined);
+                setCategoryDrawerOpen(true);
+              }}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
+            >
+              <FolderPlusIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+              {t('addCategory')}
+            </button>
+            <button
+              type="button"
+              disabled={tree.categories.length === 0}
+              onClick={() => openNewItem()}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-jade-600 px-3 text-sm font-bold text-white disabled:opacity-50"
+            >
+              <PlusIcon className="size-5" weight="bold" aria-hidden />
+              {t('addItem')}
+            </button>
+          </>
+        ) : null}
+      </div>
+
+      {activeMenuLocale !== baseLocale ? (
+        <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          {t('translationModeHint', { language: languageName })}
+        </p>
+      ) : null}
 
       {selectMode ? (
         <MenuBatchBar
@@ -327,92 +296,105 @@ export function MenuEditor({
           totalCount={allItemIds.length}
           busyAction={busyAction}
           onSelectAll={() => setSelectedIds(new Set(allItemIds))}
-          onSoldOut={(v) => void handleBatchSoldOut(v)}
-          onAvailability={(v) => void handleBatchAvailability(v)}
+          onSoldOut={(isSoldOut) => void batchUpdate({ isSoldOut }, 'batchSoldOut')}
+          onAvailability={(isAvailable) => void batchUpdate({ isAvailable }, 'batchAvailability')}
         />
       ) : null}
 
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
-      {message ? (
-        <p className="text-sm font-semibold text-jade-700" role="status">
-          {message}
-        </p>
-      ) : null}
+      {message ? <p className="text-sm font-semibold text-jade-700">{message}</p> : null}
 
       {tree.categories.length === 0 ? (
         <section className="rounded-2xl border border-jade-600 bg-jade-50 p-5">
           <h2 className="text-lg font-black text-ink-900">{t('emptyTitle')}</h2>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">{t('emptyHint')}</p>
-          <ol className="mt-4 space-y-2 text-sm font-semibold text-ink-900">
-            <li>1. {t('emptyStepCategory')}</li>
-            <li>2. {t('emptyStepItem')}</li>
-            <li>3. {t('emptyStepPublish')}</li>
-          </ol>
         </section>
+      ) : (
+        <ul className="space-y-4">
+          {tree.categories.map((category) => (
+            <MenuCategoryCard
+              key={category.id}
+              category={category}
+              activeLocale={activeMenuLocale}
+              baseLocale={baseLocale}
+              currency={currency}
+              busyAction={busyAction}
+              selectMode={selectMode}
+              selectedIds={selectedIds}
+              onAddItem={openNewItem}
+              onEditCategory={(categoryId) => {
+                setEditingCategoryId(categoryId);
+                setCategoryDrawerOpen(true);
+              }}
+              onEditItem={openEditItem}
+              onToggleSelect={toggleSelected}
+              onCopy={(itemId) => void copyItem(itemId)}
+              onDelete={(id, name) => setDeleteTarget({ id, name })}
+              onToggleSoldOut={(itemId, isSoldOut) =>
+                void updateItem(itemId, { isSoldOut: !isSoldOut }, `soldOut-${itemId}`)
+              }
+            />
+          ))}
+        </ul>
+      )}
+
+      {!isPro ? (
+        <MenuProTools initialHidden={initialHideProTools} upgradeHref={upgradeHref} />
       ) : null}
 
-      <form
-        onSubmit={(e) => void handleAddCategory(e)}
-        className="rounded-2xl border border-border bg-white p-4"
-      >
-        <label className="text-sm font-semibold text-ink-900" htmlFor="new-cat">
-          {t('addCategory')}
-        </label>
-        <div className="mt-2 flex gap-2">
-          <input
-            id="new-cat"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-            placeholder={t('categoryPlaceholder')}
-            className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
-          />
-          <Button
-            type="submit"
-            pending={busyAction === 'addCategory'}
-            busy={busyAction !== null}
-            disabled={!categoryName.trim()}
-            className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
-          >
-            {t('add')}
-          </Button>
-        </div>
-      </form>
-
-      {tree.categories.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t('emptyCategories')}</p>
-      ) : null}
-
-      <ul className="space-y-4">
-        {tree.categories.map((category) => (
-          <MenuCategoryCard
-            key={category.id}
-            category={category}
-            baseLocale={baseLocale}
-            currency={currency}
-            storeId={storeId}
-            canUseImageEnhancement={canUseImageEnhancement}
-            canUseVoiceAssistant={canUseVoiceAssistant}
-            busyAction={busyAction}
-            selectMode={selectMode}
-            selectedIds={selectedIds}
-            itemDraft={itemDraft}
-            modifiersItemId={modifiersItemId}
-            onAddItem={(categoryId) => setItemDraft({ categoryId, name: '', price: '' })}
-            onToggleSelect={toggleSelected}
-            onCopy={(itemId) => void handleCopyItem(itemId)}
-            onDelete={(itemId, name) => void handleDeleteItem(itemId, name)}
-            onToggleSoldOut={(itemId, isSoldOut) => void toggleSoldOut(itemId, isSoldOut)}
-            onEditModifiers={setModifiersItemId}
-            onBusyAction={setBusyAction}
-            onError={setError}
-            onMessage={setMessage}
-            onChangeItemDraft={setItemDraft}
-            onSubmitItem={(e) => void handleAddItem(e)}
-            onCloseModifiers={() => setModifiersItemId(null)}
-            onChanged={load}
-          />
-        ))}
-      </ul>
+      <MenuLanguageDrawer
+        open={languageOpen}
+        storeId={storeId}
+        baseLocale={baseLocale}
+        activeLocale={activeMenuLocale}
+        canUseAi={isPro}
+        upgradeHref={upgradeHref}
+        onOpenChange={setLanguageOpen}
+        onSelectLocale={selectMenuLocale}
+      />
+      <MenuImportDrawer
+        open={importOpen}
+        storeId={storeId}
+        baseLocale={baseLocale}
+        currency={currency}
+        canUseAi={isPro}
+        upgradeHref={upgradeHref}
+        onOpenChange={setImportOpen}
+      />
+      <MenuItemDrawer
+        open={itemDrawerOpen}
+        storeId={storeId}
+        currency={currency}
+        categories={tree.categories}
+        item={editingItem}
+        initialCategoryId={initialCategoryId}
+        activeLocale={activeMenuLocale}
+        baseLocale={baseLocale}
+        canUseImageEnhancement={isPro}
+        onOpenChange={setItemDrawerOpen}
+        onChanged={load}
+      />
+      <MenuCategoryDrawer
+        open={categoryDrawerOpen}
+        storeId={storeId}
+        categories={tree.categories}
+        activeLocale={activeMenuLocale}
+        baseLocale={baseLocale}
+        editingId={editingCategoryId}
+        onOpenChange={setCategoryDrawerOpen}
+        onChanged={load}
+      />
+      <AsyncAlertDialog
+        open={deleteTarget !== null}
+        title={t('deleteItem')}
+        description={t('deleteItemConfirm', { name: deleteTarget?.name ?? '' })}
+        cancelLabel={t('cancel')}
+        confirmLabel={t('deleteItem')}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        onConfirm={deleteItem}
+      />
     </div>
   );
 }

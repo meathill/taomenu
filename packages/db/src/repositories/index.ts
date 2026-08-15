@@ -144,7 +144,9 @@ export {
   recordSessionPayment,
 } from './payments';
 export {
+  getCompleteMenuLocales,
   getPublishedMenuForStore,
+  type PublicMenuLocaleSource,
   type PublicMenuPayload,
 } from './public-menu';
 export {
@@ -210,3 +212,8 @@ export {
   type TerminalDeviceView,
   touchTerminalDevice,
 } from './terminals';
+export {
+  getUserPreferences,
+  type UserPreferences,
+  updateUserPreferences,
+} from './user-preferences';

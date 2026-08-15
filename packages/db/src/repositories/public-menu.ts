@@ -26,6 +26,8 @@ export type PublicModifierGroup = {
 };
 
 export type PublicMenuPayload = {
+  availableLocales: string[];
+  resolvedLocale: string;
   store: {
     id: string;
     slug: string;
@@ -53,6 +55,75 @@ export type PublicMenuPayload = {
   }>;
 };
 
+type LocalizedName = { locale: string; name: string };
+
+export type PublicMenuLocaleSource = Array<{
+  translations: LocalizedName[];
+  items: Array<{
+    translations: LocalizedName[];
+    modifierGroups: Array<{
+      translations: LocalizedName[];
+      options: Array<{ isAvailable: boolean; translations: LocalizedName[] }>;
+    }>;
+  }>;
+}>;
+
+function hasNamedLocale(translations: LocalizedName[], locale: string) {
+  return translations.some(
+    (translation) => translation.locale === locale && translation.name.trim(),
+  );
+}
+
+/** 顾客端仅公开所有可见内容均已翻译的第二语言。 */
+export function getCompleteMenuLocales(
+  categories: PublicMenuLocaleSource,
+  baseLocale: string,
+): string[] {
+  const candidates = new Set<string>([baseLocale]);
+  for (const category of categories) {
+    for (const translation of category.translations) candidates.add(translation.locale);
+    for (const item of category.items) {
+      for (const translation of item.translations) candidates.add(translation.locale);
+      for (const group of item.modifierGroups) {
+        for (const translation of group.translations) candidates.add(translation.locale);
+        for (const option of group.options) {
+          for (const translation of option.translations) candidates.add(translation.locale);
+        }
+      }
+    }
+  }
+
+  const complete = [...candidates].filter((locale) => {
+    if (locale === baseLocale) return true;
+    return categories.every(
+      (category) =>
+        hasNamedLocale(category.translations, locale) &&
+        category.items.every(
+          (item) =>
+            hasNamedLocale(item.translations, locale) &&
+            item.modifierGroups.every(
+              (group) =>
+                hasNamedLocale(group.translations, locale) &&
+                group.options
+                  .filter((option) => option.isAvailable)
+                  .every((option) => hasNamedLocale(option.translations, locale)),
+            ),
+        ),
+    );
+  });
+  return [baseLocale, ...complete.filter((locale) => locale !== baseLocale).sort()];
+}
+
+export function resolvePublicMenuLocale(
+  availableLocales: string[],
+  baseLocale: string,
+  requestedLocale?: string,
+): string {
+  return requestedLocale && availableLocales.includes(requestedLocale)
+    ? requestedLocale
+    : baseLocale;
+}
+
 export async function getPublishedMenuForStore(
   db: Db,
   storeId: string,
@@ -74,6 +145,8 @@ export async function getPublishedMenuForStore(
   const menu = menuRows[0];
   if (!menu) {
     return {
+      availableLocales: [store.baseLocale],
+      resolvedLocale: store.baseLocale,
       store: {
         id: store.id,
         slug: store.slug,
@@ -87,7 +160,6 @@ export async function getPublishedMenuForStore(
     };
   }
 
-  const preferredLocale = locale || store.baseLocale;
   const categories = await db
     .select()
     .from(menuCategories)
@@ -103,6 +175,8 @@ export async function getPublishedMenuForStore(
   const categoryIds = categories.map((c) => c.id);
   if (categoryIds.length === 0) {
     return {
+      availableLocales: [store.baseLocale],
+      resolvedLocale: store.baseLocale,
       store: {
         id: store.id,
         slug: store.slug,
@@ -154,18 +228,32 @@ export async function getPublishedMenuForStore(
 
   const modifiersByItem = await loadModifierGroupsForItems(db, storeId, itemIds);
 
+  const localeSource: PublicMenuLocaleSource = categories.map((category) => ({
+    translations: catTr.filter((translation) => translation.categoryId === category.id),
+    items: items
+      .filter((item) => item.categoryId === category.id)
+      .map((item) => ({
+        translations: itemTr.filter((translation) => translation.itemId === item.id),
+        modifierGroups: modifiersByItem.get(item.id) ?? [],
+      })),
+  }));
+  const availableLocales = getCompleteMenuLocales(localeSource, store.baseLocale);
+  const resolvedLocale = resolvePublicMenuLocale(availableLocales, store.baseLocale, locale);
+
   function pickName(
     translations: Array<{ locale: string; name: string; description?: string | null }>,
     baseLocale: string,
   ) {
     return (
-      translations.find((t) => t.locale === preferredLocale) ||
+      translations.find((t) => t.locale === resolvedLocale) ||
       translations.find((t) => t.locale === baseLocale) ||
       translations[0]
     );
   }
 
   return {
+    availableLocales,
+    resolvedLocale,
     store: {
       id: store.id,
       slug: store.slug,
@@ -200,7 +288,7 @@ export async function getPublishedMenuForStore(
               imageKey: item.imageKey,
               modifierGroups: groups.map((g) => {
                 const gName =
-                  g.translations.find((t) => t.locale === preferredLocale)?.name ||
+                  g.translations.find((t) => t.locale === resolvedLocale)?.name ||
                   g.translations.find((t) => t.locale === store.baseLocale)?.name ||
                   g.translations[0]?.name ||
                   '—';
@@ -214,7 +302,7 @@ export async function getPublishedMenuForStore(
                     .filter((o) => o.isAvailable)
                     .map((o) => {
                       const oName =
-                        o.translations.find((t) => t.locale === preferredLocale)?.name ||
+                        o.translations.find((t) => t.locale === resolvedLocale)?.name ||
                         o.translations.find((t) => t.locale === store.baseLocale)?.name ||
                         o.translations[0]?.name ||
                         '—';

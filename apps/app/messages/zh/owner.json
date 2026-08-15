@@ -143,5 +143,6 @@
   "billingNotConfigured": "支付功能尚未配置。",
   "billingSyncPending": "上一次购买还在同步，请稍后再试。",
   "billingFailed": "Staff 席位更新失败。",
-  "billingUpdated": "Staff 席位已更新。"
+  "billingUpdated": "Staff 席位已更新。",
+  "cancel": "取消"
 }

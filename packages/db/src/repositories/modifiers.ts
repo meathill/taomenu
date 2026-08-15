@@ -1,4 +1,5 @@
 import { and, asc, eq, inArray } from 'drizzle-orm';
+import { assertLocaleAllowed } from '../menu-publish';
 import {
   menuItems,
   modifierGroups,
@@ -8,6 +9,18 @@ import {
 } from '../schema/menu';
 import { nowMs } from '../time';
 import type { Db, StoreContext } from '../types';
+import { getBaseLocale, listMenuLocales, MenuValidationError } from './menu';
+
+async function assertModifierLocaleAllowed(ctx: StoreContext, db: Db, locale: string) {
+  const baseLocale = await getBaseLocale(ctx, db);
+  const issue = assertLocaleAllowed({
+    plan: ctx.plan,
+    baseLocale,
+    locale,
+    existingLocales: await listMenuLocales(ctx, db),
+  });
+  if (issue) throw new MenuValidationError([issue]);
+}
 
 export type MenuModifierOption = {
   id: string;
@@ -136,7 +149,8 @@ export async function createModifierGroup(
     .where(and(eq(modifierGroups.storeId, ctx.storeId), eq(modifierGroups.itemId, input.itemId)));
   const sortOrder = (siblings.at(-1)?.sortOrder ?? -1) + 1;
   const groupId = crypto.randomUUID();
-  const locale = input.locale ?? 'vi';
+  const locale = input.locale ?? (await getBaseLocale(ctx, db));
+  await assertModifierLocaleAllowed(ctx, db, locale);
 
   await db.insert(modifierGroups).values({
     id: groupId,
@@ -189,7 +203,7 @@ export async function updateModifierGroup(
     .where(and(eq(modifierGroups.id, groupId), eq(modifierGroups.storeId, ctx.storeId)));
 
   if (input.name !== undefined) {
-    const locale = input.locale ?? 'vi';
+    const locale = input.locale ?? (await getBaseLocale(ctx, db));
     const existing = await db
       .select()
       .from(modifierGroupTranslations)
@@ -207,6 +221,7 @@ export async function updateModifierGroup(
         .set({ name: input.name.trim() })
         .where(eq(modifierGroupTranslations.id, existing[0].id));
     } else {
+      await assertModifierLocaleAllowed(ctx, db, locale);
       await db.insert(modifierGroupTranslations).values({
         id: crypto.randomUUID(),
         storeId: ctx.storeId,
@@ -256,7 +271,8 @@ export async function createModifier(
     .where(and(eq(modifiers.storeId, ctx.storeId), eq(modifiers.modifierGroupId, input.groupId)));
   const sortOrder = (siblings.at(-1)?.sortOrder ?? -1) + 1;
   const modifierId = crypto.randomUUID();
-  const locale = input.locale ?? 'vi';
+  const locale = input.locale ?? (await getBaseLocale(ctx, db));
+  await assertModifierLocaleAllowed(ctx, db, locale);
   const reviewedAt = nowMs();
 
   await db.insert(modifiers).values({
@@ -310,7 +326,7 @@ export async function updateModifier(
     .where(and(eq(modifiers.id, modifierId), eq(modifiers.storeId, ctx.storeId)));
 
   if (input.name !== undefined) {
-    const locale = input.locale ?? 'vi';
+    const locale = input.locale ?? (await getBaseLocale(ctx, db));
     const existing = await db
       .select()
       .from(modifierTranslations)
@@ -335,6 +351,7 @@ export async function updateModifier(
         })
         .where(eq(modifierTranslations.id, existing[0].id));
     } else {
+      await assertModifierLocaleAllowed(ctx, db, locale);
       await db.insert(modifierTranslations).values({
         id: crypto.randomUUID(),
         storeId: ctx.storeId,

@@ -4,6 +4,7 @@ import { formatCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { publicMediaPath } from '@/lib/menu-image';
 import type { PublicMenuItem } from '../../../modifier-picker';
+import { CustomerLanguageSelect } from '../../customer-language-select';
 
 type MenuCategoryView = {
   id: string;
@@ -17,10 +18,13 @@ type CustomerMenuListProps = {
   acceptingPublicRequests: boolean;
   categories: MenuCategoryView[];
   currency: string;
+  availableLocales: string[];
+  resolvedLocale: string;
   svcBusy: boolean;
   svcMsg: string | null;
   onSendService: (type: 'call_staff' | 'request_bill') => void;
   onPickItem: (item: PublicMenuItem) => void;
+  onLocaleChange: (locale: string) => void;
 };
 
 export function CustomerMenuList({
@@ -29,10 +33,13 @@ export function CustomerMenuList({
   acceptingPublicRequests,
   categories,
   currency,
+  availableLocales,
+  resolvedLocale,
   svcBusy,
   svcMsg,
   onSendService,
   onPickItem,
+  onLocaleChange,
 }: CustomerMenuListProps) {
   const t = useTranslations('customer');
   const locale = useLocale();
@@ -40,10 +47,19 @@ export function CustomerMenuList({
   return (
     <div className="min-h-dvh">
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
-        <p className="text-sm font-semibold text-brand-600">{storeName}</p>
-        <h1 className="text-xl font-extrabold text-ink-900">
-          {tableName ? t('tableLabel', { name: tableName }) : t('menu')}
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-brand-600">{storeName}</p>
+            <h1 className="text-xl font-extrabold text-ink-900">
+              {tableName ? t('tableLabel', { name: tableName }) : t('menu')}
+            </h1>
+          </div>
+          <CustomerLanguageSelect
+            availableLocales={availableLocales}
+            resolvedLocale={resolvedLocale}
+            onChange={onLocaleChange}
+          />
+        </div>
         {!acceptingPublicRequests ? (
           <p className="mt-1 text-xs font-semibold text-brand-600">{t('paused')}</p>
         ) : null}

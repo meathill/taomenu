@@ -17,6 +17,7 @@
     "deploy": "pnpm cf-typegen && node ../../scripts/run-with-wrangler-vars.mjs opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
+    "@base-ui/react": "^1.7.0",
     "@opennextjs/cloudflare": "^1.20.1",
     "@phosphor-icons/react": "^2.1.10",
     "@pushforge/builder": "^2.0.5",

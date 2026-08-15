@@ -4,6 +4,7 @@ import { PrinterIcon } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { AsyncAlertDialog } from '@/components/async-alert-dialog';
 import { withStore } from '@/lib/active-store-utils';
 import { customerEntryUrl, type QrEntryType, qrDownloadFilename } from './customer-url';
 import { QrCreateForm } from './qr-create-form';
@@ -25,6 +26,10 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   const [editingName, setEditingName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [deactivateTarget, setDeactivateTarget] = useState<{
+    type: QrEntryType;
+    id: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -111,7 +116,6 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
   }
 
   async function toggleActive(type: QrEntryType, id: string, isActive: boolean) {
-    if (isActive && !window.confirm(t('deactivateConfirm'))) return;
     setBusyAction(`toggle-${type}-${id}`);
     setError(null);
     const path =
@@ -125,13 +129,22 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
         body: JSON.stringify({ isActive: !isActive }),
       });
       if (!response.ok) {
-        setError(t('statusFailed'));
-        return;
+        throw new Error(t('statusFailed'));
       }
       await load();
     } finally {
       setBusyAction(null);
     }
+  }
+
+  function requestToggle(type: QrEntryType, id: string, isActive: boolean) {
+    if (isActive) {
+      setDeactivateTarget({ type, id });
+      return;
+    }
+    void toggleActive(type, id, false).catch((cause: unknown) => {
+      setError(cause instanceof Error ? cause.message : t('statusFailed'));
+    });
   }
 
   function renderEntry(type: QrEntryType, entry: QrEntry) {
@@ -149,7 +162,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
         onStartRename={() => startRename(type, entry.id, entry.name)}
         onSaveRename={() => void saveRename()}
         onCancelRename={() => setEditing(null)}
-        onToggleActive={() => void toggleActive(type, entry.id, entry.isActive)}
+        onToggleActive={() => requestToggle(type, entry.id, entry.isActive)}
       />
     );
   }
@@ -222,6 +235,20 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           ) : null}
         </ul>
       </section>
+      <AsyncAlertDialog
+        open={deactivateTarget !== null}
+        title={t('deactivate')}
+        description={t('deactivateConfirm')}
+        cancelLabel={t('cancel')}
+        confirmLabel={t('deactivate')}
+        onOpenChange={(open) => {
+          if (!open) setDeactivateTarget(null);
+        }}
+        onConfirm={async () => {
+          if (!deactivateTarget) return;
+          await toggleActive(deactivateTarget.type, deactivateTarget.id, true);
+        }}
+      />
     </div>
   );
 }

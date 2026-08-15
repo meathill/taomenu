@@ -48,5 +48,6 @@
   "maxTag": "max {max}",
   "modifierMinError": "Choose {name} (at least {min}).",
   "modifierMaxError": "{name}: max {max}.",
-  "addWithPrice": "Add · {price}"
+  "addWithPrice": "Add · {price}",
+  "menuLanguage": "Menu language"
 }

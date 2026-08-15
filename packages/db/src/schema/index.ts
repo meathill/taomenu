@@ -9,3 +9,4 @@ export * from './stores';
 export * from './stripe-webhook-events';
 export * from './tables-orders';
 export * from './terminal';
+export * from './user-preferences';

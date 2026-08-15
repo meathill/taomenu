@@ -48,5 +48,6 @@
   "maxTag": "最大 {max}",
   "modifierMinError": "{name} を選択してください（最低 {min}）。",
   "modifierMaxError": "{name}：最大 {max}。",
-  "addWithPrice": "追加 · {price}"
+  "addWithPrice": "追加 · {price}",
+  "menuLanguage": "メニュー言語"
 }

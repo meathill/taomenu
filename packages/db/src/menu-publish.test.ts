@@ -88,4 +88,14 @@ describe('assertLocaleAllowed', () => {
       }),
     ).toBeNull();
   });
+
+  it('Pro 达到五种语言后拒绝第六种语言', () => {
+    const issue = assertLocaleAllowed({
+      plan: 'pro',
+      baseLocale: 'vi',
+      locale: 'de',
+      existingLocales: ['vi', 'en', 'zh', 'ja', 'fr'],
+    });
+    expect(issue?.code).toBe('TOO_MANY_LOCALES');
+  });
 });

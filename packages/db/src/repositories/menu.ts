@@ -202,6 +202,12 @@ export async function listMenuLocales(ctx: StoreContext, db: Db): Promise<string
     for (const t of c.translations) locales.add(t.locale);
     for (const i of c.items) {
       for (const t of i.translations) locales.add(t.locale);
+      for (const group of i.modifierGroups) {
+        for (const t of group.translations) locales.add(t.locale);
+        for (const option of group.options) {
+          for (const t of option.translations) locales.add(t.locale);
+        }
+      }
     }
   }
   locales.add(tree.menu.baseLocale);

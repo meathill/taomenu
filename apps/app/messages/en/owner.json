@@ -143,5 +143,6 @@
   "billingNotConfigured": "Billing is not configured yet.",
   "billingSyncPending": "Your previous purchase is still syncing. Try again in a moment.",
   "billingFailed": "Could not update staff seats.",
-  "billingUpdated": "Staff seats updated."
+  "billingUpdated": "Staff seats updated.",
+  "cancel": "Cancel"
 }

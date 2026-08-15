@@ -1,10 +1,13 @@
 @import "tailwindcss";
 @import "@taomenu/ui/tokens.css";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   /* 应用端主操作使用翡翠绿，营销红保留品牌识别 */
   --primary: var(--jade-600);
   --ring: var(--jade-600);
+  --destructive-foreground: var(--color-red-700);
 }
 
 body {
@@ -28,4 +31,12 @@ body {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
+}
+
+.dark {
+  --destructive-foreground: var(--color-red-400);
+}
+
+@theme inline {
+  --color-destructive-foreground: var(--destructive-foreground);
 }

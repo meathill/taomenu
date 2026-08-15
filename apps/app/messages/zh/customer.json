@@ -48,5 +48,6 @@
   "maxTag": "最多 {max}",
   "modifierMinError": "请选择{name}（至少 {min} 项）。",
   "modifierMaxError": "{name}：最多 {max} 项。",
-  "addWithPrice": "添加 · {price}"
+  "addWithPrice": "添加 · {price}",
+  "menuLanguage": "菜单语言"
 }
