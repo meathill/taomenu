@@ -12,6 +12,7 @@
   "changeEmail": "メールを変更",
   "hint": "コードは数分以内にメールで送信されます。届かない場合は迷惑メールフォルダをご確認ください。",
   "errorGoogle": "Google ログインに失敗しました。",
+  "authError": "ログインに失敗しました。もう一度お試しください。",
   "errorSendOtp": "OTP を送信できませんでした。",
   "errorBadOtp": "OTP が正しくありません。",
   "loading": "…"

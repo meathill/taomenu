@@ -16,6 +16,8 @@ type Step = 'email' | 'otp';
 export function LoginForm() {
   const t = useTranslations('login');
   const searchParams = useSearchParams();
+  const oauthError = searchParams.get('error');
+  const oauthErrorDescription = searchParams.get('error_description');
   const [providers, setProviders] = useState<Providers>({ google: false, emailOtp: true });
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
@@ -190,7 +192,12 @@ export function LoginForm() {
         </form>
       )}
 
-      {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
+      {error || oauthError ? (
+        <p className="text-sm font-medium text-brand-600">
+          {error ?? `${t('authError')}${oauthError ? ` (${oauthError})` : ''}`}
+          {!error && oauthErrorDescription ? `: ${oauthErrorDescription}` : null}
+        </p>
+      ) : null}
 
       <p className="text-xs leading-relaxed text-muted-foreground">{t('hint')}</p>
     </div>

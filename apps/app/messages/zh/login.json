@@ -12,6 +12,7 @@
   "changeEmail": "更换邮箱",
   "hint": "验证码将在几分钟内发送到你的邮箱，如未收到请检查垃圾邮件。",
   "errorGoogle": "Google 登录失败。",
+  "authError": "登录失败，请重试。",
   "errorSendOtp": "无法发送验证码。",
   "errorBadOtp": "验证码不正确。",
   "loading": "…"

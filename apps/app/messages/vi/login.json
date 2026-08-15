@@ -12,6 +12,7 @@
   "changeEmail": "Đổi email",
   "hint": "Mã sẽ được gửi qua email trong vài phút. Nếu không nhận được, hãy kiểm tra thư mục spam.",
   "errorGoogle": "Google đăng nhập thất bại.",
+  "authError": "Đăng nhập thất bại. Vui lòng thử lại.",
   "errorSendOtp": "Không gửi được mã OTP.",
   "errorBadOtp": "Mã OTP không đúng.",
   "loading": "…"

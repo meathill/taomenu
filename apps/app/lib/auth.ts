@@ -1,10 +1,10 @@
-import { schema } from '@taomenu/db';
+import '@/lib/auth-runtime';
+import { createDb, schema } from '@taomenu/db';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { emailOTP } from 'better-auth/plugins';
-import { getEnv } from '@/lib/cf';
-import { getDb } from '@/lib/db';
+import { getEnvAsync } from '@/lib/cf';
 import { sendOtpEmail } from '@/lib/email';
 import { getAuthBaseUrl } from '@/lib/public-url';
 import { attributeSignupFromCookie } from '@/lib/referral';
@@ -15,9 +15,9 @@ function hasGoogleOAuth(env: CloudflareEnv): boolean {
 }
 
 /** 按请求构建 Better Auth（D1 绑定来自 Cloudflare 运行时，不能模块级单例）。 */
-export function getAuth() {
-  const env = getEnv();
-  const db = getDb();
+export async function getAuth() {
+  const env = await getEnvAsync();
+  const db = createDb(env.DB);
   const baseURL = getAuthBaseUrl();
 
   const socialProviders = hasGoogleOAuth(env)
@@ -34,6 +34,11 @@ export function getAuth() {
     // baseURL 只读 process.env，不要从 getCloudflareContext 取 NEXT_PUBLIC_*
     baseURL,
     secret: env.BETTER_AUTH_SECRET,
+    onAPIError: {
+      // 错误直接带回登录页（?error=xxx），避免经过 /api/auth/error → / → /login 丢失错误信息
+      errorURL: `${baseURL}/login`,
+    },
+    telemetry: { enabled: false },
     trustedOrigins: [baseURL],
     database: drizzleAdapter(db, {
       provider: 'sqlite',
@@ -97,4 +102,4 @@ export function getAuth() {
   });
 }
 
-export type Auth = ReturnType<typeof getAuth>;
+export type Auth = Awaited<ReturnType<typeof getAuth>>;

@@ -12,6 +12,7 @@
   "changeEmail": "Change email",
   "hint": "The code will be emailed within a few minutes. If it doesn't arrive, check your spam folder.",
   "errorGoogle": "Google sign-in failed.",
+  "authError": "Sign-in failed. Please try again.",
   "errorSendOtp": "Could not send OTP.",
   "errorBadOtp": "Invalid OTP code.",
   "loading": "…"

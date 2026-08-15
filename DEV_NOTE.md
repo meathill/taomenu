@@ -83,6 +83,13 @@
 - middleware 只认名称含 `taomenu` + `session_token` 的 cookie
 - 不要开 `crossSubDomainCookies`
 
+## Auth + Cloudflare Workers（2026-08-15）
+
+- 生产曾出现 `/api/auth/*` 无限 pending（`/ok`、`get-session`、social、OTP 一起挂），页面和 `/api/health` 正常
+- 根因：better-auth 把 `import("node:async_hooks")` 缓存在模块作用域；Workers 里请求被取消后该 Promise 永不结束，isolate 上后续 auth 全挂
+- 决策：`lib/auth-runtime.ts` 静态预热 ALS；catch-all handler 10s 超时返回 503，禁止无限 pending
+- Workers 上不要把「请求期内创建的 Promise」缓存到模块/isolate 生命周期
+
 ## 验收切片（2026-07-28）
 
 - 服务请求 / 付款 / 关台 / 暂停接单已接主路径；详见 `ACCEPTANCE.md`
