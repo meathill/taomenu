@@ -4,7 +4,8 @@ import { CaretDownIcon, CaretUpIcon, PlusIcon, TrashIcon } from '@phosphor-icons
 import { getCurrencyDecimals, sanitizeCurrencyInput } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
-import { Button } from '@/components/button';
+import { Button as SaveButton } from '@/components/button';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Frame, FrameHeader, FramePanel } from '@/components/ui/frame';
 import {
@@ -44,14 +45,13 @@ function IconButton({
   return (
     <Button
       type="button"
-      iconOnly
+      variant="ghost"
+      size="icon-xl"
       aria-label={label}
       title={label}
-      pending={pending}
-      busy={busy}
-      disabled={disabled}
+      loading={pending}
+      disabled={disabled || busy}
       onClick={onClick}
-      className="size-11 shrink-0 rounded-xl text-ink-900"
     >
       {children}
     </Button>
@@ -92,7 +92,15 @@ export function MenuModifierGroupFrame({
     <Frame className="w-full">
       <Collapsible defaultOpen>
         <FrameHeader className="flex-row items-center justify-between gap-1 px-2 py-2">
-          <CollapsibleTrigger className="data-open:[&_svg]:rotate-180 flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl px-2 text-left text-sm font-semibold text-ink-900">
+          <CollapsibleTrigger
+            className="data-open:[&_svg]:rotate-180"
+            render={
+              <Button
+                variant="ghost"
+                className="h-11 min-w-0 flex-1 justify-start px-2 text-sm font-semibold"
+              />
+            }
+          >
             <CaretDownIcon
               className="size-4 shrink-0 transition-transform"
               weight="bold"
@@ -191,9 +199,11 @@ export function MenuModifierGroupFrame({
               ))}
             </ul>
 
-            <button
+            <Button
               type="button"
-              className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-jade-600"
+              variant="ghost"
+              disabled={busyAction !== null}
+              className="h-11 justify-start px-2 text-jade-600"
               onClick={() =>
                 onChange(
                   markGroupDirty(draft, { options: [...draft.options, createOptionDraft()] }),
@@ -202,9 +212,9 @@ export function MenuModifierGroupFrame({
             >
               <PlusIcon className="size-4" weight="bold" aria-hidden />
               {t('addOption')}
-            </button>
+            </Button>
 
-            <Button
+            <SaveButton
               type="button"
               pending={busyAction === saveKey}
               busy={busyAction !== null}
@@ -213,7 +223,7 @@ export function MenuModifierGroupFrame({
               className="min-h-12 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
             >
               {t('saveGroup')}
-            </Button>
+            </SaveButton>
           </FramePanel>
         </CollapsiblePanel>
       </Collapsible>
