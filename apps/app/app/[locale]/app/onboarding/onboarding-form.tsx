@@ -10,6 +10,7 @@ import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const DRAFT_KEY = 'taomenu.onboarding.draft';
 
@@ -102,7 +103,14 @@ export function OnboardingForm() {
   }
 
   if (!ready) {
-    return <div className="min-h-40 animate-pulse rounded-2xl bg-muted" />;
+    return (
+      <div className="space-y-3" aria-busy="true">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-12 w-full rounded-xl" />
+        <Skeleton className="h-3 w-48" />
+        <Skeleton className="h-12 w-full rounded-xl" />
+      </div>
+    );
   }
 
   const modeMeta: Record<CreateStoreBody['serviceMode'], { title: string; desc: string }> = {

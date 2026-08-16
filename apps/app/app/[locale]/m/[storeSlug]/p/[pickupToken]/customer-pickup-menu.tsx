@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
+import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
   cartLineKey,
@@ -263,11 +264,10 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   }
 
   if (!menu) {
-    return (
-      <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-        {error || t('loading')}
-      </div>
-    );
+    if (error) {
+      return <div className="px-4 py-10 text-center text-sm text-muted-foreground">{error}</div>;
+    }
+    return <CustomerMenuSkeleton label={t('loading')} />;
   }
 
   return (

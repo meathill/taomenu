@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AsyncAlertDialog } from '@/components/async-alert-dialog';
 import { Button } from '@/components/button';
 import { QrImage } from '@/components/qr-image';
+import { Skeleton } from '@/components/ui/skeleton';
 import { formatStaffDate } from './staff-date';
 import { hasAvailableStaffSeat } from './staff-seat';
 
@@ -267,11 +268,11 @@ export function StaffManager({
           <div>
             <h2 className="text-lg font-black text-ink-900">{t('staffSeatsTitle')}</h2>
             {isLoading ? (
-              <div
-                role="status"
-                className="mt-2 h-4 w-48 animate-pulse rounded bg-paper-100 motion-reduce:animate-none"
+              <Skeleton
+                className="mt-2 h-4 w-48"
                 aria-label={t('loadingStaff')}
                 aria-busy="true"
+                role="status"
               />
             ) : (
               <p className="mt-1 text-sm text-muted-foreground">
@@ -320,12 +321,24 @@ export function StaffManager({
         {isLoading ? (
           <div
             role="status"
-            className="space-y-3 rounded-2xl border border-border bg-white p-4"
+            className="divide-y divide-border rounded-2xl border border-border bg-white"
             aria-label={t('loadingStaff')}
             aria-busy="true"
           >
-            <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
-            <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+            <div className="flex items-center justify-between gap-3 p-4">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-3 w-48" />
+              </div>
+              <Skeleton className="h-7 w-16" />
+            </div>
+            <div className="flex items-center justify-between gap-3 p-4">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="h-3 w-40" />
+              </div>
+              <Skeleton className="h-7 w-16" />
+            </div>
           </div>
         ) : devices.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-white p-5 text-sm text-muted-foreground">

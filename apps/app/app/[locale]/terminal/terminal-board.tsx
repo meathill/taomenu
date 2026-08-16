@@ -4,6 +4,7 @@ import { formatCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type OrderCard = {
   id: string;
@@ -283,14 +284,30 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
           </Button>
         </div>
         {isLoading ? (
-          <div
-            role="status"
-            className="space-y-3 rounded-2xl border border-border bg-white p-4"
-            aria-label={t('loading')}
-            aria-busy="true"
-          >
-            <div className="h-24 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
-            <div className="h-24 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
+          <div className="space-y-3" role="status" aria-label={t('loading')} aria-busy="true">
+            <div className="space-y-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+                <Skeleton className="h-5 w-16" />
+              </div>
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <div className="space-y-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <Skeleton className="h-5 w-16" />
+              </div>
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
           </div>
         ) : orders.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-white p-10 text-center">

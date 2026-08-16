@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { withStore } from '@/lib/active-store-utils';
 import { customerEntryUrl } from '../customer-url';
 import { QrCard } from '../qr-card';
@@ -149,9 +150,9 @@ export function PrintSheet({
                 aria-label={t('loading')}
                 aria-busy="true"
               >
-                <div className="h-11 w-24 animate-pulse rounded-xl bg-paper-100 motion-reduce:animate-none" />
-                <div className="h-11 w-24 animate-pulse rounded-xl bg-paper-100 motion-reduce:animate-none" />
-                <div className="h-11 w-24 animate-pulse rounded-xl bg-paper-100 motion-reduce:animate-none" />
+                <Skeleton className="h-11 w-24 rounded-xl" />
+                <Skeleton className="h-11 w-24 rounded-xl" />
+                <Skeleton className="h-11 w-24 rounded-xl" />
               </div>
             )
           ) : entries.length === 0 ? (

@@ -9,6 +9,7 @@ import { withStore } from '@/lib/active-store-utils';
 import { customerEntryUrl, type QrEntryType, qrDownloadFilename } from './customer-url';
 import { QrCreateForm } from './qr-create-form';
 import { type QrEntry, QrEntryRow } from './qr-entry-row';
+import { QrListSkeleton } from './qr-list-skeleton';
 
 type TablesManagerProps = {
   storeId: string;
@@ -196,12 +197,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           onSubmit={(event) => void addEntry(event, 'table')}
         />
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
-          {isLoading ? (
-            <li className="space-y-3 p-4" aria-label={t('loading')} aria-busy="true">
-              <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
-              <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
-            </li>
-          ) : null}
+          {isLoading ? <QrListSkeleton label={t('loading')} rows={2} /> : null}
           {!isLoading ? tables.map((table) => renderEntry('table', table)) : null}
           {!isLoading && tables.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">{t('emptyTables')}</li>
@@ -224,11 +220,7 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
           onSubmit={(event) => void addEntry(event, 'point')}
         />
         <ul className="divide-y divide-border rounded-2xl border border-border bg-white">
-          {isLoading ? (
-            <li className="p-4" aria-label={t('loading')} aria-busy="true">
-              <div className="h-14 animate-pulse rounded-xl bg-paper-50 motion-reduce:animate-none" />
-            </li>
-          ) : null}
+          {isLoading ? <QrListSkeleton label={t('loading')} rows={1} /> : null}
           {!isLoading ? points.map((point) => renderEntry('point', point)) : null}
           {!isLoading && points.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">{t('emptyPickup')}</li>

@@ -2,6 +2,7 @@ import { APP_NAME } from '@taomenu/shared';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import { PageMessages } from '@/components/page-messages';
+import { Skeleton } from '@/components/ui/skeleton';
 import { LoginForm } from './login-form';
 
 export async function generateMetadata() {
@@ -21,8 +22,11 @@ export default async function LoginPage() {
         <div className="mt-8 rounded-2xl border border-border bg-white p-5 shadow-sm">
           <Suspense
             fallback={
-              <div className="min-h-12 rounded-xl bg-muted text-center text-sm leading-[3rem] text-muted-foreground">
-                {t('loading')}
+              <div className="space-y-3" aria-busy="true" aria-label={t('loading')} role="status">
+                <Skeleton className="h-12 w-full rounded-xl" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+                <Skeleton className="h-12 w-full rounded-xl" />
               </div>
             }
           >
