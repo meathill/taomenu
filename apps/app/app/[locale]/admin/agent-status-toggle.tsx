@@ -57,9 +57,10 @@ export function AgentStatusToggle({ agentId, status }: AgentStatusToggleProps) {
       </span>
       <Button
         type="button"
+        variant="ghost"
+        size="sm"
         pending={pending}
         onClick={() => void toggle()}
-        className="min-h-9 rounded-xl border border-border px-2.5 text-xs font-bold text-ink-900"
       >
         {isActive ? t('disable') : t('enable')}
       </Button>

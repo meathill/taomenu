@@ -112,10 +112,12 @@ export function LoginForm() {
       {providers.google ? (
         <Button
           type="button"
+          variant="outline"
+          size="lg"
           pending={busyAction === 'google'}
           busy={busyAction !== null}
           onClick={handleGoogle}
-          className="min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm font-bold text-ink-900 hover:bg-muted"
+          className="w-full"
         >
           {t('continueGoogle')}
         </Button>
@@ -143,9 +145,11 @@ export function LoginForm() {
           />
           <Button
             type="submit"
+            variant="default"
+            size="lg"
             pending={busyAction === 'sendOtp'}
             busy={busyAction !== null}
-            className="min-h-12 w-full rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]"
+            className="w-full"
           >
             {t('sendOtp')}
           </Button>
@@ -171,9 +175,11 @@ export function LoginForm() {
           />
           <Button
             type="submit"
+            variant="default"
+            size="lg"
             pending={busyAction === 'verifyOtp'}
             busy={busyAction !== null}
-            className="min-h-12 w-full rounded-xl bg-jade-600 px-4 py-3 text-sm font-bold text-white hover:bg-[#265c4e]"
+            className="w-full"
           >
             {t('signIn')}
           </Button>

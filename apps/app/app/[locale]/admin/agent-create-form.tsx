@@ -70,9 +70,10 @@ export function AgentCreateForm() {
         />
         <Button
           type="submit"
+          variant="default"
+          size="lg"
           pending={pending}
           disabled={!name.trim() || !email.trim()}
-          className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
         >
           {t('create')}
         </Button>

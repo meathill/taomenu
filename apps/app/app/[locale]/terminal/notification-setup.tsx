@@ -206,10 +206,10 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
         {(status === 'ready' || status === 'subscribed' || status === 'error') && (
           <Button
             type="button"
+            variant="default"
             pending={busyAction === 'enable'}
             busy={busyAction !== null}
             onClick={() => void enableNotifications()}
-            className="min-h-11 rounded-xl bg-jade-600 text-sm font-bold text-white"
           >
             {t('pushEnable')}
           </Button>
@@ -218,10 +218,10 @@ export function NotificationSetup({ storeId }: NotificationSetupProps) {
         {(status === 'subscribed' || status === 'verified') && subscriptionId ? (
           <Button
             type="button"
+            variant="outline"
             pending={busyAction === 'test'}
             busy={busyAction !== null}
             onClick={() => void sendTest()}
-            className="min-h-11 rounded-xl border border-jade-600 text-sm font-bold text-jade-600"
           >
             {t('pushTest')}
           </Button>

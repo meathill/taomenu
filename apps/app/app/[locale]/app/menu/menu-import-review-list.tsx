@@ -143,11 +143,13 @@ export function MenuImportReviewList({
       ))}
       <Button
         type="button"
+        variant="default"
+        size="lg"
         pending={isApplying}
         busy={isBusy}
         disabled={isApplyDisabled}
         onClick={onApply}
-        className="min-h-12 w-full rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+        className="w-full bg-indigo-700 hover:bg-indigo-700/90"
       >
         {t('importApply')}
       </Button>

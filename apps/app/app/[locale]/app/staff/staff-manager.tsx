@@ -204,11 +204,13 @@ export function StaffManager({
           </div>
           <Button
             type="button"
+            variant="default"
+            size="lg"
             pending={busyAction === 'generate'}
             busy={isLoading || busyAction !== null}
             disabled={!isLoading && !hasAvailableSeat}
             onClick={() => void generateCode()}
-            className="min-h-12 shrink-0 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
+            className="shrink-0"
           >
             {t('generatePairingCode')}
           </Button>
@@ -231,11 +233,7 @@ export function StaffManager({
                 {pairingCode.code}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  onClick={() => void copyCode()}
-                  className="min-h-11 rounded-xl border border-border px-3 text-sm font-bold text-ink-900"
-                >
+                <Button type="button" variant="outline" onClick={() => void copyCode()}>
                   <CopyIcon className="size-4" />
                   {copied ? t('copied') : t('copyCode')}
                 </Button>
@@ -360,9 +358,11 @@ export function StaffManager({
                 {device.status === 'active' ? (
                   <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     busy={busyAction !== null}
                     onClick={() => setRevokeTarget(device)}
-                    className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
+                    className="text-brand-600"
                   >
                     <TrashIcon className="size-4" />
                     {t('revokeDevice')}

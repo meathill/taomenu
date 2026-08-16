@@ -65,19 +65,15 @@ export function AsyncAlertDialog({
           ) : null}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <button
+          <Button
             type="button"
+            variant="outline"
             disabled={isPending}
             onClick={() => handleOpenChange(false)}
-            className="min-h-11 rounded-xl border border-border px-4 text-sm font-bold text-ink-900 disabled:opacity-60"
           >
             {cancelLabel}
-          </button>
-          <Button
-            pending={isPending}
-            onClick={() => void handleConfirm()}
-            className="min-h-11 rounded-xl bg-brand-600 px-4 text-sm font-bold text-white"
-          >
+          </Button>
+          <Button variant="destructive" pending={isPending} onClick={() => void handleConfirm()}>
             {confirmLabel}
           </Button>
         </AlertDialogFooter>

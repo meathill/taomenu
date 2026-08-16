@@ -74,18 +74,14 @@ export function QrEntryRow({
           />
           <Button
             type="button"
+            variant="default"
             pending={busyAction === 'rename'}
             busy={busyAction !== null}
             onClick={onSaveRename}
-            className="min-h-11 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white"
           >
             {t('save')}
           </Button>
-          <Button
-            type="button"
-            onClick={onCancelRename}
-            className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
-          >
+          <Button type="button" variant="outline" onClick={onCancelRename}>
             {t('cancel')}
           </Button>
         </div>
@@ -121,48 +117,45 @@ export function QrEntryRow({
           {entry.isActive ? t('active') : t('inactive')}
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          onClick={() => void copyLink()}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
-        >
+      <div className="flex flex-wrap items-center gap-0.5">
+        <Button type="button" variant="ghost" size="sm" onClick={() => void copyLink()}>
           <CopyIcon className="size-4" />
           {copied ? t('copied') : t('copyLink')}
         </Button>
-        <a
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
+        <Button
+          variant="ghost"
+          size="sm"
+          render={<a href={url} target="_blank" rel="noreferrer" />}
         >
           <ArrowSquareOutIcon className="size-4" />
           {t('openLink')}
-        </a>
+        </Button>
         {qrDataUrl ? (
-          <a
-            href={qrDataUrl}
-            download={downloadFilename}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
+          <Button
+            variant="ghost"
+            size="sm"
+            render={<a href={qrDataUrl} download={downloadFilename} />}
           >
             <DownloadSimpleIcon className="size-4" />
             {t('download')}
-          </a>
+          </Button>
         ) : null}
         <Button
           type="button"
+          variant="ghost"
+          size="sm"
           disabled={busyAction !== null}
           onClick={onStartRename}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
         >
           <PencilSimpleIcon className="size-4" />
           {t('rename')}
         </Button>
         <Button
           type="button"
+          variant="ghost"
+          size="sm"
           disabled={busyAction !== null}
           onClick={onToggleActive}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold"
         >
           {entry.isActive ? (
             <ProhibitIcon className="size-4 text-brand-600" />

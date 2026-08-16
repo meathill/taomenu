@@ -242,12 +242,12 @@ export function MenuEditor({
         onPublish={() => void publishMenu()}
       />
 
-      <div className="flex flex-wrap gap-1">
-        <Button type="button" variant="ghost" size="sm" onClick={() => setLanguageOpen(true)}>
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="outline" onClick={() => setLanguageOpen(true)}>
           <TranslateIcon className="size-4 text-jade-600" weight="bold" aria-hidden />
           {languageName}
         </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => setImportOpen(true)}>
+        <Button type="button" variant="outline" onClick={() => setImportOpen(true)}>
           <CameraIcon className="size-4 text-jade-600" weight="bold" aria-hidden />
           {t('photoImport')}
         </Button>
@@ -255,8 +255,7 @@ export function MenuEditor({
           <>
             <Button
               type="button"
-              variant="ghost"
-              size="sm"
+              variant="outline"
               onClick={() => {
                 setEditingCategoryId(undefined);
                 setCategoryDrawerOpen(true);
@@ -267,11 +266,9 @@ export function MenuEditor({
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              size="sm"
+              variant="default"
               disabled={tree.categories.length === 0}
               onClick={() => openNewItem()}
-              className="text-jade-700"
             >
               <PlusIcon className="size-4" weight="bold" aria-hidden />
               {t('addItem')}

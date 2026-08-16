@@ -281,10 +281,11 @@ export function MenuImportPanel({
           </p>
           <Button
             type="button"
+            variant="default"
             pending={busyAction === 'retry'}
             busy={busyAction !== null}
             onClick={() => void handleRetry()}
-            className="mt-3 min-h-11 rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+            className="mt-3 bg-indigo-700 hover:bg-indigo-700/90"
           >
             {t('importRetry')}
           </Button>
@@ -343,10 +344,12 @@ export function MenuImportPanel({
           </label>
           <Button
             type="submit"
+            variant="default"
+            size="lg"
             pending={busyAction === 'upload'}
             busy={busyAction !== null}
             disabled={!file || usage.used >= usage.limit}
-            className="min-h-12 w-full rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+            className="w-full bg-indigo-700 hover:bg-indigo-700/90"
           >
             {t('importStart')}
           </Button>

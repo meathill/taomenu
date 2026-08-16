@@ -255,11 +255,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
 
       {error ? <p className="text-sm font-semibold text-brand-600">{error}</p> : null}
       {message ? <p className="text-sm font-semibold text-jade-600">{message}</p> : null}
-      <Button
-        type="submit"
-        pending={busy}
-        className="min-h-12 w-full rounded-xl bg-jade-600 text-base font-bold text-white sm:w-auto sm:px-6"
-      >
+      <Button type="submit" variant="default" size="lg" pending={busy} className="w-full sm:w-auto">
         {t('saveSettings')}
       </Button>
     </form>

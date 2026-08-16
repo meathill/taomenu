@@ -132,17 +132,20 @@ export function MenuItemDrawer({
             <Button
               type="button"
               variant="outline"
+              size="lg"
               disabled={isPending}
               onClick={() => onOpenChange(false)}
-              className="min-h-12 flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none"
             >
               {t('cancel')}
             </Button>
             <Button
+              variant="default"
+              size="lg"
               pending={isPending}
               disabled={!name.trim() || (isBaseMode && (!categoryId || !price))}
               onClick={() => void saveItem()}
-              className="min-h-12 flex-1 rounded-xl bg-jade-600 px-5 text-sm font-bold text-white hover:bg-jade-600/90 sm:flex-none"
+              className="flex-1 sm:flex-none"
             >
               {t('save')}
             </Button>

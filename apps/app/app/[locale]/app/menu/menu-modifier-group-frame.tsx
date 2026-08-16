@@ -216,11 +216,13 @@ export function MenuModifierGroupFrame({
 
             <SaveButton
               type="button"
+              variant="default"
+              size="lg"
               pending={busyAction === saveKey}
               busy={busyAction !== null}
               disabled={!draft.name.trim()}
               onClick={onSave}
-              className="min-h-12 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
+              className="w-full"
             >
               {t('saveGroup')}
             </SaveButton>

@@ -129,9 +129,11 @@ export function MenuModifierTranslations({
         })}
       </div>
       <Button
+        variant="outline"
+        size="lg"
         pending={isPending}
         onClick={() => void saveTranslations()}
-        className="mt-3 min-h-11 w-full rounded-xl border border-jade-600 px-4 text-sm font-bold text-jade-700"
+        className="mt-3 w-full"
       >
         {t('saveModifierTranslations')}
       </Button>

@@ -26,6 +26,7 @@
 - 复制菜品：`POST .../menu/items/:id/copy` → `duplicateItem`（名称加 `(sao chép)`，售罄重置；含规格组）
 - 批量上下架：`PATCH .../menu/items` + `batchItemAvailabilitySchema`（`isSoldOut` / `isAvailable`）
 - 规格：`modifier_groups` / `modifiers`；owner 面板整组一次保存（`saveModifierGroup`），组间 `PATCH orderedIds` 排序；顾客 `ModifierPicker`；下单 `resolveModifierSelection` 重算加价，名称快照 `菜名 (规格…)`
+- 按钮：列表行操作用 `ghost sm`；工具条/次操作用 `outline`；主提交用 `default`（店主端 primary 为翡翠）
 - 菜品图：R2 binding `MEDIA`（bucket `taomenu-media`）；key `menu/{storeId}/{itemId}/{uuid}.ext`；上传 `POST .../items/:id/image`（MIME/魔数/2MB）；公开读 `GET /api/media/...`
 - 桌码/取餐码：token 明文存储、固定不变（无轮换），列表接口直接返回，二维码可随时重印；A4 打印页 `/app/tables/print`（模版 + 勾选，`@page A4`）
 - 顾客下单：服务端按当前菜单价重算；`idempotency_key` 唯一；外带取餐号按 `Asia/Ho_Chi_Minh` 营业日序列

@@ -51,14 +51,11 @@ export function StoreControls({ storeId, acceptingPublicRequests, isReady }: Sto
         </div>
         <Button
           type="button"
+          variant={accepting ? 'outline' : 'default'}
           pending={busy}
           disabled={!isReady && !accepting}
           onClick={() => void toggle()}
-          className={
-            accepting
-              ? 'min-h-11 shrink-0 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600'
-              : 'min-h-11 shrink-0 rounded-xl bg-jade-600 px-3 text-xs font-bold text-white'
-          }
+          className={accepting ? 'shrink-0 text-brand-600' : 'shrink-0'}
         >
           {accepting ? t('pause') : t('resume')}
         </Button>

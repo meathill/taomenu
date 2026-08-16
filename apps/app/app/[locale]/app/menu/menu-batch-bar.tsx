@@ -31,11 +31,10 @@ export function MenuBatchBar({
           </button>
         ) : null}
       </p>
-      <div className="flex flex-wrap gap-0.5">
+      <div className="flex flex-wrap gap-2">
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant="outline"
           pending={busyAction === 'batchSoldOut'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
@@ -46,20 +45,17 @@ export function MenuBatchBar({
         </Button>
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant="outline"
           pending={busyAction === 'batchSoldOut'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onSoldOut(false)}
-          className="text-jade-700"
         >
           {t('markInStock')}
         </Button>
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant="outline"
           pending={busyAction === 'batchAvailability'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
@@ -69,8 +65,7 @@ export function MenuBatchBar({
         </Button>
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant="outline"
           pending={busyAction === 'batchAvailability'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}

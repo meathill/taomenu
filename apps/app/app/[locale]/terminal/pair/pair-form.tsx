@@ -69,9 +69,11 @@ export function PairForm({ code }: PairFormProps) {
       {error ? <p className="text-sm font-semibold text-brand-600">{error}</p> : null}
       <Button
         type="submit"
+        variant="default"
+        size="lg"
         pending={busy}
         disabled={!name.trim()}
-        className="min-h-12 w-full rounded-xl bg-jade-600 text-base font-bold text-white"
+        className="w-full"
       >
         {t('pairDevice')}
       </Button>

@@ -34,10 +34,11 @@ export function QrCreateForm({
       />
       <Button
         type="submit"
+        variant="default"
+        size="lg"
         pending={pending}
         busy={busy}
         disabled={!value.trim()}
-        className="min-h-12 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
       >
         {addLabel}
       </Button>

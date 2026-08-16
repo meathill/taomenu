@@ -216,19 +216,22 @@ export function MenuItemImage({
         />
         <Button
           type="button"
+          variant="outline"
+          size="icon-xl"
           pending={busyAction === `upload-${itemId}`}
           busy={busyAction !== null}
           iconOnly
           title={t('image')}
           aria-label={t('uploadImage')}
           onClick={() => inputRef.current?.click()}
-          className="size-11 rounded-xl border border-border text-ink-900"
         >
           <ImageIcon className="size-4" weight="bold" aria-hidden />
         </Button>
         {imageKey ? (
           <Button
             type="button"
+            variant="outline"
+            size="icon-xl"
             pending={busyAction === `enhance-${itemId}`}
             busy={busyAction !== null}
             iconOnly
@@ -241,7 +244,7 @@ export function MenuItemImage({
                 void handleEnhance();
               }
             }}
-            className="size-11 rounded-xl border border-indigo-200 text-indigo-700"
+            className="text-indigo-700"
           >
             <SparkleIcon className="size-4" weight="fill" aria-hidden />
           </Button>
@@ -249,13 +252,15 @@ export function MenuItemImage({
         {imageKey ? (
           <Button
             type="button"
+            variant="outline"
+            size="icon-xl"
             pending={busyAction === `remove-${itemId}`}
             busy={busyAction !== null}
             iconOnly
             title={t('removeImage')}
             aria-label={t('removeImage')}
             onClick={() => void handleRemove()}
-            className="size-11 rounded-xl border border-border text-brand-600"
+            className="text-brand-600"
           >
             <TrashIcon className="size-4" weight="bold" aria-hidden />
           </Button>

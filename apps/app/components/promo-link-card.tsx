@@ -57,12 +57,8 @@ export function PromoLinkCard({
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold text-ink-900">{label}</p>
         <p className="mt-1 break-all text-xs text-muted-foreground">{url}</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Button
-            type="button"
-            onClick={() => void copyLink()}
-            className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
-          >
+        <div className="mt-3 flex flex-wrap items-center gap-0.5">
+          <Button type="button" variant="ghost" size="sm" onClick={() => void copyLink()}>
             <CopyIcon className="size-4" />
             {copied ? copiedLabel : copyLabel}
           </Button>

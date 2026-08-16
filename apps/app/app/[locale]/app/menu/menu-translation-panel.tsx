@@ -267,10 +267,12 @@ export function MenuTranslationPanel({
           </div>
           <Button
             type="button"
+            variant="default"
+            size="lg"
             pending={busyAction === 'apply'}
             busy={busyAction !== null}
             onClick={() => void applyTranslation()}
-            className="min-h-12 w-full rounded-xl bg-indigo-700 text-sm font-bold text-white"
+            className="w-full bg-indigo-700 hover:bg-indigo-700/90"
           >
             {t('translationApply')}
           </Button>
@@ -292,11 +294,13 @@ export function MenuTranslationPanel({
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <Button
             type="button"
+            variant="default"
+            size="lg"
             pending={busyAction === 'create'}
             busy={busyAction !== null}
             disabled={usage.used >= usage.limit}
             onClick={() => void createTranslation()}
-            className="min-h-12 w-full rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+            className="w-full bg-indigo-700 hover:bg-indigo-700/90"
           >
             {t('translationCreate')}
           </Button>

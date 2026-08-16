@@ -85,10 +85,12 @@ export function MenuCategoryDrawer({
       footer={
         editing || canCreate ? (
           <Button
+            variant="default"
+            size="lg"
             pending={isPending}
             disabled={!name.trim()}
             onClick={() => void saveCategory()}
-            className="min-h-12 w-full rounded-xl bg-jade-600 px-4 text-sm font-bold text-white sm:w-auto"
+            className="w-full sm:w-auto"
           >
             {editing ? t('save') : t('createCategory')}
           </Button>

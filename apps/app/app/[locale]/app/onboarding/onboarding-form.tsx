@@ -185,17 +185,21 @@ export function OnboardingForm() {
           </select>
           <p className="text-xs text-muted-foreground">{t('currencyHint')}</p>
           <div className="flex gap-2">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="lg"
+              className="flex-1"
               onClick={() => setStep(1)}
-              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-border bg-white px-4 text-sm font-bold text-ink-900"
             >
               {t('back')}
-            </button>
+            </Button>
             <Button
               type="submit"
+              variant="default"
+              size="lg"
               pending={isPending}
-              className="min-h-12 flex-1 rounded-xl bg-jade-600 px-4 text-sm font-bold text-white"
+              className="flex-1"
             >
               {t('createStore')}
             </Button>
