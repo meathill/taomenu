@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { DocLanguageAlert } from '@/components/doc-language-alert';
 import { mdxComponents } from '@/components/mdx-components';
 import { type DocSlug, loadDocSource } from '@/lib/docs';
+import { buildAlternates } from '@/lib/seo';
 
 type DocPageProps = {
   slug: DocSlug;
@@ -47,8 +48,6 @@ export async function docMetadata(slug: DocSlug, locale: string) {
   return {
     title: t(`${slug}.title`),
     description: t(`${slug}.description`),
-    alternates: {
-      languages: Object.fromEntries(LOCALES.map((code) => [code, `/${code}/${slug}`])),
-    },
+    alternates: buildAlternates(locale, `/${slug}`),
   };
 }
