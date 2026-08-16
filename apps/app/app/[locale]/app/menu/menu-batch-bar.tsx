@@ -31,44 +31,50 @@ export function MenuBatchBar({
           </button>
         ) : null}
       </p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-0.5">
         <Button
           type="button"
+          variant="ghost"
+          size="sm"
           pending={busyAction === 'batchSoldOut'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onSoldOut(true)}
-          className="min-h-11 rounded-xl border border-brand-600 px-3 text-xs font-bold text-brand-600"
+          className="text-brand-600"
         >
           {t('markSoldOut')}
         </Button>
         <Button
           type="button"
+          variant="ghost"
+          size="sm"
           pending={busyAction === 'batchSoldOut'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onSoldOut(false)}
-          className="min-h-11 rounded-xl border border-jade-600 px-3 text-xs font-bold text-jade-600"
+          className="text-jade-700"
         >
           {t('markInStock')}
         </Button>
         <Button
           type="button"
+          variant="ghost"
+          size="sm"
           pending={busyAction === 'batchAvailability'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onAvailability(false)}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
         >
           {t('hideItems')}
         </Button>
         <Button
           type="button"
+          variant="ghost"
+          size="sm"
           pending={busyAction === 'batchAvailability'}
           busy={busyAction !== null}
           disabled={selectedCount === 0}
           onClick={() => onAvailability(true)}
-          className="min-h-11 rounded-xl border border-border px-3 text-xs font-bold text-ink-900"
         >
           {t('showItems')}
         </Button>

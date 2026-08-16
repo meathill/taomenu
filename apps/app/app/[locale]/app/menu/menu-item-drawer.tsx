@@ -129,19 +129,20 @@ export function MenuItemDrawer({
         description={isBaseMode ? t('itemDrawerBaseHint') : t('itemDrawerTranslationHint')}
         footer={
           <div className="flex w-full gap-2 sm:w-auto">
-            <button
+            <Button
               type="button"
+              variant="outline"
               disabled={isPending}
               onClick={() => onOpenChange(false)}
-              className="min-h-12 flex-1 rounded-xl border border-border px-4 text-sm font-bold sm:flex-none"
+              className="min-h-12 flex-1 sm:flex-none"
             >
               {t('cancel')}
-            </button>
+            </Button>
             <Button
               pending={isPending}
               disabled={!name.trim() || (isBaseMode && (!categoryId || !price))}
               onClick={() => void saveItem()}
-              className="min-h-12 flex-1 rounded-xl bg-jade-600 px-5 text-sm font-bold text-white sm:flex-none"
+              className="min-h-12 flex-1 rounded-xl bg-jade-600 px-5 text-sm font-bold text-white hover:bg-jade-600/90 sm:flex-none"
             >
               {t('save')}
             </Button>
@@ -189,7 +190,7 @@ export function MenuItemDrawer({
                 <button
                   type="button"
                   onClick={() => setNestedCategoryOpen(true)}
-                  className="mt-1 flex min-h-12 w-full items-center justify-between rounded-xl border border-border px-3 text-left text-sm font-semibold"
+                  className="mt-1 flex min-h-12 w-full items-center justify-between rounded-xl border border-border px-3 text-left text-sm font-semibold hover:bg-muted"
                 >
                   {categoryLabel}
                   <span aria-hidden>›</span>

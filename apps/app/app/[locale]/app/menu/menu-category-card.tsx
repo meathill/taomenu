@@ -2,6 +2,7 @@
 
 import { PencilSimpleIcon, PlusIcon } from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/button';
 import { MenuItemRow } from './menu-item-row';
 import { localizedName, type MenuCategory } from './menu-types';
 
@@ -54,24 +55,28 @@ export function MenuCategoryCard({
           ) : null}
         </div>
         {!selectMode ? (
-          <div className="flex shrink-0 items-center gap-1">
-            <button
+          <div className="flex shrink-0 items-center gap-0.5">
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onEditCategory(category.id)}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-bold text-jade-700"
+              className="text-jade-700"
             >
               <PencilSimpleIcon className="size-4" weight="bold" aria-hidden />
               {t('edit')}
-            </button>
+            </Button>
             {isBaseMode ? (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => onAddItem(category.id)}
-                className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-bold text-jade-700"
+                className="text-jade-700"
               >
                 <PlusIcon className="size-4" weight="bold" aria-hidden />
                 {t('addItem')}
-              </button>
+              </Button>
             ) : null}
           </div>
         ) : null}

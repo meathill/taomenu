@@ -2,7 +2,6 @@
 
 import { CopyIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import { formatCurrency } from '@taomenu/shared';
-import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 import type { MenuItem } from './menu-types';
@@ -63,42 +62,45 @@ export function MenuItemRow({
         </div>
       </div>
       {!selectMode ? (
-        <div className="flex max-w-full flex-wrap gap-1.5 sm:shrink-0 sm:justify-end">
+        <div className="flex max-w-full flex-wrap items-center gap-0.5 sm:shrink-0 sm:justify-end">
           <Button
+            variant="ghost"
+            size="sm"
             onClick={onEdit}
             busy={busyAction !== null}
-            className="min-h-11 rounded-xl border border-jade-600 px-3 text-xs font-bold text-jade-700"
+            className="text-jade-700"
           >
             <PencilSimpleIcon className="size-4" weight="bold" aria-hidden />
             {t('edit')}
           </Button>
           <Button
+            variant="ghost"
+            size="sm"
             pending={busyAction === `soldOut-${item.id}`}
             busy={busyAction !== null}
             onClick={onToggleSoldOut}
-            className={cn(
-              'min-h-11 rounded-xl border px-3 text-xs font-bold',
-              item.isSoldOut ? 'border-jade-600 text-jade-700' : 'border-border text-ink-900',
-            )}
           >
             {item.isSoldOut ? t('inStockToggle') : t('soldOutToggle')}
           </Button>
           <Button
+            variant="ghost"
+            size="icon-sm"
             iconOnly
             pending={busyAction === `copy-${item.id}`}
             busy={busyAction !== null}
             onClick={onCopy}
             aria-label={t('copyItem')}
-            className="size-11 rounded-xl border border-border text-ink-900"
           >
             <CopyIcon className="size-4" weight="bold" aria-hidden />
           </Button>
           <Button
+            variant="ghost"
+            size="icon-sm"
             iconOnly
             busy={busyAction !== null}
             onClick={onDelete}
             aria-label={t('deleteItem')}
-            className="size-11 rounded-xl border border-border text-brand-600"
+            className="text-brand-600"
           >
             <TrashIcon className="size-4" weight="bold" aria-hidden />
           </Button>

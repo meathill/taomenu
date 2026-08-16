@@ -171,9 +171,9 @@ export function MenuModifiersPanel({
           </p>
           <p className="text-sm font-bold text-ink-900">{itemName}</p>
         </div>
-        <button type="button" className="text-sm font-semibold text-ink-900" onClick={onClose}>
+        <Button type="button" variant="ghost" size="sm" onClick={onClose}>
           {tCommon('close')}
-        </button>
+        </Button>
       </div>
 
       {drafts.length === 0 ? (
@@ -200,9 +200,11 @@ export function MenuModifiersPanel({
 
       <Button
         type="button"
+        variant="ghost"
+        size="sm"
         busy={busyAction !== null}
         onClick={() => setDrafts((current) => [...current, createGroupDraft()])}
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
+        className="w-full justify-center"
       >
         <PlusIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
         {t('addGroup')}

@@ -273,7 +273,7 @@ export function MenuItemImage({
               type="button"
               aria-label={t('close')}
               onClick={() => setIsEnhancementOpen(false)}
-              className="rounded p-1 text-muted-foreground"
+              className="rounded p-1 text-muted-foreground hover:bg-muted"
             >
               <XIcon className="size-4" aria-hidden />
             </button>

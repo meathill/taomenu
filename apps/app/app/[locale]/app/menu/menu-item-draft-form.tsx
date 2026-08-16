@@ -150,18 +150,14 @@ export function MenuItemDraftForm({
         className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base tabular-nums outline-none ring-jade-600 focus:ring-2"
       />
       <div className="flex gap-2">
-        <button
-          type="button"
-          className="min-h-12 flex-1 rounded-xl border border-border text-sm font-bold"
-          onClick={onCancel}
-        >
+        <Button type="button" variant="outline" className="min-h-12 flex-1" onClick={onCancel}>
           {t('cancel')}
-        </button>
+        </Button>
         <Button
           type="submit"
           pending={busyAction === 'addItem'}
           busy={busyAction !== null}
-          className="min-h-12 flex-1 rounded-xl bg-jade-600 text-sm font-bold text-white"
+          className="min-h-12 flex-1 rounded-xl bg-jade-600 text-sm font-bold text-white hover:bg-jade-600/90"
         >
           {t('saveContinue')}
         </Button>

@@ -59,7 +59,7 @@ export function MenuLanguageDrawer({
               <button
                 type="button"
                 onClick={() => selectLocale(locale)}
-                className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-border px-3 text-left"
+                className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-border px-3 text-left hover:bg-muted"
               >
                 <TranslateIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
                 <span className="min-w-0 flex-1">

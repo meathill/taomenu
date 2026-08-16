@@ -111,7 +111,7 @@ export function MenuCategoryDrawer({
                     onSelect(category.id);
                     onOpenChange(false);
                   }}
-                  className="flex min-h-12 w-full items-center justify-between rounded-xl border border-border px-3 text-left text-sm font-semibold text-ink-900"
+                  className="flex min-h-12 w-full items-center justify-between rounded-xl border border-border px-3 text-left text-sm font-semibold text-ink-900 hover:bg-muted"
                 >
                   <span>
                     {label}

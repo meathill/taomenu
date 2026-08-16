@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AsyncAlertDialog } from '@/components/async-alert-dialog';
+import { Button } from '@/components/button';
 import { MenuBatchBar } from './menu-batch-bar';
 import { MenuCategoryCard } from './menu-category-card';
 import { MenuCategoryDrawer } from './menu-category-drawer';
@@ -241,45 +242,40 @@ export function MenuEditor({
         onPublish={() => void publishMenu()}
       />
 
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-        <button
-          type="button"
-          onClick={() => setLanguageOpen(true)}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
-        >
-          <TranslateIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+      <div className="flex flex-wrap gap-1">
+        <Button type="button" variant="ghost" size="sm" onClick={() => setLanguageOpen(true)}>
+          <TranslateIcon className="size-4 text-jade-600" weight="bold" aria-hidden />
           {languageName}
-        </button>
-        <button
-          type="button"
-          onClick={() => setImportOpen(true)}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
-        >
-          <CameraIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+        </Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => setImportOpen(true)}>
+          <CameraIcon className="size-4 text-jade-600" weight="bold" aria-hidden />
           {t('photoImport')}
-        </button>
+        </Button>
         {activeMenuLocale === baseLocale ? (
           <>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 setEditingCategoryId(undefined);
                 setCategoryDrawerOpen(true);
               }}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
             >
-              <FolderPlusIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+              <FolderPlusIcon className="size-4 text-jade-600" weight="bold" aria-hidden />
               {t('addCategory')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               disabled={tree.categories.length === 0}
               onClick={() => openNewItem()}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-jade-600 px-3 text-sm font-bold text-white disabled:opacity-50"
+              className="text-jade-700"
             >
-              <PlusIcon className="size-5" weight="bold" aria-hidden />
+              <PlusIcon className="size-4" weight="bold" aria-hidden />
               {t('addItem')}
-            </button>
+            </Button>
           </>
         ) : null}
       </div>
