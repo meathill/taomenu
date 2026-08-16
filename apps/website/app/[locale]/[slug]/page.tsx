@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { LandingPage } from '@/components/landing-page';
 import { isLandingSlug, LANDING_SLUGS } from '@/lib/landing';
-import { buildAlternates } from '@/lib/seo';
+import { buildPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-static';
 
@@ -23,11 +23,7 @@ export async function generateMetadata({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: `landing.${slug}` });
 
-  return {
-    title: t('title'),
-    description: t('description'),
-    alternates: buildAlternates(locale, `/${slug}`),
-  };
+  return buildPageMetadata(locale, `/${slug}`, t('title'), t('description'));
 }
 
 export default async function LandingRoute({

@@ -4,7 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { DocLanguageAlert } from '@/components/doc-language-alert';
 import { mdxComponents } from '@/components/mdx-components';
 import { type DocSlug, loadDocSource } from '@/lib/docs';
-import { buildAlternates } from '@/lib/seo';
+import { buildPageMetadata } from '@/lib/seo';
 
 type DocPageProps = {
   slug: DocSlug;
@@ -45,9 +45,5 @@ export function docStaticParams() {
 
 export async function docMetadata(slug: DocSlug, locale: string) {
   const t = await getTranslations({ locale, namespace: 'docs' });
-  return {
-    title: t(`${slug}.title`),
-    description: t(`${slug}.description`),
-    alternates: buildAlternates(locale, `/${slug}`),
-  };
+  return buildPageMetadata(locale, `/${slug}`, t(`${slug}.title`), t(`${slug}.description`));
 }

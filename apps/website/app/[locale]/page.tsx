@@ -24,7 +24,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { JsonLd } from '@/components/json-ld';
 import { Link } from '@/i18n/routing';
-import { buildAlternates } from '@/lib/seo';
+import { buildPageMetadata } from '@/lib/seo';
 import { getAppSignupUrl } from '@/lib/site';
 
 type HomePageProps = {
@@ -35,11 +35,7 @@ export async function generateMetadata({ params }: HomePageProps) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'meta' });
 
-  return {
-    title: t('title'),
-    description: t('description'),
-    alternates: buildAlternates(locale, ''),
-  };
+  return buildPageMetadata(locale, '', t('title'), t('description'));
 }
 
 type FaqItem = { q: string; a: string };

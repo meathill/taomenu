@@ -1,7 +1,7 @@
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr';
 import { formatCurrency, getBillingCurrencyForLocale, getBillingPrice } from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { buildAlternates } from '@/lib/seo';
+import { buildPageMetadata } from '@/lib/seo';
 import { getAppSignupUrl } from '@/lib/site';
 
 type PricingPageProps = {
@@ -12,11 +12,7 @@ export async function generateMetadata({ params }: PricingPageProps) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'pricing' });
 
-  return {
-    title: t('title'),
-    description: t('subtitle'),
-    alternates: buildAlternates(locale, '/pricing'),
-  };
+  return buildPageMetadata(locale, '/pricing', t('title'), t('subtitle'));
 }
 
 type PlanFeature = {
