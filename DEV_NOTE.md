@@ -70,6 +70,17 @@
 - 与**菜单内容** `stores.baseLocale`（默认仍 `vi`）分离
 - 发信：`EMAIL_FROM=noreply@dyqr.me`（`dyqr.me` 须 Email Sending enable）
 
+## 营销站 SEO 与落地页（2026-08-16）
+
+- 策略依据 `docs/KEYWORD_RESEARCH.md`：首页承接 `phần mềm order nhà hàng` 主词，7 个高意图落地页承接长尾；核心痛点是**外国游客语言障碍**
+- 落地页：`app/[locale]/[slug]/page.tsx`（静态路由优先，`isLandingSlug` 判非法 slug → notFound）+ `content/landing/{slug}/{locale}.mdx`（4 语言，force-static）
+- 落地页结构：H1/description/结论先行 answer（messages）→ MDX 正文 → FAQ（messages `landing.{slug}.faq`）→ related 内链（`lib/landing.ts` `LANDING_RELATED`）→ CTA → 更新时间（`LANDING_UPDATED_AT` 手写常量）
+- SEO 基建：`lib/seo.ts` `buildPageMetadata` 统一 title/description/canonical/hreflang(+x-default)/OG/Twitter；`metadataBase` 在 layout；页面级 openGraph 会**整体替换** layout 默认值，images/twitter 需在 helper 里显式带上
+- 结构化数据：layout 注入 WebSite + Organization；首页 SoftwareApplication（含报价）+ FAQPage；落地页 SoftwareApplication + BreadcrumbList + FAQPage——只写真实产品事实
+- OG 图：`public/brand/og-default.png`（1200×630，`scripts/gen-og-image.mjs` 用 sharp 从 SVG 生成，一次性入库）
+- 付款口径：FAQ 统一「目前顾客直接付款，在线收款正在开发中」；促销套餐/会员系统等未上线功能标注 Coming soon，不编造
+- sitemap 覆盖：首页 + pricing + docs + 7 个落地页 × 4 locale
+
 ## 产品 app i18n（2026-08-03）
 
 - 同样 en/zh/ja/vi，默认 en；**`localePrefix: 'never'`**（对外仍是 `/login` `/app`）

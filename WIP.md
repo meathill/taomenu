@@ -12,11 +12,11 @@
 ## 任务分解
 
 - [x] 阶段 1：SEO 基建 — metadataBase、OG/Twitter、canonical helper、WebSite/Organization JSON-LD、OG 图（commit 4973f9b）
-- [x] 阶段 3：落地页基建 — lib/landing.ts、app/[locale]/[slug]/page.tsx、sitemap 扩展
-- [ ] 阶段 2：首页内容 — 4 语言 messages + page.tsx 区块（痛点区/差异点/如何运作/场景/增值功能/FAQ/CTA）+ FAQPage JSON-LD
-- [ ] 阶段 4：7 个落地页内容（content/landing/{slug}/{locale}.mdx × 28）
-- [ ] 回归：format / typecheck / test / build，浏览器验收
-- [ ] 更新 DEV_NOTE.md、清理 WIP.md
+- [x] 阶段 3：落地页基建 — lib/landing.ts、app/[locale]/[slug]/page.tsx、sitemap 扩展（commit c98fbbe）
+- [x] 阶段 2：首页内容 — 4 语言 messages + page.tsx 区块（痛点区/差异点/如何运作/场景/增值功能/FAQ/CTA）+ FAQPage JSON-LD（commit c98fbbe）
+- [x] 阶段 4：7 个落地页内容（content/landing/{slug}/{locale}.mdx × 28，commit 815c446）
+- [x] 回归：format / typecheck / test（210 例）/ build 全绿；浏览器验证 HTML/OG/canonical/sitemap
+- [x] 更新 DEV_NOTE.md、清理 WIP.md
 
 ## 关键决策
 
