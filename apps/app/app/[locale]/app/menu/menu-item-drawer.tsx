@@ -2,10 +2,11 @@
 
 import { getCurrencyDecimals, parseCurrencyInput, sanitizeCurrencyInput } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
 import { MenuCategoryDrawer } from './menu-category-drawer';
+import { buildItemFormValues, shouldHydrateItemForm } from './menu-item-form';
 import { MenuItemImage } from './menu-item-image';
 import { MenuModifierTranslations } from './menu-modifier-translations';
 import { MenuModifiersPanel } from './menu-modifiers-panel';
@@ -24,11 +25,6 @@ type MenuItemDrawerProps = {
   onOpenChange: (open: boolean) => void;
   onChanged: () => Promise<void>;
 };
-
-function amountToInput(amount: number, currency: string) {
-  const decimals = getCurrencyDecimals(currency);
-  return (amount / 10 ** decimals).toFixed(decimals).replace(/\.0+$/, '');
-}
 
 export function MenuItemDrawer({
   open,
@@ -56,17 +52,29 @@ export function MenuItemDrawer({
   const [nestedCategoryOpen, setNestedCategoryOpen] = useState(false);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const itemId = item?.id ?? null;
+  const formSessionRef = useRef({ open: false, itemId: null as string | null });
 
   useEffect(() => {
-    if (!open) return;
-    setName(translation?.name ?? '');
-    setDescription(translation?.description ?? '');
-    setPrice(item ? amountToInput(item.priceAmount, currency) : '');
-    setCategoryId(initialCategoryId ?? categories[0]?.id ?? '');
-    setIsAvailable(item?.isAvailable ?? true);
-    setIsSoldOut(item?.isSoldOut ?? false);
+    const { open: wasOpen, itemId: previousItemId } = formSessionRef.current;
+    formSessionRef.current = { open, itemId };
+    if (!shouldHydrateItemForm({ open, wasOpen, itemId, previousItemId })) return;
+
+    const next = buildItemFormValues({
+      item,
+      translation,
+      currency,
+      initialCategoryId,
+      fallbackCategoryId: categories[0]?.id,
+    });
+    setName(next.name);
+    setDescription(next.description);
+    setPrice(next.price);
+    setCategoryId(next.categoryId);
+    setIsAvailable(next.isAvailable);
+    setIsSoldOut(next.isSoldOut);
     setError(null);
-  }, [categories, currency, initialCategoryId, item, open, translation]);
+  }, [categories, currency, initialCategoryId, item, itemId, open, translation]);
 
   async function saveItem() {
     if (!name.trim() || (!item && !categoryId)) return;
