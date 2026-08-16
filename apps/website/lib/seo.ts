@@ -23,3 +23,38 @@ export function buildAlternates(locale: string, path: string) {
     },
   };
 }
+
+/**
+ * 页面级 metadata 统一构造：title / description / canonical+hreflang / OG。
+ * openGraph 只覆盖本页字段，images 等其余字段由 layout 默认值合并保留。
+ */
+export function buildPageMetadata(
+  locale: string,
+  path: string,
+  title: string,
+  description: string,
+) {
+  return {
+    title,
+    description,
+    alternates: buildAlternates(locale, path),
+    openGraph: {
+      title,
+      description,
+      url: absoluteWebsiteUrl(`/${locale}${path.startsWith('/') ? path : `/${path}`}`),
+      images: [
+        {
+          url: absoluteWebsiteUrl('/brand/og-default.png'),
+          width: 1200,
+          height: 630,
+          alt: 'TaoMenu',
+        },
+      ],
+    },
+    twitter: {
+      title,
+      description,
+      images: [absoluteWebsiteUrl('/brand/og-default.png')],
+    },
+  };
+}
