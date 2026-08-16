@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "TaoMenu — Lightweight QR ordering for small restaurants",
-    "description": "Customers scan a QR code to order. Owners run menus, staff terminals, and payment notes from a phone — no POS, no payment processing."
+    "title": "QR ordering software for small restaurants",
+    "description": "Multi-language QR menus: foreign guests browse and order in their own language. Owners manage everything from a phone — no POS, no guest app."
   },
   "nav": {
     "pricing": "Pricing",
@@ -13,15 +13,77 @@
   "home": {
     "badge": "Phone-only setup",
     "title": "Lightweight QR ordering for restaurants, cafés, and banh mi shops",
-    "subtitle": "Guests scan to browse the menu and order. Staff handle tickets on a phone. TaoMenu never takes meal payments and needs no POS hardware.",
+    "subtitle": "Foreign guests can't read the menu? Scan the QR code and they order in their own language. Owners run everything from a phone — no POS hardware, no guest app.",
     "primaryCta": "Start free",
     "secondaryCta": "See pricing",
+    "painTitle": "Why guests scan to order",
+    "painBody": "Menu language and spoken English are the two hardest parts of serving tourists. A QR menu solves both at once.",
+    "pain1Title": "Guests can't read Vietnamese menus",
+    "pain1Body": "The menu opens in the guest's own language — up to 5 languages on Pro.",
+    "pain2Title": "Ordering in broken English is painful",
+    "pain2Body": "Guests tap to order instead of explaining at the counter or to a server.",
+    "pain3Title": "Staff and guests both stay relaxed",
+    "pain3Body": "Orders arrive in writing on staff phones. No shouting, no misheard dishes.",
+    "highlight1Title": "No POS hardware",
+    "highlight1Body": "Guests scan a QR code to order — nothing to buy or install.",
+    "highlight2Title": "No guest app install",
+    "highlight2Body": "Open the browser, browse the menu, and send the order.",
+    "highlight3Title": "Run from a phone",
+    "highlight3Body": "Owners and staff build menus and take orders on a phone.",
+    "highlight4Title": "Start free",
+    "highlight4Body": "Build a menu and take your first order at no cost.",
     "feature1Title": "No guest app install",
     "feature1Body": "Customers scan a QR code, open the menu, and submit orders in the browser.",
     "feature2Title": "Run everything from a phone",
     "feature2Body": "Owners register, build menus, and share table or pickup codes without a computer.",
     "feature3Title": "Table service or counter pickup",
-    "feature3Body": "Support dine-in table codes and short pickup numbers for walk-up shops."
+    "feature3Body": "Support dine-in table codes and short pickup numbers for walk-up shops.",
+    "howTitle": "How it works",
+    "howSubtitle": "From sign-up to the first order in minutes.",
+    "howStep1Title": "Build your menu",
+    "howStep1Body": "Enter items by hand for free, or photograph a menu and let AI help with Pro.",
+    "howStep2Title": "Print or share QR codes",
+    "howStep2Body": "Table codes or pickup codes — print them on A4 or share a link.",
+    "howStep3Title": "Guests scan and order",
+    "howStep3Body": "Orders reach staff phones in seconds, with options and special requests.",
+    "scenariosTitle": "Made for the shops that need it",
+    "scenario1Title": "Sit-down restaurants",
+    "scenario1Body": "Table service with self-ordering in the guest's language.",
+    "scenario2Title": "Cafés and tea shops",
+    "scenario2Body": "Lightweight ordering for dine-in or takeaway — no equipment.",
+    "scenario3Title": "Street shops with few seats",
+    "scenario3Body": "One shared pickup code and short order numbers.",
+    "scenario4Title": "Banh mi and takeaway shops",
+    "scenario4Body": "Pickup by number — no more rush-hour chaos.",
+    "moreScenarios": "Also relevant:",
+    "moreScenario1": "Free restaurant software",
+    "moreScenario2": "Multi-language menus",
+    "moreScenario3": "QR call-a-server",
+    "beyondTitle": "And there is more to come",
+    "beyondBody": "TaoMenu keeps adding value beyond order taking — available now or on the roadmap.",
+    "beyond1Title": "AI dish photo enhancement",
+    "beyond1Body": "Make menu photos appetizing with reviewed AI previews (Pro).",
+    "beyond2Title": "Promo combos",
+    "beyond2Body": "Set up combo deals and promotions (in development).",
+    "beyond3Title": "Membership system",
+    "beyond3Body": "Returning guests, points and repeat orders (in development).",
+    "comingSoon": "Coming soon",
+    "faqTitle": "Frequently asked questions",
+    "faq1Q": "Do guests need an app to order?",
+    "faq1A": "No. Guests scan the QR code, open the menu in a browser, and submit their order — no app installation.",
+    "faq2Q": "Can I run this without a computer or POS?",
+    "faq2A": "Yes. A single phone is enough: register, build the menu, receive orders, and record payment.",
+    "faq3Q": "Can the free plan run a real business?",
+    "faq3A": "Yes. Free includes 1 staff seat, 1 menu language, and manual menu entry — enough for a small shop day to day.",
+    "faq4Q": "Does TaoMenu handle payments?",
+    "faq4A": "Today, guests pay directly with cash or the shop's own payment QR code — TaoMenu never touches meal money. Online payment is in development.",
+    "faq5Q": "Can guests order in their own language?",
+    "faq5A": "Yes. Pro supports up to 5 menu languages. Translations are AI-assisted and reviewed by the owner before publishing.",
+    "faq6Q": "How long does it take to get started?",
+    "faq6A": "Minutes. Sign up free, build your menu, print or share QR codes — then start taking orders.",
+    "finalCtaTitle": "Start free in minutes",
+    "finalCtaBody": "Build your menu, print QR codes, and take your first order today.",
+    "finalCtaPrimary": "Start free"
   },
   "pricing": {
     "title": "Simple pricing",
@@ -85,6 +147,150 @@
     "terms": {
       "title": "Terms of Service",
       "description": "The rules that govern your use of the TaoMenu service."
+    }
+  },
+  "landing": {
+    "homeLabel": "Home",
+    "breadcrumbLabel": "Breadcrumb",
+    "faqTitle": "Frequently asked questions",
+    "relatedTitle": "Related reading",
+    "ctaTitle": "Start free in minutes",
+    "ctaBody": "Build your menu, print QR codes, and take your first order today.",
+    "ctaPrimary": "Start free",
+    "ctaSecondary": "See pricing",
+    "updatedAt": "Last updated: {date}",
+    "phan-mem-order-nha-hang": {
+      "title": "Restaurant ordering software: guests scan, orders reach staff",
+      "description": "QR ordering for restaurants: guests scan a code, browse a menu in their own language, and order straight to staff phones. No POS.",
+      "answer": "TaoMenu is ordering software for restaurants that runs on a phone: guests scan a QR code to view the menu and order, and staff receive orders on their phones. No POS hardware needed.",
+      "faq": [
+        {
+          "q": "Does the restaurant need to buy hardware?",
+          "a": "No. Everything runs on the owner's and staff's existing phones; the QR code can be printed on paper."
+        },
+        {
+          "q": "Can guests order in their own language?",
+          "a": "Yes. Pro supports up to 5 menu languages so tourists can read and order without an interpreter."
+        },
+        {
+          "q": "How do staff get notified of new orders?",
+          "a": "Orders appear in the staff app within seconds. New-order push notifications are available in the installed PWA."
+        }
+      ]
+    },
+    "menu-qr-cho-quan-an": {
+      "title": "QR menu for restaurants: turn your paper menu into a scan-to-view menu",
+      "description": "Create a QR menu for your restaurant, café or shop. Hand-built for free, or import a photo or PDF with Pro.",
+      "answer": "A QR menu is a menu that opens on a phone when scanned. TaoMenu lets you build one by hand for free; Pro can create it quickly from a photo or PDF of your paper menu.",
+      "faq": [
+        {
+          "q": "Do guests need an app to open the QR menu?",
+          "a": "No. It opens in the browser instantly — nothing to install."
+        },
+        {
+          "q": "Can I update the menu myself?",
+          "a": "Yes. Edit items, prices and availability at any time from your phone; changes go live when you publish."
+        },
+        {
+          "q": "How do I put the QR code on tables?",
+          "a": "Print the A4 table-code sheet, or share the link via chat apps for counter pickup."
+        }
+      ]
+    },
+    "phan-mem-quan-ly-nha-hang-mien-phi": {
+      "title": "Free restaurant management software: is it really usable?",
+      "description": "TaoMenu's free plan runs a small shop day to day: 1 staff seat, 1 menu language, manual entry. No POS, inventory or accounting.",
+      "answer": "Yes. The free plan is enough for a small shop to run daily: 1 staff seat, 1 menu language and manual menu entry — it does not include POS, inventory or accounting.",
+      "faq": [
+        {
+          "q": "What exactly does the free plan include?",
+          "a": "1 staff seat (2 total including the owner), 1 menu language and manual menu entry."
+        },
+        {
+          "q": "What does Pro add?",
+          "a": "4 staff seats, up to 5 languages, AI menu import, reviewed AI translation and dish photo enhancement, plus premium QR templates."
+        },
+        {
+          "q": "Will free disappear after a trial?",
+          "a": "No. Free stays free; you upgrade only when you need more."
+        }
+      ]
+    },
+    "phan-mem-order-tren-dien-thoai": {
+      "title": "Phone ordering software: run a shop without a computer or POS",
+      "description": "Build menus, print QR codes, take orders and record payment — all from one phone. No computer, no POS, no guest app.",
+      "answer": "The whole workflow — building the menu, printing QR codes, receiving orders and recording payment — runs on one phone. Guests don't install anything.",
+      "faq": [
+        {
+          "q": "Do staff need a computer too?",
+          "a": "No. Staff receive and update orders from their own phones."
+        },
+        {
+          "q": "Can I use it without a printer?",
+          "a": "Yes. Share the menu link via chat apps instead of printing QR codes."
+        },
+        {
+          "q": "What about shops with many tables?",
+          "a": "Each table gets its own QR code, so orders arrive labeled with the table number."
+        }
+      ]
+    },
+    "menu-da-ngon-ngu": {
+      "title": "Multi-language restaurant menus: serve tourists without a translator",
+      "description": "Up to 5 languages on one menu. AI-assisted translation, reviewed by the owner before publishing. Built for shops serving foreign guests.",
+      "answer": "Pro supports up to 5 languages on the same menu. AI generates draft translations and the owner reviews before anything goes live — no wrong prices or bad dish names in front of guests.",
+      "faq": [
+        {
+          "q": "Which languages are supported?",
+          "a": "Any language you add to the menu; translation drafts are AI-assisted and reviewed by you."
+        },
+        {
+          "q": "Does translation cost extra?",
+          "a": "Pro includes 20 AI translation jobs per month per store."
+        },
+        {
+          "q": "Will a translation overwrite what I wrote?",
+          "a": "No. AI output goes to drafts, and you confirm each change before it is published."
+        }
+      ]
+    },
+    "goi-nhan-vien-bang-ma-qr": {
+      "title": "Call staff by QR code: guests stop waiting, staff stop walking",
+      "description": "Guests scan the table code to call a server or ask for the bill. Requests appear on staff phones instantly.",
+      "answer": "Guests scan the QR code on the table to call a server or request payment; the request appears immediately on staff phones. No shouting, no hand-waving.",
+      "faq": [
+        {
+          "q": "Is this included in the free plan?",
+          "a": "Yes. Call-server and payment requests are core free features."
+        },
+        {
+          "q": "Do staff need extra devices?",
+          "a": "No. Requests arrive on the staff phones already in use."
+        },
+        {
+          "q": "What if a guest request is unclear?",
+          "a": "Requests are plain text; staff accept or dismiss them and can still walk over if needed."
+        }
+      ]
+    },
+    "phan-mem-order-quan-banh-mi": {
+      "title": "Banh mi shop ordering software: end the rush-hour crush",
+      "description": "One shared pickup code, daily pickup numbers, and guests watch progress on their phone. Built for street shops with few or no seats.",
+      "answer": "A single pickup QR code gives each order a daily pickup number; guests watch progress on their phones. Built for street and takeaway shops without table numbers.",
+      "faq": [
+        {
+          "q": "Can customers order without seats?",
+          "a": "Yes. The shop places one public pickup code; guests order and get a pickup number."
+        },
+        {
+          "q": "How are pickup numbers assigned?",
+          "a": "Per business day in the shop's timezone, starting from 1."
+        },
+        {
+          "q": "Does the shop need a kitchen printer?",
+          "a": "No. Staff see the queue on their phones and call out numbers when ready."
+        }
+      ]
     }
   }
 }

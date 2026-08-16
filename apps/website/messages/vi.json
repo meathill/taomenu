@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "TaoMenu — Phần mềm order QR cho nhà hàng nhỏ",
-    "description": "Quét mã QR để gọi món, không cần máy POS. Chủ quán chỉ cần điện thoại để tạo menu, nhận order và ghi nhận thanh toán."
+    "title": "Phần mềm order nhà hàng bằng QR trên điện thoại",
+    "description": "Menu đa ngôn ngữ qua mã QR: khách nước ngoài tự xem menu và gọi món bằng ngôn ngữ của mình. Chủ quán quản lý trên điện thoại — không cần máy POS hay app."
   },
   "nav": {
     "pricing": "Bảng giá",
@@ -12,16 +12,78 @@
   },
   "home": {
     "badge": "Chỉ cần điện thoại",
-    "title": "Order QR nhẹ cho quán ăn, cà phê và tiệm bánh mì",
-    "subtitle": "Khách quét mã để xem menu và gọi món. Nhân viên nhận order trên điện thoại. TaoMenu không thu tiền hộ, không cần POS.",
+    "title": "Nhận order bằng mã QR, chỉ cần điện thoại",
+    "subtitle": "Khách nước ngoài không đọc được menu? Quét mã QR là khách tự xem menu bằng ngôn ngữ của mình và gọi món. Chủ quán quản lý chỉ bằng điện thoại — không cần máy POS hay app.",
     "primaryCta": "Bắt đầu miễn phí",
     "secondaryCta": "Xem bảng giá",
+    "painTitle": "Vì sao khách cần quét mã để gọi món?",
+    "painBody": "Khách không đọc được menu tiếng Việt và khó giao tiếp bằng tiếng Anh là hai trở ngại lớn nhất khi phục vụ khách du lịch. Menu QR giải quyết cả hai cùng lúc.",
+    "pain1Title": "Khách không đọc được menu tiếng Việt",
+    "pain1Body": "Menu hiện bằng ngôn ngữ của khách — tối đa 5 ngôn ngữ với Pro.",
+    "pain2Title": "Gọi món bằng tiếng Anh vụn vỡ rất mệt",
+    "pain2Body": "Khách tự chạm để gọi món thay vì phải giải thích ở quầy hay với nhân viên.",
+    "pain3Title": "Nhân viên và khách đều nhẹ nhàng",
+    "pain3Body": "Order hiện bằng chữ trên điện thoại nhân viên. Không phải hét to, không nghe nhầm món.",
+    "highlight1Title": "Không cần máy POS",
+    "highlight1Body": "Khách quét mã QR là gọi món — không phải mua sắm hay lắp đặt gì.",
+    "highlight2Title": "Khách không cần tải app",
+    "highlight2Body": "Mở trình duyệt là xem menu và gửi order được ngay.",
+    "highlight3Title": "Chỉ cần điện thoại",
+    "highlight3Body": "Chủ quán và nhân viên tạo menu, nhận order ngay trên điện thoại.",
+    "highlight4Title": "Bắt đầu miễn phí",
+    "highlight4Body": "Tạo menu và nhận order đầu tiên mà không tốn chi phí.",
     "feature1Title": "Không cần tải app khách",
     "feature1Body": "Khách chỉ quét mã QR, xem menu và gửi order ngay trên trình duyệt.",
     "feature2Title": "Một điện thoại cũng chạy được",
     "feature2Body": "Chủ quán đăng ký, tạo menu, chia sẻ mã bàn hoặc mã lấy món chỉ bằng điện thoại.",
     "feature3Title": "Ăn tại bàn hoặc lấy tại quầy",
-    "feature3Body": "Hỗ trợ order theo bàn và số lấy món cho quán ít chỗ ngồi."
+    "feature3Body": "Hỗ trợ order theo bàn và số lấy món cho quán ít chỗ ngồi.",
+    "howTitle": "Cách hoạt động",
+    "howSubtitle": "Từ lúc đăng ký đến order đầu tiên chỉ trong vài phút.",
+    "howStep1Title": "Tạo menu",
+    "howStep1Body": "Nhập món thủ công miễn phí, hoặc chụp ảnh menu và để AI hỗ trợ với Pro.",
+    "howStep2Title": "In hoặc chia sẻ mã QR",
+    "howStep2Body": "Mã bàn hoặc mã lấy món — in trên giấy A4 hay gửi link.",
+    "howStep3Title": "Khách quét mã gọi món",
+    "howStep3Body": "Order đến điện thoại nhân viên trong vài giây, kèm lựa chọn và ghi chú.",
+    "scenariosTitle": "Phù hợp với quán cần",
+    "scenario1Title": "Nhà hàng ăn tại bàn",
+    "scenario1Body": "Phục vụ theo bàn, khách tự gọi món bằng ngôn ngữ của mình.",
+    "scenario2Title": "Quán cà phê, trà sữa",
+    "scenario2Body": "Order nhẹ cho ăn tại chỗ hay mang đi — không cần thiết bị.",
+    "scenario3Title": "Quán vỉa hè ít chỗ",
+    "scenario3Body": "Một mã lấy món chung và số thứ tự gọn.",
+    "scenario4Title": "Tiệm bánh mì, đồ mang đi",
+    "scenario4Body": "Lấy món theo số — hết cảnh chen chúc giờ cao điểm.",
+    "moreScenarios": "Cũng phù hợp:",
+    "moreScenario1": "Phần mềm quản lý nhà hàng miễn phí",
+    "moreScenario2": "Menu đa ngôn ngữ",
+    "moreScenario3": "Gọi nhân viên bằng mã QR",
+    "beyondTitle": "Và còn nhiều hơn thế",
+    "beyondBody": "TaoMenu không chỉ dừng ở nhận order — có sẵn hôm nay hoặc đang trên lộ trình.",
+    "beyond1Title": "Làm đẹp ảnh món bằng AI",
+    "beyond1Body": "Biến ảnh món thành hấp dẫn hơn bằng AI có kiểm tra (Pro).",
+    "beyond2Title": "Gói khuyến mãi",
+    "beyond2Body": "Tạo combo và chương trình khuyến mãi (đang phát triển).",
+    "beyond3Title": "Hệ thống khách hàng thân thiết",
+    "beyond3Body": "Khách quen, tích điểm và gọi lại (đang phát triển).",
+    "comingSoon": "Sắp ra mắt",
+    "faqTitle": "Câu hỏi thường gặp",
+    "faq1Q": "Khách gọi món có cần tải app không?",
+    "faq1A": "Không. Khách quét mã QR, mở menu trong trình duyệt và gửi order ngay, không cần cài ứng dụng nào.",
+    "faq2Q": "Không có máy tính hay máy POS có dùng được không?",
+    "faq2A": "Được. Chỉ cần một chiếc điện thoại: đăng ký, tạo menu, nhận order và ghi nhận thanh toán đều làm được.",
+    "faq3Q": "Bản miễn phí dùng để kinh doanh thật được không?",
+    "faq3A": "Được. Free gồm 1 chỗ nhân viên, 1 ngôn ngữ menu và tạo menu thủ công — đủ để một quán nhỏ vận hành hằng ngày.",
+    "faq4Q": "TaoMenu có xử lý thanh toán không?",
+    "faq4A": "Hiện tại khách thanh toán trực tiếp bằng tiền mặt hoặc mã QR của quán — TaoMenu không chạm vào tiền ăn. Thanh toán trực tuyến đang được phát triển.",
+    "faq5Q": "Khách có thể gọi món bằng ngôn ngữ của mình không?",
+    "faq5A": "Có. Pro hỗ trợ tối đa 5 ngôn ngữ menu. Bản dịch do AI hỗ trợ và chủ quán duyệt trước khi đăng.",
+    "faq6Q": "Bắt đầu mất bao lâu?",
+    "faq6A": "Vài phút. Đăng ký miễn phí, tạo menu, in hoặc chia sẻ mã QR là có thể nhận order.",
+    "finalCtaTitle": "Bắt đầu miễn phí trong vài phút",
+    "finalCtaBody": "Tạo menu, in mã QR và nhận order đầu tiên ngay hôm nay.",
+    "finalCtaPrimary": "Bắt đầu miễn phí"
   },
   "pricing": {
     "title": "Bảng giá đơn giản",
@@ -85,6 +147,150 @@
     "terms": {
       "title": "Điều khoản dịch vụ",
       "description": "Các quy tắc điều chỉnh việc sử dụng dịch vụ TaoMenu."
+    }
+  },
+  "landing": {
+    "homeLabel": "Trang chủ",
+    "breadcrumbLabel": "Breadcrumb",
+    "faqTitle": "Câu hỏi thường gặp",
+    "relatedTitle": "Đọc thêm",
+    "ctaTitle": "Bắt đầu miễn phí trong vài phút",
+    "ctaBody": "Tạo menu, in mã QR và nhận order đầu tiên ngay hôm nay.",
+    "ctaPrimary": "Bắt đầu miễn phí",
+    "ctaSecondary": "Xem bảng giá",
+    "updatedAt": "Cập nhật lần cuối: {date}",
+    "phan-mem-order-nha-hang": {
+      "title": "Phần mềm order nhà hàng: khách quét mã QR, order đến tay nhân viên",
+      "description": "Phần mềm order cho nhà hàng: khách quét mã, xem menu bằng ngôn ngữ của mình và gọi món thẳng tới điện thoại nhân viên. Không cần máy POS.",
+      "answer": "TaoMenu là phần mềm order cho nhà hàng chạy trên điện thoại: khách quét mã QR để xem menu và gọi món, nhân viên nhận order ngay trên điện thoại. Không cần máy POS.",
+      "faq": [
+        {
+          "q": "Nhà hàng có phải mua thêm thiết bị không?",
+          "a": "Không. Mọi thứ chạy trên điện thoại có sẵn của chủ quán và nhân viên; mã QR chỉ cần in ra giấy."
+        },
+        {
+          "q": "Khách có thể gọi món bằng ngôn ngữ của mình không?",
+          "a": "Có. Pro hỗ trợ tối đa 5 ngôn ngữ menu để khách du lịch tự đọc và gọi món không cần phiên dịch."
+        },
+        {
+          "q": "Nhân viên nhận order thế nào?",
+          "a": "Order hiện trong app nhân viên trong vài giây. Thông báo push khi có order mới có sẵn khi cài PWA."
+        }
+      ]
+    },
+    "menu-qr-cho-quan-an": {
+      "title": "Menu QR cho quán ăn: biến thực đơn giấy thành menu quét là xem",
+      "description": "Tạo menu QR cho quán ăn, cà phê hay cửa hàng. Tự tạo bằng tay miễn phí, hoặc nhập từ ảnh/PDF với Pro.",
+      "answer": "Menu QR là thực đơn mở trên điện thoại khi quét mã. TaoMenu giúp bạn tự tạo miễn phí bằng tay; Pro có thể tạo nhanh từ ảnh hoặc PDF của thực đơn giấy.",
+      "faq": [
+        {
+          "q": "Khách mở menu QR có cần tải app không?",
+          "a": "Không. Mở ngay trong trình duyệt — không cần cài gì."
+        },
+        {
+          "q": "Tôi tự cập nhật menu được không?",
+          "a": "Được. Sửa món, giá và trạng thái bất cứ lúc nào từ điện thoại; thay đổi có hiệu lực khi bạn đăng."
+        },
+        {
+          "q": "Đặt mã QR lên bàn thế nào?",
+          "a": "In trang mã bàn A4, hoặc gửi link qua ứng dụng nhắn tin cho quán lấy tại quầy."
+        }
+      ]
+    },
+    "phan-mem-quan-ly-nha-hang-mien-phi": {
+      "title": "Phần mềm quản lý nhà hàng miễn phí: dùng thật được không?",
+      "description": "Bản Free của TaoMenu đủ để một quán nhỏ hoạt động hằng ngày: 1 chỗ nhân viên, 1 ngôn ngữ menu, nhập tay. Không gồm POS, kho hay kế toán.",
+      "answer": "Được. Bản Free đủ để một quán nhỏ hoạt động hằng ngày: 1 chỗ nhân viên, 1 ngôn ngữ menu và nhập món thủ công — không gồm POS, kho hay kế toán.",
+      "faq": [
+        {
+          "q": "Bản miễn phí gồm những gì?",
+          "a": "1 chỗ nhân viên (tổng 2 chỗ gồm chủ quán), 1 ngôn ngữ menu và nhập món thủ công."
+        },
+        {
+          "q": "Pro khác gì?",
+          "a": "4 chỗ nhân viên, tối đa 5 ngôn ngữ, nhập menu bằng AI, dịch AI có kiểm tra, làm đẹp ảnh món và mẫu QR cao cấp."
+        },
+        {
+          "q": "Bản miễn phí có hết hạn không?",
+          "a": "Không. Free ở lại mãi; bạn chỉ trả phí khi cần nhiều hơn."
+        }
+      ]
+    },
+    "phan-mem-order-tren-dien-thoai": {
+      "title": "Phần mềm order trên điện thoại: quán không cần máy tính hay POS",
+      "description": "Tạo menu, in mã QR, nhận order và ghi nhận thanh toán — tất cả trên một chiếc điện thoại. Không cần máy tính, không POS, không app khách.",
+      "answer": "Toàn bộ quy trình — tạo menu, in mã QR, nhận order và ghi nhận thanh toán — chạy trên một chiếc điện thoại. Khách không cần cài gì.",
+      "faq": [
+        {
+          "q": "Nhân viên có cần máy tính không?",
+          "a": "Không. Nhân viên nhận và cập nhật order ngay trên điện thoại của mình."
+        },
+        {
+          "q": "Không có máy in có dùng được không?",
+          "a": "Được. Gửi link menu qua ứng dụng nhắn tin thay vì in mã QR."
+        },
+        {
+          "q": "Quán nhiều bàn thì sao?",
+          "a": "Mỗi bàn có một mã QR riêng, order về kèm số bàn rõ ràng."
+        }
+      ]
+    },
+    "menu-da-ngon-ngu": {
+      "title": "Menu đa ngôn ngữ cho nhà hàng: phục vụ khách du lịch không cần phiên dịch",
+      "description": "Tối đa 5 ngôn ngữ trên cùng một menu. Bản dịch do AI hỗ trợ và chủ quán duyệt trước khi đăng. Dành cho quán đón khách nước ngoài.",
+      "answer": "Pro hỗ trợ tối đa 5 ngôn ngữ trên cùng một menu. AI tạo bản dịch nháp và chủ quán duyệt trước khi đăng — không có giá sai hay tên món sai trước mặt khách.",
+      "faq": [
+        {
+          "q": "Hỗ trợ những ngôn ngữ nào?",
+          "a": "Bất kỳ ngôn ngữ nào bạn thêm vào menu; bản dịch do AI hỗ trợ và bạn kiểm tra lại."
+        },
+        {
+          "q": "Dịch có tốn thêm phí không?",
+          "a": "Pro gồm 20 lượt dịch AI mỗi tháng cho mỗi quán."
+        },
+        {
+          "q": "Bản dịch có ghi đè nội dung tôi tự viết không?",
+          "a": "Không. Kết quả AI vào bản nháp và bạn xác nhận từng thay đổi trước khi đăng."
+        }
+      ]
+    },
+    "goi-nhan-vien-bang-ma-qr": {
+      "title": "Gọi nhân viên bằng mã QR: khách hết chờ đợi, nhân viên đỡ đi lại",
+      "description": "Khách quét mã trên bàn để gọi phục vụ hoặc yêu cầu thanh toán. Yêu cầu hiện ngay trên điện thoại của nhân viên.",
+      "answer": "Khách quét mã QR trên bàn để gọi phục vụ hoặc yêu cầu thanh toán; yêu cầu hiện ngay trên điện thoại nhân viên. Không phải vẫy tay, không phải hét to.",
+      "faq": [
+        {
+          "q": "Tính năng này có trong bản miễn phí không?",
+          "a": "Có. Gọi phục vụ và yêu cầu thanh toán là tính năng miễn phí cốt lõi."
+        },
+        {
+          "q": "Nhân viên có cần thêm thiết bị không?",
+          "a": "Không. Yêu cầu hiện trên điện thoại nhân viên đang dùng."
+        },
+        {
+          "q": "Yêu cầu của khách không rõ thì sao?",
+          "a": "Yêu cầu là chữ; nhân viên chấp nhận hoặc bỏ qua và vẫn có thể đến bàn nếu cần."
+        }
+      ]
+    },
+    "phan-mem-order-quan-banh-mi": {
+      "title": "Phần mềm order quán bánh mì: hết cảnh chen chúc giờ cao điểm",
+      "description": "Một mã lấy món chung, số thứ tự trong ngày, khách xem tiến trình trên điện thoại. Dành cho quán vỉa hè ít hoặc không có chỗ ngồi.",
+      "answer": "Một mã QR lấy món chung, mỗi order có số thứ tự trong ngày và khách xem tiến trình trên điện thoại. Dành cho quán vỉa hè và quán mang đi không có số bàn.",
+      "faq": [
+        {
+          "q": "Khách không có chỗ ngồi vẫn order được không?",
+          "a": "Được. Quán đặt một mã lấy món công khai; khách order và nhận số thứ tự."
+        },
+        {
+          "q": "Số thứ tự tính thế nào?",
+          "a": "Theo ngày kinh doanh theo giờ của quán, bắt đầu từ 1."
+        },
+        {
+          "q": "Quán có cần máy in bếp không?",
+          "a": "Không. Nhân viên xem hàng đợi trên điện thoại và gọi số khi món sẵn sàng."
+        }
+      ]
     }
   }
 }
