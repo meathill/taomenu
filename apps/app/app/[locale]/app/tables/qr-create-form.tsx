@@ -2,6 +2,7 @@
 
 import type { FormEvent } from 'react';
 import { Button } from '@/components/button';
+import { fieldClassName } from '@/components/ui/field';
 
 type QrCreateFormProps = {
   value: string;
@@ -30,7 +31,7 @@ export function QrCreateForm({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2 disabled:bg-paper-50 disabled:opacity-60"
+        className={`flex-1 ${fieldClassName}`}
       />
       <Button
         type="submit"

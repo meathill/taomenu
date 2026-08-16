@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
+import { fieldClassName } from '@/components/ui/field';
 
-const INPUT_CLASS =
-  'min-h-12 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2 disabled:bg-paper-50 disabled:opacity-60';
+const INPUT_CLASS = `flex-1 ${fieldClassName}`;
 
 /** 创建代理商。成功后 router.refresh() 让 RSC 重新拉取汇总表。 */
 export function AgentCreateForm() {

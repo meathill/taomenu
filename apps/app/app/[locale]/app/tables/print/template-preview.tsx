@@ -5,6 +5,7 @@ import type { PlanId } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/button';
+import { compactFieldClassName } from '@/components/ui/field';
 import { customerEntryUrl } from '../customer-url';
 import { QrCard } from '../qr-card';
 import { isTemplateAvailable, QR_CARD_TEMPLATES, type QrCardTemplateId } from '../qr-templates';
@@ -234,7 +235,7 @@ export function TemplatePreview({
                       value={previewFields.storeName}
                       maxLength={40}
                       onChange={(event) => updatePreviewField('storeName', event.target.value)}
-                      className="mt-1.5 min-h-10 w-full rounded-lg border border-border px-3 text-sm font-normal outline-none ring-jade-600 focus:ring-2"
+                      className={`mt-1.5 ${compactFieldClassName}`}
                     />
                   </label>
                   <label className="block text-xs font-bold text-ink-900">
@@ -243,7 +244,7 @@ export function TemplatePreview({
                       value={previewFields.entryName}
                       maxLength={40}
                       onChange={(event) => updatePreviewField('entryName', event.target.value)}
-                      className="mt-1.5 min-h-10 w-full rounded-lg border border-border px-3 text-sm font-normal outline-none ring-jade-600 focus:ring-2"
+                      className={`mt-1.5 ${compactFieldClassName}`}
                     />
                   </label>
                   <label className="block text-xs font-bold text-ink-900">
@@ -252,7 +253,7 @@ export function TemplatePreview({
                       value={previewFields.scanHint}
                       maxLength={48}
                       onChange={(event) => updatePreviewField('scanHint', event.target.value)}
-                      className="mt-1.5 min-h-10 w-full rounded-lg border border-border px-3 text-sm font-normal outline-none ring-jade-600 focus:ring-2"
+                      className={`mt-1.5 ${compactFieldClassName}`}
                     />
                   </label>
                 </div>

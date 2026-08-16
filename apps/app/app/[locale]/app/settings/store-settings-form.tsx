@@ -11,6 +11,8 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
+import { FieldSwitch } from '@/components/field-switch';
+import { fieldClassName } from '@/components/ui/field';
 
 type StoreSettingsFormProps = {
   store: StoreRow;
@@ -101,7 +103,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="mt-2 min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+              className={`mt-2 ${fieldClassName}`}
             />
           </label>
           <label className="block text-sm font-bold text-ink-900">
@@ -109,7 +111,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
             <select
               value={serviceMode}
               onChange={(event) => setServiceMode(event.target.value as StoreRow['serviceMode'])}
-              className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base outline-none ring-jade-600 focus:ring-2"
+              className={`mt-2 ${fieldClassName}`}
             >
               <option value="table_service">{t('modeDineIn')}</option>
               <option value="counter_pickup">{t('modeCounter')}</option>
@@ -121,7 +123,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
             <input
               value={timezone}
               onChange={(event) => setTimezone(event.target.value)}
-              className="mt-2 min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+              className={`mt-2 ${fieldClassName}`}
             />
           </label>
           <label className="block text-sm font-bold text-ink-900">
@@ -129,7 +131,7 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
             <select
               value={currency}
               onChange={(event) => setCurrency(event.target.value as BillingCurrency)}
-              className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base outline-none ring-jade-600 focus:ring-2"
+              className={`mt-2 ${fieldClassName}`}
             >
               {BILLING_CURRENCIES.map((code) => (
                 <option key={code} value={code}>
@@ -149,15 +151,12 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
 
       <section className="rounded-2xl border border-border bg-white p-5">
         <h2 className="text-lg font-black text-ink-900">{t('orderingStatus')}</h2>
-        <label className="mt-4 flex min-h-12 items-center gap-3 text-sm font-semibold text-ink-900">
-          <input
-            type="checkbox"
-            checked={acceptingPublicRequests}
-            onChange={(event) => setAcceptingPublicRequests(event.target.checked)}
-            className="size-5 accent-jade-600"
-          />
-          {t('acceptingOrders')}
-        </label>
+        <FieldSwitch
+          className="mt-4"
+          label={t('acceptingOrders')}
+          checked={acceptingPublicRequests}
+          onCheckedChange={setAcceptingPublicRequests}
+        />
         <p className="mt-2 text-xs leading-5 text-muted-foreground">{t('acceptingOrdersHint')}</p>
       </section>
 

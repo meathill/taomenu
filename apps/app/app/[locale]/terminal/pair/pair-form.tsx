@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useState } from 'react';
 import { Button } from '@/components/button';
+import { fieldClassName } from '@/components/ui/field';
 
 type PairFormProps = {
   code: string | null;
@@ -63,7 +64,7 @@ export function PairForm({ code }: PairFormProps) {
           onChange={(event) => setName(event.target.value)}
           autoComplete="off"
           placeholder={t('deviceNameHint')}
-          className="mt-2 min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+          className={`mt-2 ${fieldClassName}`}
         />
       </label>
       {error ? <p className="text-sm font-semibold text-brand-600">{error}</p> : null}

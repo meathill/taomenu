@@ -4,7 +4,9 @@ import { getCurrencyDecimals, parseCurrencyInput, sanitizeCurrencyInput } from '
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import { FieldSwitch } from '@/components/field-switch';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
+import { fieldClassName, textareaClassName } from '@/components/ui/field';
 import { MenuCategoryDrawer } from './menu-category-drawer';
 import { buildItemFormValues, shouldHydrateItemForm } from './menu-item-form';
 import { MenuItemImage } from './menu-item-image';
@@ -163,7 +165,7 @@ export function MenuItemDrawer({
                 item?.translations.find((entry) => entry.locale === baseLocale)?.name ??
                 t('itemName')
               }
-              className="mt-1 min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+              className={`mt-1 ${fieldClassName}`}
             />
           </label>
           <label className="block text-sm font-bold text-ink-900">
@@ -172,7 +174,7 @@ export function MenuItemDrawer({
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               rows={3}
-              className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-base outline-none ring-jade-600 focus:ring-2"
+              className={`mt-1 ${textareaClassName}`}
             />
           </label>
           {isBaseMode ? (
@@ -185,7 +187,7 @@ export function MenuItemDrawer({
                     setPrice(sanitizeCurrencyInput(event.target.value, currency))
                   }
                   inputMode={getCurrencyDecimals(currency) > 0 ? 'decimal' : 'numeric'}
-                  className="mt-1 min-h-12 w-full rounded-xl border border-border px-3 text-base tabular-nums outline-none ring-jade-600 focus:ring-2"
+                  className={`mt-1 ${fieldClassName} tabular-nums`}
                 />
               </label>
               <div>
@@ -193,31 +195,23 @@ export function MenuItemDrawer({
                 <button
                   type="button"
                   onClick={() => setNestedCategoryOpen(true)}
-                  className="mt-1 flex min-h-12 w-full items-center justify-between rounded-xl border border-border px-3 text-left text-sm font-semibold hover:bg-muted"
+                  className={`mt-1 flex items-center justify-between text-left text-sm font-semibold hover:bg-muted ${fieldClassName}`}
                 >
                   {categoryLabel}
                   <span aria-hidden>›</span>
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <label className="flex min-h-12 items-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={isAvailable}
-                    onChange={(event) => setIsAvailable(event.target.checked)}
-                    className="size-4 accent-jade-600"
-                  />
-                  {t('available')}
-                </label>
-                <label className="flex min-h-12 items-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={isSoldOut}
-                    onChange={(event) => setIsSoldOut(event.target.checked)}
-                    className="size-4 accent-jade-600"
-                  />
-                  {t('soldOut')}
-                </label>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <FieldSwitch
+                  label={t('available')}
+                  checked={isAvailable}
+                  onCheckedChange={setIsAvailable}
+                />
+                <FieldSwitch
+                  label={t('soldOut')}
+                  checked={isSoldOut}
+                  onCheckedChange={setIsSoldOut}
+                />
               </div>
             </>
           ) : null}

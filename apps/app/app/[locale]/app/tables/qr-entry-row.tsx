@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/button';
 import { useQrDataUrl } from '@/components/qr-image';
+import { fieldClassName } from '@/components/ui/field';
 
 export type QrEntry = {
   id: string;
@@ -70,7 +71,7 @@ export function QrEntryRow({
             value={editingName}
             onChange={(event) => onEditingNameChange(event.target.value)}
             aria-label={t('rename')}
-            className="min-h-11 flex-1 rounded-xl border border-border px-3 text-sm outline-none ring-jade-600 focus:ring-2"
+            className={`flex-1 ${fieldClassName}`}
           />
           <Button
             type="button"

@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@phosphor-icons/react';
 import { formatCurrency, getCurrencyDecimals, sanitizeCurrencyInput } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
+import { compactFieldClassName, textareaClassName } from '@/components/ui/field';
 import type { ReviewDraft, SuggestionGroup } from './menu-import-review';
 
 type MenuImportReviewListProps = {
@@ -52,7 +53,7 @@ export function MenuImportReviewList({
             <input
               value={draft[group.category.id]?.name ?? ''}
               onChange={(event) => onUpdate(group.category.id, { name: event.target.value })}
-              className="min-h-10 min-w-0 flex-1 rounded-lg border border-border px-2 text-base"
+              className={`min-w-0 flex-1 ${compactFieldClassName}`}
               aria-label={t('importCategoryName')}
             />
           </label>
@@ -62,7 +63,7 @@ export function MenuImportReviewList({
             placeholder={t('importDescription')}
             aria-label={t('importDescription')}
             rows={2}
-            className="mt-2 min-h-16 w-full resize-y rounded-lg border border-border px-2 py-1.5 text-sm"
+            className={`mt-2 min-h-16 resize-y ${textareaClassName} text-sm`}
           />
           <ul className="mt-2 space-y-3 border-t border-border pt-2">
             {group.items.map((item) => {
@@ -87,7 +88,7 @@ export function MenuImportReviewList({
                   <input
                     value={draft[item.id]?.name ?? ''}
                     onChange={(event) => onUpdate(item.id, { name: event.target.value })}
-                    className="min-h-10 min-w-0 rounded-lg border border-border px-2 text-base"
+                    className={`min-w-0 ${compactFieldClassName}`}
                     aria-label={t('itemName')}
                   />
                   <input
@@ -99,7 +100,7 @@ export function MenuImportReviewList({
                       })
                     }
                     placeholder={t('importConfirmPrice')}
-                    className="min-h-10 min-w-0 rounded-lg border border-border px-2 text-right text-base"
+                    className={`min-w-0 text-right ${compactFieldClassName}`}
                     aria-label={t('price', { currency })}
                   />
                   <textarea
@@ -108,7 +109,7 @@ export function MenuImportReviewList({
                     placeholder={t('importDescription')}
                     aria-label={`${t('importDescription')}: ${draft[item.id]?.name ?? ''}`}
                     rows={2}
-                    className="col-start-2 col-span-2 min-h-16 resize-y rounded-lg border border-border px-2 py-1.5 text-sm"
+                    className={`col-span-2 col-start-2 min-h-16 resize-y ${textareaClassName} text-sm`}
                   />
                   {modifierGroups.length > 0 ? (
                     <div className="col-start-2 col-span-2 rounded-lg bg-paper-50 p-2 text-xs">

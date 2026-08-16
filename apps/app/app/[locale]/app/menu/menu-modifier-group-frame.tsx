@@ -5,8 +5,10 @@ import { getCurrencyDecimals, sanitizeCurrencyInput } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { Button as SaveButton } from '@/components/button';
+import { FieldSwitch } from '@/components/field-switch';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { fieldClassName } from '@/components/ui/field';
 import { Frame, FrameHeader, FramePanel } from '@/components/ui/frame';
 import {
   createOptionDraft,
@@ -143,20 +145,16 @@ export function MenuModifierGroupFrame({
                 value={draft.name}
                 onChange={(event) => onChange(markGroupDirty(draft, { name: event.target.value }))}
                 placeholder={t('groupPlaceholder')}
-                className="mt-1 min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+                className={`mt-1 ${fieldClassName}`}
               />
             </label>
-            <label className="flex min-h-12 items-center gap-2 text-sm font-semibold text-ink-900">
-              <input
-                type="checkbox"
-                checked={draft.isRequired}
-                onChange={(event) =>
-                  onChange(markGroupDirty(draft, { isRequired: event.target.checked }))
-                }
-                className="size-4 accent-jade-600"
-              />
-              {t('groupRequired')}
-            </label>
+            <FieldSwitch
+              label={t('groupRequired')}
+              checked={draft.isRequired}
+              onCheckedChange={(checked) =>
+                onChange(markGroupDirty(draft, { isRequired: checked }))
+              }
+            />
 
             <ul className="space-y-2">
               {draft.options.map((option) => (
@@ -168,7 +166,7 @@ export function MenuModifierGroupFrame({
                         updateOption(option.clientId, { name: event.target.value })
                       }
                       placeholder={t('optionName')}
-                      className="min-h-12 min-w-0 flex-1 rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+                      className={`min-w-0 flex-1 ${fieldClassName}`}
                     />
                     <input
                       value={option.delta}
@@ -179,7 +177,7 @@ export function MenuModifierGroupFrame({
                       }
                       placeholder={t('priceDelta')}
                       inputMode={hasDecimals ? 'decimal' : 'numeric'}
-                      className="min-h-12 w-24 shrink-0 rounded-xl border border-border px-2 text-base tabular-nums outline-none ring-jade-600 focus:ring-2"
+                      className={`w-24 shrink-0 px-2 tabular-nums ${fieldClassName}`}
                     />
                   </div>
                   <IconButton

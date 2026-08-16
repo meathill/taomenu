@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AsyncAlertDialog } from '@/components/async-alert-dialog';
 import { Button } from '@/components/button';
 import { QrImage } from '@/components/qr-image';
+import { fieldClassName } from '@/components/ui/field';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatStaffDate } from './staff-date';
 import { hasAvailableStaffSeat } from './staff-seat';
@@ -291,7 +292,7 @@ export function StaffManager({
                 onChange={(event) =>
                   setAdditionalSeats(Math.min(20, Math.max(1, Number(event.target.value) || 1)))
                 }
-                className="mt-1.5 min-h-11 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2 sm:w-24"
+                className={`mt-1.5 sm:w-24 ${fieldClassName}`}
               />
             </label>
             <Button

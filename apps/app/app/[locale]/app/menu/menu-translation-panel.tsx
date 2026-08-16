@@ -4,6 +4,7 @@ import { SparkleIcon, TranslateIcon } from '@phosphor-icons/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
+import { compactFieldClassName, textareaClassName } from '@/components/ui/field';
 
 type TranslationSuggestion = {
   id: string;
@@ -246,7 +247,7 @@ export function MenuTranslationPanel({
                           updateDraft(suggestion.id, { name: event.target.value })
                         }
                         disabled={!row.selected}
-                        className="mt-1 min-h-11 w-full rounded-lg border border-border px-3 text-sm font-semibold disabled:opacity-50"
+                        className={`mt-1 font-semibold ${compactFieldClassName}`}
                       />
                       {suggestion.sourceDescription || row.description ? (
                         <textarea
@@ -256,7 +257,7 @@ export function MenuTranslationPanel({
                           }
                           disabled={!row.selected}
                           rows={2}
-                          className="mt-2 w-full rounded-lg border border-border px-3 py-2 text-sm disabled:opacity-50"
+                          className={`mt-2 ${textareaClassName} text-sm`}
                         />
                       ) : null}
                     </span>

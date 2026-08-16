@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
+import { compactFieldClassName } from '@/components/ui/field';
 import type { MenuItem } from './menu-types';
 
 type MenuModifierTranslationsProps = {
@@ -99,7 +100,7 @@ export function MenuModifierTranslations({
                       [`group:${group.id}`]: event.target.value,
                     }))
                   }
-                  className="mt-1 min-h-11 w-full rounded-lg border border-border px-3 text-sm text-ink-900"
+                  className={`mt-1 ${compactFieldClassName}`}
                 />
               </label>
               <div className="mt-3 space-y-2">
@@ -118,7 +119,7 @@ export function MenuModifierTranslations({
                             [`option:${option.id}`]: event.target.value,
                           }))
                         }
-                        className="mt-1 min-h-11 w-full rounded-lg border border-border px-3 text-sm text-ink-900"
+                        className={`mt-1 ${compactFieldClassName}`}
                       />
                     </label>
                   );

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
+import { fieldClassName } from '@/components/ui/field';
 import { localizedName, type MenuCategory } from './menu-types';
 
 type MenuCategoryDrawerProps = {
@@ -113,7 +114,7 @@ export function MenuCategoryDrawer({
                     onSelect(category.id);
                     onOpenChange(false);
                   }}
-                  className="flex min-h-12 w-full items-center justify-between rounded-xl border border-border px-3 text-left text-sm font-semibold text-ink-900 hover:bg-muted"
+                  className={`flex items-center justify-between text-left text-sm font-semibold hover:bg-muted ${fieldClassName}`}
                 >
                   <span>
                     {label}
@@ -145,7 +146,7 @@ export function MenuCategoryDrawer({
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder={t('categoryPlaceholder')}
-              className="min-h-12 w-full rounded-xl border border-border px-3 text-base outline-none ring-jade-600 focus:ring-2"
+              className={fieldClassName}
             />
           </div>
         </div>
