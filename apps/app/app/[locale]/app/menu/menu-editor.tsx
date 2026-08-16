@@ -10,6 +10,7 @@ import { MenuBatchBar } from './menu-batch-bar';
 import { MenuCategoryCard } from './menu-category-card';
 import { MenuCategoryDrawer } from './menu-category-drawer';
 import { MenuEditorHeader } from './menu-editor-header';
+import { MenuEditorSkeleton } from './menu-editor-skeleton';
 import { MenuImportDrawer } from './menu-import-drawer';
 import { MenuItemDrawer } from './menu-item-drawer';
 import { MenuLanguageDrawer } from './menu-language-drawer';
@@ -218,11 +219,14 @@ export function MenuEditor({
   }
 
   if (!tree) {
-    return (
-      <div className="rounded-2xl border border-border bg-white p-6">
-        {error ? <p className="text-sm text-brand-600">{error}</p> : <p>{t('loading')}</p>}
-      </div>
-    );
+    if (error) {
+      return (
+        <div className="rounded-2xl border border-border bg-white p-6">
+          <p className="text-sm text-brand-600">{error}</p>
+        </div>
+      );
+    }
+    return <MenuEditorSkeleton label={t('loading')} />;
   }
 
   const baseLocale = tree.menu.baseLocale;
