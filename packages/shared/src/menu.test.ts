@@ -4,6 +4,8 @@ import {
   createItemSchema,
   createModifierGroupSchema,
   createModifierSchema,
+  reorderModifierGroupsSchema,
+  updateModifierGroupSchema,
 } from './menu';
 
 describe('createItemSchema', () => {
@@ -65,6 +67,35 @@ describe('modifier schemas', () => {
       createModifierSchema.safeParse({
         name: 'L',
         priceDeltaAmount: 10000,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('创建规格组时可一次带上选项', () => {
+    expect(
+      createModifierGroupSchema.safeParse({
+        name: '辣度',
+        isRequired: true,
+        options: [{ name: '不辣' }, { name: '中辣', priceDeltaAmount: 5000 }],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('更新规格组可同步选项并改排序', () => {
+    expect(
+      updateModifierGroupSchema.safeParse({
+        name: '辣度',
+        sortOrder: 1,
+        options: [{ id: '00000000-0000-4000-8000-000000000001', name: '不辣' }],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('重排必须是 uuid 列表', () => {
+    expect(reorderModifierGroupsSchema.safeParse({ orderedIds: [] }).success).toBe(false);
+    expect(
+      reorderModifierGroupsSchema.safeParse({
+        orderedIds: ['00000000-0000-4000-8000-000000000001'],
       }).success,
     ).toBe(true);
   });

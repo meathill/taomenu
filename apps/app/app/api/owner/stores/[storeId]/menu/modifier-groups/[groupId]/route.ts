@@ -1,4 +1,9 @@
-import { deleteModifierGroup, updateModifierGroup } from '@taomenu/db';
+import {
+  deleteModifierGroup,
+  MenuValidationError,
+  saveModifierGroup,
+  updateModifierGroup,
+} from '@taomenu/db';
 import { updateModifierGroupSchema } from '@taomenu/shared';
 import { badRequest, notFound } from '@/lib/api-error';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
@@ -24,11 +29,30 @@ export async function PATCH(request: Request, context: RouteContext) {
     return badRequest(parsed.error.issues[0]?.message ?? 'Invalid body');
   }
 
-  const result = await updateModifierGroup(owner.storeCtx, owner.db, groupId, parsed.data);
-  if (!result) {
-    return notFound();
+  try {
+    const result =
+      parsed.data.options !== undefined
+        ? await saveModifierGroup(owner.storeCtx, owner.db, {
+            groupId,
+            name: parsed.data.name,
+            isRequired: parsed.data.isRequired,
+            minSelected: parsed.data.minSelected,
+            maxSelected: parsed.data.maxSelected,
+            sortOrder: parsed.data.sortOrder,
+            locale: parsed.data.locale,
+            options: parsed.data.options,
+          })
+        : await updateModifierGroup(owner.storeCtx, owner.db, groupId, parsed.data);
+    if (!result) {
+      return notFound();
+    }
+    return Response.json(result);
+  } catch (error) {
+    if (error instanceof MenuValidationError) {
+      return Response.json({ error: error.message, issues: error.issues }, { status: 422 });
+    }
+    throw error;
   }
-  return Response.json(result);
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {

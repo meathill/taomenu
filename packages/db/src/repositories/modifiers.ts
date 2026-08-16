@@ -128,6 +128,7 @@ export async function createModifierGroup(
     minSelected?: number;
     maxSelected?: number;
     locale?: string;
+    sortOrder?: number;
   },
 ) {
   const item = await db
@@ -147,7 +148,7 @@ export async function createModifierGroup(
     .select({ sortOrder: modifierGroups.sortOrder })
     .from(modifierGroups)
     .where(and(eq(modifierGroups.storeId, ctx.storeId), eq(modifierGroups.itemId, input.itemId)));
-  const sortOrder = (siblings.at(-1)?.sortOrder ?? -1) + 1;
+  const sortOrder = input.sortOrder ?? (siblings.at(-1)?.sortOrder ?? -1) + 1;
   const groupId = crypto.randomUUID();
   const locale = input.locale ?? (await getBaseLocale(ctx, db));
   await assertModifierLocaleAllowed(ctx, db, locale);
@@ -182,6 +183,7 @@ export async function updateModifierGroup(
     minSelected?: number;
     maxSelected?: number;
     locale?: string;
+    sortOrder?: number;
   },
 ) {
   const rows = await db
@@ -199,7 +201,12 @@ export async function updateModifierGroup(
 
   await db
     .update(modifierGroups)
-    .set({ minSelected, maxSelected, isRequired })
+    .set({
+      minSelected,
+      maxSelected,
+      isRequired,
+      sortOrder: input.sortOrder ?? rows[0].sortOrder,
+    })
     .where(and(eq(modifierGroups.id, groupId), eq(modifierGroups.storeId, ctx.storeId)));
 
   if (input.name !== undefined) {
@@ -256,6 +263,7 @@ export async function createModifier(
     name: string;
     priceDeltaAmount?: number;
     locale?: string;
+    sortOrder?: number;
   },
 ) {
   const group = await db
@@ -269,7 +277,7 @@ export async function createModifier(
     .select({ sortOrder: modifiers.sortOrder })
     .from(modifiers)
     .where(and(eq(modifiers.storeId, ctx.storeId), eq(modifiers.modifierGroupId, input.groupId)));
-  const sortOrder = (siblings.at(-1)?.sortOrder ?? -1) + 1;
+  const sortOrder = input.sortOrder ?? (siblings.at(-1)?.sortOrder ?? -1) + 1;
   const modifierId = crypto.randomUUID();
   const locale = input.locale ?? (await getBaseLocale(ctx, db));
   await assertModifierLocaleAllowed(ctx, db, locale);
@@ -308,6 +316,7 @@ export async function updateModifier(
     priceDeltaAmount?: number;
     isAvailable?: boolean;
     locale?: string;
+    sortOrder?: number;
   },
 ) {
   const rows = await db
@@ -322,6 +331,7 @@ export async function updateModifier(
     .set({
       priceDeltaAmount: input.priceDeltaAmount ?? rows[0].priceDeltaAmount,
       isAvailable: input.isAvailable ?? rows[0].isAvailable,
+      sortOrder: input.sortOrder ?? rows[0].sortOrder,
     })
     .where(and(eq(modifiers.id, modifierId), eq(modifiers.storeId, ctx.storeId)));
 

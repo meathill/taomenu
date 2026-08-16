@@ -1,14 +1,18 @@
 'use client';
 
-import {
-  formatCurrency,
-  getCurrencyDecimals,
-  parseCurrencyInput,
-  sanitizeCurrencyInput,
-} from '@taomenu/shared';
-import { useLocale, useTranslations } from 'next-intl';
-import { type FormEvent, useState } from 'react';
+import { PlusIcon } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import {
+  buildGroupSavePayload,
+  createGroupDraft,
+  type ModifierGroupDraft,
+  moveDraft,
+  persistedOrderIds,
+  reconcileModifierDrafts,
+} from './menu-modifier-draft';
+import { MenuModifierGroupFrame } from './menu-modifier-group-frame';
 
 export type ModifierOptionView = {
   id: string;
@@ -40,22 +44,6 @@ type MenuModifiersPanelProps = {
   onClose: () => void;
 };
 
-function groupLabel(group: ModifierGroupView, baseLocale: string): string {
-  return (
-    group.translations.find((t) => t.locale === baseLocale)?.name ||
-    group.translations[0]?.name ||
-    '—'
-  );
-}
-
-function optionLabel(option: ModifierOptionView, baseLocale: string): string {
-  return (
-    option.translations.find((t) => t.locale === baseLocale)?.name ||
-    option.translations[0]?.name ||
-    '—'
-  );
-}
-
 export function MenuModifiersPanel({
   storeId,
   itemId,
@@ -71,107 +59,101 @@ export function MenuModifiersPanel({
 }: MenuModifiersPanelProps) {
   const t = useTranslations('menu');
   const tCommon = useTranslations('common');
-  const locale = useLocale();
-  const hasDecimals = getCurrencyDecimals(currency) > 0;
-  const [groupName, setGroupName] = useState('');
-  const [groupRequired, setGroupRequired] = useState(true);
-  const [optionDraft, setOptionDraft] = useState<{
-    groupId: string;
-    name: string;
-    delta: string;
-  } | null>(null);
+  const [drafts, setDrafts] = useState<ModifierGroupDraft[]>([]);
+  const itemIdRef = useRef(itemId);
 
-  async function handleAddGroup(event: FormEvent) {
-    event.preventDefault();
-    if (!groupName.trim()) return;
-    onBusyAction('addGroup');
-    onError(null);
-    try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/modifier-groups`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: groupName.trim(),
-          isRequired: groupRequired,
-          minSelected: groupRequired ? 1 : 0,
-          maxSelected: groupRequired ? 1 : 3,
-          locale: baseLocale,
-        }),
-      });
-      if (!res.ok) {
-        onError(t('addGroupFailed'));
-        return;
-      }
-      setGroupName('');
-      await onChanged();
-    } finally {
-      onBusyAction(null);
-    }
+  useEffect(() => {
+    const itemChanged = itemIdRef.current !== itemId;
+    itemIdRef.current = itemId;
+    setDrafts((current) =>
+      reconcileModifierDrafts(itemChanged ? [] : current, groups, baseLocale, currency),
+    );
+  }, [baseLocale, currency, groups, itemId]);
+
+  function updateDraft(clientId: string, next: ModifierGroupDraft) {
+    setDrafts((current) => current.map((draft) => (draft.clientId === clientId ? next : draft)));
   }
 
-  async function handleDeleteGroup(groupId: string) {
-    onBusyAction(`delGroup-${groupId}`);
-    onError(null);
-    try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/modifier-groups/${groupId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        onError(t('deleteGroupFailed'));
-        return;
-      }
-      await onChanged();
-    } finally {
-      onBusyAction(null);
-    }
-  }
-
-  async function handleAddOption(event: FormEvent) {
-    event.preventDefault();
-    if (!optionDraft) return;
-    // 留空视为不加价，与旧版 `... || '0'` 一致；加价只允许 0+，负号在输入阶段已被过滤
-    const priceDeltaAmount = optionDraft.delta.trim()
-      ? parseCurrencyInput(optionDraft.delta, currency)
-      : 0;
-    if (!optionDraft.name.trim() || priceDeltaAmount === null) {
+  async function handleSave(draft: ModifierGroupDraft) {
+    const payload = buildGroupSavePayload(draft, baseLocale, currency);
+    if (!payload.ok) {
       onError(t('invalidOption'));
       return;
     }
-    onBusyAction(`saveOption-${optionDraft.groupId}`);
+    const action = `saveGroup-${draft.clientId}`;
+    onBusyAction(action);
     onError(null);
     try {
-      const res = await fetch(
-        `/api/owner/stores/${storeId}/menu/modifier-groups/${optionDraft.groupId}/modifiers`,
+      const response = await fetch(
+        draft.serverId
+          ? `/api/owner/stores/${storeId}/menu/modifier-groups/${draft.serverId}`
+          : `/api/owner/stores/${storeId}/menu/items/${itemId}/modifier-groups`,
         {
-          method: 'POST',
+          method: draft.serverId ? 'PATCH' : 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: optionDraft.name.trim(),
-            priceDeltaAmount,
-            locale: baseLocale,
-          }),
+          body: JSON.stringify(payload.body),
         },
       );
-      if (!res.ok) {
-        onError(t('addOptionFailed'));
+      if (!response.ok) {
+        onError(t(draft.serverId ? 'saveGroupFailed' : 'addGroupFailed'));
         return;
       }
-      setOptionDraft(null);
+      const data = (await response.json()) as { groupId: string };
+      setDrafts((current) =>
+        current.map((row) =>
+          row.clientId === draft.clientId ? { ...row, serverId: data.groupId, dirty: false } : row,
+        ),
+      );
       await onChanged();
     } finally {
       onBusyAction(null);
     }
   }
 
-  async function handleDeleteOption(modifierId: string) {
-    onBusyAction(`delOption-${modifierId}`);
+  async function handleDelete(draft: ModifierGroupDraft) {
+    if (!draft.serverId) {
+      setDrafts((current) => current.filter((row) => row.clientId !== draft.clientId));
+      return;
+    }
+    const action = `delGroup-${draft.serverId}`;
+    onBusyAction(action);
     onError(null);
     try {
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/modifiers/${modifierId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        onError(t('deleteOptionFailed'));
+      const response = await fetch(
+        `/api/owner/stores/${storeId}/menu/modifier-groups/${draft.serverId}`,
+        { method: 'DELETE' },
+      );
+      if (!response.ok) {
+        onError(t('deleteGroupFailed'));
+        return;
+      }
+      setDrafts((current) => current.filter((row) => row.clientId !== draft.clientId));
+      await onChanged();
+    } finally {
+      onBusyAction(null);
+    }
+  }
+
+  async function handleMove(index: number, delta: -1 | 1) {
+    const next = moveDraft(drafts, index, delta);
+    if (next === drafts) return;
+    setDrafts(next);
+    const orderedIds = persistedOrderIds(next);
+    if (orderedIds.length < 2) return;
+    onBusyAction('reorderGroups');
+    onError(null);
+    try {
+      const response = await fetch(
+        `/api/owner/stores/${storeId}/menu/items/${itemId}/modifier-groups`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderedIds }),
+        },
+      );
+      if (!response.ok) {
+        onError(t('reorderGroupsFailed'));
+        setDrafts(drafts);
         return;
       }
       await onChanged();
@@ -181,7 +163,7 @@ export function MenuModifiersPanel({
   }
 
   return (
-    <div className="mt-3 space-y-3 rounded-xl border border-jade-600/30 bg-jade-50/60 p-3">
+    <div className="mt-3 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-jade-700">
@@ -194,135 +176,37 @@ export function MenuModifiersPanel({
         </button>
       </div>
 
-      {groups.length === 0 ? (
+      {drafts.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t('emptyGroupsHint')}</p>
-      ) : null}
+      ) : (
+        <ul className="space-y-3">
+          {drafts.map((draft, index) => (
+            <li key={draft.clientId}>
+              <MenuModifierGroupFrame
+                draft={draft}
+                currency={currency}
+                index={index}
+                total={drafts.length}
+                busyAction={busyAction}
+                onChange={(next) => updateDraft(draft.clientId, next)}
+                onMove={(delta) => void handleMove(index, delta)}
+                onDelete={() => void handleDelete(draft)}
+                onSave={() => void handleSave(draft)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <ul className="space-y-3">
-        {groups.map((group) => (
-          <li key={group.id} className="rounded-xl border border-border bg-white p-3">
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <p className="font-semibold text-ink-900">{groupLabel(group, baseLocale)}</p>
-                <p className="text-xs text-muted-foreground">
-                  {group.isRequired ? t('required') : t('optional')} ·{' '}
-                  {t('chooseRange', { min: group.minSelected, max: group.maxSelected })}
-                </p>
-              </div>
-              <Button
-                type="button"
-                pending={busyAction === `delGroup-${group.id}`}
-                busy={busyAction !== null}
-                className="text-xs font-bold text-brand-600"
-                onClick={() => void handleDeleteGroup(group.id)}
-              >
-                {t('deleteGroup')}
-              </Button>
-            </div>
-            <ul className="mt-2 divide-y divide-border">
-              {group.options.map((option) => (
-                <li key={option.id} className="flex items-center justify-between gap-2 py-2">
-                  <span className="text-sm text-ink-900">
-                    {optionLabel(option, baseLocale)}
-                    {option.priceDeltaAmount > 0 ? (
-                      <span className="ml-1 text-muted-foreground">
-                        +{formatCurrency(option.priceDeltaAmount, currency, locale)}
-                      </span>
-                    ) : null}
-                    {!option.isAvailable ? (
-                      <span className="ml-1 text-xs text-muted-foreground">{t('hiddenParen')}</span>
-                    ) : null}
-                  </span>
-                  <Button
-                    type="button"
-                    pending={busyAction === `delOption-${option.id}`}
-                    busy={busyAction !== null}
-                    className="text-xs font-bold text-brand-600"
-                    onClick={() => void handleDeleteOption(option.id)}
-                  >
-                    {t('deleteOption')}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-            {optionDraft?.groupId === group.id ? (
-              <form onSubmit={(e) => void handleAddOption(e)} className="mt-2 space-y-2">
-                <input
-                  value={optionDraft.name}
-                  onChange={(e) => setOptionDraft({ ...optionDraft, name: e.target.value })}
-                  placeholder={t('optionName')}
-                  className="min-h-11 w-full rounded-xl border border-border px-3 text-sm outline-none ring-jade-600 focus:ring-2"
-                />
-                <input
-                  value={optionDraft.delta}
-                  onChange={(e) =>
-                    setOptionDraft({
-                      ...optionDraft,
-                      delta: sanitizeCurrencyInput(e.target.value, currency),
-                    })
-                  }
-                  placeholder={t('priceDelta')}
-                  inputMode={hasDecimals ? 'decimal' : 'numeric'}
-                  className="min-h-11 w-full rounded-xl border border-border px-3 text-sm tabular-nums outline-none ring-jade-600 focus:ring-2"
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    className="min-h-11 flex-1 rounded-xl border border-border text-xs font-bold"
-                    onClick={() => setOptionDraft(null)}
-                  >
-                    {t('cancel')}
-                  </button>
-                  <Button
-                    type="submit"
-                    pending={busyAction === `saveOption-${optionDraft.groupId}`}
-                    busy={busyAction !== null}
-                    className="min-h-11 flex-1 rounded-xl bg-jade-600 text-xs font-bold text-white"
-                  >
-                    {t('saveOption')}
-                  </Button>
-                </div>
-              </form>
-            ) : (
-              <button
-                type="button"
-                className="mt-2 text-xs font-semibold text-jade-600"
-                onClick={() => setOptionDraft({ groupId: group.id, name: '', delta: '0' })}
-              >
-                {t('addOption')}
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      <form onSubmit={(e) => void handleAddGroup(e)} className="space-y-2 rounded-xl bg-white p-3">
-        <p className="text-sm font-semibold text-ink-900">{t('addGroupTitle')}</p>
-        <input
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-          placeholder={t('groupPlaceholder')}
-          className="min-h-11 w-full rounded-xl border border-border px-3 text-sm outline-none ring-jade-600 focus:ring-2"
-        />
-        <label className="flex items-center gap-2 text-sm text-ink-900">
-          <input
-            type="checkbox"
-            checked={groupRequired}
-            onChange={(e) => setGroupRequired(e.target.checked)}
-            className="size-4 accent-jade-600"
-          />
-          {t('groupRequired')}
-        </label>
-        <Button
-          type="submit"
-          pending={busyAction === 'addGroup'}
-          busy={busyAction !== null}
-          disabled={!groupName.trim()}
-          className="min-h-11 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
-        >
-          {t('addGroup')}
-        </Button>
-      </form>
+      <Button
+        type="button"
+        busy={busyAction !== null}
+        onClick={() => setDrafts((current) => [...current, createGroupDraft()])}
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-white px-3 text-sm font-bold text-ink-900"
+      >
+        <PlusIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
+        {t('addGroup')}
+      </Button>
     </div>
   );
 }
