@@ -170,11 +170,14 @@
 
 ## 落地页图片与演示门店截图管线（2026-08-17）
 
-- 营销站是纯 SSG（Cloudflare Workers Static Assets）：`next.config.ts` 设 `images.unoptimized`，
-  素材预压缩为 WebP 原样输出，避免运行时图片优化器（付费特性/不确定支持）
-- 截图素材规范：`public/screenshots/{slug}/*.webp`（手机截图 780×1688 = 390×844@2x，桌面 1280×800）；
-  hero 场景图（AI 生成）放 `public/images/landing/{slug}/hero.webp`，接入要更新 `lib/landing.ts` 的 `LANDING_HERO`
-- MDX 正文配图用 `Image`/`Screenshot` 组件（`mdx-components.tsx`）；手机截图套 `Screenshot` 手机框
+- 营销站是纯 SSG（Cloudflare Workers Static Assets）。`next/image` 走自定义 loader
+  （`apps/website/image-loader.ts`，对齐 blog-2026 / OpenNext custom loader）：
+  开发环境返回原图；生产走 `/cdn-cgi/image/fit=scale-down,format=auto,width=…`。
+  需要在 menu.dyqr.me 所在 zone 打开 Cloudflare Image Transformations。
+- 截图素材规范：`public/screenshots/{slug}/*.webp`（手机 780×1688，桌面 1280×800）。
+  `Screenshot` 按文件名/宽高判断：竖屏套手机框，横屏（staff / menu-editor / qr-tables / payment）全宽展示。
+  hero 与配图可点击弹出准全屏 dialog。
+  hero 场景图放 `public/images/landing/{slug}/hero.webp`，接入要更新 `lib/landing.ts` 的 `LANDING_HERO`
 - 演示门店造数：`apps/app/scripts/seed-demo-stores.ts`（tsx 运行）直写本地 miniflare D1——
   用 `node:sqlite` + drizzle d1 驱动包装（参考 `packages/db/src/testing/memory-d1.ts`），复用 `@taomenu/db` repository 函数；
   订单状态机必须逐级 transition（submitted→accepted→ready_for_pickup→picked_up），跳级会 INVALID_TRANSITION

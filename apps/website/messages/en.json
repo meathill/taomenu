@@ -10,6 +10,10 @@
     "cta": "Start free",
     "language": "Language"
   },
+  "media": {
+    "expand": "View larger: {alt}",
+    "close": "Close"
+  },
   "home": {
     "badge": "Phone-only setup",
     "title": "Lightweight QR ordering for restaurants, cafés, and banh mi shops",

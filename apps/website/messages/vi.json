@@ -10,6 +10,10 @@
     "cta": "Bắt đầu miễn phí",
     "language": "Ngôn ngữ"
   },
+  "media": {
+    "expand": "Xem ảnh lớn: {alt}",
+    "close": "Đóng"
+  },
   "home": {
     "badge": "Chỉ cần điện thoại",
     "title": "Nhận order bằng mã QR, chỉ cần điện thoại",

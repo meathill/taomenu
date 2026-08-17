@@ -1,8 +1,8 @@
 import { ArrowRightIcon, CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { JsonLd } from '@/components/json-ld';
+import { LightboxImage } from '@/components/lightbox-image';
 import { Link } from '@/i18n/routing';
 import { getLandingContent } from '@/lib/content-sources';
 import { LANDING_HERO, LANDING_RELATED, LANDING_UPDATED_AT, type LandingSlug } from '@/lib/landing';
@@ -95,15 +95,17 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
           <p className="text-base font-semibold leading-relaxed text-ink-900">{answer}</p>
         </div>
         {hero ? (
-          <Image
-            src={hero.src}
-            alt={hero.alt}
-            width={hero.width}
-            height={hero.height}
-            priority
-            className="mt-8 h-auto w-full rounded-2xl border border-border object-cover"
-            sizes="(min-width: 768px) 768px, 100vw"
-          />
+          <div className="mt-8">
+            <LightboxImage
+              src={hero.src}
+              alt={hero.alt}
+              width={hero.width}
+              height={hero.height}
+              priority
+              className="h-auto w-full rounded-2xl border border-border object-cover"
+              sizes="(min-width: 768px) 768px, 100vw"
+            />
+          </div>
         ) : null}
       </header>
 

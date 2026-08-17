@@ -13,9 +13,13 @@ const withMDX = createMDX({
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@taomenu/shared', '@taomenu/ui'],
-  // 纯 SSG（Cloudflare Workers Static Assets）无运行时图片优化器；
-  // 素材已预压缩为 WebP，直接原样输出。
-  images: { unoptimized: true },
+  images: {
+    loader: 'custom',
+    loaderFile: './image-loader.ts',
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1600],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 300],
+  },
 };
 
 export default withNextIntl(withMDX(nextConfig));
