@@ -184,5 +184,6 @@
   本地 EMAIL binding 走真实发送不打印日志时，直接查表拿码
 - 图片批量处理：sips 不支持 WebP 输出；macOS 有 `cwebp`（`cwebp -q 85 in.png -o out.webp`）；
   另有 https://tools.meathill.com/tools/image-converter（浏览器本地批量转换，支持 HEIC）
-- 菜品图（demo 菜单）：Wikimedia Commons API（免 key，`iiurlwidth=800` 取缩略图）搜索下载，
-  标题关键词过滤保证题材正确；已压缩 600px JPEG 进本地 R2
+- 菜品图（demo 菜单）：8 道主菜（phở bò / bún chả / bánh mì / chè ba màu / cà phê sữa đá /
+  trà sữa / xôi xéo / sữa chua nếp cẩm）为统一棚拍 AI 图；其余仍来自 Wikimedia Commons。
+  600px JPEG 进 `scripts/dish-images/`，本地 R2 用 `node scripts/upload-dish-images.ts`
