@@ -179,9 +179,9 @@
       ]
     },
     "menu-qr-cho-quan-an": {
-      "title": "Menu QR cho quán ăn: biến thực đơn giấy thành menu quét là xem",
-      "description": "Tạo menu QR cho quán ăn, cà phê hay cửa hàng. Tự tạo bằng tay miễn phí, hoặc nhập từ ảnh/PDF với Pro.",
-      "answer": "Menu QR là thực đơn mở trên điện thoại khi quét mã. TaoMenu giúp bạn tự tạo miễn phí bằng tay; Pro có thể tạo nhanh từ ảnh hoặc PDF của thực đơn giấy.",
+      "title": "Menu QR cho quán ăn: biến thực đơn giấy thành menu điện tử quét là xem",
+      "description": "Tạo menu điện tử (menu QR) cho quán ăn, cà phê hay cửa hàng. Tự tạo bằng tay miễn phí, hoặc nhập từ ảnh/PDF với Pro.",
+      "answer": "Menu điện tử là thực đơn mở trên điện thoại khi quét mã QR. TaoMenu giúp bạn tự tạo miễn phí bằng tay; Pro có thể tạo nhanh từ ảnh hoặc PDF của thực đơn giấy.",
       "faq": [
         {
           "q": "Khách mở menu QR có cần tải app không?",
@@ -289,6 +289,101 @@
         {
           "q": "Quán có cần máy in bếp không?",
           "a": "Không. Nhân viên xem hàng đợi trên điện thoại và gọi số khi món sẵn sàng."
+        }
+      ]
+    },
+    "phan-mem-order-tiem-banh": {
+      "title": "Phần mềm order tiệm bánh: hết cảnh chen chúc giờ cao điểm",
+      "description": "Khách quét mã QR tự chọn size, độ cay và topping; món hết hiện ngay trên menu. Phù hợp tiệm bánh mì, bánh ngọt, trà sữa mang đi.",
+      "answer": "TaoMenu giúp tiệm bánh nhận order trên điện thoại: khách quét một mã lấy món chung, tự chọn size và tùy chọn, món hết hiển thị rõ — không cần POS.",
+      "faq": [
+        {
+          "q": "Khách có chọn được size và vị không?",
+          "a": "Có. Mỗi món có thể kèm nhóm tùy chọn như size, độ cay, topping; giá tự cập nhật."
+        },
+        {
+          "q": "Món hết thì sao?",
+          "a": "Chỉ cần báo hết trong app, món đó hiển thị mờ và không thể đặt trên điện thoại khách."
+        },
+        {
+          "q": "Tiệm không có chỗ ngồi dùng được không?",
+          "a": "Được. Một mã lấy món chung ở quầy, khách order và nhận số thứ tự."
+        }
+      ]
+    },
+    "phan-mem-order-quan-cafe-takeaway": {
+      "title": "Phần mềm order quán cafe takeaway: khách tự chọn đường, đá, sữa",
+      "description": "Khách quét mã chọn cà phê, trà sữa và tự điều chỉnh đường/đá/topping; order về thẳng quầy pha chế. Hết nhầm lẫn giờ cao điểm.",
+      "answer": "TaoMenu đưa thực đơn lên điện thoại: khách tự chọn đường, đá, sữa và topping; order hiện ngay trong hàng đợi của quán — nhân viên làm theo đúng lựa chọn.",
+      "faq": [
+        {
+          "q": "Khách tự chọn đường đá được không?",
+          "a": "Được. Mỗi món kèm nhóm tùy chọn như đường, đá, sữa hoặc topping; khách chọn xong order về đúng ý."
+        },
+        {
+          "q": "Đông khách có bị loạn không?",
+          "a": "Không. Mỗi order có số thứ tự trong ngày; nhân viên làm theo hàng đợi trên điện thoại."
+        },
+        {
+          "q": "Khách nước ngoài dùng được không?",
+          "a": "Được. Menu hiển thị theo ngôn ngữ khách chọn; Pro hỗ trợ tối đa 5 ngôn ngữ."
+        }
+      ]
+    },
+    "phan-mem-order-quan-an-sang": {
+      "title": "Phần mềm order quán ăn sáng: hết cảnh xếp hàng giờ cao điểm",
+      "description": "Khách quét mã tự chọn món và sửa theo ý: ít nước, nhiều hành. Order về thẳng quầy, khách đặt trước đến là lấy.",
+      "answer": "TaoMenu giúp quán ăn sáng nhận order trên điện thoại: khách tự chọn món và tùy chỉnh, order hiện trong hàng đợi — không cần POS.",
+      "faq": [
+        {
+          "q": "Khách sửa món theo ý được không?",
+          "a": "Được. Mỗi món có thể kèm tùy chọn như ít nước, nhiều hành; khách tự chọn trước khi gửi order."
+        },
+        {
+          "q": "Quán ít nhân viên có dùng được không?",
+          "a": "Được. Nhân viên chỉ cần điện thoại; order tự về hàng đợi, không cần người ghi món."
+        },
+        {
+          "q": "Khách quen đặt trước được không?",
+          "a": "Được. Khách tự đặt món quen thuộc trên điện thoại và đến lấy khi món xong."
+        }
+      ]
+    },
+    "phan-mem-order-quan-do-an-nhanh": {
+      "title": "Phần mềm order quán đồ ăn nhanh: hết cảnh chen chúc chờ lấy đồ",
+      "description": "Khách quét mã chọn combo và đồ uống kèm; order về thẳng hàng đợi, số lấy món hiện trên điện thoại.",
+      "answer": "TaoMenu giúp quán đồ ăn nhanh nhận order trên điện thoại: khách tự chọn combo, chọn nước đi kèm; nhân viên làm theo số thứ tự.",
+      "faq": [
+        {
+          "q": "Combo kèm lựa chọn được không?",
+          "a": "Được. Combo có thể bắt buộc chọn nước hoặc tùy chọn sốt; giá tự cập nhật."
+        },
+        {
+          "q": "Khách theo dõi món thế nào?",
+          "a": "Mỗi order có số thứ tự trong ngày; khách xem trạng thái trên điện thoại."
+        },
+        {
+          "q": "Quán cần máy in không?",
+          "a": "Không. Hàng đợi hiện trên điện thoại nhân viên, không cần máy in bếp."
+        }
+      ]
+    },
+    "phan-mem-order-quan-che": {
+      "title": "Phần mềm order quán chè: khách tự chọn nóng lạnh, đường, topping",
+      "description": "Khách quét mã chọn chè nóng/lạnh, độ ngọt và topping trên điện thoại; order về đúng như chọn — hết nhầm lẫn.",
+      "answer": "TaoMenu giúp quán chè nhận order trên điện thoại: khách tự chọn nhiệt độ, đường và topping; order về hàng đợi đúng ý.",
+      "faq": [
+        {
+          "q": "Khách chọn nóng lạnh được không?",
+          "a": "Được. Mỗi món kèm nhóm tùy chọn như nhiệt độ, độ đường và topping."
+        },
+        {
+          "q": "Chọn topping có tính giá không?",
+          "a": "Có. Mỗi topping có giá riêng; tổng tiền tự cập nhật trên màn hình."
+        },
+        {
+          "q": "Khách du lịch tự order được không?",
+          "a": "Được. Menu đa ngôn ngữ giúp khách nước ngoài tự đọc và gọi món đúng ý."
         }
       ]
     }

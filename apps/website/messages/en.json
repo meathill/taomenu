@@ -291,6 +291,101 @@
           "a": "No. Staff see the queue on their phones and call out numbers when ready."
         }
       ]
+    },
+    "phan-mem-order-tiem-banh": {
+      "title": "Bakery ordering software: end the rush-hour crush",
+      "description": "Customers scan a QR code, pick size, spice level and toppings; sold-out items show right on the menu. Built for banh mi shops, bakeries and takeaway milk tea.",
+      "answer": "TaoMenu helps bakeries take orders on a phone: customers scan one shared pickup code, choose size and options, and sold-out items are clearly shown — no POS needed.",
+      "faq": [
+        {
+          "q": "Can customers pick size and flavor?",
+          "a": "Yes. Each item can have option groups like size, spice level or toppings; the price updates automatically."
+        },
+        {
+          "q": "What happens when an item sells out?",
+          "a": "Mark it sold out in the app — it goes grey and can no longer be ordered from the customer’s phone."
+        },
+        {
+          "q": "Can a shop without seating use it?",
+          "a": "Yes. One shared pickup code at the counter; customers order and get a pickup number."
+        }
+      ]
+    },
+    "phan-mem-order-quan-cafe-takeaway": {
+      "title": "Cafe takeaway ordering software: customers choose sugar, ice and milk",
+      "description": "Customers scan a code, pick coffee or milk tea and adjust sugar, ice and toppings; orders land straight in the brew queue. No more mix-ups at rush hour.",
+      "answer": "TaoMenu puts the menu on the phone: customers choose sugar, ice, milk and toppings; orders appear in the shop’s queue — staff follow exactly what was chosen.",
+      "faq": [
+        {
+          "q": "Can customers choose sugar and ice?",
+          "a": "Yes. Each item can have option groups like sugar, ice, milk or toppings; orders arrive exactly as chosen."
+        },
+        {
+          "q": "Does it get chaotic when busy?",
+          "a": "No. Every order gets a daily pickup number; staff follow the queue on their phones."
+        },
+        {
+          "q": "Can foreign tourists use it?",
+          "a": "Yes. The menu shows in the language guests choose; Pro supports up to 5 languages."
+        }
+      ]
+    },
+    "phan-mem-order-quan-an-sang": {
+      "title": "Breakfast shop ordering software: end the morning queue",
+      "description": "Customers scan a code, pick their meal and customize it: less broth, extra onion. Orders reach the counter instantly; regulars can order ahead and pick up on arrival.",
+      "answer": "TaoMenu helps breakfast shops take orders on a phone: customers pick and customize their meal, orders appear in the queue — no POS needed.",
+      "faq": [
+        {
+          "q": "Can customers customize their meal?",
+          "a": "Yes. Each item can have options like less broth or extra onion; customers choose before sending the order."
+        },
+        {
+          "q": "Does it work with few staff?",
+          "a": "Yes. Staff only need a phone; orders arrive in the queue automatically, no order-taker needed."
+        },
+        {
+          "q": "Can regulars order ahead?",
+          "a": "Yes. Regulars order their usual meal on their phone and pick it up when ready."
+        }
+      ]
+    },
+    "phan-mem-order-quan-do-an-nhanh": {
+      "title": "Fast food ordering software: no more crowding at the counter",
+      "description": "Customers scan a code, pick a combo and the drink that goes with it; orders land in the queue and pickup numbers show on their phones.",
+      "answer": "TaoMenu helps fast food shops take orders on a phone: customers pick combos and choose their drink; staff follow the pickup numbers.",
+      "faq": [
+        {
+          "q": "Can combos include choices?",
+          "a": "Yes. A combo can require choosing a drink or offer sauce options; the price updates automatically."
+        },
+        {
+          "q": "How do customers follow their order?",
+          "a": "Every order gets a daily pickup number; customers watch the status on their phones."
+        },
+        {
+          "q": "Does the shop need a printer?",
+          "a": "No. The queue lives on staff phones; no kitchen printer needed."
+        }
+      ]
+    },
+    "phan-mem-order-quan-che": {
+      "title": "Dessert shop ordering software: customers choose hot or cold, sugar and toppings",
+      "description": "Customers scan a code and pick hot or cold chè, sugar level and toppings on their phone; orders arrive exactly as chosen — no mix-ups.",
+      "answer": "TaoMenu helps dessert shops take orders on a phone: customers choose temperature, sweetness and toppings; orders land in the queue as chosen.",
+      "faq": [
+        {
+          "q": "Can customers choose hot or cold?",
+          "a": "Yes. Each item can have option groups like temperature, sugar level and toppings."
+        },
+        {
+          "q": "Do toppings cost extra?",
+          "a": "Yes. Each topping has its own price; the total updates automatically on screen."
+        },
+        {
+          "q": "Can tourists order by themselves?",
+          "a": "Yes. The multilingual menu helps foreign guests read and order exactly what they want."
+        }
+      ]
     }
   }
 }
