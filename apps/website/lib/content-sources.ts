@@ -82,6 +82,36 @@ export const landingContentLoaders: Record<LandingSlug, LocaleLoaders> = {
     ja: () => import('@/content/landing/phan-mem-order-quan-banh-mi/ja.mdx'),
     vi: () => import('@/content/landing/phan-mem-order-quan-banh-mi/vi.mdx'),
   },
+  'phan-mem-order-tiem-banh': {
+    en: () => import('@/content/landing/phan-mem-order-tiem-banh/en.mdx'),
+    zh: () => import('@/content/landing/phan-mem-order-tiem-banh/zh.mdx'),
+    ja: () => import('@/content/landing/phan-mem-order-tiem-banh/ja.mdx'),
+    vi: () => import('@/content/landing/phan-mem-order-tiem-banh/vi.mdx'),
+  },
+  'phan-mem-order-quan-cafe-takeaway': {
+    en: () => import('@/content/landing/phan-mem-order-quan-cafe-takeaway/en.mdx'),
+    zh: () => import('@/content/landing/phan-mem-order-quan-cafe-takeaway/zh.mdx'),
+    ja: () => import('@/content/landing/phan-mem-order-quan-cafe-takeaway/ja.mdx'),
+    vi: () => import('@/content/landing/phan-mem-order-quan-cafe-takeaway/vi.mdx'),
+  },
+  'phan-mem-order-quan-an-sang': {
+    en: () => import('@/content/landing/phan-mem-order-quan-an-sang/en.mdx'),
+    zh: () => import('@/content/landing/phan-mem-order-quan-an-sang/zh.mdx'),
+    ja: () => import('@/content/landing/phan-mem-order-quan-an-sang/ja.mdx'),
+    vi: () => import('@/content/landing/phan-mem-order-quan-an-sang/vi.mdx'),
+  },
+  'phan-mem-order-quan-do-an-nhanh': {
+    en: () => import('@/content/landing/phan-mem-order-quan-do-an-nhanh/en.mdx'),
+    zh: () => import('@/content/landing/phan-mem-order-quan-do-an-nhanh/zh.mdx'),
+    ja: () => import('@/content/landing/phan-mem-order-quan-do-an-nhanh/ja.mdx'),
+    vi: () => import('@/content/landing/phan-mem-order-quan-do-an-nhanh/vi.mdx'),
+  },
+  'phan-mem-order-quan-che': {
+    en: () => import('@/content/landing/phan-mem-order-quan-che/en.mdx'),
+    zh: () => import('@/content/landing/phan-mem-order-quan-che/zh.mdx'),
+    ja: () => import('@/content/landing/phan-mem-order-quan-che/ja.mdx'),
+    vi: () => import('@/content/landing/phan-mem-order-quan-che/vi.mdx'),
+  },
 };
 
 function pickLoader(loaders: LocaleLoaders, locale: string): ContentLoader | null {

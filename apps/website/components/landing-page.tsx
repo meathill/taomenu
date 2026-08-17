@@ -1,10 +1,11 @@
 import { ArrowRightIcon, CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { JsonLd } from '@/components/json-ld';
 import { Link } from '@/i18n/routing';
 import { getLandingContent } from '@/lib/content-sources';
-import { LANDING_RELATED, LANDING_UPDATED_AT, type LandingSlug } from '@/lib/landing';
+import { LANDING_HERO, LANDING_RELATED, LANDING_UPDATED_AT, type LandingSlug } from '@/lib/landing';
 import { absoluteWebsiteUrl } from '@/lib/seo';
 import { getAppSignupUrl } from '@/lib/site';
 
@@ -30,6 +31,7 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
   }
   const faq = tSlug.raw('faq') as FaqItem[];
   const related = LANDING_RELATED[slug];
+  const hero = LANDING_HERO[slug];
   const title = tSlug('title');
   const description = tSlug('description');
   const answer = tSlug('answer');
@@ -92,6 +94,17 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
         <div className="mt-6 rounded-2xl border border-brand-200 bg-brand-50 p-5">
           <p className="text-base font-semibold leading-relaxed text-ink-900">{answer}</p>
         </div>
+        {hero ? (
+          <Image
+            src={hero.src}
+            alt={hero.alt}
+            width={hero.width}
+            height={hero.height}
+            priority
+            className="mt-8 h-auto w-full rounded-2xl border border-border object-cover"
+            sizes="(min-width: 768px) 768px, 100vw"
+          />
+        ) : null}
       </header>
 
       <div className="doc-prose mt-8">
