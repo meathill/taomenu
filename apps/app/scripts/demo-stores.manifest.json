@@ -1,0 +1,212 @@
+{
+  "ownerEmail": "demo@taomenu.app",
+  "stores": {
+    "nha-hang-pho-xua": {
+      "storeId": "ce6d533a-295b-4e80-8306-037e2bc6639d",
+      "name": "Nhà hàng Phố Xưa",
+      "plan": "pro",
+      "imageKeys": {
+        "goi-cuon": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/5ba38e4d-8151-41d0-8950-9bdb14e83c56/0bdae9e7-6b0d-4184-a536-20da9542c20a.jpg",
+        "nem-ran": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/383c1719-5b99-4d13-aff8-10f5438e95c2/bb5dc1a5-3c0e-499e-9421-239b3fc3c001.jpg",
+        "pho-bo": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/3a60279c-2270-4a42-a7c7-6c6243f11126/38651750-cd7e-44b9-a8c6-4c86c40acdd1.jpg",
+        "bun-cha": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/ef9a29fc-e845-4599-b4c8-e8a0bdb2f744/4c2c9e45-6cba-4fc2-a260-cdbe8ddcb13d.jpg",
+        "com-tam": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/fd2254b4-7793-4ce4-b6ce-551d7a7cb2bb/24d05e12-0140-41ce-8b74-60d875faa6a9.jpg",
+        "caphe-sua-da": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/c357e7f7-c559-44e8-a540-20e15fddec03/457e0e81-6142-4137-8c60-5dc2bed0d2e4.jpg",
+        "tra-sen": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/7b7cbc69-8b8d-48e9-a25f-06431ef3875a/47b7cacf-33b1-4be0-9ded-2a624554af79.jpg",
+        "che-ba-mau": "menu/ce6d533a-295b-4e80-8306-037e2bc6639d/4339ed0a-7781-4d54-84c4-f84e0905495f/d2824302-a189-4a00-863e-542651d1ebd7.jpg"
+      },
+      "tables": {
+        "1": {
+          "id": "12b587e7-0f7a-4e35-8fb9-5acd303664a7",
+          "token": "vu0eCL3PGAs9kM5MYeGSismMUdssofA1"
+        },
+        "2": {
+          "id": "83b1abbf-1bad-441f-be81-ecd369c5d2fb",
+          "token": "kHHRTwtcEvZRgyvUt_h2mC39232b-E4X"
+        },
+        "3": {
+          "id": "69b08ff4-0c8a-40a0-a7e4-9a52e247155e",
+          "token": "CisWLNyEvfr0MJnOqt_1pzna-ZgtAoTK"
+        },
+        "4": {
+          "id": "8c5cca71-9fb4-4ccb-9f03-921ba7f9a4c0",
+          "token": "LNzlt_wD6p3NUtGuqJY450h4bsGodYTj"
+        },
+        "5": {
+          "id": "dff403df-675b-442b-b662-9c7b25c65ac2",
+          "token": "9W5Di43IdSDp3AW7xovABpDFjUgQotmz"
+        },
+        "6": {
+          "id": "100cbf2b-d506-4762-8685-601d342e5bac",
+          "token": "CoFbxdKVfH9oPFGAIedjhoi3yTs1P2uz"
+        }
+      },
+      "pickupPoints": {},
+      "orders": {
+        "pho-table": {
+          "displayNumber": 1,
+          "pickupNumber": null,
+          "publicToken": "6iFCeBGRGZsmuV6xt2UFSScL0kZJYDsC",
+          "status": "accepted"
+        },
+        "bun-table": {
+          "displayNumber": 2,
+          "pickupNumber": null,
+          "publicToken": "LI-x28LgarMQQpi1gxM0gzt1CTLJ18H_",
+          "status": "served"
+        }
+      }
+    },
+    "tiem-banh-mi-sai-gon": {
+      "storeId": "f8333067-7263-408e-9d58-a01100b74249",
+      "name": "Tiệm Bánh Mì Sài Gòn",
+      "plan": "free",
+      "imageKeys": {
+        "banh-mi-thit-nguoi": "menu/f8333067-7263-408e-9d58-a01100b74249/5329b37c-a4e1-4b0e-9601-f39f032ab995/ffb10c72-ecbc-4faa-ac90-329ec8a12583.jpg",
+        "banh-mi-ga": "menu/f8333067-7263-408e-9d58-a01100b74249/e4aaddd5-0057-47a5-8498-58a04a38debc/a494429c-809c-4b28-bf79-04a1828dcaa9.jpg",
+        "banh-mi-dac-biet": "menu/f8333067-7263-408e-9d58-a01100b74249/57457036-8aed-4d5b-88ab-07eb0a490ec2/2a43e041-f271-40ce-b8c3-8589b3d2050a.jpg",
+        "banh-bong-lan": "menu/f8333067-7263-408e-9d58-a01100b74249/b099404e-aaf7-40b5-a1f3-0db19b8f0dd9/68f96d35-9265-4ed2-825e-a70e6e876103.jpg",
+        "panna-cotta": "menu/f8333067-7263-408e-9d58-a01100b74249/65c5a467-6727-41f1-882a-934b2c6edec9/d608339b-ec0a-4cb7-b89c-ede37ae9e3d6.jpg"
+      },
+      "tables": {},
+      "pickupPoints": {
+        "Quầy lấy bánh": {
+          "id": "18a1a6d5-7e42-4621-a185-72da8a5578af",
+          "token": "_Ud_25j6Enw29k7-oQeydayPXe8xRUea"
+        }
+      },
+      "orders": {
+        "pickup-bmi": {
+          "displayNumber": 1,
+          "pickupNumber": 1,
+          "publicToken": "O9LBcVsQw0AF9b8ZxUjcHYjlYQig7WAS",
+          "status": "ready_for_pickup"
+        },
+        "pickup-banh-ngot": {
+          "displayNumber": 2,
+          "pickupNumber": 2,
+          "publicToken": "48M9biroScExALyMk3aQ568Rd_udKWpQ",
+          "status": "picked_up"
+        }
+      }
+    },
+    "ca-phe-nhanh-corner": {
+      "storeId": "0e63ac11-bb80-41e6-b616-8a6b475a6d11",
+      "name": "Cà Phê Nhanh Corner",
+      "plan": "free",
+      "imageKeys": {
+        "caphe-sua-da": "menu/0e63ac11-bb80-41e6-b616-8a6b475a6d11/b9fde994-6a91-471a-bc8f-5d1a6b06ccdd/9e117a21-e7a9-4cd0-8979-a1d58845e01b.jpg",
+        "caphe-den": "menu/0e63ac11-bb80-41e6-b616-8a6b475a6d11/4dd554db-558a-4960-b26c-b428c7dd7e5d/5e7b06a0-f5e4-44e3-baff-4def1866378d.jpg",
+        "tra-sua": "menu/0e63ac11-bb80-41e6-b616-8a6b475a6d11/96c32be3-4a83-4708-8fee-0032ddcc0001/5431905a-0f74-4200-9ff6-853141780bd2.jpg",
+        "sinh-to-bo": "menu/0e63ac11-bb80-41e6-b616-8a6b475a6d11/5e946aa5-c985-4dbd-8ddd-2012213d49c7/53c3b761-ef43-49ca-a6cf-4476e6474620.jpg"
+      },
+      "tables": {},
+      "pickupPoints": {
+        "Quầy pickup": {
+          "id": "06057f22-e4b2-4952-a27a-478d0170b9e6",
+          "token": "ArmBMaKowfxPbfzLwl8tMGeTgiB1KJui"
+        }
+      },
+      "orders": {
+        "pickup-cafe": {
+          "displayNumber": 1,
+          "pickupNumber": 1,
+          "publicToken": "COpg2h__Gc_5738cvcTKlrEgs4dvJz-9",
+          "status": "ready_for_pickup"
+        }
+      }
+    },
+    "quan-an-sang-binh-minh": {
+      "storeId": "30c22527-3833-44c4-b39a-ae7693d39c79",
+      "name": "Quán Ăn Sáng Bình Minh",
+      "plan": "free",
+      "imageKeys": {
+        "pho-ga": "menu/30c22527-3833-44c4-b39a-ae7693d39c79/f90b43e8-9471-4220-8302-fbb111840667/951ce193-5d47-405a-a098-e7a76e5da961.jpg",
+        "bun-dau": "menu/30c22527-3833-44c4-b39a-ae7693d39c79/fa8733f5-a595-4f5a-bc72-a7d72902f5ad/2fc29e02-3e54-43b0-816b-b0d6c87300e8.jpg",
+        "xoi-xeo": "menu/30c22527-3833-44c4-b39a-ae7693d39c79/e21d2ef8-acd9-410e-acae-5fb9e1a9c37c/ab4f7df1-7802-45e7-acf5-dc6df916b780.jpg",
+        "banh-mi-op-la": "menu/30c22527-3833-44c4-b39a-ae7693d39c79/9a757980-78ec-44dc-8198-bcc20909e6b1/1bc33256-cca3-4bb6-b02a-3ecbab5624f3.jpg",
+        "sua-dau-nanh": "menu/30c22527-3833-44c4-b39a-ae7693d39c79/20126c72-8ad8-426d-a497-201dd616a3f6/5666997f-5d46-4d57-844c-1324471ba3db.jpg"
+      },
+      "tables": {
+        "1": {
+          "id": "fcf76a5d-3d08-426e-9890-17cbf9c7b0cd",
+          "token": "9ZZCfsE1WkehurDEEqgiLruPKKv-cCXs"
+        },
+        "2": {
+          "id": "37e5fea2-315c-47e3-845a-2a5a55b52ec5",
+          "token": "O3nsqAhrGmVHmvZF_T-tn-a417qM72Tp"
+        },
+        "3": {
+          "id": "c801f571-e47c-427f-b529-699af48b7c0b",
+          "token": "joPr0GtfkTz1uU6dgNetUS90xTQkjM9K"
+        }
+      },
+      "pickupPoints": {
+        "Quầy lấy món": {
+          "id": "e600644b-6124-4e98-ad9b-7a81ab2fa9cc",
+          "token": "Wx0zojTPJM1I1nqgjqZq7T0E83h3ejOd"
+        }
+      },
+      "orders": {
+        "pickup-sang": {
+          "displayNumber": 1,
+          "pickupNumber": 1,
+          "publicToken": "58Hpz9zY1EqghplXxfg41z4q2zsem43d",
+          "status": "ready_for_pickup"
+        }
+      }
+    },
+    "fastfood-viet": {
+      "storeId": "832ef946-47c9-4ddd-a643-3835033688ce",
+      "name": "FastFood Việt",
+      "plan": "free",
+      "imageKeys": {
+        "combo-ga-ran": "menu/832ef946-47c9-4ddd-a643-3835033688ce/2cd0f84a-186e-45dd-b8fd-6295d2aceb47/9de021a9-169e-4661-8547-2ff332d53845.jpg",
+        "combo-com-ga": "menu/832ef946-47c9-4ddd-a643-3835033688ce/baedc0c2-ac08-4185-956a-b5ddba0a0bca/50083793-a680-485a-9e9c-f28d35ac2fbd.jpg",
+        "com-tam": "menu/832ef946-47c9-4ddd-a643-3835033688ce/7874f055-a96b-4e77-b3d2-67281a360b4b/be1a0a89-1b18-40fa-a52c-7a5bc7ef7b2a.jpg",
+        "ga-ran": "menu/832ef946-47c9-4ddd-a643-3835033688ce/8c2e5418-d147-4bc7-929e-c01cb66621b8/be097a90-3232-44dd-9e3c-5c4498c98def.jpg",
+        "khoai-tay": "menu/832ef946-47c9-4ddd-a643-3835033688ce/db8d81d9-16a0-436d-aff3-ee3d3bf22fb7/c031e130-c0f4-43fa-a04e-47d345b22bb2.jpg"
+      },
+      "tables": {},
+      "pickupPoints": {
+        "Quầy lấy đồ": {
+          "id": "4aa8e036-992c-4d12-8667-2561fbd2aae2",
+          "token": "JcJ90alGJZ3rmpY38XqQ_tD8FK_O9-zS"
+        }
+      },
+      "orders": {
+        "pickup-fastfood": {
+          "displayNumber": 1,
+          "pickupNumber": 1,
+          "publicToken": "nhwJHNd8cObHM05fIryauNYuqJsf3a__",
+          "status": "ready_for_pickup"
+        }
+      }
+    },
+    "che-3-mien": {
+      "storeId": "60530062-3b2c-4850-941b-14633ef2d965",
+      "name": "Chè 3 Miền",
+      "plan": "free",
+      "imageKeys": {
+        "che-ba-mau": "menu/60530062-3b2c-4850-941b-14633ef2d965/8aba4e0d-6bc9-4304-8c95-d1c474acc892/817965bd-8cff-4456-a1d4-cd3fea4cfb33.jpg",
+        "che-buoi": "menu/60530062-3b2c-4850-941b-14633ef2d965/9565a2fe-4281-4706-8c04-7bed16d3eecb/de960b38-56de-48a9-81b0-995978bc08b5.jpg",
+        "sua-chua-nep-cam": "menu/60530062-3b2c-4850-941b-14633ef2d965/d6eb09f7-56c4-4cfd-bd9e-a98a156b57cd/703e67fe-9169-4f10-9ef4-b1e8714d1b86.jpg"
+      },
+      "tables": {},
+      "pickupPoints": {
+        "Quầy chè": {
+          "id": "485cf3d9-4e6e-4a0a-9329-6a3c22189081",
+          "token": "bQ-4hsMtfULkq--il4z4eV6BCsx_dA8t"
+        }
+      },
+      "orders": {
+        "pickup-che": {
+          "displayNumber": 1,
+          "pickupNumber": 1,
+          "publicToken": "ZkyU1JAcwLutPJOBuZ0ycpkySFPGIjG9",
+          "status": "ready_for_pickup"
+        }
+      }
+    }
+  }
+}
