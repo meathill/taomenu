@@ -1,26 +1,38 @@
-# 升级 SEO + 丰富首页 + 7 个越南语落地页（2026-08-16）
+# #6 越南落地页真实感升级（2026-08-17）
 
-依据 `docs/KEYWORD_RESEARCH.md`，落地首页定位、结构化数据与高意图落地页。
+依据 issue #6，把越南落地页从「纯文字」升级为「真实感」：hero 场景图（用户 GPT+/Grok 生成）+ 真实 app 截图（本会话产出）+ 菜品图（免费图库下载）。
 
-## 内容方向（2026-08-16 用户确认）
+## 阶段 A：落地页图片基建
 
-- **核心痛点 = 外国游客语言障碍**：游客看不懂菜单、服务员口语难交流 → 扫码点单的必要性
-- **保留差异点**：手机管理 / 顾客免装 App / 免费开始 / 无需 POS
-- **付款口径**：不把"不代收餐费"当卖点；表述为"目前顾客直接付款，在线收款正在开发中"
-- **增值功能**：AI 菜品照片美化（Pro 已上线）+ 促销套餐 / 会员系统（规划中，Coming soon）
+- [ ] mdx-components.tsx 新增 `Image`（next/image）与 `Screenshot`（手机框 mockup）组件
+- [ ] landing-page.tsx 加 hero 图槽；lib/landing.ts 加 `LANDING_HERO` 清单
+- [ ] public/images/landing/{slug}/ 目录 + 命名规范 README
 
-## 任务分解
+## 阶段 B：截图管线
 
-- [x] 阶段 1：SEO 基建 — metadataBase、OG/Twitter、canonical helper、WebSite/Organization JSON-LD、OG 图（commit 4973f9b）
-- [x] 阶段 3：落地页基建 — lib/landing.ts、app/[locale]/[slug]/page.tsx、sitemap 扩展（commit c98fbbe）
-- [x] 阶段 2：首页内容 — 4 语言 messages + page.tsx 区块（痛点区/差异点/如何运作/场景/增值功能/FAQ/CTA）+ FAQPage JSON-LD（commit c98fbbe）
-- [x] 阶段 4：7 个落地页内容（content/landing/{slug}/{locale}.mdx × 28，commit 815c446）
-- [x] 回归：format / typecheck / test（210 例）/ build 全绿；浏览器验证 HTML/OG/canonical/sitemap
-- [x] 更新 DEV_NOTE.md、清理 WIP.md
+- [ ] 造数脚本 scripts/seed-demo-stores.ts：写本地 D1，建 6 个演示门店（面包/咖啡外带/早餐/快餐/chè/通用餐厅），含 modifier、多语言、餐桌/取餐码、预置各状态订单
+- [ ] 菜品图：免费图库下载 → image-converter 工具转 WebP（480-640px q80）→ 本地 R2
+- [ ] 本地起 app，OTP 登录，Chrome DevTools 截全流程：顾客菜单/修改器/购物车/订单状态/请求结账 + 员工菜单编辑器/订单看板/收款 + 多语言游客场景
+- [ ] 截图转 WebP 存 public/screenshots/{slug}/
+
+## 阶段 C：#6 内容
+
+- [ ] 5 新垂直页：phan-mem-order-tiem-banh / quan-cafe-takeaway / quan-an-sang / quan-do-an-nhanh / quan-che
+- [ ] 4 核心页优化：phan-mem-order-nha-hang / menu-qr-cho-quan-an / phan-mem-order-tren-dien-thoai / menu-da-ngon-ngu
+- [ ] 每页内嵌截图 + hero 槽；4 语言 messages + MDX
+
+## 阶段 D：图片 prompt
+
+- [ ] issue #6 comments：每页 hero 场景图 prompt + 菜品图 prompt + 输出规格
+
+## 阶段 E：回归收尾
+
+- [ ] format / typecheck / test / build
+- [ ] 浏览器验证页面 200、图片渲染、sitemap 含新 URL
+- [ ] 更新 docs/KEYWORD_RESEARCH.md §3.2；按阶段 commit；清理 WIP.md
 
 ## 关键决策
 
-- 落地页 URL 直接 `/{locale}/{slug}`，与 docs slug 不冲突；非法 slug → notFound
-- FAQ 只写真实产品事实；"规划中"功能明确标注 Coming soon，不编造已上线
-- 内容页 force-static，与现有 doc 页一致
-- 不伪造评分型 JSON-LD；不做 llms.txt
+- 图片处理统一走 https://tools.meathill.com/tools/image-converter（浏览器本地转换，支持批量/WebP/尺寸/质量），不引入 sharp
+- hero 图用户产出后放 public/images/landing/{slug}/，本会话先留槽位与 prompt
+- 造数走 @taomenu/db repo 函数直写本地 D1（miniflare state），不走 UI e2e

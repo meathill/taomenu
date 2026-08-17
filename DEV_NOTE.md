@@ -167,3 +167,22 @@
 - 客户端导航的即时反馈要用 `useLinkStatus`（`next/link`，`useOptimistic` 实现，点击瞬间 pending 即 true）：
   `components/navigation-spinner.tsx` 作为 `<Link>` 子组件使用，pending 时渲染 spinner
 - 手写 `<Suspense fallback>` 包裹 DB 查询与 loading.tsx 机制相同，软导航下同样不可靠
+
+## 落地页图片与演示门店截图管线（2026-08-17）
+
+- 营销站是纯 SSG（Cloudflare Workers Static Assets）：`next.config.ts` 设 `images.unoptimized`，
+  素材预压缩为 WebP 原样输出，避免运行时图片优化器（付费特性/不确定支持）
+- 截图素材规范：`public/screenshots/{slug}/*.webp`（手机截图 780×1688 = 390×844@2x，桌面 1280×800）；
+  hero 场景图（AI 生成）放 `public/images/landing/{slug}/hero.webp`，接入要更新 `lib/landing.ts` 的 `LANDING_HERO`
+- MDX 正文配图用 `Image`/`Screenshot` 组件（`mdx-components.tsx`）；手机截图套 `Screenshot` 手机框
+- 演示门店造数：`apps/app/scripts/seed-demo-stores.ts`（tsx 运行）直写本地 miniflare D1——
+  用 `node:sqlite` + drizzle d1 驱动包装（参考 `packages/db/src/testing/memory-d1.ts`），复用 `@taomenu/db` repository 函数；
+  订单状态机必须逐级 transition（submitted→accepted→ready_for_pickup→picked_up），跳级会 INVALID_TRANSITION
+- **本地 R2 上传坑**：`wrangler r2 object put --local` 的 `--persist-to` 会自动追加 `v3`，
+  写 `.wrangler/state` 才会落到 dev server 读取的 `.wrangler/state/v3/r2`（直接写 `v3` 会嵌套成 `v3/v3`）
+- 本地 OTP 登录：验证码存在 D1 `verification` 表（identifier `sign-in-otp-{email}`），
+  本地 EMAIL binding 走真实发送不打印日志时，直接查表拿码
+- 图片批量处理：sips 不支持 WebP 输出；macOS 有 `cwebp`（`cwebp -q 85 in.png -o out.webp`）；
+  另有 https://tools.meathill.com/tools/image-converter（浏览器本地批量转换，支持 HEIC）
+- 菜品图（demo 菜单）：Wikimedia Commons API（免 key，`iiurlwidth=800` 取缩略图）搜索下载，
+  标题关键词过滤保证题材正确；已压缩 600px JPEG 进本地 R2

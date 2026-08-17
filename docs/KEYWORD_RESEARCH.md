@@ -71,6 +71,18 @@ Google Trends 的数字是归一化后的相对热度，不是月搜索量；`0`
 | `/vi/goi-nhan-vien-bang-ma-qr` | `gọi nhân viên bằng mã QR` | 顾客需要服务员或想结账时等待过久 | 顾客从桌码页面发请求，员工手机即时看到 |
 | `/vi/phan-mem-order-quan-banh-mi` | `phần mềm order quán bánh mì` | 法棍/街边外带店没有桌号，高峰期取餐容易混乱 | 一张公共取餐码、当日取餐号和员工手机叫号队列 |
 
+### 3.2b 垂直长尾落地页（2026-08-17 依据真实 GSC 查询新增）
+
+| 页面 | 主关键词 | 用户问题 | 页面承诺 |
+|---|---|---|---|
+| `/vi/phan-mem-order-tiem-banh` | `phần mềm order tiệm bánh` | 面包店高峰柜台拥挤、售罄难同步 | 一码取餐、尺寸/辣度自选、售罄置灰 |
+| `/vi/phan-mem-order-quan-cafe-takeaway` | `phần mềm order quán cafe takeaway` | 外带高峰点单混乱、糖度冰量加料难记 | 糖度/冰量/奶类/加料自选、取餐号 |
+| `/vi/phan-mem-order-quan-an-sang` | `phần mềm order quán ăn sáng` | 早高峰排队、店员少、常客重复点单 | 自选餐品与调整、常客提前下单到店即取 |
+| `/vi/phan-mem-order-quan-do-an-nhanh` | `phần mềm order quán đồ ăn nhanh` | 取餐叫号混乱、套餐选择多 | 套餐+饮品自选、取餐号跟进度 |
+| `/vi/phan-mem-order-quan-che` | `phần mềm order quán chè` | 冷热/糖度/加料组合复杂、游客难点单 | 温度/糖度/加料自选、多语言菜单 |
+
+每页均有独立真实用例、产品截图与 FAQ，不做换词门页。
+
 ### 3.3 问题型内容
 
 - `cách tạo menu QR miễn phí`（如何免费创建 QR 菜单）
