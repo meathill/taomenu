@@ -81,6 +81,15 @@
 - 付款口径：FAQ 统一「目前顾客直接付款，在线收款正在开发中」；促销套餐/会员系统等未上线功能标注 Coming soon，不编造
 - sitemap 覆盖：首页 + pricing + docs + 7 个落地页 × 4 locale
 
+### 营销站内容与缓存（2026-08-17）
+
+- **MDX 一律编译进 bundle（`@next/mdx`）**，不再运行时 `fs.readFile(content/*.mdx)`：Worker 的 Next 输出追踪（`.nft.json`）追踪不到动态 fs 读，`content/` 不会进部署包，运行时渲染直接 ENOENT 500（issue #5 根因）。
+  做法照 mui-api `blog-content.ts`：`lib/content-sources.ts` 里 slug×locale → `import('@/content/...mdx')` 的动态 loader map + 英文回退，页面直接渲染编译后的 MDX 组件。
+- 依赖：`@next/mdx`（版本跟 Next minor 对齐）+ `@mdx-js/loader`/`@mdx-js/react`（`@next/mdx` peer）+ `remark-gfm`；`next-mdx-remote` 已移除。
+- **`mdx-components.tsx` 必须放 app 根目录并按约定导出 `useMDXComponents`**，`@next/mdx` 才会全局注入组件样式；`*.mdx` 模块类型要在 tsconfig 里 `/// <reference types="mdx" />`（`types/mdx.d.ts`）。
+- **纯 SSG 站 OpenNext 缓存配置**：`incrementalCache: staticAssetsIncrementalCache` + `enableCacheInterception: true`。默认 `defineCloudflareConfig()` 的 incrementalCache 是 `dummy`（不缓存任何东西），预渲染页每次请求都进 NextServer 运行时渲染——内容页在这种模式下必然读不到 bundle 外的文件。`staticAssets` 是只读缓存，`deploy` 时 `populateCache` 会把 `.open-next/cache` 拷进 assets 的 `cdn-cgi/_next_cache`，命中路由不启动 NextServer。不需要 R2/DO/D1（无 ISR/无 revalidateTag/无 D1）。
+- 静态资源缓存：`public/_headers` 给 `/_next/static/*` 配 `immutable`（Workers Static Assets 默认 `max-age=0`）。
+
 ## 产品 app i18n（2026-08-03）
 
 - 同样 en/zh/ja/vi，默认 en；**`localePrefix: 'never'`**（对外仍是 `/login` `/app`）

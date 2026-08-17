@@ -1,10 +1,7 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { DEFAULT_LOCALE, isLocale, type Locale } from '@taomenu/shared';
-
 /**
  * 高意图落地页 slug（见 docs/KEYWORD_RESEARCH.md 3.2）。
  * URL 直接挂 `/locale/{slug}`，与 docs slug 互斥。
+ * MDX 正文经 lib/content-sources.ts 编译进 bundle。
  */
 export const LANDING_SLUGS = [
   'phan-mem-order-nha-hang',
@@ -63,23 +60,3 @@ export const LANDING_RELATED: Record<LandingSlug, LandingSlug[]> = {
     'phan-mem-order-tren-dien-thoai',
   ],
 };
-
-/**
- * 读取落地页 MDX 正文。构建期 force-static 时用 fs 即可；
- * 若某 locale 缺失则回退英文。
- */
-export async function loadLandingSource(
-  slug: LandingSlug,
-  locale: string,
-): Promise<{ source: string; contentLocale: Locale; usedFallback: boolean }> {
-  const contentLocale: Locale = isLocale(locale) ? locale : DEFAULT_LOCALE;
-  const dir = path.join(process.cwd(), 'content', 'landing', slug);
-
-  try {
-    const source = await readFile(path.join(dir, `${contentLocale}.mdx`), 'utf8');
-    return { source, contentLocale, usedFallback: false };
-  } catch {
-    const source = await readFile(path.join(dir, `${DEFAULT_LOCALE}.mdx`), 'utf8');
-    return { source, contentLocale: DEFAULT_LOCALE, usedFallback: true };
-  }
-}

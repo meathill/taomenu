@@ -1,9 +1,9 @@
 import { LOCALES } from '@taomenu/shared';
+import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import { DocLanguageAlert } from '@/components/doc-language-alert';
-import { mdxComponents } from '@/components/mdx-components';
-import { type DocSlug, loadDocSource } from '@/lib/docs';
+import { getDocContent } from '@/lib/content-sources';
+import type { DocSlug } from '@/lib/docs';
 import { buildPageMetadata } from '@/lib/seo';
 
 type DocPageProps = {
@@ -16,7 +16,10 @@ export async function DocPage({ slug, params }: DocPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: 'docs' });
-  const { source } = await loadDocSource(slug, locale);
+  const DocContent = await getDocContent(slug, locale);
+  if (!DocContent) {
+    notFound();
+  }
   const title = t(`${slug}.title`);
   const description = t(`${slug}.description`);
 
@@ -33,7 +36,7 @@ export async function DocPage({ slug, params }: DocPageProps) {
       <DocLanguageAlert locale={locale} slug={slug} />
 
       <div className="doc-prose mt-8">
-        <MDXRemote source={source} components={mdxComponents} />
+        <DocContent />
       </div>
     </article>
   );

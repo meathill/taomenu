@@ -1,15 +1,10 @@
 import { ArrowRightIcon, CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import { JsonLd } from '@/components/json-ld';
-import { mdxComponents } from '@/components/mdx-components';
 import { Link } from '@/i18n/routing';
-import {
-  LANDING_RELATED,
-  LANDING_UPDATED_AT,
-  type LandingSlug,
-  loadLandingSource,
-} from '@/lib/landing';
+import { getLandingContent } from '@/lib/content-sources';
+import { LANDING_RELATED, LANDING_UPDATED_AT, type LandingSlug } from '@/lib/landing';
 import { absoluteWebsiteUrl } from '@/lib/seo';
 import { getAppSignupUrl } from '@/lib/site';
 
@@ -29,7 +24,10 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
 
   const t = await getTranslations({ locale, namespace: 'landing' });
   const tSlug = await getTranslations({ locale, namespace: `landing.${slug}` });
-  const { source } = await loadLandingSource(slug, locale);
+  const ArticleContent = await getLandingContent(slug, locale);
+  if (!ArticleContent) {
+    notFound();
+  }
   const faq = tSlug.raw('faq') as FaqItem[];
   const related = LANDING_RELATED[slug];
   const title = tSlug('title');
@@ -97,7 +95,7 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
       </header>
 
       <div className="doc-prose mt-8">
-        <MDXRemote source={source} components={mdxComponents} />
+        <ArticleContent />
       </div>
 
       {faq.length > 0 ? <FaqSection faq={faq} title={t('faqTitle')} /> : null}

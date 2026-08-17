@@ -26,7 +26,7 @@ function MdxLink({ href, children, ...rest }: ComponentPropsWithoutRef<'a'>) {
   );
 }
 
-export const mdxComponents: MDXComponents = {
+const components: MDXComponents = {
   h1: (props) => (
     <h1 className="text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl" {...props} />
   ),
@@ -58,3 +58,10 @@ export const mdxComponents: MDXComponents = {
     />
   ),
 };
+
+export function useMDXComponents(overrides: MDXComponents): MDXComponents {
+  return {
+    ...components,
+    ...overrides,
+  };
+}
