@@ -90,6 +90,12 @@
 - **纯 SSG 站 OpenNext 缓存配置**：`incrementalCache: staticAssetsIncrementalCache` + `enableCacheInterception: true`。默认 `defineCloudflareConfig()` 的 incrementalCache 是 `dummy`（不缓存任何东西），预渲染页每次请求都进 NextServer 运行时渲染——内容页在这种模式下必然读不到 bundle 外的文件。`staticAssets` 是只读缓存，`deploy` 时 `populateCache` 会把 `.open-next/cache` 拷进 assets 的 `cdn-cgi/_next_cache`，命中路由不启动 NextServer。不需要 R2/DO/D1（无 ISR/无 revalidateTag/无 D1）。
 - 静态资源缓存：`public/_headers` 给 `/_next/static/*` 配 `immutable`（Workers Static Assets 默认 `max-age=0`）。
 
+### Owner App 缓存边界（2026-08-17）
+
+- Owner App 是动态业务应用（订单/桌台/终端/菜单/用户态），**不是 SSG**：`open-next.config.ts` 保持默认 `defineCloudflareConfig()`（incrementalCache=dummy），页面与 API 全程进 NextServer 运行时，不引入 R2/DO/D1 增量缓存
+- 静态 chunk：`public/_headers` 给 `/_next/static/*` 配 `immutable`（带 hash，可安全强缓存）；**其余路径一律不配置缓存头** → 默认 `max-age=0`，保证菜单/订单/桌台等实时业务不出现跨门店、跨用户或过期缓存
+- 与 Website 的差异：Website 纯 SSG 用 `staticAssetsIncrementalCache` + `enableCacheInterception` 缓存整个预渲染页；App 只有 chunk 走强缓存，页面永远实时
+
 ## 产品 app i18n（2026-08-03）
 
 - 同样 en/zh/ja/vi，默认 en；**`localePrefix: 'never'`**（对外仍是 `/login` `/app`）
