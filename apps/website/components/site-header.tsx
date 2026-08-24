@@ -35,6 +35,12 @@ export async function SiteHeader() {
             {t('pricing')}
           </Link>
           <Link
+            href="/blog"
+            className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-brand-50 sm:inline-flex"
+          >
+            {t('blog')}
+          </Link>
+          <Link
             href="/about"
             className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-brand-50 sm:inline-flex"
           >

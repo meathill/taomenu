@@ -8,7 +8,8 @@
     "about": "Giới thiệu",
     "login": "Đăng nhập",
     "cta": "Bắt đầu miễn phí",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "blog": "Blog"
   },
   "media": {
     "expand": "Xem ảnh lớn: {alt}",
@@ -391,5 +392,13 @@
         }
       ]
     }
+  },
+  "blog": {
+    "label": "Blog",
+    "title": "Blog",
+    "description": "Hướng dẫn và mẹo order qua QR cho quán ăn nhỏ.",
+    "empty": "Chưa có bài viết nào. Hẹn sớm quay lại.",
+    "backToBlog": "Tất cả bài viết",
+    "englishFallback": "Bản tiếng Anh"
   }
 }

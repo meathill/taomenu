@@ -8,7 +8,8 @@
     "about": "について",
     "login": "ログイン",
     "cta": "無料で始める",
-    "language": "言語"
+    "language": "言語",
+    "blog": "ブログ"
   },
   "media": {
     "expand": "拡大表示：{alt}",
@@ -391,5 +392,13 @@
         }
       ]
     }
+  },
+  "blog": {
+    "label": "ブログ",
+    "title": "ブログ",
+    "description": "小規模レストラン向け QR 注文のガイドとヒント。",
+    "empty": "記事はまだありません。お楽しみに。",
+    "backToBlog": "記事一覧",
+    "englishFallback": "英語版"
   }
 }

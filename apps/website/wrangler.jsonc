@@ -12,6 +12,10 @@
     {
       "binding": "WORKER_SELF_REFERENCE",
       "service": "taomenu-website"
+    },
+    {
+      "binding": "MUICV_CMS",
+      "service": "muicv-cms"
     }
   ],
   "observability": {

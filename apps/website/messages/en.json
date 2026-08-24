@@ -8,7 +8,8 @@
     "about": "About",
     "login": "Log in",
     "cta": "Start free",
-    "language": "Language"
+    "language": "Language",
+    "blog": "Blog"
   },
   "media": {
     "expand": "View larger: {alt}",
@@ -391,5 +392,13 @@
         }
       ]
     }
+  },
+  "blog": {
+    "label": "Blog",
+    "title": "Blog",
+    "description": "QR ordering guides and tips for small restaurants.",
+    "empty": "No posts yet. Come back soon.",
+    "backToBlog": "All posts",
+    "englishFallback": "English version"
   }
 }

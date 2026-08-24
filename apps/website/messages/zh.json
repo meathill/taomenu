@@ -8,7 +8,8 @@
     "about": "关于",
     "login": "登录",
     "cta": "免费开始",
-    "language": "语言"
+    "language": "语言",
+    "blog": "博客"
   },
   "media": {
     "expand": "查看大图：{alt}",
@@ -391,5 +392,13 @@
         }
       ]
     }
+  },
+  "blog": {
+    "label": "博客",
+    "title": "博客",
+    "description": "小餐馆 QR 点餐实战指南与技巧。",
+    "empty": "暂无文章，敬请期待。",
+    "backToBlog": "全部文章",
+    "englishFallback": "英文版"
   }
 }
