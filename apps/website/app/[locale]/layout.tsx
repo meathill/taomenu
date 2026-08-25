@@ -1,4 +1,4 @@
-import { APP_NAME, LOCALES } from '@taomenu/shared';
+import { APP_NAME, DEFAULT_LOCALE, LOCALES } from '@taomenu/shared';
 import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: absoluteWebsiteUrl(`/${locale}`),
+      url: absoluteWebsiteUrl(locale === DEFAULT_LOCALE ? '' : `/${locale}`),
       siteName: APP_NAME,
       locale,
       type: 'website',

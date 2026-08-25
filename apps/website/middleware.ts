@@ -1,54 +1,33 @@
-import { resolveUiLocale } from '@taomenu/shared';
 import { type NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-const LOCALE_COOKIE = 'NEXT_LOCALE';
-
-function readCountry(request: NextRequest): string | null {
-  const cfCountry = (request as NextRequest & { cf?: { country?: string } }).cf?.country;
-  if (cfCountry) {
-    return cfCountry;
-  }
-  return request.headers.get('cf-ipcountry') || request.headers.get('CF-IPCountry');
-}
-
-/**
- * 语言协商优先级：
- * 1. 路径已带 /en|zh|ja|vi → next-intl
- * 2. NEXT_LOCALE cookie
- * 3. Accept-Language 命中支持语言
- * 4. IP 国家（Cloudflare CF-IPCountry / request.cf.country）
- * 5. 默认 en
- */
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const pathHasLocale = routing.locales.some(
-    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
-  );
 
-  if (pathHasLocale) {
-    return intlMiddleware(request);
+  // 1) /en 前缀归一到裸路径（308），裸路径即 en；同时去尾 /
+  if (pathname === '/en' || pathname.startsWith('/en/')) {
+    let bare = pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+    if (bare.length > 1 && bare.endsWith('/')) {
+      bare = bare.replace(/\/+$/, '');
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = bare;
+    return NextResponse.redirect(url, 308);
   }
 
-  const resolved = resolveUiLocale({
-    preferred: request.cookies.get(LOCALE_COOKIE)?.value,
-    acceptLanguage: request.headers.get('accept-language'),
-    country: readCountry(request),
-  });
+  // 2) 尾斜杠统一：除根 / 外，一律 308 去尾 /
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.replace(/\/+$/, '');
+    return NextResponse.redirect(url, 308);
+  }
 
-  const url = request.nextUrl.clone();
-  url.pathname = pathname === '/' ? `/${resolved}` : `/${resolved}${pathname}`;
-
-  const response = NextResponse.redirect(url);
-  response.cookies.set(LOCALE_COOKIE, resolved, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: 'lax',
-  });
-  return response;
+  // 3) 其余：带非默认前缀（/zh /ja /vi）或裸路径，交给 next-intl
+  //    裸路径在 as-needed 模式下即 en，不再做 cookie/Accept-Language 协商
+  return intlMiddleware(request);
 }
 
 export const config = {

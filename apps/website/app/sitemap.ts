@@ -1,4 +1,4 @@
-import { LOCALES } from '@taomenu/shared';
+import { DEFAULT_LOCALE, LOCALES } from '@taomenu/shared';
 import type { MetadataRoute } from 'next';
 import { listPublishedPosts } from '@/lib/cms-blog';
 import { DOC_SLUGS } from '@/lib/docs';
@@ -6,6 +6,14 @@ import { LANDING_SLUGS } from '@/lib/landing';
 import { getPublicWebsiteUrl } from '@/lib/site';
 
 export const revalidate = 86400;
+
+function toSitemapPath(locale: string, path: string): string {
+  const normalized = path || '';
+  if (locale === DEFAULT_LOCALE) {
+    return normalized || '';
+  }
+  return `/${locale}${normalized}`;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paths = [
@@ -26,17 +34,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...LOCALES.flatMap((locale) =>
-      paths.map((path) => ({
-        url: `${websiteUrl}/${locale}${path}`,
-        lastModified: new Date(),
-        alternates: {
-          languages: Object.fromEntries(LOCALES.map((alt) => [alt, `${websiteUrl}/${alt}${path}`])),
-        },
-      })),
+      paths.map((path) => {
+        const url = `${websiteUrl}${toSitemapPath(locale, path)}`;
+        const languages: Record<string, string> = {};
+        for (const alt of LOCALES) {
+          languages[alt] = `${websiteUrl}${toSitemapPath(alt, path)}`;
+        }
+        languages['x-default'] = `${websiteUrl}${toSitemapPath(DEFAULT_LOCALE, path)}`;
+        return {
+          url,
+          lastModified: new Date(),
+          alternates: { languages },
+        };
+      }),
     ),
     ...LOCALES.flatMap((locale) =>
       (postsByLocale.get(locale) ?? []).map((post) => ({
-        url: `${websiteUrl}/${locale}/blog/${post.slug}`,
+        url: `${websiteUrl}${toSitemapPath(locale, `/blog/${post.slug}`)}`,
         lastModified: new Date(post.updatedAt),
       })),
     ),
