@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { listPublishedPosts } from '@/lib/cms-blog';
+import { formatDate } from '@/lib/format-date';
 import { buildPageMetadata } from '@/lib/seo';
 
 // 博客页 ISR：1 天缓存兜底；CMS 后台发文后最长 1 天生效。
@@ -10,18 +11,6 @@ export const revalidate = 86400;
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  try {
-    return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(date);
-  } catch {
-    return value;
-  }
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -60,7 +49,9 @@ export default async function BlogIndexPage({ params }: PageProps) {
               <h2 className="text-xl font-bold tracking-tight text-ink-900 group-hover:text-brand-700">
                 {post.title}
               </h2>
-              <p className="text-xs tabular-nums text-muted-foreground">{formatDate(post.publishedAt)}</p>
+              <p className="text-xs tabular-nums text-muted-foreground">
+                {formatDate(post.publishedAt)}
+              </p>
               <p className="text-sm leading-relaxed text-muted-foreground">{post.summary}</p>
             </Link>
           ))}

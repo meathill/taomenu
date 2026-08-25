@@ -281,9 +281,10 @@ pnpm stripe:prices:sync
   "NEXT_PUBLIC_WEBSITE_URL": "https://menu.dyqr.me",
   "NEXT_PUBLIC_APP_URL": "https://app.menu.dyqr.me"
 }
+"services": [{ "binding": "MUICV_CMS", "service": "muicv-cms" }]
 ```
 
-website **无密钥、无 D1、无 Email binding**。
+website **无 D1/Email/media 密钥**，但通过 service binding `MUICV_CMS` 内网直连 MUICV Payload CMS（同账号 `muicv-cms` Worker）。构建期（`NEXT_PHASE=phase-production-build`）无可用 binding，回落 `process.env.TAOMENU_CMS_URL`（默认 `https://cms.muicv.com`）公网拉取；运行时优先 `env.MUICV_CMS.fetch`。**CMS 文章为匿名只读，无需密钥**，仅用 `Accept: application/json`；见 `apps/website/lib/cms-blog.ts`。
 
 ### AI Worker（`apps/ai`）
 

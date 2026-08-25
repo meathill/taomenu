@@ -1,18 +1,12 @@
 'use client';
 
-import {
-  ArrowCounterClockwiseIcon,
-  CheckIcon,
-  ImageIcon,
-  SparkleIcon,
-  TrashIcon,
-  XIcon,
-} from '@phosphor-icons/react';
+import { ImageIcon, SparkleIcon, TrashIcon } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { MENU_IMAGE_MAX_BYTES, publicMediaPath } from '@/lib/menu-image';
+import { MenuImageEnhancementPanel } from './menu-image-enhancement-panel';
 
 const IMAGE_ERROR_KEYS: Record<string, string> = {
   UNSUPPORTED_TYPE: 'imageErrorUnsupportedType',
@@ -267,117 +261,18 @@ export function MenuItemImage({
         ) : null}
       </div>
 
-      {imageKey && isEnhancementOpen && canUseImageEnhancement ? (
-        <div className="mt-2 w-72 max-w-[calc(100vw-3rem)] rounded-xl border border-indigo-200 bg-indigo-50 p-3 text-xs shadow-lg">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <p className="font-black text-ink-900">{t('photoEnhance')}</p>
-              <p className="mt-0.5 text-muted-foreground">{t('photoEnhanceMonthlyUsage', usage)}</p>
-            </div>
-            <button
-              type="button"
-              aria-label={t('close')}
-              onClick={() => setIsEnhancementOpen(false)}
-              className="rounded p-1 text-muted-foreground hover:bg-muted"
-            >
-              <XIcon className="size-4" aria-hidden />
-            </button>
-          </div>
-
-          {!enhancement || ['failed', 'cancelled'].includes(enhancement.status) ? (
-            <div className="mt-3">
-              {enhancement?.status === 'failed' ? (
-                <p className="mb-2 font-semibold text-brand-600">
-                  {enhancementError(enhancement.errorCode ?? undefined)}
-                </p>
-              ) : null}
-              <Button
-                type="button"
-                pending={busyAction === `enhance-${itemId}`}
-                busy={busyAction !== null}
-                disabled={usage.used >= usage.limit}
-                onClick={() => void handleEnhance()}
-                className="min-h-10 w-full rounded-lg bg-indigo-600 px-3 font-bold text-white"
-              >
-                {t('photoEnhanceCreate')}
-              </Button>
-            </div>
-          ) : null}
-
-          {enhancement?.status === 'queued' || enhancement?.status === 'processing' ? (
-            <p className="mt-3 font-semibold text-indigo-700" role="status">
-              {t('photoEnhanceProcessing')}
-            </p>
-          ) : null}
-
-          {enhancement?.status === 'needs_review' && enhancement.previewImageUrl ? (
-            <div className="mt-3 space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                <figure>
-                  <Image
-                    src={enhancement.sourceImageUrl}
-                    alt={t('photoEnhanceOriginal')}
-                    width={128}
-                    height={128}
-                    unoptimized
-                    className="aspect-square w-full rounded-lg object-cover"
-                  />
-                  <figcaption className="mt-1 font-semibold">
-                    {t('photoEnhanceOriginal')}
-                  </figcaption>
-                </figure>
-                <figure>
-                  <Image
-                    src={enhancement.previewImageUrl}
-                    alt={t('photoEnhancePreview')}
-                    width={128}
-                    height={128}
-                    unoptimized
-                    className="aspect-square w-full rounded-lg object-cover"
-                  />
-                  <figcaption className="mt-1 font-semibold">{t('photoEnhancePreview')}</figcaption>
-                </figure>
-              </div>
-              <p className="leading-5 text-muted-foreground">{t('photoEnhanceReviewHint')}</p>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  busy={busyAction !== null}
-                  onClick={() => void handleEnhancementAction('cancel')}
-                  className="min-h-10 flex-1 rounded-lg border border-border bg-white px-2 font-bold"
-                >
-                  <XIcon className="mr-1 size-4" aria-hidden />
-                  {t('photoEnhanceKeepOriginal')}
-                </Button>
-                <Button
-                  type="button"
-                  busy={busyAction !== null}
-                  onClick={() => void handleEnhancementAction('apply')}
-                  className="min-h-10 flex-1 rounded-lg bg-indigo-600 px-2 font-bold text-white"
-                >
-                  <CheckIcon className="mr-1 size-4" aria-hidden />
-                  {t('photoEnhanceUsePreview')}
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
-          {enhancement?.status === 'applied' ? (
-            <div className="mt-3">
-              <p className="font-semibold text-indigo-700">{t('photoEnhanceInUse')}</p>
-              <Button
-                type="button"
-                busy={busyAction !== null}
-                onClick={() => void handleEnhancementAction('restore')}
-                className="mt-2 min-h-10 w-full rounded-lg border border-border bg-white px-3 font-bold"
-              >
-                <ArrowCounterClockwiseIcon className="mr-1 size-4" aria-hidden />
-                {t('photoEnhanceRestore')}
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
+      <MenuImageEnhancementPanel
+        imageKey={imageKey}
+        isOpen={isEnhancementOpen}
+        canUseImageEnhancement={canUseImageEnhancement}
+        enhancement={enhancement}
+        usage={usage}
+        busyAction={busyAction}
+        itemId={itemId}
+        onClose={() => setIsEnhancementOpen(false)}
+        onEnhance={() => void handleEnhance()}
+        onAction={(action) => void handleEnhancementAction(action)}
+      />
     </div>
   );
 }

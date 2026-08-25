@@ -44,9 +44,8 @@ pnpm build
 
 - **[验收清单 ACCEPTANCE.md](ACCEPTANCE.md)** ← 人工走查从这里开始
 - **[部署指南 DEPLOYMENT.md](DEPLOYMENT.md)** ← Cloudflare 上线
-- [产品需求文档](docs/PRD.md)
-- [设计系统与移动端交互基线](docs/DESIGN_SYSTEM.md)
-- [技术规格](docs/TECH_SPEC.md)
+- [设计系统与移动端交互基线](docs/DESIGN_SYSTEM.md)（含品牌标识）
+- [技术规格](docs/TECH_SPEC.md)（MVP 0.4 历史基线，最新决策见 DEV_NOTE）
 - [越南关键词研究](docs/KEYWORD_RESEARCH.md)
 - [实施计划](WIP.md)
 - [测试指南](TESTING.md)

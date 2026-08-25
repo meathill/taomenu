@@ -19,7 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 博客文章按 locale 各自拉取；CMS 不可达时 listPublishedPosts 返回空数组，不阻断 sitemap。
   const postsByLocale = new Map(
-    await Promise.all(LOCALES.map(async (locale) => [locale, await listPublishedPosts(locale)] as const)),
+    await Promise.all(
+      LOCALES.map(async (locale) => [locale, await listPublishedPosts(locale)] as const),
+    ),
   );
 
   return [

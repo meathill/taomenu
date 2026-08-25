@@ -190,3 +190,28 @@
 - 菜品图（demo 菜单）：8 道主菜（phở bò / bún chả / bánh mì / chè ba màu / cà phê sữa đá /
   trà sữa / xôi xéo / sữa chua nếp cẩm）为统一棚拍 AI 图；其余仍来自 Wikimedia Commons。
   600px JPEG 进 `scripts/dish-images/`，本地 R2 用 `node scripts/upload-dish-images.ts`
+
+## 代理商与推广归因（2026-08-11）
+
+- 代理商系统：`packages/db/schema/agents.ts`（`agents`/`agent_referrals`/`agent_daily_stats` 三表，migration 0014/0015），`packages/db/src/repositories/agents.ts:272` / `agent-stats.ts:201` 提供创建、状态切换与按日归因聚合。
+- 推广链路：顾客访问 `menu.dyqr.me` 时 `components/ref-tracker.tsx:39` 写入 `ref` cookie，`/api/public/ref-click/route.ts:47` 落库 `agent_referrals`；`packages/shared/src/ref.ts:101` 定义 `ref` 校验与归一。
+- 视角分层：`/app/admin` 仅 `ADMIN_EMAIL` 可见（含 `agent-totals.ts:44` 聚合），`/app/agent` 为代理商自助视图（`agent-no-access.tsx:38` 兜底）。
+- 计费联动：代理商不直接改 Stripe，仅作归因统计；Stripe 仍以 `STRIPE_*` secret 为准（见 DEPLOYMENT）。
+
+## 菜单编辑多语言重构（2026-08-12）
+
+- 交互重构：`menu-editor.tsx:397` 拆出 `menu-category-drawer.tsx:157` / `menu-item-drawer.tsx:272` / `menu-modifier-draft.ts:176` 等抽屉，表单走 `field-switch.tsx:28` 与 `responsive-drawer.tsx:60`；加载态统一骨架屏 `menu-editor-skeleton.tsx:60` / `customer-menu-skeleton.tsx:52`。
+- 保存语义：规格组整组一次保存 `packages/db/src/repositories/modifier-save.ts:124`，`pending` 态在 `menu-modifier-draft.ts:176` 聚合后提交，避免逐项写库。
+- 多语言：`menu-modifier-translations.tsx:144` / `menu-translation-panel.tsx:313` 按 `stores.baseLocale` 分级，FREE 单语言硬限仍在 `validateMenuForPublish`。
+- 样式收敛：工具条/表单按钮统一 `outline/default`，列表行保持 `ghost sm`。
+
+## 营销站 CMS 博客（2026-08-24）
+
+- 数据源：MUICV Payload CMS `articles` 集合（`site=taomenu`，`status=published` 只读），`apps/website/lib/cms-blog.ts:186` 封装 `listPublishedPosts` / `getPostWithFallback`（缺语言回退英文，`extractTitle` 从 markdown 首个 H1 取标题）。
+- 运行时：生产走 `MUICV_CMS` service binding（`apps/website/wrangler.jsonc:services` 内网 Fetcher），构建期无可用 binding 时回落 `process.env.TAOMENU_CMS_URL`（默认 `https://cms.muicv.com`）；匿名只读，无需密钥。
+- 页面：`app/[locale]/blog/page.tsx:71` 列表与 `app/[locale]/blog/[slug]/page.tsx:65` 详情均为 ISR `revalidate=86400`（1 天），`BlogMarkdownBody` 用 `marked` 渲染，`sitemap` 覆盖所有已发布文章。
+
+## 营销站缓存与落地页内容迭代（2026-08-17 补）
+
+- 缓存边界：Website 纯 SSG 的 `staticAssetsIncrementalCache` 不适用于 blog 列表/详情的 ISR（`revalidate` 分钟级），已在 `open-next.config.ts:10` 保持 SSG 静态页缓存 + blog ISR 的混合策略（blog 命中后 1 天内不重新拉 CMS）。
+- 落地页内容：7 主页 + 5 垂直页（bakery/cafe-takeaway/breakfast/fastfood/chè）共 12 slug ×4 locale，`KEYWORD_RESEARCH.md:3.2b` 为映射表；`landing.ts:168` `LANDING_RELATED` 内链与 `LANDING_UPDATED_AT` 手写更新时间保持可引用。

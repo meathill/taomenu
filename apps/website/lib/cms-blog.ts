@@ -69,7 +69,10 @@ export function extractTitle(markdown: string): string {
   for (const line of markdown.split('\n')) {
     const match = /^#{1,3}\s+(.+?)\s*#*$/.exec(line.trim());
     if (match?.[1]) {
-      return match[1].replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*_`~]/g, '').trim();
+      return match[1]
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+        .replace(/[*_`~]/g, '')
+        .trim();
     }
   }
   return '';
@@ -182,5 +185,7 @@ export async function getPostWithFallback(
     return { post: null as unknown as BlogPost, isFallback: false };
   }
   const english = await getPost(slug, DEFAULT_LOCALE);
-  return english ? { post: english, isFallback: true } : { post: null as unknown as BlogPost, isFallback: false };
+  return english
+    ? { post: english, isFallback: true }
+    : { post: null as unknown as BlogPost, isFallback: false };
 }
