@@ -130,7 +130,7 @@ async function fetchCmsDocs(query: URLSearchParams): Promise<unknown | null> {
     // service binding 时 baseUrl 为空串，path 直接作为 URL（Fetcher.fetch 接受相对路径）
     const response = await fetchImpl(`${baseUrl}/api/articles?${query.toString()}`, {
       headers: { Accept: 'application/json' },
-      cache: 'no-store',
+      next: { revalidate: 86400 },
     });
     if (!response.ok) {
       console.warn(`[cms-blog] CMS articles HTTP ${response.status}`);
