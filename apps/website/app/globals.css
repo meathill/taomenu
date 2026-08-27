@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@taomenu/ui/tokens.css";
+@plugin "@tailwindcss/typography";
 
 html {
   scroll-behavior: smooth;
@@ -12,4 +13,78 @@ body {
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 博客与营销落地页专用富文本排版样式系统 */
+.doc-prose {
+  @apply prose prose-neutral max-w-none;
+}
+
+.doc-prose h2 {
+  @apply mt-10 mb-4 text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl;
+}
+
+.doc-prose h3 {
+  @apply mt-8 mb-3 text-xl font-bold tracking-tight text-ink-900 sm:text-2xl;
+}
+
+.doc-prose p {
+  @apply my-4 text-base leading-relaxed text-ink-900 sm:text-lg;
+}
+
+.doc-prose a {
+  @apply font-semibold text-brand-600 underline-offset-4 hover:text-brand-700 hover:underline;
+}
+
+.doc-prose strong {
+  @apply font-bold text-ink-900;
+}
+
+.doc-prose ul {
+  @apply my-4 list-disc pl-6;
+}
+
+.doc-prose ol {
+  @apply my-4 list-decimal pl-6;
+}
+
+.doc-prose li {
+  @apply my-1.5 text-base leading-relaxed text-ink-900 sm:text-lg;
+}
+
+.doc-prose blockquote {
+  @apply my-6 rounded-r-2xl border-l-4 border-brand-600 bg-brand-50/60 py-3.5 px-5 not-italic text-ink-900;
+}
+
+.doc-prose hr {
+  @apply my-10 border-border;
+}
+
+.doc-prose img {
+  @apply my-8 rounded-2xl border border-border shadow-md;
+}
+
+.doc-prose table {
+  @apply my-8 w-full border-collapse overflow-hidden rounded-2xl border border-border;
+}
+
+.doc-prose thead {
+  @apply border-b border-border bg-brand-50;
+}
+
+.doc-prose th {
+  @apply p-3.5 text-left font-bold text-ink-900;
+}
+
+.doc-prose td {
+  @apply border-b border-border p-3.5 text-ink-900;
+}
+
+.doc-prose tr:hover {
+  @apply bg-brand-50/40;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
 }

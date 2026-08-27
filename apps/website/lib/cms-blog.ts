@@ -23,7 +23,7 @@ async function resolveCmsFetch(): Promise<{ fetchImpl: typeof fetch; baseUrl: st
         const binding = env.MUICV_CMS;
         return {
           fetchImpl: ((input, init) => binding.fetch(input, init)) as typeof fetch,
-          baseUrl: '',
+          baseUrl: CMS_BASE_URL,
         };
       }
     } catch {

@@ -24,6 +24,7 @@
     "@taomenu/ui": "workspace:*",
     "dayjs": "^1.11.23",
     "marked": "^18.0.10",
+    "mermaid": "^11.17.2",
     "next": "^16.2.10",
     "next-intl": "^4.8.3",
     "react": "^19.2.7",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.2",
+    "@tailwindcss/typography": "^0.5.20",
     "@types/mdx": "^2.0.14",
     "@types/node": "^25.9.3",
     "@types/react": "^19.2.17",

@@ -1,10 +1,10 @@
 import { ArrowRightIcon, CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { DEFAULT_LOCALE } from '@taomenu/shared';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { JsonLd } from '@/components/json-ld';
 import { LightboxImage } from '@/components/lightbox-image';
 import { Link } from '@/i18n/routing';
-import { DEFAULT_LOCALE } from '@taomenu/shared';
 import { getLandingContent } from '@/lib/content-sources';
 import { LANDING_HERO, LANDING_RELATED, LANDING_UPDATED_AT, type LandingSlug } from '@/lib/landing';
 import { absoluteWebsiteUrl } from '@/lib/seo';
@@ -46,9 +46,7 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
           name: 'TaoMenu',
           applicationCategory: 'BusinessApplication',
           operatingSystem: 'Web',
-          url: absoluteWebsiteUrl(
-            locale === DEFAULT_LOCALE ? `/${slug}` : `/${locale}/${slug}`,
-          ),
+          url: absoluteWebsiteUrl(locale === DEFAULT_LOCALE ? `/${slug}` : `/${locale}/${slug}`),
           description,
         }}
       />

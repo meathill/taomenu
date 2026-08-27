@@ -18,7 +18,9 @@
     "test": "pnpm -r --if-present test",
     "stripe:products:create": "node scripts/create-stripe-products.ts",
     "stripe:prices:check": "node scripts/sync-stripe-prices.ts --check",
-    "stripe:prices:sync": "node scripts/sync-stripe-prices.ts"
+    "stripe:prices:sync": "node scripts/sync-stripe-prices.ts",
+    "blog:check": "node scripts/sync-cms-articles.ts --check",
+    "blog:sync": "node scripts/sync-cms-articles.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.3",

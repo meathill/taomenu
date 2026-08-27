@@ -215,3 +215,11 @@
 
 - 缓存边界：Website 纯 SSG 的 `staticAssetsIncrementalCache` 不适用于 blog 列表/详情的 ISR（`revalidate` 分钟级），已在 `open-next.config.ts:10` 保持 SSG 静态页缓存 + blog ISR 的混合策略（blog 命中后 1 天内不重新拉 CMS）。
 - 落地页内容：7 主页 + 5 垂直页（bakery/cafe-takeaway/breakfast/fastfood/chè）共 12 slug ×4 locale，`KEYWORD_RESEARCH.md:3.2b` 为映射表；`landing.ts:168` `LANDING_RELATED` 内链与 `LANDING_UPDATED_AT` 手写更新时间保持可引用。
+
+## 博客多语言内容与 CMS 发布管线（2026-08-26）
+
+- 内容库：保存在 `apps/website/content/blog/{vi,en,zh,ja}/*.md`，共 8 大核心主题 × 4 种语言 = 32 篇 Markdown 源文件（版本受 Git 追踪保护）。
+- 同步脚本：`scripts/sync-cms-articles.ts`（命令 `pnpm blog:sync` 写入 / `pnpm blog:check` 预检），自动解析 Frontmatter 并通过 Cloudflare D1 批量 Upsert（`site=taomenu`, `locale`, `slug` 唯一索引）将文章发布到 `muicv` CMS 的 `articles` 集合。
+- 映射规则：本地 `vi` → CMS `vi`，`en` → `en`，`zh` → `zh-CN`，`ja` → `ja`；`status: 'published'` 自动生效。
+- 测试覆盖：`apps/website/lib/sync-cms-articles.test.ts` 确保 32 篇 Markdown 结构合规、Slug 在 4 语言中严格对齐。
+
