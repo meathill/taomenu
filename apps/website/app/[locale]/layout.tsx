@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { GaTag } from '@/components/ga-tag';
 import { JsonLd } from '@/components/json-ld';
 import { RefPassthrough } from '@/components/ref-passthrough';
 import { SiteFooter } from '@/components/site-footer';
@@ -75,6 +76,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <html lang={locale}>
       <body className="min-h-dvh bg-paper-50 text-ink-900 antialiased">
+        <GaTag />
         <JsonLd
           data={{
             '@context': 'https://schema.org',
