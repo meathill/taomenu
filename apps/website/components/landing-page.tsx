@@ -39,17 +39,8 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
 
   return (
     <article className="mx-auto max-w-3xl py-8 sm:py-12">
-      <JsonLd
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'SoftwareApplication',
-          name: 'TaoMenu',
-          applicationCategory: 'BusinessApplication',
-          operatingSystem: 'Web',
-          url: absoluteWebsiteUrl(locale === DEFAULT_LOCALE ? `/${slug}` : `/${locale}/${slug}`),
-          description,
-        }}
-      />
+      {/* 无真实评价时不声明 SoftwareApplication（Google Software App 富结果要求 rating/review，
+          不伪造评分）；落地页只保留 BreadcrumbList + FAQPage，价格以定价页可见内容为准。 */}
       <JsonLd
         data={{
           '@context': 'https://schema.org',

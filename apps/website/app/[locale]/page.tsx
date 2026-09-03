@@ -15,11 +15,6 @@ import {
   TagIcon,
   TranslateIcon,
 } from '@phosphor-icons/react/dist/ssr';
-import {
-  getBillingCurrencyForLocale,
-  getBillingPrice,
-  minorAmountToDecimalString,
-} from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { JsonLd } from '@/components/json-ld';
@@ -44,9 +39,6 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('home');
-
-  // 结构化数据的报价也按界面语言映射币种，与定价页保持一致
-  const currency = getBillingCurrencyForLocale(locale);
 
   const features = [
     { title: t('feature1Title'), body: t('feature1Body') },
@@ -206,30 +198,8 @@ export default async function HomePage({ params }: HomePageProps) {
         </a>
       </section>
 
-      <JsonLd
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'SoftwareApplication',
-          name: 'TaoMenu',
-          applicationCategory: 'BusinessApplication',
-          operatingSystem: 'Web',
-          offers: [
-            {
-              '@type': 'Offer',
-              name: 'Free',
-              price: minorAmountToDecimalString(0, currency),
-              priceCurrency: currency,
-            },
-            {
-              '@type': 'Offer',
-              name: 'Pro',
-              price: minorAmountToDecimalString(getBillingPrice('pro_plan', currency), currency),
-              priceCurrency: currency,
-            },
-          ],
-          description: t('subtitle'),
-        }}
-      />
+      {/* 无真实评价时不声明 SoftwareApplication，避免富结果缺 rating/review 报错；
+          价格只在定价页可见，首页也不写 offers。站点级 WebSite/Organization 见 layout。 */}
       <JsonLd
         data={{
           '@context': 'https://schema.org',

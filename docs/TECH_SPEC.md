@@ -828,7 +828,7 @@ type MenuAiProvider = {
 - 越南语营销页使用 Next.js 服务端渲染或静态生成，主要信息必须存在于初始语义 HTML 中。
 - 建立 `vi` 为主的功能/问题落地页，并用 canonical 与 `hreflang` 连接 `vi`、`en`、`zh-CN` 版本。
 - `sitemap.xml` 只包含营销、定价、帮助和明确希望被索引的页面；`/app`、`/terminal`、API、桌码和取餐码菜单返回 `noindex`。
-- 首页输出真实的 `WebSite`、`Organization` 和 `SoftwareApplication` JSON-LD；没有真实评价时不填 aggregate rating。
+- 首页输出真实的 `WebSite`、`Organization` 和 `FAQPage` JSON-LD；没有真实评价时不声明 `SoftwareApplication`（Google Software App 富结果要求 rating/review，不伪造评分——issue #10）。
 - 内容模型保存 slug、标题、摘要、正文块、locale、发布日期、更新时间和来源链接，便于搜索引擎与 AI 系统稳定引用。
 - 页面采用问题式 H2、简短直接答案、步骤、限制和 FAQ；不得批量生成只替换关键词的薄页面。
 - 上线时接入 Google Search Console 和 Bing Webmaster Tools；发布或更新营销页后更新 sitemap，可选接入 IndexNow。
