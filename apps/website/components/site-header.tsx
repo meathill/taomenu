@@ -30,18 +30,21 @@ export async function SiteHeader() {
         >
           <Link
             href="/pricing"
+            prefetch={false}
             className="rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-brand-50"
           >
             {t('pricing')}
           </Link>
           <Link
             href="/blog"
+            prefetch={false}
             className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-brand-50 sm:inline-flex"
           >
             {t('blog')}
           </Link>
           <Link
             href="/about"
+            prefetch={false}
             className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-brand-50 sm:inline-flex"
           >
             {t('about')}

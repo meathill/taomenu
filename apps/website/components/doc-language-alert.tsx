@@ -27,6 +27,7 @@ export async function DocLanguageAlert({ locale, slug }: DocLanguageAlertProps) 
         <Link
           href={`/${slug}`}
           locale={DEFAULT_LOCALE}
+          prefetch={false}
           className="font-bold text-brand-700 underline-offset-2 hover:underline"
         >
           {t('viewEnglish')}

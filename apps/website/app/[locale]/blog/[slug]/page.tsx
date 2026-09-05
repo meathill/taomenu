@@ -38,7 +38,11 @@ export default async function BlogPostPage({ params }: PageProps) {
   return (
     <article className="mx-auto max-w-3xl py-8 sm:py-12">
       <header className="mb-8 border-b border-border pb-6">
-        <Link href="/blog" className="text-sm font-semibold text-brand-700 hover:underline">
+        <Link
+          href="/blog"
+          prefetch={false}
+          className="text-sm font-semibold text-brand-700 hover:underline"
+        >
           ← {t('backToBlog')}
         </Link>
         <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">

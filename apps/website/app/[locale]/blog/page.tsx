@@ -44,6 +44,7 @@ export default async function BlogIndexPage({ params }: PageProps) {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
+              prefetch={false}
               className="group grid gap-2 rounded-2xl border border-border bg-white/60 p-5 transition-[border-color,box-shadow] hover:border-brand-600/40 hover:shadow-sm"
             >
               <h2 className="text-xl font-bold tracking-tight text-ink-900 group-hover:text-brand-700">

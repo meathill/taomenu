@@ -9,7 +9,7 @@ function MdxLink({ href, children, ...rest }: ComponentPropsWithoutRef<'a'>) {
 
   if (typeof href === 'string' && href.startsWith('/') && !href.startsWith('//')) {
     return (
-      <Link href={href} className={className}>
+      <Link href={href} prefetch={false} className={className}>
         {children}
       </Link>
     );

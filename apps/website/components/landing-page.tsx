@@ -71,7 +71,7 @@ export async function LandingPage({ slug, params }: LandingPageProps) {
       ) : null}
 
       <nav aria-label={t('breadcrumbLabel')} className="text-sm text-muted-foreground">
-        <Link href="/" className="font-semibold hover:text-brand-700">
+        <Link href="/" prefetch={false} className="font-semibold hover:text-brand-700">
           {t('homeLabel')}
         </Link>
         <span aria-hidden> / </span>
@@ -165,6 +165,7 @@ function RelatedSection({
           <li key={slug}>
             <Link
               href={`/${slug}`}
+              prefetch={false}
               className="flex h-full items-center justify-between gap-2 rounded-xl border border-border bg-white p-4 text-sm font-bold text-ink-900 hover:bg-brand-50"
             >
               <span>{relatedTitles[slug]}</span>
@@ -202,6 +203,7 @@ function CtaSection({
         </a>
         <Link
           href="/pricing"
+          prefetch={false}
           className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-base font-bold text-ink-900 hover:bg-brand-50"
         >
           {secondary}

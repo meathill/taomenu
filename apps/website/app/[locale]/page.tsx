@@ -72,6 +72,7 @@ export default async function HomePage({ params }: HomePageProps) {
           </a>
           <Link
             href="/pricing"
+            prefetch={false}
             className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-base font-bold text-ink-900 hover:bg-brand-50"
           >
             {t('secondaryCta')}
@@ -149,17 +150,23 @@ export default async function HomePage({ params }: HomePageProps) {
           {t('moreScenarios')}{' '}
           <Link
             href="/phan-mem-quan-ly-nha-hang-mien-phi"
+            prefetch={false}
             className="font-semibold text-brand-700 hover:underline"
           >
             {t('moreScenario1')}
           </Link>
           {' · '}
-          <Link href="/menu-da-ngon-ngu" className="font-semibold text-brand-700 hover:underline">
+          <Link
+            href="/menu-da-ngon-ngu"
+            prefetch={false}
+            className="font-semibold text-brand-700 hover:underline"
+          >
             {t('moreScenario2')}
           </Link>
           {' · '}
           <Link
             href="/goi-nhan-vien-bang-ma-qr"
+            prefetch={false}
             className="font-semibold text-brand-700 hover:underline"
           >
             {t('moreScenario3')}
@@ -283,6 +290,7 @@ function ScenarioCard({
   return (
     <Link
       href={href}
+      prefetch={false}
       className="flex h-full flex-col rounded-2xl border border-border bg-white p-5 shadow-sm hover:bg-brand-50"
     >
       <div className="flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">

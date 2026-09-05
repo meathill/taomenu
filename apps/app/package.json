@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "@opennextjs/cloudflare": "^1.20.3",
+    "@opennextjs/cloudflare": "^1.20.6",
     "@phosphor-icons/react": "^2.1.10",
     "@pushforge/builder": "^2.0.5",
     "@taomenu/db": "workspace:*",
@@ -27,7 +27,7 @@
     "better-auth": "^1.6.23",
     "class-variance-authority": "^0.7.1",
     "drizzle-orm": "^0.45.2",
-    "next": "^16.3.3",
+    "next": "^16.3.4",
     "next-intl": "^4.13.4",
     "qrcode": "^1.5.4",
     "react": "^19.2.7",
@@ -43,6 +43,6 @@
     "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
-    "wrangler": "^4.126.0"
+    "wrangler": "^4.129.0"
   }
 }

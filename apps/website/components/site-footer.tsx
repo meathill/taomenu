@@ -35,6 +35,7 @@ export async function SiteFooter() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  prefetch={false}
                   className="text-sm font-semibold text-muted-foreground hover:text-brand-700"
                 >
                   {item.label}
@@ -61,6 +62,7 @@ export async function SiteFooter() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  prefetch={false}
                   className="text-sm font-semibold text-muted-foreground hover:text-brand-700"
                 >
                   {item.label}

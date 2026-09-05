@@ -30,7 +30,7 @@
     ]
   },
   "observability": {
-    "enabled": true
+    "enabled": false
   },
   "vars": {
     "OPENAI_MENU_MODEL": "gpt-5.6-luna",
