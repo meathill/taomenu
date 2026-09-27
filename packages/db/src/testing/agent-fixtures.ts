@@ -31,6 +31,7 @@ export type SeedStoreOptions = {
   isActive?: boolean;
   name?: string;
   createdAt?: Date;
+  currency?: string;
 };
 
 export async function seedStore(db: Db, id: string, options: SeedStoreOptions = {}): Promise<void> {
@@ -40,7 +41,7 @@ export async function seedStore(db: Db, id: string, options: SeedStoreOptions = 
     slug: id,
     name: options.name ?? id,
     timezone: 'Asia/Ho_Chi_Minh',
-    currency: 'VND',
+    currency: options.currency ?? 'VND',
     baseLocale: 'vi',
     serviceMode: 'table_service',
     acceptingPublicRequests: true,
