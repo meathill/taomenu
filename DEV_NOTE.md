@@ -224,3 +224,11 @@
 - 映射规则：本地 `vi` → CMS `vi`，`en` → `en`，`zh` → `zh-CN`，`ja` → `ja`；`status: 'published'` 自动生效。
 - 测试覆盖：`apps/website/lib/sync-cms-articles.test.ts` 确保 32 篇 Markdown 结构合规、Slug 在 4 语言中严格对齐。
 
+## 统计后台 /admin（2026-09-27）
+
+- 位置：`apps/app` 扩展现有 `/admin`（复用 `ADMIN_EMAIL` 门禁与 layout）；`website` 纯 SSG 无 D1 binding，不放后台。
+- 原代理商页移到 `/admin/agents`；新增总览（KPI + 按天趋势 + 漏斗）与 `/admin/users`（列表+详情）、`/admin/stores`、`/admin/behavior`；`admin.json` 4 语言 key 必须对齐（`messages.test.ts` 强制）。
+- 口径（PRODUCT 不伪造数据）：登录活跃（`session.createdAt` 去重）≠ 访问量，UI 有 caveat 文案；Pro/发布数为当前快照（`stores.plan` 无历史变更日志）；金额按门店币种分别合计；取消单、停用店不计经营指标。
+- 聚合实现：`packages/db/src/repositories/admin-stats.ts` + `admin-directory.ts`，UTC 天 bucket（`strftime(..., created_at/1000, 'unixepoch')`），固定查询数内存拼装（同 agent-stats 模式）；`max(createdAt)` 原生聚合回的是数字，repository 内统一转 Date。
+- 真 PV 缺失：顾客匿名、无 page-view 表；Phase 2 才做 visitor_hash 打点（沿 `agentLinkClicks` 模式）+ 扫码→下单漏斗。
+

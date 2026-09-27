@@ -34,7 +34,7 @@ export default async function AdminAgentDetailPage({ params }: AgentDetailPagePr
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
-        <Link href="/admin" className="text-sm font-bold text-jade-600 hover:underline">
+        <Link href="/admin/agents" className="text-sm font-bold text-jade-600 hover:underline">
           {t('backToAgents')}
         </Link>
         <h2 className="text-xl font-black text-ink-900">{agent.name}</h2>

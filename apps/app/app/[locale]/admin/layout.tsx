@@ -27,6 +27,13 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   const t = await getTranslations('admin');
+  const navItems = [
+    { href: '/admin', label: t('navOverview') },
+    { href: '/admin/users', label: t('navUsers') },
+    { href: '/admin/stores', label: t('navStores') },
+    { href: '/admin/behavior', label: t('navBehavior') },
+    { href: '/admin/agents', label: t('navAgents') },
+  ];
 
   return (
     <PageMessages namespaces={['admin']}>
@@ -40,6 +47,17 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             {t('backToApp')}
           </Link>
         </header>
+        <nav className="flex flex-wrap gap-2" aria-label={t('title')}>
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-full border border-border bg-white px-3 py-1.5 text-sm font-bold text-ink-900 hover:border-ink-900"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
         {children}
       </div>
     </PageMessages>

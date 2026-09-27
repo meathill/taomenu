@@ -3,15 +3,15 @@ import { formatCurrency } from '@taomenu/shared';
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getDb } from '@/lib/db';
-import { AgentCreateForm } from './agent-create-form';
-import { AgentStatusToggle } from './agent-status-toggle';
-import { sumAgentOverview } from './agent-totals';
+import { AgentCreateForm } from '../agent-create-form';
+import { AgentStatusToggle } from '../agent-status-toggle';
+import { sumAgentOverview } from '../agent-totals';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata() {
   const t = await getTranslations('admin');
-  return { title: t('title') };
+  return { title: t('agents') };
 }
 
 const CELL = 'px-3 py-3 align-top';
