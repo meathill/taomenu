@@ -1,6 +1,6 @@
 ---
 title: "QRコード注文とレジ会計：小規模飲食店の最適な運用ガイド"
-slug: "order-bang-qr-thanh-toan-tai-quay"
+slug: "qr-chumon-reji-kaikei"
 summary: "お客様はテーブルのQRコードからセルフ注文し、お会計は従来通りの現金や店頭レジで対応。高額なPOS導入やオンライン決済手数料をかけずに店舗運営を効率化する方法。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

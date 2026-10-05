@@ -1,6 +1,6 @@
 ---
 title: "QRコード注文にPOSレジは必要？小規模店舗のリアルな選択肢"
-slug: "qr-order-co-can-may-pos-khong"
+slug: "qr-chumon-pos-hitsuyo"
 summary: "「モバイルオーダーを入れるには高額なPOS専用レジを買わなければいけない」という思い込みを解消。スタッフのスマートフォンだけで注文を受け取れる最新のクラウド型システムを解説。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

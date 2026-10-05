@@ -1,6 +1,6 @@
 ---
 title: "デジタルメニューとは？飲食店・カフェ向け完全導入ガイド"
-slug: "menu-dien-tu-la-gi"
+slug: "dejitaru-menyuu-toha"
 summary: "電子メニュー（デジタルメニュー）の基本知識、紙のメニューと比較した圧倒的メリット、小規模店舗が初期費用ゼロでスマホ型メニューを導入する方法を徹底解説。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

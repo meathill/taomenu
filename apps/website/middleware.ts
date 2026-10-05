@@ -1,11 +1,23 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import { JA_BLOG_SLUG_REDIRECTS } from './lib/blog-slugs';
 
 const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // 0) 日文博客旧越南语 slug → 罗马字本地化 slug（301，issue #12）
+  const jaBlogMatch = /^\/ja\/blog\/([^/]+)$/.exec(pathname);
+  if (jaBlogMatch?.[1]) {
+    const target = JA_BLOG_SLUG_REDIRECTS[jaBlogMatch[1]];
+    if (target) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/ja/blog/${target}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
 
   // 1) /en 前缀归一到裸路径（308），裸路径即 en；同时去尾 /
   if (pathname === '/en' || pathname.startsWith('/en/')) {

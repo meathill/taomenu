@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, LOCALES } from '@taomenu/shared';
+import { getBlogSlugForLocale, resolveBlogContentKey } from '@/lib/blog-slugs';
 import { getPublicWebsiteUrl } from '@/lib/site';
 
 /** 拼接站点绝对 URL，path 以 / 开头（空串表示首页） */
@@ -62,6 +63,63 @@ export function buildPageMetadata(
       title,
       description,
       url: absoluteWebsiteUrl(toLocalizedPath(locale, normalizeSeoPath(path))),
+      images: [
+        {
+          url: absoluteWebsiteUrl('/brand/og-default.png'),
+          width: 1200,
+          height: 630,
+          alt: 'TaoMenu',
+        },
+      ],
+    },
+    twitter: {
+      title,
+      description,
+      images: [absoluteWebsiteUrl('/brand/og-default.png')],
+    },
+  };
+}
+
+/**
+ * 博客文章的 canonical + hreflang：各语言可用不同 slug（日文罗马字本地化）。
+ * contentKey 为稳定翻译组 ID（历史越南语 slug）；未知文章回退为各语言共用同一 slug。
+ */
+export function buildBlogAlternates(locale: string, slug: string) {
+  const contentKey = resolveBlogContentKey(slug) ?? slug;
+  const canonicalPath = toLocalizedPath(
+    locale,
+    `/blog/${getBlogSlugForLocale(contentKey, locale)}`,
+  );
+  const canonical = absoluteWebsiteUrl(canonicalPath);
+  const languages: Record<string, string> = {};
+  for (const code of LOCALES) {
+    const localizedSlug = getBlogSlugForLocale(contentKey, code);
+    languages[code] = absoluteWebsiteUrl(toLocalizedPath(code, `/blog/${localizedSlug}`));
+  }
+  languages['x-default'] = absoluteWebsiteUrl(
+    toLocalizedPath(DEFAULT_LOCALE, `/blog/${getBlogSlugForLocale(contentKey, DEFAULT_LOCALE)}`),
+  );
+  return { canonical, languages };
+}
+
+export function buildBlogPageMetadata(
+  locale: string,
+  slug: string,
+  title: string,
+  description: string,
+) {
+  const contentKey = resolveBlogContentKey(slug) ?? slug;
+  const publicSlug = getBlogSlugForLocale(contentKey, locale);
+  const path = `/blog/${publicSlug}`;
+  return {
+    title,
+    description,
+    alternates: buildBlogAlternates(locale, contentKey),
+    openGraph: {
+      title,
+      description,
+      url: absoluteWebsiteUrl(toLocalizedPath(locale, path)),
+      type: 'article' as const,
       images: [
         {
           url: absoluteWebsiteUrl('/brand/og-default.png'),

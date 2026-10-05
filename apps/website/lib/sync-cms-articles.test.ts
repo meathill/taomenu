@@ -43,9 +43,9 @@ describe('sync-cms-articles', () => {
       }
     });
 
-    it('所有 8 个 slug 在 4 种语言中完整对齐', () => {
+    it('vi/en/zh 共用历史 slug，ja 使用罗马字本地化 slug（issue #12）', () => {
       const articles = loadAllBlogArticles();
-      const expectedSlugs = [
+      const sharedSlugs = [
         'order-bang-qr-thanh-toan-tai-quay',
         'menu-dien-tu-la-gi',
         'cach-tao-menu-qr-cho-nha-hang',
@@ -55,13 +55,32 @@ describe('sync-cms-articles', () => {
         'quan-an-nho-co-can-may-pos-khong',
         'phan-biet-menu-qr-va-qr-order',
       ].sort();
+      const jaSlugs = [
+        'qr-chumon-reji-kaikei',
+        'dejitaru-menyuu-toha',
+        'qr-menyuu-muryou-sakusei',
+        'qr-chumon-pos-hitsuyo',
+        'qr-chumon-online-kessai',
+        'tagengo-qr-menyuu',
+        'kogata-inshokuten-pos',
+        'qr-menyuu-to-qr-order',
+      ].sort();
 
-      for (const loc of ['vi', 'en', 'zh', 'ja']) {
+      for (const loc of ['vi', 'en', 'zh']) {
         const slugs = articles
           .filter((a) => a.folderLocale === loc)
           .map((a) => a.slug)
           .sort();
-        expect(slugs).toEqual(expectedSlugs);
+        expect(slugs).toEqual(sharedSlugs);
+      }
+
+      const actualJa = articles
+        .filter((a) => a.folderLocale === 'ja')
+        .map((a) => a.slug)
+        .sort();
+      expect(actualJa).toEqual(jaSlugs);
+      for (const slug of actualJa) {
+        expect(sharedSlugs).not.toContain(slug);
       }
     });
   });

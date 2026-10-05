@@ -4,10 +4,23 @@ import { LOCALE_LABELS, LOCALES, type Locale } from '@taomenu/shared';
 import { useLocale } from 'next-intl';
 import type { ChangeEvent } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
+import { getBlogSlugForLocale, resolveBlogContentKey } from '@/lib/blog-slugs';
 
 type LocaleSwitcherProps = {
   label: string;
 };
+
+function remapPathForLocale(pathname: string, nextLocale: Locale): string {
+  const match = /^\/blog\/([^/]+)$/.exec(pathname);
+  if (!match?.[1]) {
+    return pathname;
+  }
+  const contentKey = resolveBlogContentKey(match[1]);
+  if (!contentKey) {
+    return pathname;
+  }
+  return `/blog/${getBlogSlugForLocale(contentKey, nextLocale)}`;
+}
 
 export function LocaleSwitcher({ label }: LocaleSwitcherProps) {
   const locale = useLocale() as Locale;
@@ -16,7 +29,8 @@ export function LocaleSwitcher({ label }: LocaleSwitcherProps) {
 
   function handleChange(event: ChangeEvent<HTMLSelectElement>) {
     const next = event.target.value as Locale;
-    router.replace(pathname, { locale: next });
+    const nextPath = remapPathForLocale(pathname, next);
+    router.replace(nextPath, { locale: next });
   }
 
   return (

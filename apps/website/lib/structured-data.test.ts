@@ -46,3 +46,23 @@ describe('结构化数据不伪造评分（issue #10）', () => {
     expect(layout).toContain("'@type': 'WebSite'");
   });
 });
+
+describe('博客文章 BlogPosting schema（issue #12）', () => {
+  const blogPost = readFileSync(
+    new URL('../app/[locale]/blog/[slug]/page.tsx', import.meta.url),
+    'utf8',
+  );
+
+  it('博客详情声明 BlogPosting 并含必填字段', () => {
+    expect(blogPost).toContain("'@type': 'BlogPosting'");
+    expect(blogPost).toContain('headline:');
+    expect(blogPost).toContain('image:');
+    expect(blogPost).toContain('datePublished:');
+    expect(blogPost).toContain('author:');
+  });
+
+  it('博客详情不移除站点级 schema 依赖（Organization/WebSite 仍在 layout）', () => {
+    expect(layout).toContain("'@type': 'Organization'");
+    expect(layout).toContain("'@type': 'WebSite'");
+  });
+});

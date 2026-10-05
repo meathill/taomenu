@@ -1,4 +1,10 @@
 import { DEFAULT_LOCALE, LOCALES, type Locale } from '@taomenu/shared';
+import {
+  getBlogSlugForLocale,
+  resolveBlogContentKey,
+  toCmsLookupSlugs,
+  toPublicBlogSlug,
+} from '@/lib/blog-slugs';
 
 /** muicv Payload CMS 的 articles 集合（site=taomenu）只读客户端。
  *  匿名只读 status=published；编辑统一在 CMS 后台进行。 */
@@ -153,23 +159,34 @@ export async function listPublishedPosts(locale: Locale): Promise<BlogPost[]> {
     'where[locale][equals]': CMS_LOCALES[locale],
   });
   const payload = await fetchCmsDocs(query);
-  return payload ? parseCmsArticlesList(payload, CMS_LOCALES[locale]) : [];
+  const posts = payload ? parseCmsArticlesList(payload, CMS_LOCALES[locale]) : [];
+  // 对外 URL slug 按 locale 本地化（日文不再暴露越南语 slug）
+  return posts.map((post) => ({
+    ...post,
+    slug: toPublicBlogSlug(post.slug, locale),
+  }));
 }
 
 export async function getPost(slug: string, locale: Locale): Promise<BlogPost | null> {
-  const query = new URLSearchParams({
-    depth: '0',
-    limit: '1',
-    'where[site][equals]': 'taomenu',
-    'where[status][equals]': 'published',
-    'where[locale][equals]': CMS_LOCALES[locale],
-    'where[slug][equals]': slug,
-  });
-  const payload = await fetchCmsDocs(query);
-  if (!payload) {
-    return null;
+  for (const lookupSlug of toCmsLookupSlugs(slug, locale)) {
+    const query = new URLSearchParams({
+      depth: '0',
+      limit: '1',
+      'where[site][equals]': 'taomenu',
+      'where[status][equals]': 'published',
+      'where[locale][equals]': CMS_LOCALES[locale],
+      'where[slug][equals]': lookupSlug,
+    });
+    const payload = await fetchCmsDocs(query);
+    if (!payload) {
+      continue;
+    }
+    const post = parseCmsArticlesList(payload, CMS_LOCALES[locale])[0] ?? null;
+    if (post) {
+      return { ...post, slug: toPublicBlogSlug(post.slug, locale) };
+    }
   }
-  return parseCmsArticlesList(payload, CMS_LOCALES[locale])[0] ?? null;
+  return null;
 }
 
 /** 文章缺当前语言时回退英文（内容原则：宁给英文不给 404）。 */
@@ -184,8 +201,15 @@ export async function getPostWithFallback(
   if (locale === DEFAULT_LOCALE || !(LOCALES as readonly string[]).includes(DEFAULT_LOCALE)) {
     return { post: null as unknown as BlogPost, isFallback: false };
   }
-  const english = await getPost(slug, DEFAULT_LOCALE);
-  return english
-    ? { post: english, isFallback: true }
-    : { post: null as unknown as BlogPost, isFallback: false };
+  // 跨语言 slug 可能不同：先解析 content key，再查默认语言 slug
+  const contentKey = resolveBlogContentKey(slug) ?? slug;
+  const englishSlug = getBlogSlugForLocale(contentKey, DEFAULT_LOCALE);
+  const english = await getPost(englishSlug, DEFAULT_LOCALE);
+  if (!english) {
+    return { post: null as unknown as BlogPost, isFallback: false };
+  }
+  return {
+    post: { ...english, slug: toPublicBlogSlug(contentKey, locale) },
+    isFallback: true,
+  };
 }

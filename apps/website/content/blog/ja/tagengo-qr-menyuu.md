@@ -1,6 +1,6 @@
 ---
 title: "多言語QRコードメニュー：外国人観光客をスムーズに接客する秘訣"
-slug: "menu-da-ngon-ngu-cho-khach-du-lich"
+slug: "tagengo-qr-menyuu"
 summary: "観光地の飲食店やカフェが直面するインバウンド接客の言語の壁を解消！AI自動翻訳と多言語QRメニューで、外国人客の単価向上とスムーズな注文を実現。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

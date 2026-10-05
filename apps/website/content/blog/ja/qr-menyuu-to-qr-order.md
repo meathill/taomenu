@@ -1,6 +1,6 @@
 ---
 title: "閲覧専用QRメニューと注文機能付きQRの違い：店舗に合うのはどっち？"
-slug: "phan-biet-menu-qr-va-qr-order"
+slug: "qr-menyuu-to-qr-order"
 summary: "画像を見るだけの静的PDF QRコードメニューと、お客様がスマホから直接注文できる動的QRオーダーシステムの違いを比較。店舗タイプに応じた選び方を解説。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

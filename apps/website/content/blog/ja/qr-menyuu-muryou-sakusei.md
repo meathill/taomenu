@@ -1,6 +1,6 @@
 ---
 title: "わずか5分で飲食店のQRコードメニューを無料作成する方法"
-slug: "cach-tao-menu-qr-cho-nha-hang"
+slug: "qr-menyuu-muryou-sakusei"
 summary: "スマホだけで誰でも簡単にできる！飲食店やカフェ向けに、見やすく高機能なQRコード付き電子メニューを完全無料で作成・印刷する手順を徹底解説。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

@@ -1,19 +1,33 @@
-import type { Locale } from '@taomenu/shared';
+import { APP_NAME, DEFAULT_LOCALE, LOCALES, type Locale } from '@taomenu/shared';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BlogMarkdownBody } from '@/components/blog-markdown';
+import { JsonLd } from '@/components/json-ld';
 import { Link } from '@/i18n/routing';
-import { getPostWithFallback } from '@/lib/cms-blog';
+import { getPostWithFallback, listPublishedPosts } from '@/lib/cms-blog';
 import { formatDate } from '@/lib/format-date';
-import { buildPageMetadata } from '@/lib/seo';
+import { absoluteWebsiteUrl, buildBlogPageMetadata } from '@/lib/seo';
+import { getPublicWebsiteUrl } from '@/lib/site';
 
-// 博客详情页 ISR：1 天缓存兜底；无静态参数列表，路径按需生成并缓存。
-export const revalidate = 86400;
+// 与落地页一致：纯 SSG + OpenNext staticAssetsIncrementalCache → s-maxage 长缓存。
+// 不再用 ISR revalidate（staticAssets 只读，ISR 会落到 private/no-store）。
+export const dynamic = 'force-static';
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };
+
+export async function generateStaticParams() {
+  const params: { locale: string; slug: string }[] = [];
+  for (const locale of LOCALES) {
+    const posts = await listPublishedPosts(locale);
+    for (const post of posts) {
+      params.push({ locale, slug: post.slug });
+    }
+  }
+  return params;
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -22,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!result.post) {
     return {};
   }
-  return buildPageMetadata(locale, `/blog/${slug}`, result.post.title, result.post.summary);
+  return buildBlogPageMetadata(locale, slug, result.post.title, result.post.summary);
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
@@ -34,9 +48,41 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound();
   }
   const post = result.post;
+  const websiteUrl = getPublicWebsiteUrl();
 
   return (
     <article className="mx-auto max-w-3xl py-8 sm:py-12">
+      {/* 文章级 BlogPosting；站点级 Organization/WebSite 仍在 layout（issue #12） */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.summary,
+          image: absoluteWebsiteUrl('/brand/og-default.png'),
+          datePublished: post.publishedAt,
+          dateModified: post.updatedAt,
+          inLanguage: locale,
+          mainEntityOfPage: absoluteWebsiteUrl(
+            locale === DEFAULT_LOCALE ? `/blog/${post.slug}` : `/${locale}/blog/${post.slug}`,
+          ),
+          author: {
+            '@type': 'Organization',
+            name: APP_NAME,
+            url: websiteUrl,
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: APP_NAME,
+            url: websiteUrl,
+            logo: {
+              '@type': 'ImageObject',
+              url: absoluteWebsiteUrl('/brand/taomenu-mark.svg'),
+            },
+          },
+        }}
+      />
+
       <header className="mb-8 border-b border-border pb-6">
         <Link
           href="/blog"

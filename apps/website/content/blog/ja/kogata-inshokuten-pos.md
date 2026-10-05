@@ -1,6 +1,6 @@
 ---
 title: "小さな飲食店に高額なPOSシステムは本当に必要か？費用対効果の比較"
-slug: "quan-an-nho-co-can-may-pos-khong"
+slug: "kogata-inshokuten-pos"
 summary: "据え置き型の高額POSレジと、スマートフォンのクラウド点単システムを徹底比較。小規模な飲食店やカフェが本当に選ぶべき最適なITツールとは。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

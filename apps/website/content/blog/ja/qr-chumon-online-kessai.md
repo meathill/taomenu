@@ -1,6 +1,6 @@
 ---
 title: "QR注文にオンライン決済は必須？現地会計のメリットを解説"
-slug: "order-qr-co-can-thanh-toan-online-khong"
+slug: "qr-chumon-online-kessai"
 summary: "「QRコード注文＝クレジットカードの事前オンライン決済が必須」という誤解を解く。注文と会計を分離することで得られる柔軟性と手数料ゼロのメリットを解説。"
 status: published
 publishedAt: "2026-08-26T08:00:00.000Z"

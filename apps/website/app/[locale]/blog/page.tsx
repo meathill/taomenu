@@ -5,8 +5,8 @@ import { listPublishedPosts } from '@/lib/cms-blog';
 import { formatDate } from '@/lib/format-date';
 import { buildPageMetadata } from '@/lib/seo';
 
-// 博客页 ISR：1 天缓存兜底；CMS 后台发文后最长 1 天生效。
-export const revalidate = 86400;
+// 与落地页一致：纯 SSG，命中 OpenNext staticAssets 长缓存（issue #12）
+export const dynamic = 'force-static';
 
 type PageProps = {
   params: Promise<{ locale: string }>;
