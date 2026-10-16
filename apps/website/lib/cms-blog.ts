@@ -18,6 +18,9 @@ function isBuildTime(): boolean {
   return process.env.NEXT_PHASE === 'phase-production-build';
 }
 
+/** 构建期 fetch 缓存 key：Workers Builds 提供 WORKERS_CI_COMMIT_SHA，本地回落到进程启动时间 */
+const BUILD_CACHE_KEY = process.env.WORKERS_CI_COMMIT_SHA?.trim() || String(Date.now());
+
 /** 运行时（worker 内）优先走 service binding：同账号内网调用，不出公网。
  *  build 期（Node 进程）拿不到可用 binding，回落公网 URL。 */
 async function resolveCmsFetch(): Promise<{ fetchImpl: typeof fetch; baseUrl: string }> {
@@ -135,7 +138,11 @@ async function fetchCmsDocs(query: URLSearchParams): Promise<unknown | null> {
     const { fetchImpl, baseUrl } = await resolveCmsFetch();
     // service binding 时 baseUrl 为空串，path 直接作为 URL（Fetcher.fetch 接受相对路径）
     const response = await fetchImpl(`${baseUrl}/api/articles?${query.toString()}`, {
-      headers: { Accept: 'application/json' },
+      // Workers Builds 会恢复 .next/cache（含 fetch 数据缓存，revalidate 1d），导致重新部署仍用旧 CMS 数据。
+      // 构建期带上本次构建的 commit/时间作为请求头：fetch 缓存 key 含 headers，每次构建都会重新拉 CMS。
+      headers: isBuildTime()
+        ? { Accept: 'application/json', 'x-taomenu-build': BUILD_CACHE_KEY }
+        : { Accept: 'application/json' },
       next: { revalidate: 86400 },
     });
     if (!response.ok) {
