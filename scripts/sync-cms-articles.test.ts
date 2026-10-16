@@ -4,6 +4,7 @@ import {
   isArticleChanged,
   LOCALE_MAP,
   loadAllBlogArticles,
+  loadLegacySlugMap,
   type ParsedArticle,
 } from './sync-cms-articles';
 
@@ -56,13 +57,23 @@ describe('sync-cms-articles', () => {
         'phan-biet-menu-qr-va-qr-order',
       ].sort();
 
+      // ja 使用罗马字 slug（#12），按 blog-slugs.ts 映射回稳定的历史 slug 后比较
+      const legacy = loadLegacySlugMap();
       for (const loc of ['vi', 'en', 'zh', 'ja']) {
         const slugs = articles
           .filter((a) => a.folderLocale === loc)
-          .map((a) => a.slug)
+          .map((a) => legacy.get(`${loc}:${a.slug}`) ?? a.slug)
           .sort();
         expect(slugs).toEqual(expectedSlugs);
       }
+    });
+  });
+
+  describe('loadLegacySlugMap', () => {
+    it('把 ja 罗马字 slug 映射回 CMS 中的历史越南语 slug', () => {
+      const legacy = loadLegacySlugMap();
+      expect(legacy.get('ja:qr-menyuu-to-qr-order')).toBe('phan-biet-menu-qr-va-qr-order');
+      expect(legacy.size).toBe(8);
     });
   });
 

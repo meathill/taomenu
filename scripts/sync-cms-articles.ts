@@ -58,6 +58,8 @@ export type CmsArticleItem = {
   summary: string;
   bodyMarkdown?: string;
   body_markdown?: string;
+  seoDescription?: string;
+  seo_description?: string;
   updatedAt?: string;
   publishedAt?: string;
 };
@@ -212,6 +214,28 @@ export function escapeSqlString(str: string): string {
   return str.replace(/'/g, "''");
 }
 
+/** 读取 apps/website/lib/blog-slugs.ts 中的 BLOG_POST_SLUGS（单一事实来源），
+ *  得到「当前 slug → 历史 slug」映射。issue #12 把 ja slug 改成罗马字后，CMS 里的旧稿仍是越南语 slug，
+ *  sync 需按旧 slug 找到原文章并改名更新，避免重复新建。（不直接 import：该文件依赖 workspace 包，脚本环境下无法解析） */
+export function loadLegacySlugMap(
+  source: string = readFileSync(resolve(REPO_ROOT, 'apps/website/lib/blog-slugs.ts'), 'utf8'),
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const block of source.matchAll(/'([a-z0-9-]+)':\s*\{([^}]*)\}/g)) {
+    const legacy = block[1] as string;
+    for (const entry of (block[2] as string).matchAll(/\b(vi|en|zh|ja):\s*'([a-z0-9-]+)'/g)) {
+      const current = entry[2] as string;
+      if (current !== legacy) map.set(`${entry[1]}:${current}`, legacy);
+    }
+  }
+  return map;
+}
+
+/** 按 id 改 slug（旧 slug → 新 slug），之后的 upsert 即命中 ON CONFLICT 走更新 */
+export function generateSlugRenameSql(id: string | number, newSlug: string): string {
+  return `UPDATE articles SET slug='${escapeSqlString(newSlug)}', updated_at=datetime('now') WHERE id=${Number(id)} AND site='taomenu';`;
+}
+
 /** 生成 D1 Upsert SQL 语句 */
 export function generateArticleUpsertSql(article: ParsedArticle): string {
   const title = escapeSqlString(article.title);
@@ -270,12 +294,18 @@ export function isArticleChanged(existing: CmsArticleItem, article: ParsedArticl
   const existingBody = existing.bodyMarkdown ?? existing.body_markdown;
   if (existingBody && existingBody !== article.bodyMarkdown) return true;
   if (existing.status !== article.status) return true;
+  if (existing.slug !== article.slug) return true;
+  const existingSeo = existing.seoDescription ?? existing.seo_description;
+  if (existingSeo !== undefined && existingSeo !== article.seoDescription) return true;
   return false;
 }
 
 /** 执行 D1 SQL 批量同步 */
-export async function syncArticlesToD1(articles: ParsedArticle[]): Promise<void> {
-  const sqlStatements = articles.map(generateArticleUpsertSql).join('\n\n');
+export async function syncArticlesToD1(
+  articles: ParsedArticle[],
+  renameSql: string[] = [],
+): Promise<void> {
+  const sqlStatements = [...renameSql, ...articles.map(generateArticleUpsertSql)].join('\n\n');
   const tempSqlFile = join(tmpdir(), `taomenu_blog_sync_${Date.now()}.sql`);
 
   try {
@@ -314,6 +344,8 @@ export async function main() {
 
   console.log('='.repeat(80));
 
+  const legacySlugs = loadLegacySlugMap();
+  const renameSql: string[] = [];
   let toCreateCount = 0;
   let toUpdateCount = 0;
   let upToDateCount = 0;
@@ -321,7 +353,15 @@ export async function main() {
   for (const article of articles) {
     const key = `${article.cmsLocale}:${article.slug}`;
     const label = `[${article.folderLocale.padEnd(2)} / ${article.cmsLocale.padEnd(5)}] ${article.slug}`;
-    const existing = remoteMap.get(key);
+    let existing = remoteMap.get(key);
+    const legacySlug = legacySlugs.get(`${article.folderLocale}:${article.slug}`);
+    if (!existing && legacySlug) {
+      existing = remoteMap.get(`${article.cmsLocale}:${legacySlug}`);
+      if (existing) {
+        renameSql.push(generateSlugRenameSql(existing.id, article.slug));
+        console.log(`  ✏️  [改名] ${legacySlug} → ${article.slug} (ID: ${existing.id})`);
+      }
+    }
 
     if (!existing) {
       console.log(`  ➕ [待同步新建] ${label}`);
@@ -346,7 +386,7 @@ export async function main() {
   }
 
   console.log('\n⚡ 正在执行 Cloudflare D1 数据库批量写入...');
-  await syncArticlesToD1(articles);
+  await syncArticlesToD1(articles, renameSql);
   console.log('✅ 同步指令执行完毕！\n');
 
   // 验证结果
