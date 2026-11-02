@@ -1,6 +1,6 @@
 /*
  * IndexNow 提交脚本（taomenu issue #13）：抓取线上 sitemap（支持 sitemap index），把全部 URL 推送给 IndexNow（Bing/Yandex 等）。
- * key 文件：public/d341f3f010e8279210e14ed867664e82.txt（随 Worker 静态资源上线，带扩展名，不经过 middleware）。
+ * key 文件：public/6a0570a9ec964a52bf1b057b81d3c9eb.txt（随 Worker 静态资源上线，带扩展名，不经过 middleware）。
  *
  * 用法：
  *   pnpm indexnow --dry-run   # 只打印，不发送
@@ -9,7 +9,7 @@
  */
 
 const HOST = 'menu.dyqr.me';
-const KEY = 'd341f3f010e8279210e14ed867664e82';
+const KEY = '6a0570a9ec964a52bf1b057b81d3c9eb';
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 const SITEMAP_URL = `https://${HOST}/sitemap.xml`;
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';

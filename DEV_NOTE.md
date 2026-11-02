@@ -224,6 +224,12 @@
 - 映射规则：本地 `vi` → CMS `vi`，`en` → `en`，`zh` → `zh-CN`，`ja` → `ja`；`status: 'published'` 自动生效。
 - 测试覆盖：`apps/website/lib/sync-cms-articles.test.ts` 确保 32 篇 Markdown 结构合规、Slug 在 4 语言中严格对齐。
 
+## 博客 hreflang 与 next-intl Link 头（2026-11-02）
+
+- next-intl 4.x 默认 `alternateLinks: true`，middleware 会给每个响应加 `Link` 头；它只替换 locale 前缀，无法处理 blog「同一文章不同语言不同 slug」，会与 HTML metadata 的 `buildBlogAlternates` 冲突（Ahrefs 报 404 / 重复 hreflang / 指向 301）。
+- 已在 `i18n/routing.ts` 关闭 `alternateLinks`，hreflang 唯一来源是 `buildAlternates` / `buildBlogAlternates`。
+- `lib/blog-redirect.ts` 的 `resolveBlogRedirect` 在 middleware 里把非 canonical slug 301 到当前语言的公开 slug；新增本地化 slug 时仍需更新 `BLOG_POST_SLUGS`。
+
 ## 统计后台 /admin（2026-09-27）
 
 - 位置：`apps/app` 扩展现有 `/admin`（复用 `ADMIN_EMAIL` 门禁与 layout）；`website` 纯 SSG 无 D1 binding，不放后台。

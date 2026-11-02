@@ -22,8 +22,8 @@ describe('博客缓存与落地页对齐（issue #12）', () => {
     expect(blogPost).toContain('generateStaticParams');
   });
 
-  it('middleware 对日文旧越南语 slug 做 301', () => {
-    expect(middleware).toContain('JA_BLOG_SLUG_REDIRECTS');
+  it('middleware 对非 canonical blog slug 做 301', () => {
+    expect(middleware).toContain('resolveBlogRedirect');
     expect(middleware).toContain('301');
   });
 });
