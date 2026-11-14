@@ -2,10 +2,15 @@
 
 import { CameraIcon, FilePdfIcon, SparkleIcon } from '@phosphor-icons/react';
 import { doLocalesShareLanguage, parseCurrencyInput } from '@taomenu/shared';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
-import { getMenuImportFailureKey } from './menu-import-failure';
+import { MenuImportDiscardButton } from './menu-import-discard-button';
+import {
+  getMenuImportFailureKey,
+  getMenuImportUploadErrorKey,
+  isRetryableMenuImportFailure,
+} from './menu-import-failure';
 import {
   createReviewDraft,
   getTranslatedFromLocale,
@@ -14,6 +19,7 @@ import {
   type SuggestionGroup,
 } from './menu-import-review';
 import { MenuImportReviewList } from './menu-import-review-list';
+import { useImportLanguageNames } from './use-import-language-names';
 
 export function MenuImportPanel({
   storeId,
@@ -27,7 +33,6 @@ export function MenuImportPanel({
   isPro: boolean;
 }) {
   const t = useTranslations('menu');
-  const locale = useLocale();
   const [view, setView] = useState<ImportView | null>(null);
   // 额度以服务端为准；加载前不显示，避免先闪出旧的默认值（issue #29）
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
@@ -89,16 +94,7 @@ export function MenuImportPanel({
   const hasLocaleMismatch = Boolean(
     detectedLocale && !doLocalesShareLanguage(baseLocale, detectedLocale),
   );
-  const languageNames = useMemo(() => {
-    const names = new Intl.DisplayNames([locale], { type: 'language' });
-    return {
-      base: names.of(baseLocale) ?? baseLocale,
-      detected: detectedLocale ? (names.of(detectedLocale) ?? detectedLocale) : '',
-      original: translatedFromLocale
-        ? (names.of(translatedFromLocale) ?? translatedFromLocale)
-        : '',
-    };
-  }, [baseLocale, detectedLocale, locale, translatedFromLocale]);
+  const languageNames = useImportLanguageNames(baseLocale, detectedLocale, translatedFromLocale);
 
   async function handleUpload(event: FormEvent) {
     event.preventDefault();
@@ -117,7 +113,7 @@ export function MenuImportPanel({
         error?: string;
       } | null;
       if (!uploaded.ok || !uploadData?.importId) {
-        setError(importErrorMessage(uploadData?.error));
+        setError(t(getMenuImportUploadErrorKey(uploadData?.error)));
         return;
       }
       const started = await fetch(
@@ -150,14 +146,6 @@ export function MenuImportPanel({
     } finally {
       setBusyAction(null);
     }
-  }
-
-  function importErrorMessage(code?: string) {
-    if (code === 'TOO_LARGE') return t('importTooLarge');
-    if (code === 'UNSUPPORTED_TYPE') return t('importUnsupported');
-    if (code === 'BAD_MAGIC' || code === 'EMPTY') return t('importInvalidFile');
-    if (code === 'MONTHLY_LIMIT_REACHED') return t('importMonthlyLimitReached');
-    return t('importUploadFailed');
   }
 
   function updateDraft(id: string, patch: Partial<ReviewDraft[string]>) {
@@ -235,6 +223,19 @@ export function MenuImportPanel({
   }
 
   const status = view?.menuImport.status;
+  const isUnappliable = Boolean(hasLocaleMismatch && view?.hasExistingCategories);
+  const canUpload =
+    !status || status === 'applied' || status === 'failed' || status === 'cancelled';
+  const discardButton = view ? (
+    <MenuImportDiscardButton
+      storeId={storeId}
+      importId={view.menuImport.id}
+      isBusy={busyAction !== null}
+      prominent={isUnappliable}
+      onDiscarded={load}
+      onError={setError}
+    />
+  ) : null;
   return (
     <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -264,6 +265,7 @@ export function MenuImportPanel({
             />
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{t('importCanLeave')}</p>
+          {status === 'queued' ? discardButton : null}
         </div>
       ) : null}
 
@@ -273,16 +275,37 @@ export function MenuImportPanel({
           <p className="mt-1 text-xs text-muted-foreground">
             {t(getMenuImportFailureKey(view?.menuImport.errorCode ?? null))}
           </p>
-          <Button
-            type="button"
-            variant="default"
-            pending={busyAction === 'retry'}
-            busy={busyAction !== null}
-            onClick={() => void handleRetry()}
-            className="mt-3 bg-indigo-700 hover:bg-indigo-700/90"
-          >
-            {t('importRetry')}
-          </Button>
+          {isRetryableMenuImportFailure(view?.menuImport.errorCode ?? null) ? (
+            <Button
+              type="button"
+              variant="default"
+              pending={busyAction === 'retry'}
+              busy={busyAction !== null}
+              onClick={() => void handleRetry()}
+              className="mt-3 bg-indigo-700 hover:bg-indigo-700/90"
+            >
+              {t('importRetry')}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {status === 'draft' ? (
+        <div className="mt-4 rounded-xl border border-indigo-200 bg-white p-3">
+          <p className="text-xs leading-5 text-ink-900">{t('importDraftNotStarted')}</p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="default"
+              pending={busyAction === 'retry'}
+              busy={busyAction !== null}
+              onClick={() => void handleRetry()}
+              className="mt-3 bg-indigo-700 hover:bg-indigo-700/90"
+            >
+              {t('importRetry')}
+            </Button>
+            {discardButton}
+          </div>
         </div>
       ) : null}
 
@@ -300,22 +323,29 @@ export function MenuImportPanel({
             </p>
           ) : null}
           {hasLocaleMismatch ? (
-            <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold leading-5 text-amber-800">
-              {t(
-                view?.hasExistingCategories
-                  ? 'importLanguageMismatchExisting'
-                  : 'importLanguageWillChange',
-                languageNames,
-              )}
-            </p>
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold leading-5 text-amber-800">
+              <p>
+                {t(
+                  isUnappliable ? 'importLanguageMismatchExisting' : 'importLanguageWillChange',
+                  languageNames,
+                )}
+              </p>
+              {isUnappliable ? discardButton : null}
+            </div>
           ) : null}
+          {isUnappliable ? null : (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="mt-3 text-xs text-muted-foreground">{t('importDiscardHint')}</p>
+              {discardButton}
+            </div>
+          )}
           <MenuImportReviewList
             groups={suggestionsByCategory}
             draft={draft}
             currency={currency}
             isApplying={busyAction === 'apply'}
             isBusy={busyAction !== null}
-            isApplyDisabled={Boolean(hasLocaleMismatch && view?.hasExistingCategories)}
+            isApplyDisabled={isUnappliable}
             onUpdate={updateDraft}
             onToggleCategory={toggleCategory}
             onApply={() => void handleApply()}
@@ -329,7 +359,7 @@ export function MenuImportPanel({
         </p>
       ) : null}
 
-      {!status || status === 'applied' || status === 'failed' ? (
+      {canUpload ? (
         <form onSubmit={(event) => void handleUpload(event)} className="mt-4 space-y-3">
           <label className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-indigo-300 bg-white px-4 text-center">
             <span className="flex items-center gap-2 text-sm font-bold text-indigo-700">

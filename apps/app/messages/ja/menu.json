@@ -129,7 +129,7 @@
   "importReviewTitle": "AI 下書きを確認",
   "importReviewHint": "不要な内容は選択を外してください。信頼度が低い項目や価格未確認の項目は特に確認が必要です。",
   "importLanguageWillChange": "{detected}を検出しました。現在のメニュー言語は{base}です。メニューが空のため、下書きを適用すると主言語が{detected}に変更されます。",
-  "importLanguageMismatchExisting": "この下書きは{detected}ですが、既存メニューは{base}のため適用できません。もう一度読み取ると、自動で{base}に翻訳されます。",
+  "importLanguageMismatchExisting": "この下書きは{detected}ですが、既存メニューは{base}のため適用できません。「破棄して再読み取り」からアップロードし直すと、自動で{base}に翻訳されます。",
   "importCategoryName": "カテゴリ名",
   "importDescription": "説明（任意）",
   "importSelectItem": "{name}を選択",
@@ -242,5 +242,10 @@
   "importTranslatedNotice": "このファイルは{original}です。AI がメニュー言語の{base}に翻訳しました。訳文を確認してください。",
   "importTranslatedKeepOriginal": "下書きを適用すると、言語数の上限内であれば{original}の原文も第二言語として保存されます。",
   "importTranslatedFreeHint": "無料プランではメニュー言語は 1 つのため、原文は保存されません。Pro にアップグレードすると{original}の原文も残せます。",
-  "importOriginalHint": "原文：{text}"
+  "importOriginalHint": "原文：{text}",
+  "importDiscard": "破棄して再読み取り",
+  "importDiscardFailed": "下書きを破棄できませんでした。もう一度お試しください。",
+  "importDiscardHint": "結果に満足できない場合は、下書きを破棄してファイルをもう一度アップロードできます。",
+  "importDraftNotStarted": "ファイルはアップロード済みですが、読み取りがまだ始まっていません。読み取りを開始するか、破棄してアップロードし直してください。",
+  "importLegacyMismatchRetired": "前回の読み取りはメニューと異なる言語で、自動翻訳の導入前に読み取られたため適用できませんでした。自動で破棄し、今月の回数には含めません。ファイルをもう一度アップロードすると、メニュー言語に自動翻訳されます。"
 }

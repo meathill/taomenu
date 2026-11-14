@@ -1,4 +1,4 @@
-import { minorAmountToInput } from '@taomenu/shared';
+import { type MenuImportStatus, minorAmountToInput } from '@taomenu/shared';
 
 /** 识别原文：识别语言与菜单语言不同、已自动翻译时才有（issue #29） */
 export type SuggestionOriginal = { locale: string; name: string; description: string | null };
@@ -32,7 +32,7 @@ export type SuggestionGroup = { category: Suggestion; items: Suggestion[] };
 export type ImportView = {
   menuImport: {
     id: string;
-    status: 'draft' | 'queued' | 'processing' | 'needs_review' | 'applied' | 'failed';
+    status: MenuImportStatus;
     progress: number;
     errorCode: string | null;
   };

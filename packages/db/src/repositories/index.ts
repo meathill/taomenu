@@ -121,6 +121,11 @@ export {
   saveMenuImageEnhancementResult,
 } from './menu-image-enhancement';
 export {
+  discardMenuImport,
+  LEGACY_LOCALE_MISMATCH_ERROR,
+  retireUnappliableMenuImport,
+} from './menu-import-discard';
+export {
   applyMenuImport,
   type MenuImportSuggestionView,
   reviewMenuImport,

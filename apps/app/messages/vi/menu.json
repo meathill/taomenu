@@ -129,7 +129,7 @@
   "importReviewTitle": "Kiểm tra bản nháp AI",
   "importReviewHint": "Bỏ chọn nội dung không cần. Hãy kiểm tra kỹ mục có độ tin cậy thấp hoặc thiếu giá.",
   "importLanguageWillChange": "Đã phát hiện {detected}, khác với ngôn ngữ menu hiện tại là {base}. Vì menu đang trống, áp dụng bản nháp sẽ đặt {detected} làm ngôn ngữ chính.",
-  "importLanguageMismatchExisting": "Bản nháp này dùng {detected}, nhưng menu hiện tại dùng {base} nên không thể áp dụng. Hãy nhận diện lại file — lần nhập mới sẽ tự dịch sang {base}.",
+  "importLanguageMismatchExisting": "Bản nháp này dùng {detected}, nhưng menu hiện tại dùng {base} nên không thể áp dụng. Hãy chọn \"Bỏ và nhận diện lại\" để tải lên lại — lần nhập mới sẽ tự dịch sang {base}.",
   "importCategoryName": "Tên danh mục",
   "importDescription": "Mô tả (không bắt buộc)",
   "importSelectItem": "Chọn {name}",
@@ -242,5 +242,10 @@
   "importTranslatedNotice": "File này dùng {original}. AI đã dịch sang ngôn ngữ menu là {base}. Vui lòng kiểm tra bản dịch.",
   "importTranslatedKeepOriginal": "Khi áp dụng bản nháp, bản gốc {original} cũng được lưu làm ngôn ngữ thứ hai nếu còn trong giới hạn ngôn ngữ.",
   "importTranslatedFreeHint": "Gói miễn phí chỉ giữ một ngôn ngữ menu nên bản gốc không được lưu. Nâng cấp Pro để giữ cả bản gốc {original}.",
-  "importOriginalHint": "Bản gốc: {text}"
+  "importOriginalHint": "Bản gốc: {text}",
+  "importDiscard": "Bỏ và nhận diện lại",
+  "importDiscardFailed": "Không thể bỏ bản nháp. Vui lòng thử lại.",
+  "importDiscardHint": "Chưa hài lòng với kết quả? Bạn có thể bỏ bản nháp và tải file lên lại.",
+  "importDraftNotStarted": "File đã được tải lên nhưng chưa bắt đầu nhận diện. Hãy bắt đầu ngay, hoặc bỏ và tải lên lại.",
+  "importLegacyMismatchRetired": "Lần nhập trước dùng ngôn ngữ khác với menu và được nhận diện trước khi có dịch tự động nên không thể áp dụng. Bản nháp đã được tự động bỏ và không tính vào hạn mức tháng này. Hãy tải file lên lại — lần nhập mới sẽ tự dịch sang ngôn ngữ menu."
 }

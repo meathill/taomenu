@@ -129,7 +129,7 @@
   "importReviewTitle": "核对 AI 草稿",
   "importReviewHint": "取消勾选不需要的内容；低置信度和缺少价格的项目需要重点核对。",
   "importLanguageWillChange": "识别到{detected}，与当前菜单的{base}不同。由于菜单还是空的，应用草稿后会把主要菜单语言改为{detected}。",
-  "importLanguageMismatchExisting": "这份草稿是{detected}，但现有菜单使用{base}，无法直接写入。请重新识别一次，新的识别会自动翻译成{base}。",
+  "importLanguageMismatchExisting": "这份草稿是{detected}，但现有菜单使用{base}，无法直接写入。请点击「放弃并重新识别」重新上传，新的识别会自动翻译成{base}。",
   "importCategoryName": "分类名称",
   "importDescription": "说明（可选）",
   "importSelectItem": "选择{name}",
@@ -242,5 +242,10 @@
   "importTranslatedNotice": "文件内容是{original}，已由 AI 翻译成菜单语言{base}，请核对译文。",
   "importTranslatedKeepOriginal": "写入草稿时，菜单语言数量允许的话会把{original}原文一并保存为第二语言。",
   "importTranslatedFreeHint": "免费版只保留一种菜单语言，原文不会保存；升级 Pro 可同时保留{original}原文。",
-  "importOriginalHint": "原文：{text}"
+  "importOriginalHint": "原文：{text}",
+  "importDiscard": "放弃并重新识别",
+  "importDiscardFailed": "放弃草稿失败，请稍后重试。",
+  "importDiscardHint": "不满意这次识别结果？可以放弃草稿，重新上传文件。",
+  "importDraftNotStarted": "文件已上传，但识别还没有开始。可以开始识别，或放弃后重新上传。",
+  "importLegacyMismatchRetired": "上一次识别的菜单语言与现有菜单不同，且是在自动翻译上线前识别的，无法写入，已自动作废，不占用本月额度。请重新上传文件，新的识别会自动翻译成菜单语言。"
 }

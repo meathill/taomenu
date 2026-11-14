@@ -129,7 +129,7 @@
   "importReviewTitle": "Review the AI draft",
   "importReviewHint": "Uncheck anything you do not want. Low-confidence and missing prices need extra attention.",
   "importLanguageWillChange": "Detected {detected}, different from your current {base} menu. Because this menu is empty, applying the draft will set {detected} as its main language.",
-  "importLanguageMismatchExisting": "This draft is in {detected}, but your existing menu uses {base}, so it can't be applied. Recognize the file again — new imports are translated into {base} automatically.",
+  "importLanguageMismatchExisting": "This draft is in {detected}, but your existing menu uses {base}, so it can't be applied. Use \"Discard & re-import\" to upload it again — new imports are translated into {base} automatically.",
   "importCategoryName": "Category name",
   "importDescription": "Description (optional)",
   "importSelectItem": "Select {name}",
@@ -242,5 +242,10 @@
   "importTranslatedNotice": "This file is in {original}. AI translated it into your menu language, {base}. Please check the translations.",
   "importTranslatedKeepOriginal": "When you apply the draft, the {original} original is also saved as a second language if your language limit allows.",
   "importTranslatedFreeHint": "The free plan keeps one menu language, so the original isn't saved. Upgrade to Pro to keep the {original} original too.",
-  "importOriginalHint": "Original: {text}"
+  "importOriginalHint": "Original: {text}",
+  "importDiscard": "Discard & re-import",
+  "importDiscardFailed": "Couldn't discard the draft. Please try again.",
+  "importDiscardHint": "Not happy with this result? Discard the draft and upload the file again.",
+  "importDraftNotStarted": "The file was uploaded, but recognition hasn't started. Start it now, or discard and upload again.",
+  "importLegacyMismatchRetired": "The last import was in a different language from your menu and was recognized before automatic translation was available, so it couldn't be applied. It has been discarded and doesn't count toward this month's quota. Upload the file again — new imports are translated into your menu language automatically."
 }

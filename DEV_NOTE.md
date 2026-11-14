@@ -315,3 +315,11 @@
 
 - `taomenu-ai` 的 `OPENAI_IMAGE_MODEL` 从 `gpt-image-2` 改为 `gpt-image-2.6-sunburst`，只影响 Pro 的菜品照片美化。
 - 文本模型 `gpt-6-luna` 目前没有接入点：菜单识别和翻译自 #28 起全部走 MiMo，代码里已没有 OpenAI 文本模型配置。以后若恢复 OpenAI 文本链路，应使用 `gpt-6-luna`。
+
+## 导入草稿可以放弃；旧版无法写入的草稿自动作废（2026-11-14，#29 跟进）
+
+- 问题：修复前识别出的法语草稿（门店菜单是英语）恢复后无法写入，也没有任何入口放弃或重新上传，店主被卡住。
+- 新增 `POST /api/owner/stores/:storeId/menu-imports/:importId/discard`（店主鉴权 + 只能操作本店导入）→ `discardMenuImport`：draft/queued/needs_review/failed 可放弃，状态改为 `cancelled` 并删除 R2 源文件；processing 时返回 409（Worker 会覆盖结果）。
+- 额度：放弃本身不产生额度；还没识别过就放弃（`cancelled` 且 `completedAt` 为空）不计入。已经识别出结果再放弃的仍计入，避免反复识别再放弃白用额度。
+- `getLatestMenuImport` 先调用 `retireUnappliableMenuImport`：已有分类、建议语言与主语言不同、且没有原文（修复前的草稿）时，标记为 `failed` + `LOCALE_MISMATCH`（失败不占额度，相当于退还），该状态不可重试（源文件已删），面板直接显示上传入口。GET 接口改为先读草稿再统计额度。
+- 前端：审核区始终有「放弃并重新识别」；草稿无法写入时按钮放在提示框里并突出显示；排队中和上传后未开始（draft）也能放弃；cancelled 状态显示上传入口。

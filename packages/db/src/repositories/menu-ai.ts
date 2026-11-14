@@ -1,5 +1,5 @@
 import { getPlanLimits } from '@taomenu/shared';
-import { and, asc, count, desc, eq, gte, ne } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, isNotNull, ne, or } from 'drizzle-orm';
 import { assertPlanFeature } from '../plan-features';
 import { menuCategories } from '../schema/menu';
 import { menuImportAssets, menuImportSuggestions, menuImports } from '../schema/menu-ai';
@@ -12,6 +12,7 @@ import {
   MENU_AI_SCHEMA_VERSION,
   MenuImportError,
 } from './menu-ai-config';
+import { LEGACY_LOCALE_MISMATCH_ERROR, retireUnappliableMenuImport } from './menu-import-discard';
 import { parseSuggestionRow } from './menu-import-review';
 
 export async function getMenuImportUsage(ctx: StoreContext, db: Db) {
@@ -26,6 +27,8 @@ export async function getMenuImportUsage(ctx: StoreContext, db: Db) {
         gte(menuImports.createdAt, currentUtcMonthStart()),
         // 失败（没有可用结果）的导入不占额度；重试会把状态改回 queued，届时重新计入（issue #29）
         ne(menuImports.status, 'failed'),
+        // 还没识别出结果就放弃（draft/queued → cancelled，completedAt 为空）也不占额度
+        or(ne(menuImports.status, 'cancelled'), isNotNull(menuImports.completedAt)),
       ),
     );
   return { used: rows[0]?.value ?? 0, limit };
@@ -80,13 +83,17 @@ export async function createMenuImport(
 export async function queueMenuImport(ctx: StoreContext, db: Db, importId: string) {
   assertPlanFeature(ctx, 'canUseAiMenuImport', 'AI menu import requires Pro');
   const rows = await db
-    .select({ id: menuImports.id, status: menuImports.status })
+    .select({ id: menuImports.id, status: menuImports.status, errorCode: menuImports.errorCode })
     .from(menuImports)
     .where(and(eq(menuImports.id, importId), eq(menuImports.storeId, ctx.storeId)))
     .limit(1);
   const row = rows[0];
   if (!row) return null;
   if (row.status !== 'draft' && row.status !== 'failed') {
+    throw new MenuImportError('INVALID_STATUS', 'Import cannot be queued from this status');
+  }
+  // 自动作废的旧草稿：源文件已删除，只能重新上传
+  if (row.errorCode === LEGACY_LOCALE_MISMATCH_ERROR) {
     throw new MenuImportError('INVALID_STATUS', 'Import cannot be queued from this status');
   }
   await db
@@ -98,6 +105,7 @@ export async function queueMenuImport(ctx: StoreContext, db: Db, importId: strin
 
 export async function getLatestMenuImport(ctx: StoreContext, db: Db) {
   assertPlanFeature(ctx, 'canUseAiMenuImport', 'AI menu import requires Pro');
+  await retireUnappliableMenuImport(ctx, db);
   const imports = await db
     .select()
     .from(menuImports)

@@ -19,10 +19,9 @@ export async function GET(_request: Request, context: RouteContext) {
   if (!getPlanLimits(owner.storeCtx.plan).canUseAiMenuImport) {
     return Response.json({ error: 'PRO_REQUIRED' }, { status: 403 });
   }
-  const [view, usage] = await Promise.all([
-    getLatestMenuImport(owner.storeCtx, owner.db),
-    getMenuImportUsage(owner.storeCtx, owner.db),
-  ]);
+  // 先读草稿：无法写入的旧草稿会在这里被作废并退还额度，额度要在之后再统计
+  const view = await getLatestMenuImport(owner.storeCtx, owner.db);
+  const usage = await getMenuImportUsage(owner.storeCtx, owner.db);
   return Response.json({ view, usage });
 }
 
