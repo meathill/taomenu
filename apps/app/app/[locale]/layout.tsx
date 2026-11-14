@@ -6,9 +6,8 @@ import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server
 import type { ReactNode } from 'react';
 import { ClarityTag } from '@/components/clarity-tag';
 import { GaTag } from '@/components/ga-tag';
+import { LocaleAppShell } from '@/components/locale-app-shell';
 import { RefTracker } from '@/components/ref-tracker';
-import { SiteFooter } from '@/components/site-footer';
-import { SiteHeader } from '@/components/site-header';
 import { pickMessages } from '@/i18n/load-messages';
 import { SHELL_NAMESPACES } from '@/i18n/namespaces';
 import { routing } from '@/i18n/routing';
@@ -78,11 +77,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <RefTracker />
         {/* 只下发壳层字典；各页面用 PageMessages 追加本页 namespace */}
         <NextIntlClientProvider messages={pickMessages(messages, SHELL_NAMESPACES)}>
-          <div className="flex min-h-dvh flex-col">
-            <SiteHeader />
-            <div className="flex-1">{children}</div>
-            <SiteFooter websiteUrl={getPublicWebsiteUrl()} />
-          </div>
+          <LocaleAppShell fallbackLocale={locale} websiteUrl={getPublicWebsiteUrl()}>
+            {children}
+          </LocaleAppShell>
         </NextIntlClientProvider>
       </body>
     </html>

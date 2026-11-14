@@ -1,5 +1,4 @@
 import { getTranslations } from 'next-intl/server';
-import { PageMessages } from '@/components/page-messages';
 import { CustomerPickupMenu } from './customer-pickup-menu';
 
 type PickupMenuPageProps = {
@@ -17,9 +16,5 @@ export async function generateMetadata({ params }: PickupMenuPageProps) {
 
 export default async function PickupMenuPage({ params }: PickupMenuPageProps) {
   const { pickupToken } = await params;
-  return (
-    <PageMessages namespaces={['customer']}>
-      <CustomerPickupMenu pickupToken={pickupToken} />
-    </PageMessages>
-  );
+  return <CustomerPickupMenu pickupToken={pickupToken} />;
 }
