@@ -17,6 +17,7 @@ import { MenuItemDrawer } from './menu-item-drawer';
 import { MenuLanguageDrawer } from './menu-language-drawer';
 import { collectMenuLocales } from './menu-locales';
 import { MenuProTools } from './menu-pro-tools';
+import { MenuTranslationPanel } from './menu-translation-panel';
 import type { MenuTree } from './menu-types';
 
 type MenuEditorProps = {
@@ -276,9 +277,16 @@ export function MenuEditor({
       </div>
 
       {activeMenuLocale !== baseLocale ? (
-        <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          {t('translationModeHint', { language: languageName })}
-        </p>
+        <div className="space-y-3">
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            {t('translationModeHint', { language: languageName })}
+          </p>
+          <MenuTranslationPanel
+            storeId={storeId}
+            targetLocale={activeMenuLocale}
+            canUseAi={getPlanLimits(isPro ? 'pro' : 'free').canUseAiTranslation}
+          />
+        </div>
       ) : null}
 
       {selectMode ? (

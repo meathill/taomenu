@@ -45,7 +45,7 @@ export function MenuTranslationPanel({
   const { openPaywall } = usePaywall();
   const locale = useLocale();
   const [view, setView] = useState<TranslationView | null>(null);
-  const [usage, setUsage] = useState({ used: 0, limit: 20 });
+  const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const [draft, setDraft] = useState<TranslationDraft>({});
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -203,10 +203,14 @@ export function MenuTranslationPanel({
           MiMo AI
         </span>
       </div>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('translationHint')}</p>
-      <p className="mt-1 text-xs font-semibold text-indigo-700">
-        {t('translationMonthlyUsage', usage)}
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+        {t('translationHint', { language: languageNames.of(targetLocale) ?? targetLocale })}
       </p>
+      {usage ? (
+        <p className="mt-1 text-xs font-semibold text-indigo-700">
+          {t('translationMonthlyUsage', usage)}
+        </p>
+      ) : null}
 
       {view && (status === 'queued' || status === 'processing') ? (
         <div className="mt-4" role="status">
@@ -307,11 +311,13 @@ export function MenuTranslationPanel({
             size="lg"
             pending={busyAction === 'create'}
             busy={busyAction !== null}
-            disabled={usage.used >= usage.limit}
+            disabled={usage != null && usage.used >= usage.limit}
             onClick={() => void createTranslation()}
             className="w-full bg-indigo-700 hover:bg-indigo-700/90"
           >
-            {t('translationCreate')}
+            {t('translationCreate', {
+              language: languageNames.of(targetLocale) ?? targetLocale,
+            })}
           </Button>
         </div>
       ) : null}
