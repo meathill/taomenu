@@ -113,7 +113,8 @@ export function CustomerMenuList({
                           />
                         ) : null}
                         <span className="min-w-0">
-                          <span className="block truncate font-semibold text-ink-900">
+                          {/* 双语菜名要完整显示（游客最需要看外文名），换行而不是截断：issue #23 */}
+                          <span className="block font-semibold text-ink-900 wrap-anywhere">
                             {item.name}
                           </span>
                           <span className="text-sm tabular-nums text-muted-foreground">
@@ -123,7 +124,7 @@ export function CustomerMenuList({
                           </span>
                         </span>
                       </span>
-                      <span className="text-sm font-bold text-brand-600">+</span>
+                      <span className="shrink-0 text-sm font-bold text-brand-600">+</span>
                     </button>
                   </li>
                 ))}

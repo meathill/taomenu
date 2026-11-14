@@ -302,7 +302,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                     type="button"
                     disabled={item.isSoldOut || !menu.store.acceptingPublicRequests}
                     onClick={() => requestAddItem(item)}
-                    className="flex min-h-14 w-full items-center justify-between rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
+                    className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
                   >
                     <span className="flex min-w-0 items-center gap-3">
                       {item.imageKey ? (
@@ -315,14 +315,15 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                         />
                       ) : null}
                       <span className="min-w-0">
-                        <span className="block truncate font-semibold">{item.name}</span>
+                        {/* 双语菜名换行完整显示，不截断：issue #23 */}
+                        <span className="block font-semibold wrap-anywhere">{item.name}</span>
                         <span className="text-sm tabular-nums text-muted-foreground">
                           {formatCurrency(item.priceAmount, currency, locale)}
                           {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
                         </span>
                       </span>
                     </span>
-                    <span className="font-bold text-brand-600">+</span>
+                    <span className="shrink-0 font-bold text-brand-600">+</span>
                   </button>
                 </li>
               ))}
