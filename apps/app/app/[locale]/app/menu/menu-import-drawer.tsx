@@ -12,6 +12,8 @@ type MenuImportDrawerProps = {
   currency: string;
   /** Free 也能用照片/PDF 导入（每月少量次数，issue #25），这里只决定文案与升级提示 */
   isPro: boolean;
+  /** 套餐语言名额还够把识别原文存成额外语言时为 true */
+  canKeepImportOriginal: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
@@ -21,6 +23,7 @@ export function MenuImportDrawer({
   baseLocale,
   currency,
   isPro,
+  canKeepImportOriginal,
   onOpenChange,
 }: MenuImportDrawerProps) {
   const t = useTranslations('menu');
@@ -37,6 +40,7 @@ export function MenuImportDrawer({
         baseLocale={baseLocale}
         currency={currency}
         isPro={isPro}
+        canKeepImportOriginal={canKeepImportOriginal}
       />
       {!isPro ? (
         <p className="mt-4 rounded-xl border border-indigo-100 bg-white px-3 py-2 text-xs leading-5 text-muted-foreground">

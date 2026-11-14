@@ -52,6 +52,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
         { label: t('freeF1'), status: 'available' },
         { label: t('freeF2'), status: 'available' },
         { label: t('freeF3'), status: 'available' },
+        { label: t('freeF4'), status: 'available' },
         { label: staffAddOn, status: 'available' },
       ],
       highlight: false,

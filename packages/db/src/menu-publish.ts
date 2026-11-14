@@ -36,7 +36,7 @@ export type PublishIssue = {
 };
 
 /**
- * 发布前纯函数校验：至少一类可用菜品、基础语言完整、价格合法、Free 单语言。
+ * 发布前纯函数校验：至少一类可用菜品、基础语言完整、价格合法、语言数不超过套餐上限。
  */
 export function validateMenuForPublish(input: {
   menu: PublishableMenu;
@@ -110,7 +110,7 @@ export function validateMenuForPublish(input: {
   return issues;
 }
 
-/** Free 只能有 baseLocale 一种已发布语言。 */
+/** 套餐语言上限：Free 为基础语言 + 1 种，Pro 最多 5 种。 */
 export function assertLocaleAllowed(input: {
   plan: PlanId;
   baseLocale: string;

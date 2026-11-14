@@ -24,7 +24,7 @@
     "painTitle": "Vì sao khách cần quét mã để gọi món?",
     "painBody": "Khách không đọc được menu tiếng Việt và khó giao tiếp bằng tiếng Anh là hai trở ngại lớn nhất khi phục vụ khách du lịch. Menu QR giải quyết cả hai cùng lúc.",
     "pain1Title": "Khách không đọc được menu tiếng Việt",
-    "pain1Body": "Menu hiện bằng ngôn ngữ của khách — tối đa 5 ngôn ngữ với Pro.",
+    "pain1Body": "Menu hiện bằng ngôn ngữ của khách — gói miễn phí được thêm 1 ngôn ngữ, Pro tối đa 5.",
     "pain2Title": "Gọi món bằng tiếng Anh vụn vỡ rất mệt",
     "pain2Body": "Khách tự chạm để gọi món thay vì phải giải thích ở quầy hay với nhân viên.",
     "pain3Title": "Nhân viên và khách đều nhẹ nhàng",
@@ -79,11 +79,11 @@
     "faq2Q": "Không có máy tính hay máy POS có dùng được không?",
     "faq2A": "Được. Chỉ cần một chiếc điện thoại: đăng ký, tạo menu, nhận order và ghi nhận thanh toán đều làm được.",
     "faq3Q": "Bản miễn phí dùng để kinh doanh thật được không?",
-    "faq3A": "Được. Free gồm 1 chỗ nhân viên, 1 ngôn ngữ menu và tạo menu thủ công — đủ để một quán nhỏ vận hành hằng ngày.",
+    "faq3A": "Được. Free gồm 1 chỗ nhân viên, 2 ngôn ngữ menu (gốc cộng thêm 1) và tạo menu thủ công — đủ để một quán nhỏ vận hành hằng ngày.",
     "faq4Q": "TaoMenu có xử lý thanh toán không?",
     "faq4A": "Hiện tại khách thanh toán trực tiếp bằng tiền mặt hoặc mã QR của quán — TaoMenu không chạm vào tiền ăn. Thanh toán trực tuyến đang được phát triển.",
     "faq5Q": "Khách có thể gọi món bằng ngôn ngữ của mình không?",
-    "faq5A": "Có. Pro hỗ trợ tối đa 5 ngôn ngữ menu. Bản dịch do AI hỗ trợ và chủ quán duyệt trước khi đăng.",
+    "faq5A": "Có. Gói miễn phí gồm ngôn ngữ gốc cộng thêm 1, dịch bằng AI trong hạn mức tháng. Pro hỗ trợ tối đa 5 ngôn ngữ menu. Bản dịch do AI hỗ trợ và chủ quán duyệt trước khi đăng.",
     "faq6Q": "Bắt đầu mất bao lâu?",
     "faq6A": "Vài phút. Đăng ký miễn phí, tạo menu, in hoặc chia sẻ mã QR là có thể nhận order.",
     "finalCtaTitle": "Bắt đầu miễn phí trong vài phút",
@@ -96,7 +96,7 @@
     "freeName": "Free",
     "freeDesc": "Đủ để một quán nhỏ vận hành hằng ngày.",
     "freeF1": "1 chỗ Staff (tổng cộng 2 chỗ gồm chủ quán)",
-    "freeF2": "1 ngôn ngữ menu",
+    "freeF2": "2 ngôn ngữ menu (gốc cộng thêm 1)",
     "freeF3": "Tạo menu thủ công, kèm 10 lượt nhập menu bằng ảnh/PDF với AI mỗi tháng",
     "proName": "Pro",
     "proPrice": "{price}/tháng",
@@ -123,7 +123,8 @@
     "aiOutputBody": "Danh mục, tên món, giá, lựa chọn, bản dịch hoặc ảnh xem trước có thể chỉnh sửa — không tự đưa lên menu thật.",
     "aiReviewTitle": "Bạn xác nhận",
     "aiReviewBody": "Kiểm tra chữ, giá và thay đổi chưa chắc chắn. Áp dụng bản nháp AI vẫn chưa xuất bản menu.",
-    "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 10 lượt nhập menu ảnh/PDF. Pro: 20 lượt nhập menu ảnh/PDF, 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt."
+    "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 10 lượt nhập menu ảnh/PDF và 10 lượt dịch AI. Pro: 20 lượt nhập menu ảnh/PDF, 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt.",
+    "freeF4": "10 lượt dịch menu AI có kiểm tra mỗi tháng"
   },
   "footer": {
     "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",
@@ -207,12 +208,12 @@
     },
     "phan-mem-quan-ly-nha-hang-mien-phi": {
       "title": "Phần mềm quản lý nhà hàng miễn phí: dùng thật được không?",
-      "description": "Bản Free của TaoMenu đủ để một quán nhỏ hoạt động hằng ngày: 1 chỗ nhân viên, 1 ngôn ngữ menu, nhập tay. Không gồm POS, kho hay kế toán.",
-      "answer": "Được. Bản Free đủ để một quán nhỏ hoạt động hằng ngày: 1 chỗ nhân viên, 1 ngôn ngữ menu và nhập món thủ công — không gồm POS, kho hay kế toán.",
+      "description": "Bản Free của TaoMenu đủ để một quán nhỏ hoạt động hằng ngày: 1 chỗ nhân viên, 2 ngôn ngữ menu (gốc cộng thêm 1), nhập tay. Không gồm POS, kho hay kế toán.",
+      "answer": "Được. Bản Free đủ để một quán nhỏ hoạt động hằng ngày: 1 chỗ nhân viên, 2 ngôn ngữ menu (gốc cộng thêm 1) và nhập món thủ công — không gồm POS, kho hay kế toán.",
       "faq": [
         {
           "q": "Bản miễn phí gồm những gì?",
-          "a": "1 chỗ nhân viên (tổng 2 chỗ gồm chủ quán), 1 ngôn ngữ menu và nhập món thủ công."
+          "a": "1 chỗ nhân viên (tổng 2 chỗ gồm chủ quán), 2 ngôn ngữ menu (gốc cộng thêm 1) và nhập món thủ công."
         },
         {
           "q": "Pro khác gì?",
@@ -245,8 +246,8 @@
     },
     "menu-da-ngon-ngu": {
       "title": "Menu đa ngôn ngữ cho nhà hàng: phục vụ khách du lịch không cần phiên dịch",
-      "description": "Tối đa 5 ngôn ngữ trên cùng một menu. Bản dịch do AI hỗ trợ và chủ quán duyệt trước khi đăng. Dành cho quán đón khách nước ngoài.",
-      "answer": "Pro hỗ trợ tối đa 5 ngôn ngữ trên cùng một menu. AI tạo bản dịch nháp và chủ quán duyệt trước khi đăng — không có giá sai hay tên món sai trước mặt khách.",
+      "description": "Gói miễn phí gồm ngôn ngữ gốc cộng thêm 1. Pro hỗ trợ tối đa 5 ngôn ngữ trên cùng một menu. Bản dịch do AI hỗ trợ và chủ quán duyệt trước khi đăng. Dành cho quán đón khách nước ngoài.",
+      "answer": "Gói miễn phí gồm ngôn ngữ gốc cộng thêm 1, dịch AI trong hạn mức tháng. Pro hỗ trợ tối đa 5 ngôn ngữ trên cùng một menu. AI tạo bản dịch nháp và chủ quán duyệt trước khi đăng — không có giá sai hay tên món sai trước mặt khách.",
       "faq": [
         {
           "q": "Hỗ trợ những ngôn ngữ nào?",
@@ -254,7 +255,7 @@
         },
         {
           "q": "Dịch có tốn thêm phí không?",
-          "a": "Pro gồm 20 lượt dịch AI mỗi tháng cho mỗi quán."
+          "a": "Gói miễn phí gồm 10 lượt dịch AI mỗi tháng cho mỗi quán; Pro gồm 20 lượt."
         },
         {
           "q": "Bản dịch có ghi đè nội dung tôi tự viết không?",

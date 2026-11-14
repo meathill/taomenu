@@ -150,7 +150,7 @@
   "paywallTitle": "Pro 機能です",
   "paywallComparePlans": "プランの詳細を見る",
   "paywallRemovePoweredBy": "Pro にアップグレードすると、お客様向けメニュー下部の「TaoMenu 提供」を消して、お店のブランドだけを表示できます。",
-  "paywallTranslation": "Pro では最大 {languages} 言語のメニューを提供でき、AI がメニュー全体をワンクリックで翻訳します。",
+  "paywallTranslation": "無料プランでも基本言語にもう 1 言語を足せ、毎月 {freeTranslations} 回の AI 翻訳が使えます。Pro なら最大 {languages} 言語、毎月 {proTranslations} 回の AI 翻訳です。",
   "paywallPhotoEnhance": "Pro では AI が料理写真をワンクリックで補正し、よりおいしそうなメニューにします。",
   "paywallQrTemplates": "Pro ではすべてのテーブルカードテンプレートで QR コードを印刷できます。",
   "paywallMenuImport": "無料プランは月 {free} 回までインポートできます。Pro なら月 {pro} 回に増え、AI 翻訳と料理写真の補正も使えます。",

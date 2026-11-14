@@ -27,11 +27,13 @@ export function MenuImportPanel({
   baseLocale,
   currency,
   isPro,
+  canKeepImportOriginal,
 }: {
   storeId: string;
   baseLocale: string;
   currency: string;
   isPro: boolean;
+  canKeepImportOriginal: boolean;
 }) {
   const t = useTranslations('menu');
   const tCommon = useTranslations('common');
@@ -319,9 +321,12 @@ export function MenuImportPanel({
                 original: languageNames.original,
                 base: languageNames.base,
               })}{' '}
-              {t(isPro ? 'importTranslatedKeepOriginal' : 'importTranslatedFreeHint', {
-                original: languageNames.original,
-              })}
+              {t(
+                canKeepImportOriginal ? 'importTranslatedKeepOriginal' : 'importTranslatedFreeHint',
+                {
+                  original: languageNames.original,
+                },
+              )}
             </p>
           ) : null}
           {hasLocaleMismatch ? (

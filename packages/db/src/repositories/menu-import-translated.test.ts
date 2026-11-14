@@ -105,10 +105,10 @@ describe('另一种语言的菜单导入（issue #29）', () => {
     });
   });
 
-  it('Free：可以写入草稿，只保存译文', async () => {
+  it('Free：语言名额未满时原文一并保存为第二语言', async () => {
     const { db, ctx } = await setup('free');
     await expect(acceptAllAndApply(db, ctx)).resolves.toEqual({ applied: 2 });
-    expect(await localesOf(db, 'Đồ uống')).toEqual(['vi:Đồ uống']);
+    expect(await localesOf(db, 'Đồ uống')).toEqual(['en:Drinks', 'vi:Đồ uống']);
   });
 
   it('Pro：语言数允许时原文一并保存为第二语言', async () => {

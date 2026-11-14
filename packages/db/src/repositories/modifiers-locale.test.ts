@@ -8,7 +8,7 @@ import { createModifierGroup } from './modifiers';
 import { createStoreForOwner } from './stores';
 
 describe('规格翻译语言额度', () => {
-  it('Free 账号不能只通过规格接口创建第二语言', async () => {
+  it('Free 账号可以通过规格接口创建第二语言，但不能创建第三语言', async () => {
     const db = createTestDb();
     await db.insert(user).values({
       id: 'owner-1',
@@ -38,11 +38,18 @@ describe('规格翻译语言额度', () => {
       locale: 'vi',
     });
 
+    const second = await createModifierGroup(ctx, db, {
+      itemId: item!.itemId,
+      name: 'Size',
+      locale: 'en',
+    });
+    expect(second.groupId).toBeTruthy();
+
     await expect(
       createModifierGroup(ctx, db, {
         itemId: item!.itemId,
-        name: 'Size',
-        locale: 'en',
+        name: '规格',
+        locale: 'zh',
       }),
     ).rejects.toMatchObject({ name: 'MenuValidationError' });
   });

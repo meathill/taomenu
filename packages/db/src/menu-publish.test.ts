@@ -45,9 +45,15 @@ describe('validateMenuForPublish', () => {
     expect(issues.some((i) => i.code === 'ITEM_MISSING_BASE_LOCALE')).toBe(true);
   });
 
-  it('Free 不能发布超过一种语言', () => {
+  it('Free 可以发布基础语言加 1 种，但不能发布第 3 种', () => {
     const menu = sampleMenu();
     menu.categories[0]!.items[0]!.translations.push({ locale: 'en', name: 'Beef pho' });
+    expect(
+      validateMenuForPublish({ menu, baseLocale: 'vi', plan: 'free' }).filter(
+        (i) => i.code === 'TOO_MANY_LOCALES',
+      ),
+    ).toHaveLength(0);
+    menu.categories[0]!.items[0]!.translations.push({ locale: 'zh', name: '牛肉粉' });
     const issues = validateMenuForPublish({ menu, baseLocale: 'vi', plan: 'free' });
     expect(issues.some((i) => i.code === 'TOO_MANY_LOCALES')).toBe(true);
   });
@@ -68,12 +74,20 @@ describe('validateMenuForPublish', () => {
 });
 
 describe('assertLocaleAllowed', () => {
-  it('Free 拒绝第二语言', () => {
+  it('Free 允许第二语言，拒绝第三语言', () => {
+    expect(
+      assertLocaleAllowed({
+        plan: 'free',
+        baseLocale: 'vi',
+        locale: 'en',
+        existingLocales: ['vi'],
+      }),
+    ).toBeNull();
     const issue = assertLocaleAllowed({
       plan: 'free',
       baseLocale: 'vi',
-      locale: 'en',
-      existingLocales: ['vi'],
+      locale: 'zh',
+      existingLocales: ['vi', 'en'],
     });
     expect(issue?.code).toBe('TOO_MANY_LOCALES');
   });

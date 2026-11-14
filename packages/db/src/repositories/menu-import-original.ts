@@ -33,7 +33,7 @@ export function pickOriginalMenuLocale(
 
 /**
  * 翻译导入（issue #29）时，原文能否作为第二语言一起保存：
- * 原文语言是支持的菜单语言、与目标语言不同，且当前套餐的语言数允许（Free 只有 1 种，直接跳过）。
+ * 原文语言是支持的菜单语言、与目标语言不同，且当前套餐的语言数允许（Free 为基础语言 + 1 种）。
  */
 export async function resolveOriginalLocale(
   ctx: StoreContext,

@@ -1,15 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { getPlanLimits, getStaffSeatLimit, PLAN_IDS, shouldShowPoweredBy } from './plans';
+import {
+  getPlanLimits,
+  getStaffSeatLimit,
+  isMenuLocaleAllowed,
+  PLAN_IDS,
+  shouldShowPoweredBy,
+} from './plans';
 
 describe('getPlanLimits', () => {
-  it('free 只有 1 个 staff 席位和 1 种菜单语言', () => {
+  it('free 只有 1 个 staff 席位，菜单语言为基础语言 + 1 种，且可用每月额度内的 AI 翻译', () => {
     const free = getPlanLimits('free');
     expect(free.maxStaffTerminals).toBe(1);
-    expect(free.maxMenuLocales).toBe(1);
+    expect(free.maxMenuLocales).toBe(2);
     expect(free.canUseAiMenuImport).toBe(true);
+    expect(free.canUseAiTranslation).toBe(true);
     expect(free.canUseProQrTemplates).toBe(false);
     expect(free.maxAiMenuImportsPerMonth).toBe(10);
-    expect(free.maxAiTranslationsPerMonth).toBe(0);
+    expect(free.maxAiTranslationsPerMonth).toBe(10);
     expect(free.canUseAiImageEnhancement).toBe(false);
     expect(free.maxAiImageEnhancementsPerMonth).toBe(0);
   });
@@ -47,5 +54,34 @@ describe('shouldShowPoweredBy', () => {
   it('Free（包括降级后残留的开关）始终显示 Powered by', () => {
     expect(shouldShowPoweredBy('free', true)).toBe(true);
     expect(shouldShowPoweredBy('free', false)).toBe(true);
+  });
+});
+
+describe('isMenuLocaleAllowed', () => {
+  it('Free 允许基础语言加 1 种，拒绝第 3 种', () => {
+    expect(
+      isMenuLocaleAllowed({
+        plan: 'free',
+        baseLocale: 'vi',
+        locale: 'en',
+        existingLocales: ['vi'],
+      }),
+    ).toBe(true);
+    expect(
+      isMenuLocaleAllowed({
+        plan: 'free',
+        baseLocale: 'vi',
+        locale: 'zh',
+        existingLocales: ['vi', 'en'],
+      }),
+    ).toBe(false);
+    expect(
+      isMenuLocaleAllowed({
+        plan: 'free',
+        baseLocale: 'vi',
+        locale: 'en',
+        existingLocales: ['vi', 'en'],
+      }),
+    ).toBe(true);
   });
 });

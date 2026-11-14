@@ -150,7 +150,7 @@
   "paywallTitle": "This is a Pro feature",
   "paywallComparePlans": "See plan details",
   "paywallRemovePoweredBy": "With Pro, you can remove “Powered by TaoMenu” from the bottom of your customer menu so it shows only your brand.",
-  "paywallTranslation": "With Pro, your menu can offer up to {languages} languages, and AI translates the whole menu in one click.",
+  "paywallTranslation": "Free already includes your main language plus one more, with {freeTranslations} AI translations each month. Pro unlocks up to {languages} languages and {proTranslations} AI translations per month.",
   "paywallPhotoEnhance": "With Pro, AI can enhance your dish photos in one click to make the menu more appetizing.",
   "paywallQrTemplates": "With Pro, you can print QR codes with every table-card template.",
   "paywallMenuImport": "Free includes {free} imports per month. Pro gives you {pro} per month, plus AI translation and photo enhancement.",

@@ -19,6 +19,12 @@ describe('定价页语言权益与 PLAN_LIMITS 一致', () => {
       // issue #25：Free 的照片/PDF 导入次数与 PLAN_LIMITS 一致
       expect(pricing.freeF3).toContain(String(getPlanLimits('free').maxAiMenuImportsPerMonth));
       expect(pricing.proImport).toContain(String(getPlanLimits('pro').maxAiMenuImportsPerMonth));
+      expect(pricing.freeF4).toContain(String(getPlanLimits('free').maxAiTranslationsPerMonth));
+      expect(pricing.proTranslation).toContain(
+        String(getPlanLimits('pro').maxAiTranslationsPerMonth),
+      );
+      expect(pricing.aiLimit).toContain(String(getPlanLimits('free').maxAiTranslationsPerMonth));
+      expect(pricing.aiLimit).toContain(String(getPlanLimits('pro').maxAiTranslationsPerMonth));
     });
   }
 });

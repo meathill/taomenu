@@ -24,7 +24,7 @@
     "painTitle": "Why guests scan to order",
     "painBody": "Menu language and spoken English are the two hardest parts of serving tourists. A QR menu solves both at once.",
     "pain1Title": "Guests can't read Vietnamese menus",
-    "pain1Body": "The menu opens in the guest's own language — up to 5 languages on Pro.",
+    "pain1Body": "The menu opens in the guest's own language — Free includes one extra language, Pro up to 5.",
     "pain2Title": "Ordering in broken English is painful",
     "pain2Body": "Guests tap to order instead of explaining at the counter or to a server.",
     "pain3Title": "Staff and guests both stay relaxed",
@@ -79,11 +79,11 @@
     "faq2Q": "Can I run this without a computer or POS?",
     "faq2A": "Yes. A single phone is enough: register, build the menu, receive orders, and record payment.",
     "faq3Q": "Can the free plan run a real business?",
-    "faq3A": "Yes. Free includes 1 staff seat, 1 menu language, and manual menu entry — enough for a small shop day to day.",
+    "faq3A": "Yes. Free includes 1 staff seat, 2 menu languages (the original plus one more), and manual menu entry — enough for a small shop day to day.",
     "faq4Q": "Does TaoMenu handle payments?",
     "faq4A": "Today, guests pay directly with cash or the shop's own payment QR code — TaoMenu never touches meal money. Online payment is in development.",
     "faq5Q": "Can guests order in their own language?",
-    "faq5A": "Yes. Pro supports up to 5 menu languages. Translations are AI-assisted and reviewed by the owner before publishing.",
+    "faq5A": "Yes. Free includes your main language plus one more, with AI translation in the monthly quota. Pro supports up to 5 menu languages. Translations are AI-assisted and reviewed by the owner before publishing.",
     "faq6Q": "How long does it take to get started?",
     "faq6A": "Minutes. Sign up free, build your menu, print or share QR codes — then start taking orders.",
     "finalCtaTitle": "Start free in minutes",
@@ -96,7 +96,7 @@
     "freeName": "Free",
     "freeDesc": "Enough for a small shop to run day to day.",
     "freeF1": "1 staff seat (2 total including the owner)",
-    "freeF2": "1 menu language",
+    "freeF2": "2 menu languages (the original plus one more)",
     "freeF3": "Manual menu entry, plus 10 AI photo/PDF menu imports per month",
     "proName": "Pro",
     "proPrice": "{price}/month",
@@ -123,7 +123,8 @@
     "aiOutputBody": "Editable categories, item names, prices, options, translations or image previews — never a live menu automatically.",
     "aiReviewTitle": "You confirm",
     "aiReviewBody": "Review uncertain text, prices and changes. Applying an AI draft still does not publish it.",
-    "aiLimit": "Monthly allowance per store — Free: 10 photo/PDF menu imports. Pro: 20 photo/PDF menu imports, 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once."
+    "aiLimit": "Monthly allowance per store — Free: 10 photo/PDF menu imports and 10 AI translation jobs. Pro: 20 photo/PDF menu imports, 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once.",
+    "freeF4": "10 reviewed AI menu translations per month"
   },
   "footer": {
     "tagline": "QR ordering software for small restaurants.",
@@ -207,12 +208,12 @@
     },
     "phan-mem-quan-ly-nha-hang-mien-phi": {
       "title": "Free restaurant management software: is it really usable?",
-      "description": "TaoMenu's free plan runs a small shop day to day: 1 staff seat, 1 menu language, manual entry. No POS, inventory or accounting.",
-      "answer": "Yes. The free plan is enough for a small shop to run daily: 1 staff seat, 1 menu language and manual menu entry — it does not include POS, inventory or accounting.",
+      "description": "TaoMenu's free plan runs a small shop day to day: 1 staff seat, 2 menu languages (the original plus one more), manual entry. No POS, inventory or accounting.",
+      "answer": "Yes. The free plan is enough for a small shop to run daily: 1 staff seat, 2 menu languages (the original plus one more) and manual menu entry — it does not include POS, inventory or accounting.",
       "faq": [
         {
           "q": "What exactly does the free plan include?",
-          "a": "1 staff seat (2 total including the owner), 1 menu language and manual menu entry."
+          "a": "1 staff seat (2 total including the owner), 2 menu languages (the original plus one more) and manual menu entry."
         },
         {
           "q": "What does Pro add?",
@@ -245,8 +246,8 @@
     },
     "menu-da-ngon-ngu": {
       "title": "Multi-language restaurant menus: serve tourists without a translator",
-      "description": "Up to 5 languages on one menu. AI-assisted translation, reviewed by the owner before publishing. Built for shops serving foreign guests.",
-      "answer": "Pro supports up to 5 languages on the same menu. AI generates draft translations and the owner reviews before anything goes live — no wrong prices or bad dish names in front of guests.",
+      "description": "Free includes the original language plus one more. Pro supports up to 5 languages on one menu. AI-assisted translation, reviewed by the owner before publishing. Built for shops serving foreign guests.",
+      "answer": "Free includes the original language plus one more, with AI translation in the monthly quota. Pro supports up to 5 languages on the same menu. AI generates draft translations and the owner reviews before anything goes live — no wrong prices or bad dish names in front of guests.",
       "faq": [
         {
           "q": "Which languages are supported?",
@@ -254,7 +255,7 @@
         },
         {
           "q": "Does translation cost extra?",
-          "a": "Pro includes 20 AI translation jobs per month per store."
+          "a": "Free includes 10 AI translation jobs per month per store; Pro includes 20."
         },
         {
           "q": "Will a translation overwrite what I wrote?",

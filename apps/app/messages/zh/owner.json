@@ -150,7 +150,7 @@
   "paywallTitle": "这是 Pro 功能",
   "paywallComparePlans": "查看套餐详情",
   "paywallRemovePoweredBy": "升级 Pro 后，可以在顾客点单页去掉底部的「由 TaoMenu 提供」，让菜单只展示你的店铺品牌。",
-  "paywallTranslation": "升级 Pro 后，菜单可同时提供最多 {languages} 种语言，并用 AI 一键翻译整份菜单。",
+  "paywallTranslation": "免费方案已包含主语言再加 1 种，每月 {freeTranslations} 次 AI 翻译。升级 Pro 最多 {languages} 种语言，每月 {proTranslations} 次 AI 翻译。",
   "paywallPhotoEnhance": "升级 Pro 后，可以用 AI 一键美化菜品照片，让菜单更有食欲。",
   "paywallQrTemplates": "升级 Pro 后，可以使用全部精美桌贴模板打印二维码。",
   "paywallMenuImport": "免费版每月可导入 {free} 次，升级 Pro 后每月 {pro} 次，还能用 AI 翻译和菜品照片美化。",

@@ -1,6 +1,7 @@
 'use client';
 
 import { CameraIcon, FolderPlusIcon, PlusIcon, TranslateIcon } from '@phosphor-icons/react';
+import { getPlanLimits } from '@taomenu/shared';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,6 +15,7 @@ import { MenuEditorSkeleton } from './menu-editor-skeleton';
 import { MenuImportDrawer } from './menu-import-drawer';
 import { MenuItemDrawer } from './menu-item-drawer';
 import { MenuLanguageDrawer } from './menu-language-drawer';
+import { collectMenuLocales } from './menu-locales';
 import { MenuProTools } from './menu-pro-tools';
 import type { MenuTree } from './menu-types';
 
@@ -332,9 +334,11 @@ export function MenuEditor({
       <MenuLanguageDrawer
         open={languageOpen}
         storeId={storeId}
+        plan={isPro ? 'pro' : 'free'}
+        existingLocales={collectMenuLocales(tree, baseLocale)}
         baseLocale={baseLocale}
         activeLocale={activeMenuLocale}
-        canUseAi={isPro}
+        canUseAi={getPlanLimits(isPro ? 'pro' : 'free').canUseAiTranslation}
         onOpenChange={setLanguageOpen}
         onSelectLocale={selectMenuLocale}
       />
@@ -344,6 +348,10 @@ export function MenuEditor({
         baseLocale={baseLocale}
         currency={currency}
         isPro={isPro}
+        canKeepImportOriginal={
+          collectMenuLocales(tree, baseLocale).length <
+          getPlanLimits(isPro ? 'pro' : 'free').maxMenuLocales
+        }
         onOpenChange={setImportOpen}
       />
       <MenuItemDrawer

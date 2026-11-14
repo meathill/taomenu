@@ -79,8 +79,10 @@ export {
 } from './order';
 export {
   FREE_AI_MENU_IMPORTS_PER_MONTH,
+  FREE_AI_TRANSLATIONS_PER_MONTH,
   getPlanLimits,
   getStaffSeatLimit,
+  isMenuLocaleAllowed,
   PLAN_IDS,
   PLAN_LIMITS,
   type PlanId,

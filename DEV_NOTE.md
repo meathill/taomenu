@@ -22,7 +22,7 @@
 ## 菜单与订单（2026-07-28）
 
 - 菜单：`menus` + categories/items + 翻译；发布前 `validateMenuForPublish` 纯函数
-- Free：`maxMenuLocales=1`，写第二语言或发布多语言会 422
+- Free：`maxMenuLocales=2`（基础语言 + 1 种），写第 3 种语言或发布超过上限会 422；可用每月额度内的 AI 翻译
 - 复制菜品：`POST .../menu/items/:id/copy` → `duplicateItem`（名称加 `(sao chép)`，售罄重置；含规格组）
 - 批量上下架：`PATCH .../menu/items` + `batchItemAvailabilitySchema`（`isSoldOut` / `isAvailable`）
 - 规格：`modifier_groups` / `modifiers`；owner 面板整组一次保存（`saveModifierGroup`），组间 `PATCH orderedIds` 排序；顾客 `ModifierPicker`；下单 `resolveModifierSelection` 重算加价，名称快照 `菜名 (规格…)`

@@ -150,7 +150,7 @@
   "paywallTitle": "Đây là tính năng Pro",
   "paywallComparePlans": "Xem chi tiết gói",
   "paywallRemovePoweredBy": "Với Pro, bạn có thể bỏ dòng “Vận hành bởi TaoMenu” ở cuối thực đơn khách hàng để thực đơn chỉ hiện thương hiệu của quán.",
-  "paywallTranslation": "Với Pro, thực đơn có thể có tới {languages} ngôn ngữ và AI dịch toàn bộ thực đơn chỉ với một lần bấm.",
+  "paywallTranslation": "Gói miễn phí đã gồm ngôn ngữ gốc cộng thêm 1, với {freeTranslations} lượt dịch AI mỗi tháng. Gói Pro mở tối đa {languages} ngôn ngữ và {proTranslations} lượt dịch AI mỗi tháng.",
   "paywallPhotoEnhance": "Với Pro, AI làm đẹp ảnh món ăn chỉ với một lần bấm để thực đơn hấp dẫn hơn.",
   "paywallQrTemplates": "Với Pro, bạn có thể in mã QR bằng tất cả mẫu thẻ bàn.",
   "paywallMenuImport": "Gói miễn phí được nhập {free} lần mỗi tháng. Pro được {pro} lần mỗi tháng, kèm dịch AI và làm đẹp ảnh món.",

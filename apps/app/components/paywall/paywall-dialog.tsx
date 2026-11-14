@@ -51,6 +51,9 @@ const FEATURE_VALUES = {
   free: PLAN_LIMITS.free.maxAiMenuImportsPerMonth,
   pro: PLAN_LIMITS.pro.maxAiMenuImportsPerMonth,
   languages: PLAN_LIMITS.pro.maxMenuLocales,
+  freeLanguages: PLAN_LIMITS.free.maxMenuLocales,
+  freeTranslations: PLAN_LIMITS.free.maxAiTranslationsPerMonth,
+  proTranslations: PLAN_LIMITS.pro.maxAiTranslationsPerMonth,
 };
 
 export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogProps) {

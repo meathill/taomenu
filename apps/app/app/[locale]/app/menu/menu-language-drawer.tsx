@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckIcon, TranslateIcon } from '@phosphor-icons/react';
+import { isMenuLocaleAllowed, type PlanId } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { usePaywall } from '@/components/paywall/paywall-provider';
@@ -13,6 +14,8 @@ const MENU_LOCALES = ['en', 'vi', 'zh', 'ja'] as const;
 type MenuLanguageDrawerProps = {
   open: boolean;
   storeId: string;
+  plan: PlanId;
+  existingLocales: string[];
   baseLocale: string;
   activeLocale: string;
   canUseAi: boolean;
@@ -23,6 +26,8 @@ type MenuLanguageDrawerProps = {
 export function MenuLanguageDrawer({
   open,
   storeId,
+  plan,
+  existingLocales,
   baseLocale,
   activeLocale,
   canUseAi,
@@ -37,13 +42,22 @@ export function MenuLanguageDrawer({
     () => new Intl.DisplayNames([interfaceLocale], { type: 'language' }),
     [interfaceLocale],
   );
+  function isLocked(locale: string) {
+    return !isMenuLocaleAllowed({
+      plan,
+      baseLocale,
+      locale,
+      existingLocales,
+    });
+  }
 
   function selectLocale(locale: string) {
     setPreviewLocale(locale);
-    if (locale === baseLocale || canUseAi) onSelectLocale(locale);
+    if (!isLocked(locale)) onSelectLocale(locale);
   }
 
-  const selectedLocale = canUseAi ? activeLocale : previewLocale;
+  const selectedLocale = isLocked(previewLocale) ? previewLocale : activeLocale;
+  const selectedIsLocked = isLocked(selectedLocale);
   return (
     <ResponsiveDrawer
       open={open}
@@ -54,7 +68,7 @@ export function MenuLanguageDrawer({
       <ul className="space-y-2">
         {MENU_LOCALES.map((locale) => {
           const isBase = locale === baseLocale;
-          const isLocked = !canUseAi && !isBase;
+          const locked = isLocked(locale);
           return (
             <li key={locale}>
               <button
@@ -70,12 +84,12 @@ export function MenuLanguageDrawer({
                   <span className="block text-xs text-muted-foreground">
                     {isBase
                       ? t('baseLanguage')
-                      : isLocked
+                      : locked
                         ? t('proOnlyLanguage')
                         : t('translationLanguage')}
                   </span>
                 </span>
-                {isLocked ? (
+                {locked ? (
                   <ProBadge />
                 ) : locale === activeLocale ? (
                   <CheckIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
@@ -86,8 +100,8 @@ export function MenuLanguageDrawer({
         })}
       </ul>
 
-      {selectedLocale !== baseLocale && !canUseAi ? (
-        // Free 只有基础语言：后端 assertLocaleAllowed 会拒绝任何第二语言，手工编辑也不行（issue #17）
+      {selectedLocale !== baseLocale && selectedIsLocked ? (
+        // Free 为基础语言 + 1 种：只有再加第 3 种时才出现 Pro 门禁
         <div className="mt-6 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
           <p className="text-sm font-bold text-ink-900">
             {t('freeLanguageLimitTitle', { language: names.of(selectedLocale) ?? selectedLocale })}
@@ -105,12 +119,16 @@ export function MenuLanguageDrawer({
         </div>
       ) : null}
 
-      {selectedLocale !== baseLocale && canUseAi ? (
+      {selectedLocale !== baseLocale && !selectedIsLocked ? (
         <div className="mt-6 border-t border-border pt-5">
           <p className="mb-3 text-sm font-bold text-ink-900">
             {t('manualOrAiTranslation', { language: names.of(selectedLocale) ?? selectedLocale })}
           </p>
-          <MenuTranslationPanel storeId={storeId} targetLocale={selectedLocale} canUseAi />
+          <MenuTranslationPanel
+            storeId={storeId}
+            targetLocale={selectedLocale}
+            canUseAi={canUseAi}
+          />
         </div>
       ) : null}
     </ResponsiveDrawer>
