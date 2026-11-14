@@ -1,5 +1,5 @@
 import { getPlanLimits } from '@taomenu/shared';
-import { and, asc, count, desc, eq, gte } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ne } from 'drizzle-orm';
 import { assertPlanFeature } from '../plan-features';
 import { menuCategories } from '../schema/menu';
 import { menuImportAssets, menuImportSuggestions, menuImports } from '../schema/menu-ai';
@@ -21,7 +21,12 @@ export async function getMenuImportUsage(ctx: StoreContext, db: Db) {
     .select({ value: count() })
     .from(menuImports)
     .where(
-      and(eq(menuImports.storeId, ctx.storeId), gte(menuImports.createdAt, currentUtcMonthStart())),
+      and(
+        eq(menuImports.storeId, ctx.storeId),
+        gte(menuImports.createdAt, currentUtcMonthStart()),
+        // 失败（没有可用结果）的导入不占额度；重试会把状态改回 queued，届时重新计入（issue #29）
+        ne(menuImports.status, 'failed'),
+      ),
     );
   return { used: rows[0]?.value ?? 0, limit };
 }

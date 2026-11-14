@@ -1,5 +1,8 @@
 import { minorAmountToInput } from '@taomenu/shared';
 
+/** 识别原文：识别语言与菜单语言不同、已自动翻译时才有（issue #29） */
+export type SuggestionOriginal = { locale: string; name: string; description: string | null };
+
 export type Suggestion = {
   id: string;
   entityType: 'category' | 'item';
@@ -20,6 +23,7 @@ export type Suggestion = {
       confidence: number;
       modifiers: Array<{ name: string; priceDeltaAmount: number; confidence: number }>;
     }>;
+    original?: SuggestionOriginal | null;
   };
 };
 
@@ -63,5 +67,12 @@ export function createReviewDraft(suggestions: Suggestion[], currency: string): 
         value: suggestion.value,
       },
     ]),
+  );
+}
+
+/** 审核列表里任一条带原文，说明这次导入做过翻译；返回原文语言 */
+export function getTranslatedFromLocale(suggestions: Suggestion[]): string | null {
+  return (
+    suggestions.find((suggestion) => suggestion.value.original)?.value.original?.locale ?? null
   );
 }

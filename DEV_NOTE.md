@@ -302,3 +302,11 @@
 - 菜品照片美化需要图像编辑，MiMo 官方模型列表只有全模态理解（输出文本）、ASR、TTS，没有图像生成，所以仍走 OpenAI `OPENAI_IMAGE_MODEL`；`OPENAI_API_KEY` 仅用于这一项。`OPENAI_MENU_MODEL` 与 `openai-menu-provider.ts` 已删除，提示词放在 `apps/ai/src/menu-prompts.ts`。
 - 代价：MiMo 不读 PDF，PDF 先经 Workers AI `toMarkdown` 转文本；纯扫描 PDF（没有文字层）对 Pro 也会报 `MIMO_PDF_NO_TEXT`，提示改传照片。以前 Pro 走 OpenAI 时能直接读扫描件。
 - Free 导入额度从每月 2 次放宽到 10 次（`FREE_AI_MENU_IMPORTS_PER_MONTH`）；定价页、首页、落地页文案同步，`apps/website/lib/pricing-copy.test.ts` 会校验 freeF3 里的数字与常量一致。
+
+## 另一种语言的菜单导入改为自动翻译（2026-11-14，#29）
+
+- 现象：已有菜单的门店上传另一种语言的菜单照片，识别完成后因 `LOCALE_MISMATCH` 无法写入草稿，但仍扣掉了每月额度；额度文案加载前先闪出 `0 / 20`。
+- AI Worker 识别后用 `resolveMenuImportTargetLocale` 判断：语言不一致且已有分类时，调用 MiMo `translateMenu` 把整份识别结果翻译成门店主语言（`apps/ai/src/import-translation.ts`），结构与价格不变，漏翻条目保留原文；`saveMenuImportResult` 的 `originalOutput` 把原文按下标存进每条建议的 `original`。
+- 写入草稿（`applyMenuImport`）：译文写主语言；若原文语言属于支持的菜单语言、且 `assertLocaleAllowed` 通过（Pro 最多 5 种，Free 只有 1 种），原文另写一份翻译行（`source: 'ai'`），否则只保留译文。逻辑在 `menu-import-original.ts`。旧的未翻译草稿仍会提示重新识别。
+- 额度：`getMenuImportUsage` 不再统计 `failed` 的导入；翻译后所有成功的导入都能写入，不再出现"扣了额度却用不了"。
+- 前端：额度在接口返回前不显示、开始按钮禁用；审核列表在分类/菜品名下显示"原文：…"，顶部提示已从 X 翻译成 Y（Pro / Free 文案不同）。

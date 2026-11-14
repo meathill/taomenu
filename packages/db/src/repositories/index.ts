@@ -95,9 +95,11 @@ export {
   MENU_AI_SCHEMA_VERSION,
   MenuImportError,
 } from './menu-ai-config';
+export { resolveMenuImportTargetLocale } from './menu-ai-locale';
 export {
   failMenuImport,
   getMenuImportJob,
+  type MenuImportOriginal,
   markMenuImportProcessing,
   saveMenuImportResult,
 } from './menu-ai-processing';

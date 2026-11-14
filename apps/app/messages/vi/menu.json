@@ -129,7 +129,7 @@
   "importReviewTitle": "Kiểm tra bản nháp AI",
   "importReviewHint": "Bỏ chọn nội dung không cần. Hãy kiểm tra kỹ mục có độ tin cậy thấp hoặc thiếu giá.",
   "importLanguageWillChange": "Đã phát hiện {detected}, khác với ngôn ngữ menu hiện tại là {base}. Vì menu đang trống, áp dụng bản nháp sẽ đặt {detected} làm ngôn ngữ chính.",
-  "importLanguageMismatchExisting": "File này dùng {detected}, nhưng menu hiện tại dùng {base}. Chưa hỗ trợ nhập ngôn ngữ nguồn khác vào menu đã có nội dung. Hãy dùng file {base}.",
+  "importLanguageMismatchExisting": "Bản nháp này dùng {detected}, nhưng menu hiện tại dùng {base} nên không thể áp dụng. Hãy nhận diện lại file — lần nhập mới sẽ tự dịch sang {base}.",
   "importCategoryName": "Tên danh mục",
   "importDescription": "Mô tả (không bắt buộc)",
   "importSelectItem": "Chọn {name}",
@@ -238,5 +238,9 @@
   "quickAddSubmit": "Thêm {count} món",
   "importFreeMonthlyUsage": "Gói Free: đã dùng {used}/{limit} lượt nhập trong tháng này",
   "importFreeUpsell": "Pro có 20 lượt nhập mỗi tháng, kèm dịch AI và công cụ ảnh món.",
-  "importPdfNoText": "PDF này không có chữ đọc được (có vẻ là bản scan). Hãy tải ảnh chụp menu lên."
+  "importPdfNoText": "PDF này không có chữ đọc được (có vẻ là bản scan). Hãy tải ảnh chụp menu lên.",
+  "importTranslatedNotice": "File này dùng {original}. AI đã dịch sang ngôn ngữ menu là {base}. Vui lòng kiểm tra bản dịch.",
+  "importTranslatedKeepOriginal": "Khi áp dụng bản nháp, bản gốc {original} cũng được lưu làm ngôn ngữ thứ hai nếu còn trong giới hạn ngôn ngữ.",
+  "importTranslatedFreeHint": "Gói miễn phí chỉ giữ một ngôn ngữ menu nên bản gốc không được lưu. Nâng cấp Pro để giữ cả bản gốc {original}.",
+  "importOriginalHint": "Bản gốc: {text}"
 }

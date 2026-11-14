@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createReviewDraft, type Suggestion } from './menu-import-review';
+import { createReviewDraft, getTranslatedFromLocale, type Suggestion } from './menu-import-review';
 
 function makeSuggestion(overrides: Partial<Suggestion>): Suggestion {
   return {
@@ -51,5 +51,22 @@ describe('AI 菜单导入审核草稿', () => {
     );
     expect(draft['missing-price']?.selected).toBe(false);
     expect(draft.rejected?.selected).toBe(false);
+  });
+});
+
+describe('翻译过的导入（issue #29）', () => {
+  it('从带原文的建议里取出原文语言', () => {
+    const translated = makeSuggestion({
+      value: {
+        categoryTemporaryKey: 'category-1',
+        name: 'Phở bò',
+        description: null,
+        priceAmount: 65_000,
+        modifierGroups: [],
+        original: { locale: 'en', name: 'Beef pho', description: null },
+      },
+    });
+    expect(getTranslatedFromLocale([makeSuggestion({}), translated])).toBe('en');
+    expect(getTranslatedFromLocale([makeSuggestion({})])).toBeNull();
   });
 });

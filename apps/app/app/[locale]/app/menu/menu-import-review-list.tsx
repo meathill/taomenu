@@ -57,6 +57,11 @@ export function MenuImportReviewList({
               aria-label={t('importCategoryName')}
             />
           </label>
+          {group.category.value.original ? (
+            <p className="mt-1 pl-7 text-xs text-muted-foreground">
+              {t('importOriginalHint', { text: group.category.value.original.name })}
+            </p>
+          ) : null}
           <textarea
             value={draft[group.category.id]?.description ?? ''}
             onChange={(event) => onUpdate(group.category.id, { description: event.target.value })}
@@ -103,6 +108,11 @@ export function MenuImportReviewList({
                     className={`min-w-0 text-right ${compactFieldClassName}`}
                     aria-label={t('price', { currency })}
                   />
+                  {item.value.original ? (
+                    <p className="col-span-2 col-start-2 text-xs text-muted-foreground">
+                      {t('importOriginalHint', { text: item.value.original.name })}
+                    </p>
+                  ) : null}
                   <textarea
                     value={draft[item.id]?.description ?? ''}
                     onChange={(event) => onUpdate(item.id, { description: event.target.value })}

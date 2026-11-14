@@ -129,7 +129,7 @@
   "importReviewTitle": "AI 下書きを確認",
   "importReviewHint": "不要な内容は選択を外してください。信頼度が低い項目や価格未確認の項目は特に確認が必要です。",
   "importLanguageWillChange": "{detected}を検出しました。現在のメニュー言語は{base}です。メニューが空のため、下書きを適用すると主言語が{detected}に変更されます。",
-  "importLanguageMismatchExisting": "このファイルは{detected}ですが、既存メニューは{base}です。既存メニューへの別言語の取り込みにはまだ対応していません。{base}のファイルを使用してください。",
+  "importLanguageMismatchExisting": "この下書きは{detected}ですが、既存メニューは{base}のため適用できません。もう一度読み取ると、自動で{base}に翻訳されます。",
   "importCategoryName": "カテゴリ名",
   "importDescription": "説明（任意）",
   "importSelectItem": "{name}を選択",
@@ -238,5 +238,9 @@
   "quickAddSubmit": "{count} 品を追加",
   "importFreeMonthlyUsage": "Free プラン：今月の取込使用数 {used} / {limit}",
   "importFreeUpsell": "Pro なら月 20 回まで取込でき、AI 翻訳や料理写真ツールも使えます。",
-  "importPdfNoText": "この PDF には読み取れる文字がありません（スキャン画像のようです）。メニューの写真をアップロードしてください。"
+  "importPdfNoText": "この PDF には読み取れる文字がありません（スキャン画像のようです）。メニューの写真をアップロードしてください。",
+  "importTranslatedNotice": "このファイルは{original}です。AI がメニュー言語の{base}に翻訳しました。訳文を確認してください。",
+  "importTranslatedKeepOriginal": "下書きを適用すると、言語数の上限内であれば{original}の原文も第二言語として保存されます。",
+  "importTranslatedFreeHint": "無料プランではメニュー言語は 1 つのため、原文は保存されません。Pro にアップグレードすると{original}の原文も残せます。",
+  "importOriginalHint": "原文：{text}"
 }

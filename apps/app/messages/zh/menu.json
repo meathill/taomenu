@@ -129,7 +129,7 @@
   "importReviewTitle": "核对 AI 草稿",
   "importReviewHint": "取消勾选不需要的内容；低置信度和缺少价格的项目需要重点核对。",
   "importLanguageWillChange": "识别到{detected}，与当前菜单的{base}不同。由于菜单还是空的，应用草稿后会把主要菜单语言改为{detected}。",
-  "importLanguageMismatchExisting": "文件内容是{detected}，但现有菜单使用{base}。暂不支持向已有菜单导入另一种源语言，请改用{base}菜单文件。",
+  "importLanguageMismatchExisting": "这份草稿是{detected}，但现有菜单使用{base}，无法直接写入。请重新识别一次，新的识别会自动翻译成{base}。",
   "importCategoryName": "分类名称",
   "importDescription": "说明（可选）",
   "importSelectItem": "选择{name}",
@@ -238,5 +238,9 @@
   "quickAddSubmit": "添加 {count} 道菜",
   "importFreeMonthlyUsage": "免费版：本月已使用 {used} / {limit} 次识别",
   "importFreeUpsell": "Pro 每月 20 次识别，还包含 AI 翻译和菜品图片工具。",
-  "importPdfNoText": "这个 PDF 里没有可识别的文字（看起来是扫描件），请改为上传菜单照片。"
+  "importPdfNoText": "这个 PDF 里没有可识别的文字（看起来是扫描件），请改为上传菜单照片。",
+  "importTranslatedNotice": "文件内容是{original}，已由 AI 翻译成菜单语言{base}，请核对译文。",
+  "importTranslatedKeepOriginal": "写入草稿时，菜单语言数量允许的话会把{original}原文一并保存为第二语言。",
+  "importTranslatedFreeHint": "免费版只保留一种菜单语言，原文不会保存；升级 Pro 可同时保留{original}原文。",
+  "importOriginalHint": "原文：{text}"
 }

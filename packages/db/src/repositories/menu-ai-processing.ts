@@ -1,15 +1,23 @@
 import type { MenuImportOutput } from '@taomenu/shared';
 import { and, asc, eq } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
+import { menuCategories } from '../schema/menu';
 import { menuImportAssets, menuImportSuggestions, menuImports } from '../schema/menu-ai';
 import { stores } from '../schema/stores';
 import type { Db } from '../types';
 import { MenuImportError } from './menu-ai-config';
 
-/** 一并带出门店币种：AI worker 没有 StoreContext，识别提示词需要按币种生成 */
+/**
+ * 一并带出门店币种、菜单语言和是否已有分类：AI worker 没有 StoreContext，
+ * 识别提示词需要按币种生成；识别出的语言与已有菜单不同时需要先翻译（issue #29）
+ */
 export async function getMenuImportJob(db: Db, importId: string) {
   const rows = await db
-    .select({ menuImport: menuImports, storeCurrency: stores.currency })
+    .select({
+      menuImport: menuImports,
+      storeCurrency: stores.currency,
+      storeBaseLocale: stores.baseLocale,
+    })
     .from(menuImports)
     .innerJoin(stores, eq(stores.id, menuImports.storeId))
     .where(eq(menuImports.id, importId))
@@ -21,7 +29,18 @@ export async function getMenuImportJob(db: Db, importId: string) {
     .from(menuImportAssets)
     .where(eq(menuImportAssets.importId, importId))
     .orderBy(asc(menuImportAssets.pageOrder));
-  return { menuImport: row.menuImport, storeCurrency: row.storeCurrency, assets };
+  const existingCategories = await db
+    .select({ id: menuCategories.id })
+    .from(menuCategories)
+    .where(eq(menuCategories.storeId, row.menuImport.storeId))
+    .limit(1);
+  return {
+    menuImport: row.menuImport,
+    storeCurrency: row.storeCurrency,
+    storeBaseLocale: row.storeBaseLocale,
+    hasExistingCategories: existingCategories.length > 0,
+    assets,
+  };
 }
 
 export async function markMenuImportProcessing(db: Db, importId: string) {
@@ -33,12 +52,28 @@ export async function markMenuImportProcessing(db: Db, importId: string) {
   return result.length > 0;
 }
 
+/** 识别原文（翻译前），与 output 结构一一对应；只保留分类和菜品的名称/描述作为审核提示与第二语言 */
+export type MenuImportOriginal = { locale: string; name: string; description: string | null };
+
 export async function saveMenuImportResult(
   db: Db,
   importId: string,
   output: MenuImportOutput,
   usage: unknown,
+  options: { originalOutput?: MenuImportOutput } = {},
 ) {
+  const originalOutput = options.originalOutput;
+  function originalOf(categoryIndex: number, itemIndex?: number): MenuImportOriginal | null {
+    const category = originalOutput?.categories[categoryIndex];
+    if (!originalOutput || !category) return null;
+    const source = itemIndex === undefined ? category : category.items[itemIndex];
+    if (!source) return null;
+    return {
+      locale: originalOutput.detectedLocale,
+      name: source.name,
+      description: source.description,
+    };
+  }
   const job = await getMenuImportJob(db, importId);
   if (job?.menuImport.status !== 'processing') {
     throw new MenuImportError('INVALID_STATUS', 'Import is not processing');
@@ -46,7 +81,7 @@ export async function saveMenuImportResult(
   const statements: BatchItem<'sqlite'>[] = [
     db.delete(menuImportSuggestions).where(eq(menuImportSuggestions.importId, importId)),
   ];
-  for (const category of output.categories) {
+  for (const [categoryIndex, category] of output.categories.entries()) {
     const categoryTemporaryKey = crypto.randomUUID();
     statements.push(
       db.insert(menuImportSuggestions).values({
@@ -60,6 +95,7 @@ export async function saveMenuImportResult(
         suggestedValueJson: JSON.stringify({
           name: category.name,
           description: category.description,
+          original: originalOf(categoryIndex),
         }),
         confidence: category.confidence,
         decision: 'pending',
@@ -67,7 +103,7 @@ export async function saveMenuImportResult(
         decidedAt: null,
       }),
     );
-    for (const item of category.items) {
+    for (const [itemIndex, item] of category.items.entries()) {
       statements.push(
         db.insert(menuImportSuggestions).values({
           id: crypto.randomUUID(),
@@ -83,6 +119,7 @@ export async function saveMenuImportResult(
             description: item.description,
             priceAmount: item.priceAmount,
             modifierGroups: item.modifierGroups,
+            original: originalOf(categoryIndex, itemIndex),
           }),
           confidence: item.confidence,
           decision: 'pending',
@@ -99,7 +136,12 @@ export async function saveMenuImportResult(
         status: 'needs_review',
         sourceLocale: output.detectedLocale,
         progress: 100,
-        usageJson: JSON.stringify({ usage, warnings: output.warnings, currency: output.currency }),
+        usageJson: JSON.stringify({
+          usage,
+          warnings: output.warnings,
+          currency: output.currency,
+          translatedFrom: originalOutput?.detectedLocale ?? null,
+        }),
         completedAt: new Date(),
       })
       .where(eq(menuImports.id, importId)),

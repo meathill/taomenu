@@ -24,10 +24,14 @@ import type { Db, StoreContext } from '../types';
 import { ensureStoreMenu } from './menu';
 import { MenuImportError } from './menu-ai-config';
 import { resolveMenuImportTargetLocale } from './menu-ai-locale';
+import { originalSchema, resolveOriginalLocale } from './menu-import-original';
 
-const categorySuggestionSchema = menuImportCategorySchema.omit({ items: true, confidence: true });
+const categorySuggestionSchema = menuImportCategorySchema
+  .omit({ items: true, confidence: true })
+  .extend({ original: originalSchema });
 const itemSuggestionSchema = menuImportItemSchema.omit({ confidence: true }).extend({
   categoryTemporaryKey: z.string().uuid(),
+  original: originalSchema,
 });
 
 export type MenuImportSuggestionView = {
@@ -173,6 +177,11 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
     );
   }
   const acceptedCategoryKeys = new Set(categoryRows.map((row) => row.temporaryEntityKey));
+  const originalLocale = await resolveOriginalLocale(ctx, db, {
+    baseLocale,
+    targetLocale: localeResolution.targetLocale,
+    rows: accepted,
+  });
   const now = new Date();
   const statements: BatchItem<'sqlite'>[] = [];
 
@@ -211,6 +220,23 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
         reviewedAt: now,
       }),
     );
+    if (originalLocale && category.original) {
+      statements.push(
+        db.insert(menuCategoryTranslations).values({
+          id: crypto.randomUUID(),
+          storeId: ctx.storeId,
+          categoryId: row.temporaryEntityKey,
+          locale: originalLocale,
+          name: category.original.name.slice(0, 80),
+          description: category.original.description?.slice(0, 500) ?? null,
+          source: 'ai',
+          reviewStatus: 'reviewed',
+          sourceGenerationId: importId,
+          reviewedByUserId: ctx.userId,
+          reviewedAt: now,
+        }),
+      );
+    }
   });
 
   const itemCounts = new Map<string, number>();
@@ -254,6 +280,23 @@ export async function applyMenuImport(ctx: StoreContext, db: Db, importId: strin
         reviewedAt: now,
       }),
     );
+    if (originalLocale && item.original) {
+      statements.push(
+        db.insert(menuItemTranslations).values({
+          id: crypto.randomUUID(),
+          storeId: ctx.storeId,
+          itemId: row.temporaryEntityKey,
+          locale: originalLocale,
+          name: item.original.name,
+          description: item.original.description,
+          source: 'ai',
+          reviewStatus: 'reviewed',
+          sourceGenerationId: importId,
+          reviewedByUserId: ctx.userId,
+          reviewedAt: now,
+        }),
+      );
+    }
     item.modifierGroups.forEach((group: MenuImportItem['modifierGroups'][number], groupIndex) => {
       const groupId = crypto.randomUUID();
       statements.push(

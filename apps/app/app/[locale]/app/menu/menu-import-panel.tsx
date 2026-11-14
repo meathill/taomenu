@@ -8,6 +8,7 @@ import { Button } from '@/components/button';
 import { getMenuImportFailureKey } from './menu-import-failure';
 import {
   createReviewDraft,
+  getTranslatedFromLocale,
   type ImportView,
   type ReviewDraft,
   type SuggestionGroup,
@@ -28,7 +29,8 @@ export function MenuImportPanel({
   const t = useTranslations('menu');
   const locale = useLocale();
   const [view, setView] = useState<ImportView | null>(null);
-  const [usage, setUsage] = useState({ used: 0, limit: 20 });
+  // 额度以服务端为准；加载前不显示，避免先闪出旧的默认值（issue #29）
+  const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +85,7 @@ export function MenuImportPanel({
     return [...groups.values()];
   }, [view?.suggestions]);
   const detectedLocale = view?.suggestions[0]?.locale ?? null;
+  const translatedFromLocale = view ? getTranslatedFromLocale(view.suggestions) : null;
   const hasLocaleMismatch = Boolean(
     detectedLocale && !doLocalesShareLanguage(baseLocale, detectedLocale),
   );
@@ -91,8 +94,11 @@ export function MenuImportPanel({
     return {
       base: names.of(baseLocale) ?? baseLocale,
       detected: detectedLocale ? (names.of(detectedLocale) ?? detectedLocale) : '',
+      original: translatedFromLocale
+        ? (names.of(translatedFromLocale) ?? translatedFromLocale)
+        : '',
     };
-  }, [baseLocale, detectedLocale, locale]);
+  }, [baseLocale, detectedLocale, locale, translatedFromLocale]);
 
   async function handleUpload(event: FormEvent) {
     event.preventDefault();
@@ -239,9 +245,11 @@ export function MenuImportPanel({
         </span>
       </div>
       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('importPrivacyHint')}</p>
-      <p className="mt-1 text-xs font-semibold text-indigo-700">
-        {t(isPro ? 'importMonthlyUsage' : 'importFreeMonthlyUsage', usage)}
-      </p>
+      {usage ? (
+        <p className="mt-1 text-xs font-semibold text-indigo-700">
+          {t(isPro ? 'importMonthlyUsage' : 'importFreeMonthlyUsage', usage)}
+        </p>
+      ) : null}
 
       {status === 'queued' || status === 'processing' ? (
         <div className="mt-4" role="status" aria-live="polite">
@@ -280,6 +288,17 @@ export function MenuImportPanel({
 
       {status === 'needs_review' ? (
         <>
+          {translatedFromLocale ? (
+            <p className="mt-4 rounded-xl border border-indigo-200 bg-white p-3 text-xs leading-5 text-ink-900">
+              {t('importTranslatedNotice', {
+                original: languageNames.original,
+                base: languageNames.base,
+              })}{' '}
+              {t(isPro ? 'importTranslatedKeepOriginal' : 'importTranslatedFreeHint', {
+                original: languageNames.original,
+              })}
+            </p>
+          ) : null}
           {hasLocaleMismatch ? (
             <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold leading-5 text-amber-800">
               {t(
@@ -334,7 +353,7 @@ export function MenuImportPanel({
             size="lg"
             pending={busyAction === 'upload'}
             busy={busyAction !== null}
-            disabled={!file || usage.used >= usage.limit}
+            disabled={!file || !usage || usage.used >= usage.limit}
             className="w-full bg-indigo-700 hover:bg-indigo-700/90"
           >
             {t('importStart')}
