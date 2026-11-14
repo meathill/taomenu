@@ -30,6 +30,6 @@
     "NEXT_PUBLIC_APP_URL": "https://app.menu.dyqr.me",
     "NEXT_PUBLIC_GA_ID": "G-3SQR8Y3R6S",
     // Microsoft Clarity 项目 ID；空串＝不加载 Clarity
-    "NEXT_PUBLIC_CLARITY_ID": ""
+    "NEXT_PUBLIC_CLARITY_ID": "zddybcgngs"
   }
 }
