@@ -1,7 +1,6 @@
 'use client';
 
 import { toStoreCurrency } from '@taomenu/shared';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSyncPoweredByVisibility } from '@/lib/powered-by-visibility';
@@ -20,6 +19,7 @@ import {
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
+import { usePublicMenuLocale, useRequestGeneration } from '../../../use-public-menu-locale';
 import { CustomerMenuList } from './customer-menu-list';
 import { CustomerOrderView, type OrderStatusView } from './customer-order-view';
 
@@ -48,9 +48,8 @@ type CustomerMenuProps = {
 export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const t = useTranslations('customer');
   const locale = useLocale();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const requestedLocale = searchParams.get('locale') ?? locale;
+  const { menuLocale, changeMenuLocale } = usePublicMenuLocale(locale);
+  const beginRequest = useRequestGeneration();
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   // 菜单加载失败时也显示 Powered by（只有 Pro 主动隐藏才不显示）
@@ -64,23 +63,19 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const [picking, setPicking] = useState<PublicMenuItem | null>(null);
 
   const loadMenu = useCallback(async () => {
+    const isCurrent = beginRequest();
     setError(null);
     const res = await fetch(
-      `/api/public/tables/${encodeURIComponent(tableToken)}/menu?locale=${encodeURIComponent(requestedLocale)}`,
+      `/api/public/tables/${encodeURIComponent(tableToken)}/menu?locale=${encodeURIComponent(menuLocale)}`,
       { cache: 'no-store' },
     );
+    if (!isCurrent()) return;
     if (!res.ok) {
       setError(t('notFoundTable'));
       return;
     }
     setMenu((await res.json()) as MenuPayload);
-  }, [requestedLocale, tableToken, t]);
-
-  function changeMenuLocale(nextLocale: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('locale', nextLocale);
-    router.replace(`?${params.toString()}`);
-  }
+  }, [beginRequest, menuLocale, t, tableToken]);
 
   const refreshOrder = useCallback(async (publicToken: string) => {
     const res = await fetch(`/api/public/orders/${encodeURIComponent(publicToken)}`);
@@ -305,7 +300,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         categories={menu.categories}
         currency={currency}
         availableLocales={menu.availableLocales}
-        resolvedLocale={menu.resolvedLocale}
+        resolvedLocale={menuLocale}
         onLocaleChange={changeMenuLocale}
         svcBusy={svcBusy}
         svcMsg={svcMsg}

@@ -1,7 +1,6 @@
 'use client';
 
 import { formatCurrency, toStoreCurrency } from '@taomenu/shared';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
@@ -21,6 +20,7 @@ import {
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
+import { usePublicMenuLocale, useRequestGeneration } from '../../../use-public-menu-locale';
 import { CustomerLanguageSelect } from '../../customer-language-select';
 
 type MenuPayload = {
@@ -43,9 +43,8 @@ type MenuPayload = {
 export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const t = useTranslations('customer');
   const locale = useLocale();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const requestedLocale = searchParams.get('locale') ?? locale;
+  const { menuLocale, changeMenuLocale } = usePublicMenuLocale(locale);
+  const beginRequest = useRequestGeneration();
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   // 菜单加载失败时也显示 Powered by（只有 Pro 主动隐藏才不显示）
@@ -63,22 +62,18 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   } | null>(null);
 
   const load = useCallback(async () => {
+    const isCurrent = beginRequest();
     const res = await fetch(
-      `/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu?locale=${encodeURIComponent(requestedLocale)}`,
+      `/api/public/pickup-points/${encodeURIComponent(pickupToken)}/menu?locale=${encodeURIComponent(menuLocale)}`,
       { cache: 'no-store' },
     );
+    if (!isCurrent()) return;
     if (!res.ok) {
       setError(t('notFoundPickup'));
       return;
     }
     setMenu((await res.json()) as MenuPayload);
-  }, [pickupToken, requestedLocale, t]);
-
-  function changeMenuLocale(nextLocale: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('locale', nextLocale);
-    router.replace(`?${params.toString()}`);
-  }
+  }, [beginRequest, menuLocale, pickupToken, t]);
 
   useEffect(() => {
     void load();
@@ -295,7 +290,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           </div>
           <CustomerLanguageSelect
             availableLocales={menu.availableLocales}
-            resolvedLocale={menu.resolvedLocale}
+            resolvedLocale={menuLocale}
             onChange={changeMenuLocale}
           />
         </div>
