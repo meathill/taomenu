@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getPlanLimits, getStaffSeatLimit, PLAN_IDS } from './plans';
+import { getPlanLimits, getStaffSeatLimit, PLAN_IDS, shouldShowPoweredBy } from './plans';
 
 describe('getPlanLimits', () => {
   it('free 只有 1 个 staff 席位和 1 种菜单语言', () => {
@@ -35,5 +35,17 @@ describe('getPlanLimits', () => {
 
   it('PLAN_IDS 覆盖 free 与 pro', () => {
     expect(PLAN_IDS).toEqual(['free', 'pro']);
+  });
+});
+
+describe('shouldShowPoweredBy', () => {
+  it('只有 Pro 且商家主动关闭时才隐藏 Powered by', () => {
+    expect(shouldShowPoweredBy('pro', true)).toBe(false);
+    expect(shouldShowPoweredBy('pro', false)).toBe(true);
+  });
+
+  it('Free（包括降级后残留的开关）始终显示 Powered by', () => {
+    expect(shouldShowPoweredBy('free', true)).toBe(true);
+    expect(shouldShowPoweredBy('free', false)).toBe(true);
   });
 });

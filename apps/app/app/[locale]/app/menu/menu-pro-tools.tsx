@@ -4,15 +4,12 @@ import { SparkleIcon, XIcon } from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/button';
+import { usePaywall } from '@/components/paywall/paywall-provider';
+import { ProBadge } from '@/components/paywall/pro-badge';
 
-export function MenuProTools({
-  initialHidden,
-  upgradeHref,
-}: {
-  initialHidden: boolean;
-  upgradeHref: string;
-}) {
+export function MenuProTools({ initialHidden }: { initialHidden: boolean }) {
   const t = useTranslations('menu');
+  const { openPaywall } = usePaywall();
   const [isHidden, setIsHidden] = useState(initialHidden);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,13 +38,20 @@ export function MenuProTools({
       <div className="flex min-w-0 items-start gap-3">
         <SparkleIcon className="mt-0.5 size-5 shrink-0 text-indigo-700" weight="fill" />
         <div>
-          <h2 className="text-sm font-black text-ink-900">{t('moreProToolsTitle')}</h2>
+          <h2 className="flex flex-wrap items-center gap-2 text-sm font-black text-ink-900">
+            {t('moreProToolsTitle')}
+            <ProBadge />
+          </h2>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('moreProToolsHint')}</p>
         </div>
       </div>
-      <a href={upgradeHref} className="text-sm font-bold text-indigo-700">
+      <button
+        type="button"
+        onClick={() => openPaywall('aiTools')}
+        className="text-left text-sm font-bold text-violet-700"
+      >
         {t('viewProPlan')}
-      </a>
+      </button>
       <Button
         iconOnly
         pending={isPending}

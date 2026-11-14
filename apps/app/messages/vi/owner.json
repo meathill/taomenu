@@ -145,5 +145,21 @@
   "billingFailed": "Không thể cập nhật chỗ Staff.",
   "billingUpdated": "Đã cập nhật chỗ Staff.",
   "cancel": "Hủy",
-  "helpAndContact": "Trợ giúp & liên hệ"
+  "helpAndContact": "Trợ giúp & liên hệ",
+  "proBenefitBranding": "Ẩn “Powered by TaoMenu” trên menu khách hàng",
+  "paywallTitle": "Đây là tính năng Pro",
+  "paywallComparePlans": "Xem chi tiết gói",
+  "paywallRemovePoweredBy": "Với Pro, bạn có thể bỏ dòng “Powered by TaoMenu” ở cuối menu khách hàng để menu chỉ hiện thương hiệu của quán.",
+  "paywallTranslation": "Với Pro, menu có thể có tới {languages} ngôn ngữ và AI dịch toàn bộ menu chỉ với một lần bấm.",
+  "paywallPhotoEnhance": "Với Pro, AI làm đẹp ảnh món ăn chỉ với một lần bấm để menu hấp dẫn hơn.",
+  "paywallQrTemplates": "Với Pro, bạn có thể in mã QR bằng tất cả mẫu thẻ bàn.",
+  "paywallMenuImport": "Gói miễn phí được nhập {free} lần mỗi tháng. Pro được {pro} lần mỗi tháng với mô hình nhận diện chính xác hơn.",
+  "paywallAiTools": "Pro mở khóa dịch AI, làm đẹp ảnh, thêm lượt nhập, thêm chỗ nhân viên và mọi công cụ Pro khác.",
+  "brandingTitle": "Thương hiệu trên menu khách hàng",
+  "hidePoweredBy": "Ẩn “Powered by TaoMenu”",
+  "hidePoweredByHint": "Khi bật, cuối menu khách hàng sẽ không còn dòng “Powered by TaoMenu”. Có hiệu lực ngay.",
+  "hidePoweredByFreeHint": "Tính năng Pro: nâng cấp để bỏ dòng “Powered by TaoMenu” ở cuối menu khách hàng.",
+  "brandingSaved": "Đã lưu. Khách sẽ thấy thay đổi khi tải lại menu.",
+  "brandingSaveFailed": "Không lưu được. Vui lòng thử lại.",
+  "brandingNotReady": "Tính năng này đang được triển khai. Vui lòng thử lại sau."
 }

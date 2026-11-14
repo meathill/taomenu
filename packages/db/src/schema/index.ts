@@ -5,6 +5,7 @@ export * from './menu-ai';
 export * from './menu-image-enhancement';
 export * from './menu-translation';
 export * from './push';
+export * from './store-branding';
 export * from './stores';
 export * from './stripe-webhook-events';
 export * from './tables-orders';

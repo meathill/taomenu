@@ -85,6 +85,7 @@ export {
   PLAN_LIMITS,
   type PlanId,
   type PlanLimits,
+  shouldShowPoweredBy,
 } from './plans';
 export {
   BILLING_PRICES,

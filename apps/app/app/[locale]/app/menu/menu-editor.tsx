@@ -23,7 +23,6 @@ type MenuEditorProps = {
   activeMenuLocale: string;
   isPro: boolean;
   initialHideProTools: boolean;
-  upgradeHref: string;
 };
 
 type DeleteTarget = { id: string; name: string };
@@ -34,7 +33,6 @@ export function MenuEditor({
   activeMenuLocale,
   isPro,
   initialHideProTools,
-  upgradeHref,
 }: MenuEditorProps) {
   const t = useTranslations('menu');
   const interfaceLocale = useLocale();
@@ -335,9 +333,7 @@ export function MenuEditor({
         </ul>
       )}
 
-      {!isPro ? (
-        <MenuProTools initialHidden={initialHideProTools} upgradeHref={upgradeHref} />
-      ) : null}
+      {!isPro ? <MenuProTools initialHidden={initialHideProTools} /> : null}
 
       <MenuLanguageDrawer
         open={languageOpen}
@@ -345,7 +341,6 @@ export function MenuEditor({
         baseLocale={baseLocale}
         activeLocale={activeMenuLocale}
         canUseAi={isPro}
-        upgradeHref={upgradeHref}
         onOpenChange={setLanguageOpen}
         onSelectLocale={selectMenuLocale}
       />
@@ -355,7 +350,6 @@ export function MenuEditor({
         baseLocale={baseLocale}
         currency={currency}
         isPro={isPro}
-        upgradeHref={upgradeHref}
         onOpenChange={setImportOpen}
       />
       <MenuItemDrawer

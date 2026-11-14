@@ -11,6 +11,8 @@ export type PlanLimits = {
   canUseAiImageEnhancement: boolean;
   canUseVoiceAssistant: boolean;
   canUseProQrTemplates: boolean;
+  /** 能否在顾客点单页隐藏「Powered by TaoMenu」（issue #26） */
+  canRemovePoweredBy: boolean;
   maxAiMenuImportsPerMonth: number;
   maxAiTranslationsPerMonth: number;
   maxAiImageEnhancementsPerMonth: number;
@@ -28,6 +30,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseAiImageEnhancement: false,
     canUseVoiceAssistant: false,
     canUseProQrTemplates: false,
+    canRemovePoweredBy: false,
     maxAiMenuImportsPerMonth: FREE_AI_MENU_IMPORTS_PER_MONTH,
     maxAiTranslationsPerMonth: 0,
     maxAiImageEnhancementsPerMonth: 0,
@@ -40,6 +43,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseAiImageEnhancement: true,
     canUseVoiceAssistant: true,
     canUseProQrTemplates: true,
+    canRemovePoweredBy: true,
     maxAiMenuImportsPerMonth: 20,
     maxAiTranslationsPerMonth: 20,
     maxAiImageEnhancementsPerMonth: 10,
@@ -52,4 +56,9 @@ export function getPlanLimits(planId: PlanId): PlanLimits {
 
 export function getStaffSeatLimit(planId: PlanId, additionalSeats = 0): number {
   return getPlanLimits(planId).maxStaffTerminals + Math.max(0, Math.floor(additionalSeats));
+}
+
+/** 顾客点单页是否显示「Powered by TaoMenu」：只有当前套餐允许且商家主动关闭时才隐藏 */
+export function shouldShowPoweredBy(planId: PlanId, hidePoweredBy: boolean): boolean {
+  return !(getPlanLimits(planId).canRemovePoweredBy && hidePoweredBy);
 }

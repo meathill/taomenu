@@ -9,6 +9,7 @@ import {
 import { stores } from '../schema/stores';
 import type { Db } from '../types';
 import { loadModifierGroupsForItems } from './modifiers';
+import { getShowPoweredBy } from './store-branding';
 
 export type PublicModifierOption = {
   id: string;
@@ -36,6 +37,8 @@ export type PublicMenuPayload = {
     baseLocale: string;
     menuVersion: number;
     acceptingPublicRequests: boolean;
+    /** false 表示 Pro 商家已隐藏「Powered by TaoMenu」（issue #26） */
+    showPoweredBy: boolean;
   };
   table?: { id: string; name: string };
   pickupPoint?: { id: string; name: string };
@@ -137,6 +140,17 @@ export async function getPublishedMenuForStore(
   const store = storeRows[0];
   if (!store) return null;
 
+  const publicStore: PublicMenuPayload['store'] = {
+    id: store.id,
+    slug: store.slug,
+    name: store.name,
+    currency: store.currency,
+    baseLocale: store.baseLocale,
+    menuVersion: store.menuVersion,
+    acceptingPublicRequests: store.acceptingPublicRequests,
+    showPoweredBy: await getShowPoweredBy(db, store.id, store.plan),
+  };
+
   const menuRows = await db
     .select()
     .from(menus)
@@ -147,15 +161,7 @@ export async function getPublishedMenuForStore(
     return {
       availableLocales: [store.baseLocale],
       resolvedLocale: store.baseLocale,
-      store: {
-        id: store.id,
-        slug: store.slug,
-        name: store.name,
-        currency: store.currency,
-        baseLocale: store.baseLocale,
-        menuVersion: store.menuVersion,
-        acceptingPublicRequests: store.acceptingPublicRequests,
-      },
+      store: publicStore,
       categories: [],
     };
   }
@@ -177,15 +183,7 @@ export async function getPublishedMenuForStore(
     return {
       availableLocales: [store.baseLocale],
       resolvedLocale: store.baseLocale,
-      store: {
-        id: store.id,
-        slug: store.slug,
-        name: store.name,
-        currency: store.currency,
-        baseLocale: store.baseLocale,
-        menuVersion: store.menuVersion,
-        acceptingPublicRequests: store.acceptingPublicRequests,
-      },
+      store: publicStore,
       categories: [],
     };
   }
@@ -254,15 +252,7 @@ export async function getPublishedMenuForStore(
   return {
     availableLocales,
     resolvedLocale,
-    store: {
-      id: store.id,
-      slug: store.slug,
-      name: store.name,
-      currency: store.currency,
-      baseLocale: store.baseLocale,
-      menuVersion: store.menuVersion,
-      acceptingPublicRequests: store.acceptingPublicRequests,
-    },
+    store: publicStore,
     categories: categories.map((category) => {
       const tr = pickName(
         catTr.filter((t) => t.categoryId === category.id),

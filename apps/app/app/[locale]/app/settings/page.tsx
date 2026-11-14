@@ -1,7 +1,9 @@
+import { getStoreBranding } from '@taomenu/db';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
 import { getOwnerStoreSelection, readStoreSlug, type StoreSearchParams } from '@/lib/active-store';
+import { getDb } from '@/lib/db';
 import { getPublicWebsiteUrl, joinPublicUrl } from '@/lib/public-url';
 import { StoreSettingsForm } from './store-settings-form';
 
@@ -36,6 +38,8 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
     );
   }
 
+  const branding = await getStoreBranding(getDb(), selection.store.id);
+
   return (
     <PageMessages namespaces={['owner']}>
       <div className="space-y-6">
@@ -46,6 +50,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         </header>
         <StoreSettingsForm
           store={selection.store}
+          hidePoweredBy={branding.hidePoweredBy}
           upgradeUrl={joinPublicUrl(getPublicWebsiteUrl(), `/${locale}/pricing`)}
           isUpgradeIntent={isUpgradeIntent}
           billingStatus={

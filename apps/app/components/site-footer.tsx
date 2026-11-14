@@ -4,19 +4,24 @@ import { APP_NAME } from '@taomenu/shared';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { usePoweredByVisibility } from '@/lib/powered-by-visibility';
 import { getPoweredByUrl, getSiteChrome } from '@/lib/site-chrome';
 
 export function SiteFooter({ websiteUrl }: { websiteUrl: string }) {
   const pathname = usePathname();
   const t = useTranslations('shell');
   const chrome = getSiteChrome(pathname);
+  const poweredByVisible = usePoweredByVisibility();
 
   if (chrome === 'workspace') {
     return null;
   }
 
   if (chrome === 'customer') {
-    // 顾客页只留一行小字，兼作获客入口
+    // 顾客页只留一行小字，兼作获客入口；Pro 商家可在设置里隐藏（issue #26，服务端已按套餐判定）
+    if (poweredByVisible !== true) {
+      return null;
+    }
     return (
       <footer className="mt-auto py-4 text-center text-xs text-muted-foreground">
         <a

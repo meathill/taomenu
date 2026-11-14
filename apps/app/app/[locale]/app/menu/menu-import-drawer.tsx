@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { usePaywall } from '@/components/paywall/paywall-provider';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
 import { MenuImportPanel } from './menu-import-panel';
 
@@ -11,7 +12,6 @@ type MenuImportDrawerProps = {
   currency: string;
   /** Free 也能用照片/PDF 导入（每月少量次数，issue #25），这里只决定文案与升级提示 */
   isPro: boolean;
-  upgradeHref: string;
   onOpenChange: (open: boolean) => void;
 };
 
@@ -21,10 +21,10 @@ export function MenuImportDrawer({
   baseLocale,
   currency,
   isPro,
-  upgradeHref,
   onOpenChange,
 }: MenuImportDrawerProps) {
   const t = useTranslations('menu');
+  const { openPaywall } = usePaywall();
   return (
     <ResponsiveDrawer
       open={open}
@@ -41,9 +41,13 @@ export function MenuImportDrawer({
       {!isPro ? (
         <p className="mt-4 rounded-xl border border-indigo-100 bg-white px-3 py-2 text-xs leading-5 text-muted-foreground">
           {t('importFreeUpsell')}{' '}
-          <a href={upgradeHref} className="font-bold text-indigo-700">
+          <button
+            type="button"
+            onClick={() => openPaywall('menuImport')}
+            className="font-bold text-violet-700"
+          >
             {t('viewProPlan')}
-          </a>
+          </button>
         </p>
       ) : null}
     </ResponsiveDrawer>

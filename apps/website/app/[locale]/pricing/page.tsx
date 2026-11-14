@@ -70,6 +70,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
         { label: t('proTranslation'), status: 'available' },
         { label: t('proVoice'), status: 'available' },
         { label: t('proEnhance'), status: 'available' },
+        { label: t('proBranding'), status: 'available' },
         { label: staffAddOn, status: 'available' },
       ],
       highlight: true,

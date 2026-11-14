@@ -214,6 +214,13 @@ export {
   transitionOrder,
 } from './staff-orders';
 export {
+  getShowPoweredBy,
+  getStoreBranding,
+  type StoreBranding,
+  StoreBrandingError,
+  updateStoreBranding,
+} from './store-branding';
+export {
   listStoreContextsForUser,
   resolveStoreContext,
 } from './store-context';

@@ -120,6 +120,8 @@ pnpm --filter @taomenu/app db:migrate:remote
 # 或：npx wrangler d1 migrations apply taomenu --remote
 ```
 
+> 0016（`store_branding`，Pro 去水印，#26）需要手动执行上面的命令才会生效。未执行前公开菜单照常显示「Powered by TaoMenu」，设置页的开关保存时会提示功能上线中。
+
 本地：
 
 ```bash

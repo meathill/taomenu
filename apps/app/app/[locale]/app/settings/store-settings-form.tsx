@@ -13,11 +13,16 @@ import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { FieldSwitch } from '@/components/field-switch';
+import { ProBadge } from '@/components/paywall/pro-badge';
 import { TimeZoneSelect } from '@/components/time-zone-select';
 import { fieldClassName } from '@/components/ui/field';
+import { type BillingPath, requestBillingUrl } from '@/lib/billing-client';
+import { StoreBrandingSection } from './store-branding-section';
 
 type StoreSettingsFormProps = {
   store: StoreRow;
+  /** issue #26：顾客页是否已隐藏 Powered by */
+  hidePoweredBy: boolean;
   upgradeUrl: string;
   billingStatus?: string;
   /** 从定价页 Pro 入口过来：滚动到并高亮升级区块 */
@@ -26,6 +31,7 @@ type StoreSettingsFormProps = {
 
 export function StoreSettingsForm({
   store,
+  hidePoweredBy,
   upgradeUrl,
   billingStatus,
   isUpgradeIntent = false,
@@ -64,30 +70,21 @@ export function StoreSettingsForm({
     locale,
   );
 
-  async function openBilling(path: 'pro/checkout' | 'portal') {
+  async function openBilling(path: BillingPath) {
     setBillingBusy(true);
     setMessage(null);
     setError(null);
-    try {
-      const response = await fetch(`/api/owner/stores/${store.id}/billing/${path}`, {
-        method: 'POST',
-      });
-      const data = (await response.json().catch(() => null)) as {
-        error?: string;
-        url?: string;
-      } | null;
-      if (!response.ok || !data?.url) {
-        setError(
-          data?.error === 'BILLING_NOT_CONFIGURED'
-            ? t('billingNotConfigured')
-            : t('planBillingFailed'),
-        );
-        return;
-      }
-      window.location.assign(data.url);
-    } finally {
-      setBillingBusy(false);
+    const result = await requestBillingUrl(store.id, path);
+    if (result.ok) {
+      window.location.assign(result.url);
+      return;
     }
+    setBillingBusy(false);
+    setError(
+      result.error === 'BILLING_NOT_CONFIGURED'
+        ? t('billingNotConfigured')
+        : t('planBillingFailed'),
+    );
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -179,6 +176,8 @@ export function StoreSettingsForm({
         <p className="mt-2 text-xs leading-5 text-muted-foreground">{t('acceptingOrdersHint')}</p>
       </section>
 
+      <StoreBrandingSection store={store} initialHidePoweredBy={hidePoweredBy} />
+
       <section className="rounded-2xl border border-border bg-paper-50 p-5">
         <h2 className="text-lg font-black text-ink-900">{t('readOnlyDetails')}</h2>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -211,9 +210,7 @@ export function StoreSettingsForm({
               <h2 className="text-lg font-black text-ink-900">
                 {store.plan === 'pro' ? t('proActiveTitle') : t('upgradeTitle')}
               </h2>
-              <span className="rounded-full bg-violet-600 px-2.5 py-1 text-xs font-black text-white">
-                PRO
-              </span>
+              <ProBadge />
             </div>
             <p className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
               {store.plan === 'pro' ? t('proActiveSubtitle') : t('upgradeSubtitle')}
@@ -232,6 +229,7 @@ export function StoreSettingsForm({
           <li>✓ {t('proBenefitTranslation')}</li>
           <li>✓ {t('proBenefitVoice')}</li>
           <li>✓ {t('proBenefitEnhance')}</li>
+          <li>✓ {t('proBenefitBranding')}</li>
         </ul>
         <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('aiReviewRule')}</p>
 

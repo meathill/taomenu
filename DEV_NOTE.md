@@ -281,3 +281,10 @@
 - 没有配置 `MIMO_API_KEY` 时报 `MIMO_NOT_CONFIGURED`，前端显示“AI 服务暂不可用”。失败的导入可以重试，不会再占用次数（次数在创建时计）。
 - 为什么 Pro 不切到 MiMo：OpenAI 那边原生读 PDF、支持严格 JSON Schema，付费用户优先保证识别质量；MiMo 只给 Free 做低成本试用。
 - 内存 D1 测试夹具补了 `batch()`（事务内顺序执行），以便测试 `createMenuImport` 这类用 `db.batch` 的仓储函数。
+
+## Pro 去水印、统一付费信号与付费墙（2026-11-14，#26）
+
+- 新表 `store_branding`（migration `0016_store_branding.sql`，不改 `stores`）。`packages/db/src/repositories/store-branding.ts`：`getStoreBranding` 遇到「no such table」时返回默认值（显示水印），所以 migration 未执行时公开菜单不会 500；`updateStoreBranding` 对 Free 开启抛 `PRO_REQUIRED`，表缺失抛 `NOT_MIGRATED`（API 返回 503，设置页提示「正在上线中」）。
+- 判定规则在 `packages/shared/src/plans.ts` 的 `shouldShowPoweredBy(plan, hidePoweredBy)`（`PLAN_LIMITS.*.canRemovePoweredBy`）。公开菜单接口 `store.showPoweredBy` 由服务端按「当前套餐 + 开关」算出，降级回 Free 后自动恢复水印，不需要清开关。
+- 顾客页的「Powered by」仍由根布局 `SiteFooter` 渲染，但菜单是客户端拉取的，所以用 `lib/powered-by-visibility.ts`（`useSyncExternalStore` 小 store）从 `CustomerMenu` / `CustomerPickupMenu` 把结论传给页脚；菜单未加载前不渲染，避免 Pro 店铺闪出水印。
+- 付费信号统一为 `components/paywall/pro-badge.tsx`（皇冠 + Pro，violet），付费墙为 `PaywallProvider` + `PaywallDialog`（挂在 `OwnerShell`，`usePaywall().openPaywall(feature)`），按钮直接走现有 `billing/pro/checkout`。已接入：设置页去水印开关、语言抽屉（AI 翻译）、翻译面板、菜品照片美化、菜单导入抽屉、菜单页 Pro 工具条、桌贴 Pro 模板。新增 Pro 功能时在 `paywall-features.ts` 加 key，并在 4 种语言 `owner.json` 加 `paywall*` 文案。

@@ -21,7 +21,6 @@ type PrintSheetProps = {
   plan: PlanId;
   /** 门店面向顾客语言（baseLocale）的扫码提示语 */
   scanHint: string;
-  upgradeUrl: string;
 };
 
 type EntryRow = {
@@ -31,14 +30,7 @@ type EntryRow = {
   isActive: boolean;
 };
 
-export function PrintSheet({
-  storeId,
-  storeSlug,
-  storeName,
-  plan,
-  scanHint,
-  upgradeUrl,
-}: PrintSheetProps) {
+export function PrintSheet({ storeId, storeSlug, storeName, plan, scanHint }: PrintSheetProps) {
   const t = useTranslations('tables');
   const [entries, setEntries] = useState<PrintableEntry[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -113,7 +105,6 @@ export function PrintSheet({
           plan={plan}
           scanHint={scanHint}
           qrAlt={t('qrAlt')}
-          upgradeUrl={upgradeUrl}
           selectedTemplateId={templateId}
           onSelectTemplate={setTemplateId}
         />

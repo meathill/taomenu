@@ -145,5 +145,21 @@
   "billingFailed": "Could not update staff seats.",
   "billingUpdated": "Staff seats updated.",
   "cancel": "Cancel",
-  "helpAndContact": "Help & contact"
+  "helpAndContact": "Help & contact",
+  "proBenefitBranding": "Remove “Powered by TaoMenu” from your customer menu",
+  "paywallTitle": "This is a Pro feature",
+  "paywallComparePlans": "See plan details",
+  "paywallRemovePoweredBy": "With Pro, you can remove “Powered by TaoMenu” from the bottom of your customer menu so it shows only your brand.",
+  "paywallTranslation": "With Pro, your menu can offer up to {languages} languages, and AI translates the whole menu in one click.",
+  "paywallPhotoEnhance": "With Pro, AI can enhance your dish photos in one click to make the menu more appetizing.",
+  "paywallQrTemplates": "With Pro, you can print QR codes with every table-card template.",
+  "paywallMenuImport": "Free includes {free} imports per month. Pro gives you {pro} per month with a more accurate model.",
+  "paywallAiTools": "Pro unlocks AI translation, photo enhancement, more imports, more staff seats and every other Pro tool.",
+  "brandingTitle": "Customer menu branding",
+  "hidePoweredBy": "Hide “Powered by TaoMenu”",
+  "hidePoweredByHint": "When on, the customer menu no longer shows “Powered by TaoMenu” at the bottom. Takes effect immediately.",
+  "hidePoweredByFreeHint": "Pro feature: upgrade to remove “Powered by TaoMenu” from the bottom of your customer menu.",
+  "brandingSaved": "Saved. Customers see the change when they reload the menu.",
+  "brandingSaveFailed": "Couldn’t save. Please try again.",
+  "brandingNotReady": "This feature is still rolling out. Please try again later."
 }

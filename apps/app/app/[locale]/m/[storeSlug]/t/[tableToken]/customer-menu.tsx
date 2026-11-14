@@ -4,6 +4,7 @@ import { toStoreCurrency } from '@taomenu/shared';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSyncPoweredByVisibility } from '@/lib/powered-by-visibility';
 import {
   addToCart,
   type CartLine,
@@ -25,7 +26,13 @@ import { CustomerOrderView, type OrderStatusView } from './customer-order-view';
 type MenuPayload = {
   availableLocales: string[];
   resolvedLocale: string;
-  store: { name: string; currency: string; acceptingPublicRequests: boolean; menuVersion: number };
+  store: {
+    name: string;
+    currency: string;
+    acceptingPublicRequests: boolean;
+    menuVersion: number;
+    showPoweredBy?: boolean;
+  };
   table?: { name: string };
   categories: Array<{
     id: string;
@@ -46,6 +53,8 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const requestedLocale = searchParams.get('locale') ?? locale;
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // 菜单加载失败时也显示 Powered by（只有 Pro 主动隐藏才不显示）
+  useSyncPoweredByVisibility(menu?.store.showPoweredBy, menu !== null || error !== null);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import { usePaywall } from '@/components/paywall/paywall-provider';
 import { publicMediaPath } from '@/lib/menu-image';
 import { imageErrorKey, MENU_IMAGE_MAX_MB, uploadMenuItemImage } from '@/lib/menu-image-upload';
 import { MenuImageEnhancementPanel } from './menu-image-enhancement-panel';
@@ -33,6 +34,7 @@ export function MenuItemImage({
   onChanged,
 }: MenuItemImageProps) {
   const t = useTranslations('menu');
+  const { openPaywall } = usePaywall();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isEnhancementOpen, setIsEnhancementOpen] = useState(false);
   const [enhancement, setEnhancement] = useState<{
@@ -124,7 +126,7 @@ export function MenuItemImage({
 
   async function handleEnhance() {
     if (!canUseImageEnhancement) {
-      onError(t('photoEnhanceProHint'));
+      openPaywall('photoEnhance');
       return;
     }
     setIsEnhancementOpen(true);

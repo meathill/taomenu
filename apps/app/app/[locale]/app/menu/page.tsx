@@ -66,7 +66,6 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
           activeMenuLocale={activeMenuLocale}
           isPro={store.plan === 'pro'}
           initialHideProTools={preferences.hideMenuProTools}
-          upgradeHref={withStore('/app/settings', store.slug)}
         />
       </div>
     </PageMessages>

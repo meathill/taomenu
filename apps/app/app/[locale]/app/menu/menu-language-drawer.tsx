@@ -1,8 +1,10 @@
 'use client';
 
-import { CheckIcon, LockSimpleIcon, TranslateIcon } from '@phosphor-icons/react';
+import { CheckIcon, TranslateIcon } from '@phosphor-icons/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
+import { usePaywall } from '@/components/paywall/paywall-provider';
+import { ProBadge } from '@/components/paywall/pro-badge';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
 import { MenuTranslationPanel } from './menu-translation-panel';
 
@@ -14,7 +16,6 @@ type MenuLanguageDrawerProps = {
   baseLocale: string;
   activeLocale: string;
   canUseAi: boolean;
-  upgradeHref: string;
   onOpenChange: (open: boolean) => void;
   onSelectLocale: (locale: string) => void;
 };
@@ -25,11 +26,11 @@ export function MenuLanguageDrawer({
   baseLocale,
   activeLocale,
   canUseAi,
-  upgradeHref,
   onOpenChange,
   onSelectLocale,
 }: MenuLanguageDrawerProps) {
   const t = useTranslations('menu');
+  const { openPaywall } = usePaywall();
   const interfaceLocale = useLocale();
   const [previewLocale, setPreviewLocale] = useState(activeLocale);
   const names = useMemo(
@@ -75,7 +76,7 @@ export function MenuLanguageDrawer({
                   </span>
                 </span>
                 {isLocked ? (
-                  <LockSimpleIcon className="size-5 text-indigo-700" weight="bold" aria-hidden />
+                  <ProBadge />
                 ) : locale === activeLocale ? (
                   <CheckIcon className="size-5 text-jade-600" weight="bold" aria-hidden />
                 ) : null}
@@ -94,12 +95,13 @@ export function MenuLanguageDrawer({
           <p className="mt-1 text-sm text-muted-foreground">
             {t('freeLanguageLimitBody', { base: names.of(baseLocale) ?? baseLocale })}
           </p>
-          <a
-            href={upgradeHref}
-            className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+          <button
+            type="button"
+            onClick={() => openPaywall('translation')}
+            className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-violet-600 px-4 text-sm font-bold text-white"
           >
             {t('viewProPlan')}
-          </a>
+          </button>
         </div>
       ) : null}
 

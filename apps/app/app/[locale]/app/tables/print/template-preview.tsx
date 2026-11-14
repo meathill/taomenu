@@ -1,10 +1,12 @@
 'use client';
 
-import { LockSimpleIcon, XIcon } from '@phosphor-icons/react';
+import { CrownIcon, XIcon } from '@phosphor-icons/react';
 import type { PlanId } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/button';
+import { usePaywall } from '@/components/paywall/paywall-provider';
+import { ProBadge } from '@/components/paywall/pro-badge';
 import { compactFieldClassName } from '@/components/ui/field';
 import { customerEntryUrl } from '../customer-url';
 import { QrCard } from '../qr-card';
@@ -16,7 +18,6 @@ type TemplatePreviewProps = {
   plan: PlanId;
   scanHint: string;
   qrAlt: string;
-  upgradeUrl: string;
   selectedTemplateId: QrCardTemplateId;
   onSelectTemplate: (templateId: QrCardTemplateId) => void;
 };
@@ -33,11 +34,11 @@ export function TemplatePreview({
   plan,
   scanHint,
   qrAlt,
-  upgradeUrl,
   selectedTemplateId,
   onSelectTemplate,
 }: TemplatePreviewProps) {
   const t = useTranslations('tables');
+  const { openPaywall } = usePaywall();
   const previewUrl = customerEntryUrl('table', storeSlug, 'preview');
   const [previewTemplateId, setPreviewTemplateId] = useState<QrCardTemplateId | null>(null);
   const [previewFields, setPreviewFields] = useState<PreviewFields>({
@@ -124,12 +125,7 @@ export function TemplatePreview({
                     <span className="absolute right-2 top-2 inline-flex items-center rounded-lg bg-white/90 px-2 py-1 text-xs font-bold text-ink-900 shadow-sm">
                       {t('previewTemplate')}
                     </span>
-                    {template.pro ? (
-                      <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-lg bg-gold-600 px-2 py-1 text-[10px] font-black uppercase text-white">
-                        <LockSimpleIcon className="size-3" />
-                        {t('proBadge')}
-                      </span>
-                    ) : null}
+                    {template.pro ? <ProBadge className="absolute left-2 top-2" /> : null}
                     <span className="absolute inset-0 bg-jade-600/0 transition-colors group-hover:bg-jade-600/10" />
                   </div>
                 </button>
@@ -144,19 +140,27 @@ export function TemplatePreview({
                   </div>
                   <Button
                     type="button"
-                    disabled={!available}
                     aria-pressed={isActive}
-                    onClick={() => onSelectTemplate(template.id)}
+                    onClick={() =>
+                      available ? onSelectTemplate(template.id) : openPaywall('qrTemplates')
+                    }
                     className={[
                       'min-h-9 shrink-0 rounded-lg px-2.5 text-xs font-bold',
-                      isActive ? 'bg-jade-600 text-white' : 'border border-border text-ink-900',
+                      isActive
+                        ? 'bg-jade-600 text-white'
+                        : available
+                          ? 'border border-border text-ink-900'
+                          : 'gap-1 border border-violet-600/30 text-violet-700',
                     ].join(' ')}
                   >
                     {isActive
                       ? t('templateSelected')
                       : available
                         ? t('useTemplate')
-                        : t('proBadge')}
+                        : [
+                            <CrownIcon key="icon" className="size-3.5" weight="fill" aria-hidden />,
+                            t('proBadge'),
+                          ]}
                   </Button>
                 </div>
               </article>
@@ -259,16 +263,16 @@ export function TemplatePreview({
                 </div>
 
                 {previewIsAvailable ? null : (
-                  <div className="rounded-xl border border-gold-600/40 bg-gold-600/10 p-3">
+                  <div className="rounded-xl border border-violet-600/30 bg-violet-600/5 p-3">
                     <p className="text-xs leading-5 text-ink-900">{t('proPreviewHint')}</p>
-                    <a
-                      href={upgradeUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-gold-600 px-3 text-xs font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-600 focus-visible:ring-offset-2"
+                    <button
+                      type="button"
+                      onClick={() => openPaywall('qrTemplates')}
+                      className="mt-2 inline-flex min-h-9 items-center gap-1 rounded-lg bg-violet-600 px-3 text-xs font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2"
                     >
+                      <CrownIcon className="size-3.5" weight="fill" aria-hidden />
                       {t('upgradeToPro')}
-                    </a>
+                    </button>
                   </div>
                 )}
 

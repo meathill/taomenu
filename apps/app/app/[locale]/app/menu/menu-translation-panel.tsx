@@ -4,6 +4,8 @@ import { SparkleIcon, TranslateIcon } from '@phosphor-icons/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
+import { usePaywall } from '@/components/paywall/paywall-provider';
+import { ProBadge } from '@/components/paywall/pro-badge';
 import { compactFieldClassName, textareaClassName } from '@/components/ui/field';
 
 type TranslationSuggestion = {
@@ -40,6 +42,7 @@ export function MenuTranslationPanel({
   canUseAi: boolean;
 }) {
   const t = useTranslations('menu');
+  const { openPaywall } = usePaywall();
   const locale = useLocale();
   const [view, setView] = useState<TranslationView | null>(null);
   const [usage, setUsage] = useState({ used: 0, limit: 20 });
@@ -176,11 +179,16 @@ export function MenuTranslationPanel({
         <div className="flex items-center gap-2">
           <TranslateIcon className="size-5 text-indigo-700" weight="bold" aria-hidden />
           <h2 className="text-sm font-black text-ink-900">{t('aiTranslate')}</h2>
-          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-700">
-            Pro
-          </span>
+          <ProBadge />
         </div>
         <p className="mt-2 text-sm text-muted-foreground">{t('translationProHint')}</p>
+        <button
+          type="button"
+          onClick={() => openPaywall('translation')}
+          className="mt-2 text-sm font-bold text-violet-700"
+        >
+          {t('viewProPlan')}
+        </button>
       </section>
     );
   }

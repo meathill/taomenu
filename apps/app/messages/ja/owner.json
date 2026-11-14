@@ -145,5 +145,21 @@
   "billingFailed": "スタッフ席を更新できませんでした。",
   "billingUpdated": "スタッフ席を更新しました。",
   "cancel": "キャンセル",
-  "helpAndContact": "ヘルプ・お問い合わせ"
+  "helpAndContact": "ヘルプ・お問い合わせ",
+  "proBenefitBranding": "お客様向けメニューの「Powered by TaoMenu」を非表示",
+  "paywallTitle": "Pro 機能です",
+  "paywallComparePlans": "プランの詳細を見る",
+  "paywallRemovePoweredBy": "Pro にアップグレードすると、お客様向けメニュー下部の「Powered by TaoMenu」を消して、お店のブランドだけを表示できます。",
+  "paywallTranslation": "Pro では最大 {languages} 言語のメニューを提供でき、AI がメニュー全体をワンクリックで翻訳します。",
+  "paywallPhotoEnhance": "Pro では AI が料理写真をワンクリックで補正し、よりおいしそうなメニューにします。",
+  "paywallQrTemplates": "Pro ではすべてのテーブルカードテンプレートで QR コードを印刷できます。",
+  "paywallMenuImport": "無料プランは月 {free} 回までインポートできます。Pro は月 {pro} 回、より精度の高いモデルを使います。",
+  "paywallAiTools": "Pro では AI 翻訳、写真補正、インポート回数の追加、スタッフ席の追加など、すべての Pro ツールが使えます。",
+  "brandingTitle": "お客様向けページのブランド",
+  "hidePoweredBy": "「Powered by TaoMenu」を非表示",
+  "hidePoweredByHint": "オンにすると、お客様向けメニュー下部に「Powered by TaoMenu」が表示されなくなります。すぐに反映されます。",
+  "hidePoweredByFreeHint": "Pro 機能：アップグレードすると、お客様向けメニュー下部の「Powered by TaoMenu」を消せます。",
+  "brandingSaved": "保存しました。お客様がメニューを再読み込みすると反映されます。",
+  "brandingSaveFailed": "保存できませんでした。もう一度お試しください。",
+  "brandingNotReady": "この機能は公開準備中です。しばらくしてからお試しください。"
 }

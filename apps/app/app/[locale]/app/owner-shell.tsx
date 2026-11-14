@@ -19,6 +19,7 @@ import { useTranslations } from 'next-intl';
 import { type ComponentType, type ReactNode, useState } from 'react';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { NavigationSpinner } from '@/components/navigation-spinner';
+import { PaywallProvider } from '@/components/paywall/paywall-provider';
 import { resolveActiveStore, withStore } from '@/lib/active-store-utils';
 import { signOut } from '@/lib/auth-client';
 import { StoreSwitcher } from './store-switcher';
@@ -283,7 +284,9 @@ export function OwnerShell({ stores, user, helpUrl, children }: OwnerShellProps)
             </Link>
           </div>
           <div className="px-4 py-5 sm:px-6 lg:px-10 lg:py-8 print:p-0">
-            <div className="mx-auto max-w-6xl print:max-w-none">{children}</div>
+            <div className="mx-auto max-w-6xl print:max-w-none">
+              <PaywallProvider store={activeStore}>{children}</PaywallProvider>
+            </div>
           </div>
         </main>
       </div>
