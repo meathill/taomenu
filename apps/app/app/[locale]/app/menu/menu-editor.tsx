@@ -53,6 +53,7 @@ export function MenuEditor({
   const [initialCategoryId, setInitialCategoryId] = useState<string | undefined>();
   const [editingCategoryId, setEditingCategoryId] = useState<string | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
 
   const load = useCallback(async () => {
     setError(null);
@@ -191,29 +192,22 @@ export function MenuEditor({
   }
 
   async function publishMenu() {
-    setBusyAction('publish');
-    setError(null);
     setMessage(null);
-    try {
-      const response = await fetch(`/api/owner/stores/${storeId}/menu`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'publish' }),
-      });
-      const data = (await response.json().catch(() => null)) as {
-        error?: string;
-        issues?: Array<{ message: string }>;
-      } | null;
-      if (!response.ok) {
-        throw new Error(data?.issues?.[0]?.message || data?.error || t('publishFailed'));
-      }
-      await load();
-      setMessage(t('publishDone'));
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : t('publishFailed'));
-    } finally {
-      setBusyAction(null);
+    const response = await fetch(`/api/owner/stores/${storeId}/menu`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'publish' }),
+    });
+    const data = (await response.json().catch(() => null)) as {
+      error?: string;
+      issues?: Array<{ message: string }>;
+    } | null;
+    if (!response.ok) {
+      throw new Error(data?.issues?.[0]?.message || data?.error || t('publishFailed'));
     }
+    await load();
+    setError(null);
+    setMessage(t('publishDone'));
   }
 
   if (!tree) {
@@ -241,7 +235,7 @@ export function MenuEditor({
         selectMode={selectMode}
         canPublish={allItemIds.length > 0}
         onToggleSelect={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
-        onPublish={() => void publishMenu()}
+        onPublish={() => setPublishConfirmOpen(true)}
       />
 
       <div className="flex flex-wrap gap-2">
@@ -374,6 +368,16 @@ export function MenuEditor({
         editingId={editingCategoryId}
         onOpenChange={setCategoryDrawerOpen}
         onChanged={load}
+      />
+      <AsyncAlertDialog
+        open={publishConfirmOpen}
+        title={t('publishConfirmTitle')}
+        description={t('publishConfirm', { count: allItemIds.length })}
+        cancelLabel={t('cancel')}
+        confirmLabel={t('publish')}
+        confirmVariant="default"
+        onOpenChange={setPublishConfirmOpen}
+        onConfirm={publishMenu}
       />
       <AsyncAlertDialog
         open={deleteTarget !== null}

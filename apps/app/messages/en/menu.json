@@ -12,6 +12,8 @@
   "publish": "Publish menu",
   "publishDone": "Menu published.",
   "publishFailed": "Publish failed.",
+  "publishConfirmTitle": "Publish this menu?",
+  "publishConfirm": "{count} items will go live. Customers will see the changes immediately.",
   "addCategory": "Add category",
   "categoryPlaceholder": "Mains",
   "add": "Add",

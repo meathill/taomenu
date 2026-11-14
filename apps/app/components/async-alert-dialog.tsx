@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/button';
+import { Button, type ButtonProps } from '@/components/button';
 import {
   AlertDialog,
   AlertDialogDescription,
@@ -17,6 +17,7 @@ type AsyncAlertDialogProps = {
   description: string;
   cancelLabel: string;
   confirmLabel: string;
+  confirmVariant?: ButtonProps['variant'];
   onOpenChange: (open: boolean) => void;
   onConfirm: () => Promise<void>;
 };
@@ -27,6 +28,7 @@ export function AsyncAlertDialog({
   description,
   cancelLabel,
   confirmLabel,
+  confirmVariant = 'destructive',
   onOpenChange,
   onConfirm,
 }: AsyncAlertDialogProps) {
@@ -73,7 +75,7 @@ export function AsyncAlertDialog({
           >
             {cancelLabel}
           </Button>
-          <Button variant="destructive" pending={isPending} onClick={() => void handleConfirm()}>
+          <Button variant={confirmVariant} pending={isPending} onClick={() => void handleConfirm()}>
             {confirmLabel}
           </Button>
         </AlertDialogFooter>

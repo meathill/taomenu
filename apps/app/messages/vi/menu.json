@@ -12,6 +12,8 @@
   "publish": "Xuất bản menu",
   "publishDone": "Đã xuất bản menu.",
   "publishFailed": "Xuất bản thất bại.",
+  "publishConfirmTitle": "Xuất bản menu này?",
+  "publishConfirm": "{count} món sẽ được công khai. Khách sẽ thấy thay đổi ngay lập tức.",
   "addCategory": "Thêm nhóm món",
   "categoryPlaceholder": "Món chính",
   "add": "Thêm",

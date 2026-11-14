@@ -12,6 +12,8 @@
   "publish": "发布菜单",
   "publishDone": "菜单已发布。",
   "publishFailed": "发布失败。",
+  "publishConfirmTitle": "确认发布菜单？",
+  "publishConfirm": "将发布 {count} 道菜，顾客会立刻看到这些改动。",
   "addCategory": "添加分类",
   "categoryPlaceholder": "主食",
   "add": "添加",

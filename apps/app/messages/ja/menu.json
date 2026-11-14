@@ -12,6 +12,8 @@
   "publish": "メニューを公開",
   "publishDone": "メニューを公開しました。",
   "publishFailed": "公開に失敗しました。",
+  "publishConfirmTitle": "このメニューを公開しますか？",
+  "publishConfirm": "{count} 品が公開されます。お客様にはすぐに反映されます。",
   "addCategory": "カテゴリを追加",
   "categoryPlaceholder": "メイン",
   "add": "追加",
