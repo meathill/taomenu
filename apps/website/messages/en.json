@@ -46,7 +46,7 @@
     "howTitle": "How it works",
     "howSubtitle": "From sign-up to the first order in minutes.",
     "howStep1Title": "Build your menu",
-    "howStep1Body": "Enter items by hand, or photograph a menu and let AI draft it — 2 imports a month on Free, 20 on Pro.",
+    "howStep1Body": "Enter items by hand, or photograph a menu and let AI draft it — 10 imports a month on Free, 20 on Pro.",
     "howStep2Title": "Print or share QR codes",
     "howStep2Body": "Table codes or pickup codes — print them on A4 or share a link.",
     "howStep3Title": "Guests scan and order",
@@ -97,7 +97,7 @@
     "freeDesc": "Enough for a small shop to run day to day.",
     "freeF1": "1 staff seat (2 total including the owner)",
     "freeF2": "1 menu language",
-    "freeF3": "Manual menu entry, plus 2 AI photo/PDF menu imports per month",
+    "freeF3": "Manual menu entry, plus 10 AI photo/PDF menu imports per month",
     "proName": "Pro",
     "proPrice": "{price}/month",
     "proDesc": "For busy shops that need multi-language menus and faster setup.",
@@ -123,7 +123,7 @@
     "aiOutputBody": "Editable categories, item names, prices, options, translations or image previews — never a live menu automatically.",
     "aiReviewTitle": "You confirm",
     "aiReviewBody": "Review uncertain text, prices and changes. Applying an AI draft still does not publish it.",
-    "aiLimit": "Monthly allowance per store — Free: 2 photo/PDF menu imports. Pro: 20 photo/PDF menu imports, 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once."
+    "aiLimit": "Monthly allowance per store — Free: 10 photo/PDF menu imports. Pro: 20 photo/PDF menu imports, 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once."
   },
   "footer": {
     "tagline": "QR ordering software for small restaurants.",
@@ -189,7 +189,7 @@
     "menu-qr-cho-quan-an": {
       "title": "QR menu for restaurants: turn your paper menu into a scan-to-view menu",
       "description": "Create a QR menu for your restaurant, café or shop. Build it by hand or import a photo or PDF — free to start.",
-      "answer": "A QR menu is a menu that opens on a phone when scanned. TaoMenu lets you build one by hand or from a photo or PDF of your paper menu: Free includes 2 AI imports a month, Pro 20.",
+      "answer": "A QR menu is a menu that opens on a phone when scanned. TaoMenu lets you build one by hand or from a photo or PDF of your paper menu: Free includes 10 AI imports a month, Pro 20.",
       "faq": [
         {
           "q": "Do guests need an app to open the QR menu?",

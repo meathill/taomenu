@@ -276,7 +276,7 @@
 
 ## Free 套餐的照片/PDF 导入（2026-11-14，#25）
 
-- Free 每店每月 `FREE_AI_MENU_IMPORTS_PER_MONTH = 2` 次导入，Pro 20 次。`createMenuImport` 按套餐写入 `menu_imports.provider/model`（`getMenuAiRoute`）：Free → `mimo / mimo-v2.6-flash`，Pro → `openai / gpt-5.6-luna`。`taomenu-ai` 按记录里的 provider 分派。
+- Free 每店每月 `FREE_AI_MENU_IMPORTS_PER_MONTH` 次导入（最初 2 次，#28 起 10 次），Pro 20 次。`createMenuImport` 按套餐写入 `menu_imports.provider/model`（`getMenuAiRoute`）：Free → `mimo / mimo-v2.6-flash`，Pro → `openai / gpt-5.6-luna`。`taomenu-ai` 按记录里的 provider 分派。
 - MiMo 用 OpenAI 兼容 Chat Completions（`{MIMO_BASE_URL}/chat/completions`，header `api-key`）。它只支持 `response_format: json_object`，所以 schema 写进系统提示词，返回后用 `menuImportOutputSchema` 严格校验；不支持 PDF 输入，PDF 先经 Workers AI `toMarkdown` 转文本（截断到 6 万字符），纯扫描件报 `MIMO_PDF_NO_TEXT`。
 - 没有配置 `MIMO_API_KEY` 时报 `MIMO_NOT_CONFIGURED`，前端显示“AI 服务暂不可用”。失败的导入可以重试，不会再占用次数（次数在创建时计）。
 - 为什么 Pro 不切到 MiMo：OpenAI 那边原生读 PDF、支持严格 JSON Schema，付费用户优先保证识别质量；MiMo 只给 Free 做低成本试用。
@@ -301,3 +301,4 @@
 - AI 菜单翻译也改走 MiMo：`createMimoMenuProvider().translateMenu`，同样是 json_object + 系统提示词里的 JSON Schema + `menuTranslationOutputSchema` 校验。翻译落库校验失败的错误码由 `OPENAI_INVALID_OUTPUT` 改为 `AI_INVALID_OUTPUT`。
 - 菜品照片美化需要图像编辑，MiMo 官方模型列表只有全模态理解（输出文本）、ASR、TTS，没有图像生成，所以仍走 OpenAI `OPENAI_IMAGE_MODEL`；`OPENAI_API_KEY` 仅用于这一项。`OPENAI_MENU_MODEL` 与 `openai-menu-provider.ts` 已删除，提示词放在 `apps/ai/src/menu-prompts.ts`。
 - 代价：MiMo 不读 PDF，PDF 先经 Workers AI `toMarkdown` 转文本；纯扫描 PDF（没有文字层）对 Pro 也会报 `MIMO_PDF_NO_TEXT`，提示改传照片。以前 Pro 走 OpenAI 时能直接读扫描件。
+- Free 导入额度从每月 2 次放宽到 10 次（`FREE_AI_MENU_IMPORTS_PER_MONTH`）；定价页、首页、落地页文案同步，`apps/website/lib/pricing-copy.test.ts` 会校验 freeF3 里的数字与常量一致。

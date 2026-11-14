@@ -46,7 +46,7 @@
     "howTitle": "Cách hoạt động",
     "howSubtitle": "Từ lúc đăng ký đến order đầu tiên chỉ trong vài phút.",
     "howStep1Title": "Tạo menu",
-    "howStep1Body": "Nhập món thủ công, hoặc chụp ảnh menu để AI soạn bản nháp — Free 2 lượt/tháng, Pro 20 lượt/tháng.",
+    "howStep1Body": "Nhập món thủ công, hoặc chụp ảnh menu để AI soạn bản nháp — Free 10 lượt/tháng, Pro 20 lượt/tháng.",
     "howStep2Title": "In hoặc chia sẻ mã QR",
     "howStep2Body": "Mã bàn hoặc mã lấy món — in trên giấy A4 hay gửi link.",
     "howStep3Title": "Khách quét mã gọi món",
@@ -97,7 +97,7 @@
     "freeDesc": "Đủ để một quán nhỏ vận hành hằng ngày.",
     "freeF1": "1 chỗ Staff (tổng cộng 2 chỗ gồm chủ quán)",
     "freeF2": "1 ngôn ngữ menu",
-    "freeF3": "Tạo menu thủ công, kèm 2 lượt nhập menu bằng ảnh/PDF với AI mỗi tháng",
+    "freeF3": "Tạo menu thủ công, kèm 10 lượt nhập menu bằng ảnh/PDF với AI mỗi tháng",
     "proName": "Pro",
     "proPrice": "{price}/tháng",
     "proDesc": "Cho quán bận, đa ngôn ngữ và nhập menu nhanh.",
@@ -123,7 +123,7 @@
     "aiOutputBody": "Danh mục, tên món, giá, lựa chọn, bản dịch hoặc ảnh xem trước có thể chỉnh sửa — không tự đưa lên menu thật.",
     "aiReviewTitle": "Bạn xác nhận",
     "aiReviewBody": "Kiểm tra chữ, giá và thay đổi chưa chắc chắn. Áp dụng bản nháp AI vẫn chưa xuất bản menu.",
-    "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 2 lượt nhập menu ảnh/PDF. Pro: 20 lượt nhập menu ảnh/PDF, 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt."
+    "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 10 lượt nhập menu ảnh/PDF. Pro: 20 lượt nhập menu ảnh/PDF, 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt."
   },
   "footer": {
     "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",
@@ -189,7 +189,7 @@
     "menu-qr-cho-quan-an": {
       "title": "Menu QR cho quán ăn: biến thực đơn giấy thành menu điện tử quét là xem",
       "description": "Tạo menu điện tử (menu QR) cho quán ăn, cà phê hay cửa hàng. Tự tạo bằng tay hoặc nhập từ ảnh/PDF — bắt đầu miễn phí.",
-      "answer": "Menu điện tử là thực đơn mở trên điện thoại khi quét mã QR. TaoMenu giúp bạn tự tạo bằng tay hoặc từ ảnh/PDF của thực đơn giấy: Free có 2 lượt nhập AI mỗi tháng, Pro 20 lượt.",
+      "answer": "Menu điện tử là thực đơn mở trên điện thoại khi quét mã QR. TaoMenu giúp bạn tự tạo bằng tay hoặc từ ảnh/PDF của thực đơn giấy: Free có 10 lượt nhập AI mỗi tháng, Pro 20 lượt.",
       "faq": [
         {
           "q": "Khách mở menu QR có cần tải app không?",
