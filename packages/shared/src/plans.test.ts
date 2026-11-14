@@ -6,9 +6,9 @@ describe('getPlanLimits', () => {
     const free = getPlanLimits('free');
     expect(free.maxStaffTerminals).toBe(1);
     expect(free.maxMenuLocales).toBe(1);
-    expect(free.canUseAiMenuImport).toBe(false);
+    expect(free.canUseAiMenuImport).toBe(true);
     expect(free.canUseProQrTemplates).toBe(false);
-    expect(free.maxAiMenuImportsPerMonth).toBe(0);
+    expect(free.maxAiMenuImportsPerMonth).toBe(2);
     expect(free.maxAiTranslationsPerMonth).toBe(0);
     expect(free.canUseAiImageEnhancement).toBe(false);
     expect(free.maxAiImageEnhancementsPerMonth).toBe(0);

@@ -112,7 +112,6 @@
   "close": "閉じる",
   "moreProToolsTitle": "その他の Pro ツール",
   "moreProToolsHint": "Pro では AI 翻訳、ベトナム語音声入力、確認付き写真補正を利用できます。",
-  "importProHint": "Pro では、メニュー写真や PDF を編集可能な下書きに変換できます。自動公開はされません。",
   "importPrivacyHint": "選択したファイルは認識のため一度 OpenAI に送信されます。適用前に各品名と価格を確認してください。",
   "importMonthlyUsage": "今月の取込使用数：{used} / {limit}",
   "importMonthlyLimitReached": "今月のメニュー取込上限に達しました。翌月にリセットされます。",
@@ -236,5 +235,8 @@
   "quickAddDone": "{count} 品を追加しました。",
   "quickAddFailed": "{count} 行を追加できませんでした。入力欄に残してあるので再試行してください。",
   "quickAddProgress": "追加中 {done}/{total}…",
-  "quickAddSubmit": "{count} 品を追加"
+  "quickAddSubmit": "{count} 品を追加",
+  "importFreeMonthlyUsage": "Free プラン：今月の取込使用数 {used} / {limit}",
+  "importFreeUpsell": "Pro なら月 20 回まで取込でき、より高精度な AI が PDF を直接読み取ります。AI 翻訳や料理写真ツールも使えます。",
+  "importPdfNoText": "この PDF には読み取れる文字がありません（スキャン画像のようです）。メニューの写真をアップロードしてください。"
 }

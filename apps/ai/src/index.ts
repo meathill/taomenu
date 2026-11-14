@@ -13,6 +13,7 @@ import {
   saveMenuImportResult,
   saveMenuTranslationResult,
 } from '@taomenu/db';
+import { createMimoMenuProvider } from './mimo-menu-provider';
 import { createOpenAiImageProvider } from './openai-image-provider';
 import { createOpenAiMenuProvider } from './openai-menu-provider';
 
@@ -25,7 +26,25 @@ function errorCode(error: unknown): string {
   if (!(error instanceof Error)) return 'AI_UNKNOWN_ERROR';
   if (error.message.startsWith('OPENAI_HTTP_')) return error.message;
   if (error.message.startsWith('OPENAI_')) return error.message.split(':')[0] ?? 'OPENAI_ERROR';
+  if (error.message.startsWith('MIMO_')) return error.message.split(':')[0] ?? 'MIMO_ERROR';
   return 'AI_PROCESSING_FAILED';
+}
+
+function createMimoProvider(env: AiWorkerEnv) {
+  // 密钥只来自 Worker secret；没配置时给出明确错误码，前端显示“暂不可用”
+  if (!env.MIMO_API_KEY) throw new Error('MIMO_NOT_CONFIGURED');
+  return createMimoMenuProvider({
+    apiKey: env.MIMO_API_KEY,
+    model: env.MIMO_MENU_MODEL,
+    baseUrl: env.MIMO_BASE_URL,
+    async pdfToText(bytes) {
+      const result = await env.AI.toMarkdown({
+        name: 'menu.pdf',
+        blob: new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }),
+      });
+      return result.format === 'error' ? '' : (result.data ?? '');
+    },
+  });
 }
 
 async function processMenuImport(env: AiWorkerEnv, importId: string) {
@@ -42,10 +61,11 @@ async function processMenuImport(env: AiWorkerEnv, importId: string) {
         return { mimeType: asset.mimeType, bytes: new Uint8Array(await object.arrayBuffer()) };
       }),
     );
-    const provider = createOpenAiMenuProvider({
-      apiKey: env.OPENAI_API_KEY,
-      model: env.OPENAI_MENU_MODEL,
-    });
+    // Free 套餐的导入记录 provider = 'mimo'（issue #25），Pro 仍走 OpenAI
+    const provider =
+      job.menuImport.provider === 'mimo'
+        ? createMimoProvider(env)
+        : createOpenAiMenuProvider({ apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MENU_MODEL });
     const result = await provider.extractMenu({
       assets,
       expectedLocale: job.menuImport.sourceLocale,

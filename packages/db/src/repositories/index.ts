@@ -89,6 +89,9 @@ export {
   queueMenuImport,
 } from './menu-ai';
 export {
+  getMenuAiRoute,
+  MENU_AI_FREE_MODEL,
+  MENU_AI_FREE_PROVIDER,
   MENU_AI_MODEL,
   MENU_AI_PROMPT_VERSION,
   MENU_AI_PROVIDER,

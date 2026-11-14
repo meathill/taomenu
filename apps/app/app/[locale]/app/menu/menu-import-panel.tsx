@@ -18,12 +18,12 @@ export function MenuImportPanel({
   storeId,
   baseLocale,
   currency,
-  canUseAi,
+  isPro,
 }: {
   storeId: string;
   baseLocale: string;
   currency: string;
-  canUseAi: boolean;
+  isPro: boolean;
 }) {
   const t = useTranslations('menu');
   const locale = useLocale();
@@ -35,7 +35,6 @@ export function MenuImportPanel({
   const [draft, setDraft] = useState<ReviewDraft>({});
 
   const load = useCallback(async () => {
-    if (!canUseAi) return;
     const response = await fetch(`/api/owner/stores/${storeId}/menu-imports`, {
       cache: 'no-store',
     });
@@ -53,7 +52,7 @@ export function MenuImportPanel({
     if (nextView?.menuImport.status === 'needs_review') {
       setDraft(createReviewDraft(nextView.suggestions, currency));
     }
-  }, [canUseAi, currency, storeId, t]);
+  }, [currency, storeId, t]);
 
   useEffect(() => {
     void load();
@@ -229,21 +228,6 @@ export function MenuImportPanel({
     }
   }
 
-  if (!canUseAi) {
-    return (
-      <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <SparkleIcon className="size-5 text-indigo-700" weight="fill" aria-hidden />
-          <h2 className="text-sm font-black text-ink-900">{t('photoImport')}</h2>
-          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
-            Pro
-          </span>
-        </div>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('importProHint')}</p>
-      </section>
-    );
-  }
-
   const status = view?.menuImport.status;
   return (
     <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
@@ -251,11 +235,13 @@ export function MenuImportPanel({
         <SparkleIcon className="size-5 text-indigo-700" weight="fill" aria-hidden />
         <h2 className="text-sm font-black text-ink-900">{t('photoImport')}</h2>
         <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
-          Luna AI
+          {isPro ? 'Pro' : 'Free'}
         </span>
       </div>
       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('importPrivacyHint')}</p>
-      <p className="mt-1 text-xs font-semibold text-indigo-700">{t('importMonthlyUsage', usage)}</p>
+      <p className="mt-1 text-xs font-semibold text-indigo-700">
+        {t(isPro ? 'importMonthlyUsage' : 'importFreeMonthlyUsage', usage)}
+      </p>
 
       {status === 'queued' || status === 'processing' ? (
         <div className="mt-4" role="status" aria-live="polite">

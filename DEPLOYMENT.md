@@ -67,7 +67,8 @@
 | `CRON_SECRET` | 可选，保护 `POST /api/internal/process-outbox` |
 | `STRIPE_SECRET_KEY` | Stripe 服务端 Restricted API Key（建议 `rk_`，仅支付 API） |
 | `STRIPE_WEBHOOK_SECRET` | Stripe Webhook 签名密钥 |
-| `OPENAI_API_KEY` | 仅供 `taomenu-ai` 调用 GPT-5.6 Luna，不配置在 app Worker |
+| `OPENAI_API_KEY` | 仅供 `taomenu-ai` 调用 GPT-5.6 Luna（Pro 菜单导入/翻译/图片），不配置在 app Worker |
+| `MIMO_API_KEY` | 仅供 `taomenu-ai` 调用小米 MiMo（Free 菜单导入，#25）；未配置时 Free 导入失败并提示“暂不可用”，不影响 Pro |
 
 ### Cloudflare Bindings（不是 env 字符串）
 
@@ -150,6 +151,7 @@ cd apps/ai
 npx wrangler queues create taomenu-ai-menu
 npx wrangler queues create taomenu-ai-menu-dead
 npx wrangler secret put OPENAI_API_KEY
+npx wrangler secret put MIMO_API_KEY
 ```
 
 `taomenu-app` 只有 producer binding；`taomenu-ai` 是 consumer，并共享 D1 `taomenu` 与 R2 `taomenu-media`。密钥只配置在 `taomenu-ai`。
@@ -295,7 +297,10 @@ website **无 D1/Email/media 密钥**，但通过 service binding `MUICV_CMS` �
 ```bash
 cd apps/ai
 npx wrangler secret put OPENAI_API_KEY
+npx wrangler secret put MIMO_API_KEY
 ```
+
+`taomenu-ai` 的 MiMo 相关 vars：`MIMO_MENU_MODEL`（默认 `mimo-v2.6-flash`）、`MIMO_BASE_URL`（按量付费为 `https://api.xiaomimimo.com/v1`；如果用 Token Plan，改成控制台给出的专属 Base URL，如 `https://token-plan-cn.xiaomimimo.com/v1`）。另有 Workers AI binding `AI`，仅用于把 PDF 转成文本（`toMarkdown`，PDF 转换免费）。
 
 不要把 OpenAI key 放进 `apps/app`、wrangler `vars` 或任何 `.env.*.example`。
 

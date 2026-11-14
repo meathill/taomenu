@@ -354,7 +354,7 @@ export function MenuEditor({
         storeId={storeId}
         baseLocale={baseLocale}
         currency={currency}
-        canUseAi={isPro}
+        isPro={isPro}
         upgradeHref={upgradeHref}
         onOpenChange={setImportOpen}
       />

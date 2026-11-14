@@ -6,9 +6,8 @@ import { menuImportAssets, menuImportSuggestions, menuImports } from '../schema/
 import { currentUtcMonthStart } from '../time';
 import type { Db, StoreContext } from '../types';
 import {
-  MENU_AI_MODEL,
+  getMenuAiRoute,
   MENU_AI_PROMPT_VERSION,
-  MENU_AI_PROVIDER,
   MENU_AI_SCHEMA_VERSION,
   MenuImportError,
 } from './menu-ai-config';
@@ -39,6 +38,7 @@ export async function createMenuImport(
 
   const importId = input.importId ?? crypto.randomUUID();
   const createdAt = new Date();
+  const route = getMenuAiRoute(ctx.plan);
   await db.batch([
     db.insert(menuImports).values({
       id: importId,
@@ -46,8 +46,8 @@ export async function createMenuImport(
       status: 'draft',
       sourceLocale: null,
       targetLocalesJson: '[]',
-      provider: MENU_AI_PROVIDER,
-      model: MENU_AI_MODEL,
+      provider: route.provider,
+      model: route.model,
       promptVersion: MENU_AI_PROMPT_VERSION,
       schemaVersion: MENU_AI_SCHEMA_VERSION,
       progress: 0,

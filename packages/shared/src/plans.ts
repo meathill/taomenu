@@ -16,16 +16,19 @@ export type PlanLimits = {
   maxAiImageEnhancementsPerMonth: number;
 };
 
+/** Free 每店每月可用的照片/PDF 导入次数：作为 Pro 的试用钩子（issue #25） */
+export const FREE_AI_MENU_IMPORTS_PER_MONTH = 2;
+
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   free: {
     maxStaffTerminals: 1,
     maxMenuLocales: 1,
-    canUseAiMenuImport: false,
+    canUseAiMenuImport: true,
     canUseAiTranslation: false,
     canUseAiImageEnhancement: false,
     canUseVoiceAssistant: false,
     canUseProQrTemplates: false,
-    maxAiMenuImportsPerMonth: 0,
+    maxAiMenuImportsPerMonth: FREE_AI_MENU_IMPORTS_PER_MONTH,
     maxAiTranslationsPerMonth: 0,
     maxAiImageEnhancementsPerMonth: 0,
   },

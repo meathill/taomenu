@@ -19,7 +19,22 @@ export function createMemoryD1(setupSql: string) {
   const sqlite = new DatabaseSync(':memory:');
   sqlite.exec(setupSql);
 
+  type BoundStatement = { all(): Promise<{ success: boolean; results: unknown[]; meta: object }> };
+
   return {
+    /** D1 batch：按顺序执行并整体包在事务里，与生产 D1 的原子语义一致 */
+    async batch(statements: BoundStatement[]) {
+      sqlite.exec('BEGIN');
+      try {
+        const results = [];
+        for (const statement of statements) results.push(await statement.all());
+        sqlite.exec('COMMIT');
+        return results;
+      } catch (error) {
+        sqlite.exec('ROLLBACK');
+        throw error;
+      }
+    },
     prepare(sql: string) {
       const statement = sqlite.prepare(sql);
       return {

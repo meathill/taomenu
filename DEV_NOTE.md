@@ -273,3 +273,11 @@
 - 门店订阅结算币种用 `getBillingCurrencyForStore`：可计费币种原样，其他门店币种按 USD 结算（以前 `toBillingCurrency` 会把非计费币种错误回落为 VND）。顾客菜单、AI 菜单识别改用 `toStoreCurrency`。
 - Onboarding 按浏览器时区猜默认币种（`guessStoreCurrencyFromTimeZone`，如 Europe/Paris → EUR、Europe/London → GBP），草稿里选过的币种优先。
 - `apps/ai` 的金额提示词也改用门店币种；ai Worker 不在 Workers Builds 自动部署范围内，需要单独部署才生效。
+
+## Free 套餐的照片/PDF 导入（2026-11-14，#25）
+
+- Free 每店每月 `FREE_AI_MENU_IMPORTS_PER_MONTH = 2` 次导入，Pro 20 次。`createMenuImport` 按套餐写入 `menu_imports.provider/model`（`getMenuAiRoute`）：Free → `mimo / mimo-v2.6-flash`，Pro → `openai / gpt-5.6-luna`。`taomenu-ai` 按记录里的 provider 分派。
+- MiMo 用 OpenAI 兼容 Chat Completions（`{MIMO_BASE_URL}/chat/completions`，header `api-key`）。它只支持 `response_format: json_object`，所以 schema 写进系统提示词，返回后用 `menuImportOutputSchema` 严格校验；不支持 PDF 输入，PDF 先经 Workers AI `toMarkdown` 转文本（截断到 6 万字符），纯扫描件报 `MIMO_PDF_NO_TEXT`。
+- 没有配置 `MIMO_API_KEY` 时报 `MIMO_NOT_CONFIGURED`，前端显示“AI 服务暂不可用”。失败的导入可以重试，不会再占用次数（次数在创建时计）。
+- 为什么 Pro 不切到 MiMo：OpenAI 那边原生读 PDF、支持严格 JSON Schema，付费用户优先保证识别质量；MiMo 只给 Free 做低成本试用。
+- 内存 D1 测试夹具补了 `batch()`（事务内顺序执行），以便测试 `createMenuImport` 这类用 `db.batch` 的仓储函数。

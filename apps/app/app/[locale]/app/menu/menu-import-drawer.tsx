@@ -9,7 +9,8 @@ type MenuImportDrawerProps = {
   storeId: string;
   baseLocale: string;
   currency: string;
-  canUseAi: boolean;
+  /** Free 也能用照片/PDF 导入（每月少量次数，issue #25），这里只决定文案与升级提示 */
+  isPro: boolean;
   upgradeHref: string;
   onOpenChange: (open: boolean) => void;
 };
@@ -19,7 +20,7 @@ export function MenuImportDrawer({
   storeId,
   baseLocale,
   currency,
-  canUseAi,
+  isPro,
   upgradeHref,
   onOpenChange,
 }: MenuImportDrawerProps) {
@@ -29,21 +30,21 @@ export function MenuImportDrawer({
       open={open}
       onOpenChange={onOpenChange}
       title={t('photoImport')}
-      description={t(canUseAi ? 'importDrawerHint' : 'importProHint')}
+      description={t('importDrawerHint')}
     >
       <MenuImportPanel
         storeId={storeId}
         baseLocale={baseLocale}
         currency={currency}
-        canUseAi={canUseAi}
+        isPro={isPro}
       />
-      {!canUseAi ? (
-        <a
-          href={upgradeHref}
-          className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
-        >
-          {t('viewProPlan')}
-        </a>
+      {!isPro ? (
+        <p className="mt-4 rounded-xl border border-indigo-100 bg-white px-3 py-2 text-xs leading-5 text-muted-foreground">
+          {t('importFreeUpsell')}{' '}
+          <a href={upgradeHref} className="font-bold text-indigo-700">
+            {t('viewProPlan')}
+          </a>
+        </p>
       ) : null}
     </ResponsiveDrawer>
   );
