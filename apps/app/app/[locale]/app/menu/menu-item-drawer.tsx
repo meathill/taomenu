@@ -1,6 +1,12 @@
 'use client';
 
-import { getCurrencyDecimals, parseCurrencyInput, sanitizeCurrencyInput } from '@taomenu/shared';
+import {
+  getCurrencyDecimals,
+  type PriceInputError,
+  parseCurrencyInput,
+  sanitizeCurrencyInput,
+  validatePriceInput,
+} from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
@@ -26,6 +32,15 @@ type MenuItemDrawerProps = {
   canUseImageEnhancement: boolean;
   onOpenChange: (open: boolean) => void;
   onChanged: () => Promise<void>;
+};
+
+const PRICE_ERROR_KEYS: Record<
+  PriceInputError,
+  'priceRequired' | 'priceNegative' | 'priceInvalid'
+> = {
+  required: 'priceRequired',
+  negative: 'priceNegative',
+  invalid: 'priceInvalid',
 };
 
 export function MenuItemDrawer({
@@ -80,6 +95,11 @@ export function MenuItemDrawer({
 
   async function saveItem() {
     if (!name.trim() || (!item && !categoryId)) return;
+    const priceError = isBaseMode ? validatePriceInput(price, currency) : null;
+    if (priceError) {
+      setError(t(PRICE_ERROR_KEYS[priceError]));
+      return;
+    }
     const priceAmount =
       item && !isBaseMode ? item.priceAmount : parseCurrencyInput(price, currency);
     if (priceAmount === null) {
@@ -117,6 +137,8 @@ export function MenuItemDrawer({
     }
   }
 
+  // 输入过程中只即时提示负数；"5." 这类中间态等保存时再判
+  const livePriceError = isBaseMode && price.trim().startsWith('-') ? 'negative' : null;
   const selectedCategory = categories.find((category) => category.id === categoryId);
   const categoryLabel = selectedCategory
     ? localizedName(selectedCategory.translations, activeLocale, baseLocale).label
@@ -145,7 +167,9 @@ export function MenuItemDrawer({
               variant="default"
               size="lg"
               pending={isPending}
-              disabled={!name.trim() || (isBaseMode && (!categoryId || !price))}
+              disabled={
+                !name.trim() || (isBaseMode && (!categoryId || !price || livePriceError !== null))
+              }
               onClick={() => void saveItem()}
               className="flex-1 sm:flex-none"
             >
@@ -187,8 +211,14 @@ export function MenuItemDrawer({
                     setPrice(sanitizeCurrencyInput(event.target.value, currency))
                   }
                   inputMode={getCurrencyDecimals(currency) > 0 ? 'decimal' : 'numeric'}
+                  aria-invalid={livePriceError !== null}
                   className={`mt-1 ${fieldClassName} tabular-nums`}
                 />
+                {livePriceError ? (
+                  <span className="mt-1 block text-xs font-semibold text-brand-600" role="alert">
+                    {t(PRICE_ERROR_KEYS[livePriceError])}
+                  </span>
+                ) : null}
               </label>
               <div>
                 <span className="text-sm font-bold text-ink-900">{t('categoryName')}</span>

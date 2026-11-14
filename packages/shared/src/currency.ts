@@ -64,6 +64,10 @@ export function formatCurrency(amount: number, currency: string, locale = 'vi-VN
 export function parseCurrencyInput(raw: string, currency: string): number | null {
   const decimals = getCurrencyDecimals(currency);
   const trimmed = raw.trim();
+  // 负数一律非法；0 位小数分支会剥离非数字字符，必须先拦下，否则 "-5000" 会被当成 5000
+  if (trimmed.startsWith('-')) {
+    return null;
+  }
 
   let minor: number;
   if (decimals === 0) {
@@ -89,16 +93,32 @@ export function parseCurrencyInput(raw: string, currency: string): number | null
  * 2 位小数：只保留数字与一个小数点，小数部分截到该币种的位数；`.5` 补成 `0.5`。
  */
 export function sanitizeCurrencyInput(raw: string, currency: string): string {
+  // 保留开头的负号让用户看见自己输入了什么，再由 validatePriceInput 明确报错（issue #14）
+  const sign = raw.trimStart().startsWith('-') ? '-' : '';
   const decimals = getCurrencyDecimals(currency);
   if (decimals === 0) {
-    return raw.replace(/\D/g, '');
+    return sign + raw.replace(/\D/g, '');
   }
 
   const [integer = '', ...fractions] = raw.replace(/[^\d.]/g, '').split('.');
   if (fractions.length === 0) {
-    return integer;
+    return sign + integer;
   }
-  return `${integer || '0'}.${fractions.join('').slice(0, decimals)}`;
+  return `${sign}${integer || '0'}.${fractions.join('').slice(0, decimals)}`;
+}
+
+export type PriceInputError = 'required' | 'negative' | 'invalid';
+
+/** 价格输入框校验：允许 0（免费小料、白开水等），拒绝空值、负数与非法格式。 */
+export function validatePriceInput(raw: string, currency: string): PriceInputError | null {
+  const trimmed = raw.trim();
+  if (trimmed === '' || trimmed === '-') {
+    return trimmed === '-' ? 'negative' : 'required';
+  }
+  if (trimmed.startsWith('-')) {
+    return 'negative';
+  }
+  return parseCurrencyInput(trimmed, currency) === null ? 'invalid' : null;
 }
 
 /** 最小单位整数 → 主单位字符串，用于回填输入框，保证与 parseCurrencyInput 可往返 */

@@ -7,9 +7,11 @@ export {
   isBillingCurrency,
   minorAmountToDecimalString,
   minorAmountToInput,
+  type PriceInputError,
   parseCurrencyInput,
   sanitizeCurrencyInput,
   toBillingCurrency,
+  validatePriceInput,
 } from './currency';
 export {
   type BatchItemAvailabilityBody,

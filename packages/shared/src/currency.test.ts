@@ -10,6 +10,7 @@ import {
   parseCurrencyInput,
   sanitizeCurrencyInput,
   toBillingCurrency,
+  validatePriceInput,
 } from './currency';
 
 describe('formatCurrency', () => {
@@ -61,6 +62,7 @@ describe('parseCurrencyInput', () => {
     expect(parseCurrencyInput('', 'USD')).toBeNull();
     expect(parseCurrencyInput('5.9.9', 'USD')).toBeNull();
     expect(parseCurrencyInput('-5', 'USD')).toBeNull();
+    expect(parseCurrencyInput('-5000', 'VND')).toBeNull();
     expect(parseCurrencyInput('5,99', 'USD')).toBeNull();
   });
 });
@@ -70,6 +72,7 @@ describe('sanitizeCurrencyInput', () => {
     expect(sanitizeCurrencyInput('149000', 'VND')).toBe('149000');
     expect(sanitizeCurrencyInput('149.000', 'VND')).toBe('149000');
     expect(sanitizeCurrencyInput('12a3-4', 'VND')).toBe('1234');
+    expect(sanitizeCurrencyInput('-5000', 'VND')).toBe('-5000');
     expect(sanitizeCurrencyInput('', 'VND')).toBe('');
     expect(sanitizeCurrencyInput('5.99', 'JPY')).toBe('599');
   });
@@ -85,7 +88,8 @@ describe('sanitizeCurrencyInput', () => {
     expect(sanitizeCurrencyInput('5,9a9', 'USD')).toBe('599');
     expect(sanitizeCurrencyInput('5.9.9', 'USD')).toBe('5.99');
     expect(sanitizeCurrencyInput('5.999', 'USD')).toBe('5.99');
-    expect(sanitizeCurrencyInput('-5.99', 'USD')).toBe('5.99');
+    // 负号保留，交给 validatePriceInput 明确报错，而不是悄悄变成正数（issue #14）
+    expect(sanitizeCurrencyInput('-12.50', 'USD')).toBe('-12.50');
     expect(sanitizeCurrencyInput('.5', 'USD')).toBe('0.5');
   });
 
@@ -143,5 +147,26 @@ describe('币种边界', () => {
       expect(getCurrencyDecimals(currency)).toBe(expected[currency]);
     }
     expect(getCurrencyDecimals('EUR')).toBe(0);
+  });
+});
+
+describe('validatePriceInput（issue #14）', () => {
+  it('负数明确报错', () => {
+    expect(validatePriceInput(sanitizeCurrencyInput('-12.50', 'USD'), 'USD')).toBe('negative');
+    expect(validatePriceInput(sanitizeCurrencyInput('-5000', 'VND'), 'VND')).toBe('negative');
+    expect(validatePriceInput('-', 'USD')).toBe('negative');
+  });
+
+  it('空值与非数字', () => {
+    expect(validatePriceInput('', 'USD')).toBe('required');
+    expect(validatePriceInput(sanitizeCurrencyInput('abc', 'USD'), 'USD')).toBe('required');
+    expect(validatePriceInput('5.', 'USD')).toBe('invalid');
+  });
+
+  it('0 与正常价格合法', () => {
+    expect(validatePriceInput('0', 'USD')).toBeNull();
+    expect(validatePriceInput('0', 'VND')).toBeNull();
+    expect(validatePriceInput('12.50', 'USD')).toBeNull();
+    expect(validatePriceInput('45000', 'VND')).toBeNull();
   });
 });

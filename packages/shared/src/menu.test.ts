@@ -5,10 +5,18 @@ import {
   createModifierGroupSchema,
   createModifierSchema,
   reorderModifierGroupsSchema,
+  updateItemSchema,
   updateModifierGroupSchema,
 } from './menu';
 
 describe('createItemSchema', () => {
+  it('后端拒绝负数价格，允许 0（issue #14）', () => {
+    const base = { categoryId: '00000000-0000-4000-8000-000000000001', name: 'Baguette' };
+    expect(createItemSchema.safeParse({ ...base, priceAmount: -1250 }).success).toBe(false);
+    expect(createItemSchema.safeParse({ ...base, priceAmount: 0 }).success).toBe(true);
+    expect(updateItemSchema.safeParse({ priceAmount: -1 }).success).toBe(false);
+  });
+
   it('拒绝小数价格', () => {
     expect(
       createItemSchema.safeParse({
