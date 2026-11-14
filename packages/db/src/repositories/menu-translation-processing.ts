@@ -1,4 +1,8 @@
-import type { MenuTranslationInputEntity, MenuTranslationOutput } from '@taomenu/shared';
+import {
+  isUntranslatedMenuOutput,
+  type MenuTranslationInputEntity,
+  type MenuTranslationOutput,
+} from '@taomenu/shared';
 import { and, eq } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
 import { menuTranslationJobs, menuTranslationSuggestions } from '../schema/menu-translation';
@@ -41,6 +45,21 @@ export async function saveMenuTranslationResult(
     output.translations.length !== current.entities.length
   ) {
     throw new MenuImportError('AI_INVALID_OUTPUT', 'Translation output is incomplete');
+  }
+  if (
+    isUntranslatedMenuOutput(
+      current.entities,
+      output.translations.map((translation) => ({
+        entityId: translation.entityId,
+        name: translation.name,
+        description: translation.description,
+      })),
+    )
+  ) {
+    throw new MenuImportError(
+      'AI_UNTRANSLATED_OUTPUT',
+      'Translation output copied the source text',
+    );
   }
 
   const statements: BatchItem<'sqlite'>[] = [

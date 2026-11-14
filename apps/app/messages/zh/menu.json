@@ -76,6 +76,7 @@
   "translationApplied": "翻译已写入。请检查顾客菜单，确认后再发布。",
   "translationLoadFailed": "无法加载最近的翻译草稿。",
   "translationFailed": "翻译未完成，请稍后重试或联系支持。",
+  "translationUntranslatedOutput": "AI 返回了原文，没有真正翻译。未保存草稿，也未占用本月额度。请再试一次。",
   "translationApplyFailed": "无法应用这份翻译草稿。",
   "translationNothingMissing": "所有菜单内容已经有这种语言的翻译。",
   "translationLocaleLimit": "当前店铺已达到菜单语言数量上限。",

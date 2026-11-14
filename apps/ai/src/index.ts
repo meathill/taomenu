@@ -6,6 +6,7 @@ import {
   getMenuImageEnhancementJob,
   getMenuImportJob,
   getMenuTranslationJob,
+  MenuImportError,
   markMenuImageEnhancementProcessing,
   markMenuImportProcessing,
   markMenuTranslationProcessing,
@@ -24,6 +25,7 @@ type AiQueueMessage =
   | { type: 'menu_image_enhancement'; enhancementId: string };
 
 function errorCode(error: unknown): string {
+  if (error instanceof MenuImportError) return error.code;
   if (!(error instanceof Error)) return 'AI_UNKNOWN_ERROR';
   if (error.message.startsWith('OPENAI_HTTP_')) return error.message;
   if (error.message.startsWith('OPENAI_')) return error.message.split(':')[0] ?? 'OPENAI_ERROR';

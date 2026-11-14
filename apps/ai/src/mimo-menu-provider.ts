@@ -150,11 +150,18 @@ export function createMimoMenuProvider(options: MimoMenuProviderOptions) {
       targetLocale: string;
       entities: MenuTranslationInputEntity[];
     }): Promise<{ output: MenuTranslationOutput; usage: unknown }> {
+      // 输入字段改成 sourceName，避免与输出的 name 同形，模型把原文原样抄回去
+      const sourceEntities = input.entities.map((entity) => ({
+        entityType: entity.entityType,
+        entityId: entity.entityId,
+        sourceName: entity.name,
+        sourceDescription: entity.description,
+      }));
       return chatJson(
         systemPrompt('You translate restaurant menus for guests.', MENU_TRANSLATION_JSON_SCHEMA),
         [
           buildTranslateInstructions(input.sourceLocale, input.targetLocale),
-          JSON.stringify(input.entities),
+          JSON.stringify(sourceEntities),
         ].join('\n'),
         menuTranslationOutputSchema,
       );

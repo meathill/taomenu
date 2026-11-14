@@ -61,6 +61,7 @@ export {
   reviewMenuImportSchema,
 } from './menu-ai';
 export {
+  isUntranslatedMenuOutput,
   MENU_TRANSLATION_ENTITY_TYPES,
   MENU_TRANSLATION_JSON_SCHEMA,
   type MenuTranslationEntityType,
@@ -68,8 +69,10 @@ export {
   type MenuTranslationOutput,
   menuTranslationInputEntitySchema,
   menuTranslationOutputSchema,
+  normalizeComparableTranslationText,
   type ReviewMenuTranslationBody,
   reviewMenuTranslationSchema,
+  UNTRANSLATED_OUTPUT_RATIO,
 } from './menu-translation';
 export {
   type CreateOrderBody,

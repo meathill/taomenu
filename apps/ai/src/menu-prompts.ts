@@ -41,13 +41,23 @@ export function buildExtractInstructions(
   ].join('\n');
 }
 
+/** 提示词里用英语语言名，避免模型只看到 vi/en 这种代码就原样回写菜名 */
+export function menuLocalePromptName(locale: string): string {
+  return new Intl.DisplayNames(['en'], { type: 'language' }).of(locale) ?? locale;
+}
+
 /** 菜单翻译的用户指令 */
 export function buildTranslateInstructions(sourceLocale: string, targetLocale: string): string {
+  const source = menuLocalePromptName(sourceLocale);
+  const target = menuLocalePromptName(targetLocale);
   return [
-    `Translate restaurant menu content from ${sourceLocale} to ${targetLocale}.`,
+    `Translate restaurant menu content from ${source} (${sourceLocale}) to ${target} (${targetLocale}).`,
+    'The JSON below is SOURCE TEXT only. In your output, the name and description fields must be written in the target language.',
+    'Never copy a source name or description unchanged when it is still in the source language. Copying the source text is a failed translation.',
     'Preserve every entityType and entityId exactly and return every input entity once.',
-    'Translate names and descriptions naturally for restaurant guests. Do not add claims, ingredients, prices, or details absent from the source.',
-    'Keep common dish names recognizable when a literal translation would be misleading.',
+    `For well-known local dish names (for example phở, bánh mì, sushi, tacos), keep the familiar native name and add a short ${target} gloss in parentheses, e.g. "Phở bò tái (Rare beef noodle soup)" or "Bánh mì thịt (Pork baguette sandwich)". Do not invent ingredients or claims that the source name does not imply.`,
+    `Translate generic category and option names fully into ${target}, e.g. "Đồ uống" → "Drinks".`,
+    'Do not add prices or marketing language.',
   ].join('\n');
 }
 

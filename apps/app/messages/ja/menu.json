@@ -76,6 +76,7 @@
   "translationApplied": "翻訳を追加しました。公開メニューを確認してから公開してください。",
   "translationLoadFailed": "最新の翻訳下書きを読み込めませんでした。",
   "translationFailed": "翻訳を完了できませんでした。後で再試行するかサポートへご連絡ください。",
+  "translationUntranslatedOutput": "AI が原文のまま返したため、下書きは保存せず、今月の回数も消費していません。もう一度お試しください。",
   "translationApplyFailed": "この翻訳下書きを適用できませんでした。",
   "translationNothingMissing": "すべてのメニュー項目に対象言語の翻訳があります。",
   "translationLocaleLimit": "この店舗はメニュー言語数の上限に達しています。",

@@ -118,7 +118,9 @@ describe('MiMo 菜单 provider（issue #25 / #28）', () => {
       };
       expect(body.response_format).toEqual({ type: 'json_object' });
       expect(body.messages[0]?.content).toContain('"translations"');
-      expect(body.messages[1]?.content).toContain('from vi to en');
+      expect(body.messages[1]?.content).toContain('from Vietnamese (vi) to English (en)');
+      expect(body.messages[1]?.content).toContain('"sourceName":"Phở bò"');
+      expect(body.messages[1]?.content).not.toContain('"name":"Phở bò"');
       expect(body.messages[1]?.content).toContain(entityId);
       return reply(
         JSON.stringify({

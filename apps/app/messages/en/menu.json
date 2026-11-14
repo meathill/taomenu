@@ -76,6 +76,7 @@
   "translationApplied": "Translations were added. Review the public menu and publish when ready.",
   "translationLoadFailed": "Could not load the latest translation draft.",
   "translationFailed": "Translation did not finish. Try again later or contact support.",
+  "translationUntranslatedOutput": "The AI returned the original text instead of a translation. Nothing was saved, and this did not use your monthly quota. Please try again.",
   "translationApplyFailed": "Could not apply this translation draft.",
   "translationNothingMissing": "Every menu entry already has this target language.",
   "translationLocaleLimit": "This store has reached its menu language limit.",

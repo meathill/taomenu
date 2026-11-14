@@ -4,7 +4,7 @@ import {
   type MenuTranslationInputEntity,
   type ReviewMenuTranslationBody,
 } from '@taomenu/shared';
-import { and, asc, count, desc, eq, gte, inArray } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray, ne } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
 import { assertPlanFeature } from '../plan-features';
 import {
@@ -29,6 +29,8 @@ export async function getMenuTranslationUsage(ctx: StoreContext, db: Db) {
       and(
         eq(menuTranslationJobs.storeId, ctx.storeId),
         gte(menuTranslationJobs.createdAt, currentUtcMonthStart()),
+        // 失败任务不占额度（例如模型原样回写原文）
+        ne(menuTranslationJobs.status, 'failed'),
       ),
     );
   return { used: rows[0]?.value ?? 0, limit };

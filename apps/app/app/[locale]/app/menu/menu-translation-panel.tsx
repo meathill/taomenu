@@ -99,12 +99,13 @@ export function MenuTranslationPanel({
     return () => window.clearInterval(timer);
   }, [load, view?.job.status]);
 
-  function errorMessage(code?: string) {
+  function errorMessage(code?: string | null) {
     if (code === 'NOTHING_TO_TRANSLATE') return t('translationNothingMissing');
     if (code === 'LOCALE_LIMIT_REACHED') return t('translationLocaleLimit');
     if (code === 'SAME_LANGUAGE') return t('translationSameLanguage');
     if (code === 'MENU_TOO_LARGE') return t('translationMenuTooLarge');
     if (code === 'MONTHLY_LIMIT_REACHED') return t('translationMonthlyLimitReached');
+    if (code === 'AI_UNTRANSLATED_OUTPUT') return t('translationUntranslatedOutput');
     return t('translationFailed');
   }
 
@@ -294,7 +295,7 @@ export function MenuTranslationPanel({
 
       {status === 'failed' ? (
         <p className="mt-4 rounded-xl bg-white p-3 text-sm font-semibold text-brand-600">
-          {t('translationFailed')}
+          {errorMessage(view?.job.errorCode)}
         </p>
       ) : null}
       {status === 'applied' ? (

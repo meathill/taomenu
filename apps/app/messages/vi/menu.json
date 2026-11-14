@@ -76,6 +76,7 @@
   "translationApplied": "Đã thêm bản dịch. Hãy kiểm tra thực đơn khách và xuất bản khi sẵn sàng.",
   "translationLoadFailed": "Không tải được bản nháp dịch gần nhất.",
   "translationFailed": "Chưa dịch xong. Hãy thử lại sau hoặc liên hệ hỗ trợ.",
+  "translationUntranslatedOutput": "AI trả về đúng nguyên văn, chưa dịch. Chúng tôi chưa lưu bản nháp và không trừ lượt trong hạn mức tháng. Bạn hãy thử lại.",
   "translationApplyFailed": "Không thể áp dụng bản nháp dịch này.",
   "translationNothingMissing": "Mọi nội dung thực đơn đã có bản dịch cho ngôn ngữ này.",
   "translationLocaleLimit": "Quán đã đạt giới hạn số ngôn ngữ thực đơn.",
