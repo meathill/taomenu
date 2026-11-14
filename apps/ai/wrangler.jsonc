@@ -36,7 +36,7 @@
     "enabled": false
   },
   "vars": {
-    "OPENAI_IMAGE_MODEL": "gpt-image-2",
+    "OPENAI_IMAGE_MODEL": "gpt-image-2.6-sunburst",
     "MIMO_MENU_MODEL": "mimo-v2.6-flash",
     "MIMO_BASE_URL": "https://api.xiaomimimo.com/v1"
   }

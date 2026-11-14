@@ -310,3 +310,8 @@
 - 写入草稿（`applyMenuImport`）：译文写主语言；若原文语言属于支持的菜单语言、且 `assertLocaleAllowed` 通过（Pro 最多 5 种，Free 只有 1 种），原文另写一份翻译行（`source: 'ai'`），否则只保留译文。逻辑在 `menu-import-original.ts`。旧的未翻译草稿仍会提示重新识别。
 - 额度：`getMenuImportUsage` 不再统计 `failed` 的导入；翻译后所有成功的导入都能写入，不再出现"扣了额度却用不了"。
 - 前端：额度在接口返回前不显示、开始按钮禁用；审核列表在分类/菜品名下显示"原文：…"，顶部提示已从 X 翻译成 Y（Pro / Free 文案不同）。
+
+## 图片模型升级为 gpt-image-2.6-sunburst（2026-11-14）
+
+- `taomenu-ai` 的 `OPENAI_IMAGE_MODEL` 从 `gpt-image-2` 改为 `gpt-image-2.6-sunburst`，只影响 Pro 的菜品照片美化。
+- 文本模型 `gpt-6-luna` 目前没有接入点：菜单识别和翻译自 #28 起全部走 MiMo，代码里已没有 OpenAI 文本模型配置。以后若恢复 OpenAI 文本链路，应使用 `gpt-6-luna`。

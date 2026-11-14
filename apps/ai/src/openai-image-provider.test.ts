@@ -5,7 +5,7 @@ describe('OpenAI image provider', () => {
   it('sends one high-fidelity dish edit and decodes the JPEG result', async () => {
     const fetchImpl = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
       const form = init?.body as FormData;
-      expect(form.get('model')).toBe('gpt-image-2');
+      expect(form.get('model')).toBe('gpt-image-2.6-sunburst');
       expect(form.get('quality')).toBe('low');
       expect(form.get('output_format')).toBe('jpeg');
       expect(form.getAll('image[]')).toHaveLength(1);
@@ -14,7 +14,7 @@ describe('OpenAI image provider', () => {
     });
     const provider = createOpenAiImageProvider({
       apiKey: 'test-key',
-      model: 'gpt-image-2',
+      model: 'gpt-image-2.6-sunburst',
       fetchImpl: fetchImpl as typeof fetch,
     });
 
@@ -30,7 +30,7 @@ describe('OpenAI image provider', () => {
   it('maps upstream failures to a stable error code', async () => {
     const provider = createOpenAiImageProvider({
       apiKey: 'test-key',
-      model: 'gpt-image-2',
+      model: 'gpt-image-2.6-sunburst',
       fetchImpl: vi.fn(async () => new Response('no', { status: 403 })) as typeof fetch,
     });
 
