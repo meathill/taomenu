@@ -25,3 +25,11 @@ export function withStore(path: string, storeSlug: string): string {
   const separator = path.includes('?') ? '&' : '?';
   return `${path}${separator}store=${encodeURIComponent(storeSlug)}`;
 }
+
+/** 刚建好的店必须写进 URL，否则会回落到店主名下第一家店（往往是旧店）。 */
+export function destinationAfterCreateStore(
+  storeSlug: string | undefined,
+  fallback: string,
+): string {
+  return storeSlug ? withStore('/app', storeSlug) : fallback;
+}

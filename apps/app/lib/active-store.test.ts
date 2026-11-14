@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { readStoreSlug, resolveActiveStore, withStore } from './active-store-utils';
+import {
+  destinationAfterCreateStore,
+  readStoreSlug,
+  resolveActiveStore,
+  withStore,
+} from './active-store-utils';
 
 const stores = [{ slug: 'first' }, { slug: 'second' }];
 
@@ -23,5 +28,17 @@ describe('active store', () => {
   it('reads the first value from Next search params', () => {
     expect(readStoreSlug({ store: ['second', 'first'] })).toBe('second');
     expect(readStoreSlug({ store: 'first' })).toBe('first');
+  });
+});
+
+describe('destinationAfterCreateStore', () => {
+  it('lands on the newly created store overview, not the fallback first store', () => {
+    expect(destinationAfterCreateStore('qa-pho-chi-mai-hoi-an', '/app')).toBe(
+      '/app?store=qa-pho-chi-mai-hoi-an',
+    );
+  });
+
+  it('falls back when the create response has no slug', () => {
+    expect(destinationAfterCreateStore(undefined, '/app')).toBe('/app');
   });
 });

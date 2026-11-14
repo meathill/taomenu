@@ -15,6 +15,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import { TimeZoneSelect } from '@/components/time-zone-select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { destinationAfterCreateStore } from '@/lib/active-store-utils';
 
 const DRAFT_KEY = 'taomenu.onboarding.draft';
 
@@ -104,9 +105,11 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
         setError(data?.error || t('errorCreate'));
         return;
       }
+      const data = (await res.json()) as { store?: { slug?: string } };
       localStorage.removeItem(DRAFT_KEY);
-      // 整页跳转，避免 SPA 导航与 session 不同步
-      window.location.assign(nextPath);
+      // 整页跳转，避免 SPA 导航与 session 不同步。必须带上新店 slug，
+      // 否则 /app 会回落到店主名下第一家店（例如已有的 Muimui）。
+      window.location.assign(destinationAfterCreateStore(data.store?.slug, nextPath));
     } catch {
       setError(t('errorCreate'));
       setIsPending(false);
