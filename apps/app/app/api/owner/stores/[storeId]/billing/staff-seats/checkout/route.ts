@@ -2,6 +2,7 @@ import { getStore, updateStaffSeatBilling } from '@taomenu/db';
 import { getBillingCurrencyForStore } from '@taomenu/shared';
 import { z } from 'zod';
 import { badRequest, notFound, unauthorized } from '@/lib/api-error';
+import { resolveCheckoutLocale } from '@/lib/checkout-locale';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
 import { getSession } from '@/lib/session';
 import {
@@ -15,6 +16,7 @@ type RouteContext = { params: Promise<{ storeId: string }> };
 
 const checkoutSchema = z.object({
   quantity: z.number().int().min(1).max(20),
+  locale: z.string().trim().min(2).max(16).optional(),
 });
 
 export async function POST(request: Request, context: RouteContext) {
@@ -71,6 +73,7 @@ export async function POST(request: Request, context: RouteContext) {
       stripeCustomerId: store.stripeCustomerId,
       quantity: additionalSeats,
       currency: getBillingCurrencyForStore(store.currency),
+      locale: await resolveCheckoutLocale(parsed.data.locale),
     });
     return Response.json(checkout, { status: 201 });
   } catch (error) {

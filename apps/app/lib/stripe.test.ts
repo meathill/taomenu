@@ -4,6 +4,7 @@ import {
   buildProCheckoutParams,
   buildStaffSeatCheckoutParams,
   isSubscriptionUsable,
+  toStripeCheckoutLocale,
   verifyStripeWebhookSignature,
 } from './stripe';
 
@@ -65,6 +66,7 @@ describe('Stripe Checkout 参数构造', () => {
     ownerEmail: 'owner@example.com',
     stripeCustomerId: null,
     currency: 'USD',
+    locale: 'en',
   };
   const appUrl = getPublicAppUrl();
 
@@ -73,6 +75,7 @@ describe('Stripe Checkout 参数构造', () => {
 
     expect(params.get('mode')).toBe('subscription');
     expect(params.get('currency')).toBe('usd');
+    expect(params.get('locale')).toBe('en');
     expect(params.get('line_items[0][price]')).toBe('price_pro_multi');
     expect(params.get('line_items[0][quantity]')).toBe('1');
     expect(params.get('client_reference_id')).toBe('store_1');
@@ -104,6 +107,7 @@ describe('Stripe Checkout 参数构造', () => {
 
     expect(params.get('mode')).toBe('subscription');
     expect(params.get('currency')).toBe('usd');
+    expect(params.get('locale')).toBe('en');
     expect(params.get('line_items[0][price]')).toBe('price_seat_multi');
     expect(params.get('line_items[0][quantity]')).toBe('3');
     expect(params.get('metadata[storeId]')).toBe('store_1');
@@ -144,5 +148,35 @@ describe('Stripe subscription entitlement', () => {
 
   it.each(['incomplete', 'unpaid', 'canceled', null])('%s 不授予 Pro 权益', (status) => {
     expect(isSubscriptionUsable(status)).toBe(false);
+  });
+});
+
+describe('toStripeCheckoutLocale', () => {
+  it('maps the four owner UI languages to Stripe locale codes', () => {
+    expect(toStripeCheckoutLocale('vi')).toBe('vi');
+    expect(toStripeCheckoutLocale('ja')).toBe('ja');
+    expect(toStripeCheckoutLocale('zh')).toBe('zh');
+    expect(toStripeCheckoutLocale('en')).toBe('en');
+  });
+
+  it('falls back to English for unknown values', () => {
+    expect(toStripeCheckoutLocale('fr')).toBe('en');
+    expect(toStripeCheckoutLocale(undefined)).toBe('en');
+  });
+});
+
+describe('Checkout locale and currency together', () => {
+  it('Vietnamese owner paying VND still gets locale=vi and currency=vnd', () => {
+    const params = buildProCheckoutParams({
+      priceId: 'price_pro_multi',
+      storeId: 'store_1',
+      storeSlug: 'qa-pho-chi-mai-hoi-an',
+      ownerEmail: 'owner@example.com',
+      stripeCustomerId: null,
+      currency: 'VND',
+      locale: 'vi',
+    });
+    expect(params.get('locale')).toBe('vi');
+    expect(params.get('currency')).toBe('vnd');
   });
 });

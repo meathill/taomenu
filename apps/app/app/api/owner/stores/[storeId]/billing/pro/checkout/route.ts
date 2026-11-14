@@ -1,12 +1,13 @@
 import { getStore } from '@taomenu/db';
 import { getBillingCurrencyForStore } from '@taomenu/shared';
+import { resolveCheckoutLocale } from '@/lib/checkout-locale';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
 import { getSession } from '@/lib/session';
 import { createProCheckoutSession, getStripeConfig, StripeRequestError } from '@/lib/stripe';
 
 type RouteContext = { params: Promise<{ storeId: string }> };
 
-export async function POST(_request: Request, context: RouteContext) {
+export async function POST(request: Request, context: RouteContext) {
   const { storeId } = await context.params;
   const owner = await requireOwnerStore(storeId);
   if (isErrorResponse(owner)) return owner;
@@ -26,12 +27,18 @@ export async function POST(_request: Request, context: RouteContext) {
   }
 
   try {
+    const body = await request.json().catch(() => null);
+    const requestedLocale =
+      body && typeof body === 'object' && 'locale' in body ? body.locale : null;
     const checkout = await createProCheckoutSession(config, {
       storeId: store.id,
       storeSlug: store.slug,
       ownerEmail: session.user.email,
       stripeCustomerId: store.stripeCustomerId,
       currency: getBillingCurrencyForStore(store.currency),
+      locale: await resolveCheckoutLocale(
+        typeof requestedLocale === 'string' ? requestedLocale : null,
+      ),
     });
     return Response.json(checkout, { status: 201 });
   } catch (error) {

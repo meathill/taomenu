@@ -124,7 +124,7 @@ export function StaffManager({
       const response = await fetch(`/api/owner/stores/${storeId}/billing/staff-seats/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: additionalSeats }),
+        body: JSON.stringify({ quantity: additionalSeats, locale }),
       });
       const data = (await response.json().catch(() => null)) as {
         url?: string;

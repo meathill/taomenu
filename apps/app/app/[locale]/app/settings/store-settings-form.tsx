@@ -74,7 +74,7 @@ export function StoreSettingsForm({
     setBillingBusy(true);
     setMessage(null);
     setError(null);
-    const result = await requestBillingUrl(store.id, path);
+    const result = await requestBillingUrl(store.id, path, { locale });
     if (result.ok) {
       window.location.assign(result.url);
       return;

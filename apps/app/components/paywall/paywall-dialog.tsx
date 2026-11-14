@@ -68,7 +68,7 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
   async function handleUpgrade() {
     setBusy(true);
     setError(null);
-    const result = await requestBillingUrl(store.id, 'pro/checkout');
+    const result = await requestBillingUrl(store.id, 'pro/checkout', { locale });
     if (result.ok) {
       window.location.assign(result.url);
       return;

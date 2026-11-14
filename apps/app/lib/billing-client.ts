@@ -8,10 +8,13 @@ export type BillingUrlResult =
 export async function requestBillingUrl(
   storeId: string,
   path: BillingPath,
+  options?: { locale?: string },
 ): Promise<BillingUrlResult> {
   try {
     const response = await fetch(`/api/owner/stores/${storeId}/billing/${path}`, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale: options?.locale }),
     });
     const data = (await response.json().catch(() => null)) as {
       error?: string;

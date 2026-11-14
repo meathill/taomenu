@@ -1,5 +1,11 @@
+import { isLocale, type Locale } from '@taomenu/shared';
 import { getEnv } from './cf';
 import { getPublicAppUrl, joinPublicUrl } from './public-url';
+
+/** Stripe Checkout 支持的语言码与产品 UI 四种语言一致。未知时回落 en，避免整页变成浏览器默认英文。 */
+export function toStripeCheckoutLocale(locale: string | null | undefined): Locale {
+  return isLocale(locale) ? locale : 'en';
+}
 
 const STRIPE_API_VERSION = '2026-04-22.dahlia';
 const STRIPE_API_URL = 'https://api.stripe.com/v1';
@@ -69,6 +75,8 @@ type CheckoutInputBase = {
   stripeCustomerId: string | null;
   /** 门店计费币种，Stripe 侧由多币种 Price 的 currency_options 承接 */
   currency: string;
+  /** 店主当前 UI 语言，传给 Checkout Session 的 locale */
+  locale: string;
 };
 
 export type StaffSeatCheckoutInput = CheckoutInputBase & { quantity: number };
@@ -90,6 +98,7 @@ export function buildStaffSeatCheckoutParams(
   const params = new URLSearchParams();
   params.set('mode', 'subscription');
   params.set('currency', input.currency.toLowerCase());
+  params.set('locale', toStripeCheckoutLocale(input.locale));
   params.set('line_items[0][price]', input.priceId);
   params.set('line_items[0][quantity]', String(input.quantity));
   params.set('client_reference_id', input.storeId);
@@ -118,6 +127,7 @@ export function buildProCheckoutParams(
   const params = new URLSearchParams();
   params.set('mode', 'subscription');
   params.set('currency', input.currency.toLowerCase());
+  params.set('locale', toStripeCheckoutLocale(input.locale));
   params.set('line_items[0][price]', input.priceId);
   params.set('line_items[0][quantity]', '1');
   params.set('client_reference_id', input.storeId);
