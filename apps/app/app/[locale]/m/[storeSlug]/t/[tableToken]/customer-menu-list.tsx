@@ -1,8 +1,7 @@
 'use client';
 
-import { formatCurrency } from '@taomenu/shared';
-import { useLocale, useTranslations } from 'next-intl';
-import { publicMediaPath } from '@/lib/menu-image';
+import { useTranslations } from 'next-intl';
+import { CustomerMenuCategories } from '../../../customer-menu-categories';
 import type { PublicMenuItem } from '../../../modifier-picker';
 import { CustomerLanguageSelect } from '../../customer-language-select';
 
@@ -42,7 +41,6 @@ export function CustomerMenuList({
   onLocaleChange,
 }: CustomerMenuListProps) {
   const t = useTranslations('customer');
-  const locale = useLocale();
 
   return (
     <div className="min-h-dvh">
@@ -87,49 +85,12 @@ export function CustomerMenuList({
       {categories.length === 0 ? (
         <p className="px-4 py-8 text-sm text-muted-foreground">{t('menuUnpublished')}</p>
       ) : (
-        <ul className="space-y-6 px-4 py-4">
-          {categories.map((category) => (
-            <li key={category.id}>
-              <h2 className="mb-2 text-base font-extrabold text-terracotta-600">{category.name}</h2>
-              <ul className="space-y-2">
-                {category.items.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      disabled={item.isSoldOut || !acceptingPublicRequests}
-                      onClick={() => onPickItem(item)}
-                      className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        {item.imageKey ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={publicMediaPath(item.imageKey)}
-                            alt=""
-                            className="size-12 shrink-0 rounded-xl object-cover"
-                            loading="lazy"
-                          />
-                        ) : null}
-                        <span className="min-w-0">
-                          {/* 双语菜名要完整显示（游客最需要看外文名），换行而不是截断：issue #23 */}
-                          <span className="block font-semibold text-ink-900 wrap-anywhere">
-                            {item.name}
-                          </span>
-                          <span className="text-sm tabular-nums text-muted-foreground">
-                            {formatCurrency(item.priceAmount, currency, locale)}
-                            {item.isSoldOut ? ` · ${t('soldOut')}` : ''}
-                            {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
-                          </span>
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-sm font-bold text-brand-600">+</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
+        <CustomerMenuCategories
+          categories={categories}
+          currency={currency}
+          acceptingPublicRequests={acceptingPublicRequests}
+          onPickItem={onPickItem}
+        />
       )}
     </div>
   );

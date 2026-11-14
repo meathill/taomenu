@@ -2,13 +2,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function CustomerItemSkeleton() {
   return (
-    <div className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3">
-      <div className="flex min-w-0 items-center gap-3">
-        <Skeleton className="size-12 shrink-0 rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-3 w-16" />
-        </div>
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-white p-3.5">
+      <div className="min-w-0 flex-1 space-y-2">
+        <Skeleton className="h-4 w-36" />
+        <Skeleton className="h-3 w-20" />
       </div>
       <Skeleton className="size-4" />
     </div>
@@ -18,8 +15,8 @@ function CustomerItemSkeleton() {
 function CustomerCategorySkeleton({ extraItem = false }: { extraItem?: boolean }) {
   return (
     <div>
-      <Skeleton className="mb-2 h-4 w-16" />
-      <div className="space-y-2">
+      <Skeleton className="mb-3 h-5 w-28" />
+      <div className="space-y-3">
         <CustomerItemSkeleton />
         {extraItem ? <CustomerItemSkeleton /> : null}
       </div>
@@ -48,7 +45,7 @@ export function CustomerMenuSkeleton({ label }: { label: string }) {
           <Skeleton className="h-10 flex-1 rounded-xl" />
         </div>
       </header>
-      <div className="space-y-6 px-4 py-4">
+      <div className="space-y-8 px-4 py-5">
         <CustomerCategorySkeleton extraItem />
         <CustomerCategorySkeleton />
       </div>

@@ -3,7 +3,6 @@
 import { displayPickupPointName, formatCurrency, toStoreCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { publicMediaPath } from '@/lib/menu-image';
 import { useSyncPoweredByVisibility } from '@/lib/powered-by-visibility';
 import {
   addToCart,
@@ -13,6 +12,7 @@ import {
   normalizeOrderNote,
 } from '../../../customer-cart';
 import { CustomerCartPanel } from '../../../customer-cart-panel';
+import { CustomerMenuCategories } from '../../../customer-menu-categories';
 import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
@@ -303,46 +303,12 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         ) : null}
       </header>
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
-      <ul className="space-y-6 px-4 py-4">
-        {menu.categories.map((category) => (
-          <li key={category.id}>
-            <h2 className="mb-2 text-base font-extrabold text-terracotta-600">{category.name}</h2>
-            <ul className="space-y-2">
-              {category.items.map((item) => (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    disabled={item.isSoldOut || !menu.store.acceptingPublicRequests}
-                    onClick={() => requestAddItem(item)}
-                    className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 py-3 text-left disabled:opacity-50"
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      {item.imageKey ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={publicMediaPath(item.imageKey)}
-                          alt=""
-                          className="size-12 shrink-0 rounded-xl object-cover"
-                          loading="lazy"
-                        />
-                      ) : null}
-                      <span className="min-w-0">
-                        {/* 双语菜名换行完整显示，不截断：issue #23 */}
-                        <span className="block font-semibold wrap-anywhere">{item.name}</span>
-                        <span className="text-sm tabular-nums text-muted-foreground">
-                          {formatCurrency(item.priceAmount, currency, locale)}
-                          {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
-                        </span>
-                      </span>
-                    </span>
-                    <span className="shrink-0 font-bold text-brand-600">+</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <CustomerMenuCategories
+        categories={menu.categories}
+        currency={currency}
+        acceptingPublicRequests={menu.store.acceptingPublicRequests}
+        onPickItem={requestAddItem}
+      />
       {cart.length > 0 ? (
         <CustomerCartPanel
           cart={cart}
