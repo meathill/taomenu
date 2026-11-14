@@ -67,7 +67,11 @@ export function MenuLanguageDrawer({
                     {names.of(locale) ?? locale}
                   </span>
                   <span className="block text-xs text-muted-foreground">
-                    {isBase ? t('baseLanguage') : t('translationLanguage')}
+                    {isBase
+                      ? t('baseLanguage')
+                      : isLocked
+                        ? t('proOnlyLanguage')
+                        : t('translationLanguage')}
                   </span>
                 </span>
                 {isLocked ? (
@@ -81,24 +85,30 @@ export function MenuLanguageDrawer({
         })}
       </ul>
 
-      {selectedLocale !== baseLocale ? (
+      {selectedLocale !== baseLocale && !canUseAi ? (
+        // Free 只有基础语言：后端 assertLocaleAllowed 会拒绝任何第二语言，手工编辑也不行（issue #17）
+        <div className="mt-6 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
+          <p className="text-sm font-bold text-ink-900">
+            {t('freeLanguageLimitTitle', { language: names.of(selectedLocale) ?? selectedLocale })}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t('freeLanguageLimitBody', { base: names.of(baseLocale) ?? baseLocale })}
+          </p>
+          <a
+            href={upgradeHref}
+            className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
+          >
+            {t('viewProPlan')}
+          </a>
+        </div>
+      ) : null}
+
+      {selectedLocale !== baseLocale && canUseAi ? (
         <div className="mt-6 border-t border-border pt-5">
           <p className="mb-3 text-sm font-bold text-ink-900">
             {t('manualOrAiTranslation', { language: names.of(selectedLocale) ?? selectedLocale })}
           </p>
-          <MenuTranslationPanel
-            storeId={storeId}
-            targetLocale={selectedLocale}
-            canUseAi={canUseAi}
-          />
-          {!canUseAi ? (
-            <a
-              href={upgradeHref}
-              className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white"
-            >
-              {t('viewProPlan')}
-            </a>
-          ) : null}
+          <MenuTranslationPanel storeId={storeId} targetLocale={selectedLocale} canUseAi />
         </div>
       ) : null}
     </ResponsiveDrawer>
