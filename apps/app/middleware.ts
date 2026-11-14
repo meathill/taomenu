@@ -111,7 +111,9 @@ export default function middleware(request: NextRequest) {
     if (!isPairingPage && !hasSessionCookie(request)) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';
-      loginUrl.searchParams.set('next', pathname);
+      // next 带上原查询串（如 ?upgrade=pro），登录后不丢意图
+      loginUrl.search = '';
+      loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`);
       const response = NextResponse.redirect(loginUrl);
       applyLocaleCookie(response, locale);
       applyRefCookie(request, response);

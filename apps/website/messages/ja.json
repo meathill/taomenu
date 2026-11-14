@@ -112,6 +112,8 @@
     "comingSoon": "近日公開",
     "staffAddOn": "スタッフ席を追加購入できます（{price}/月・1席）",
     "cta": "Freeで始める",
+    "proCta": "Proで始める",
+    "proCtaNote": "1分でお店を作成し、ワンタップでProにアップグレード。いつでも解約できます。",
     "aiHowTitle": "AIツールは実際に何をするのか",
     "aiHowSubtitle": "TaoMenuはAIでメニュー作成の手間を減らしますが、お客様に表示される内容は常にオーナーが決定します。",
     "aiInputTitle": "あなたが提供",

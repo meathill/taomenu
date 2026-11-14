@@ -34,3 +34,11 @@ export function getAppLoginUrl(): string {
 export function getAppSignupUrl(): string {
   return `${getPublicAppUrl()}/login`;
 }
+
+/** 店内升级 Pro 的落点：settings 会高亮升级区块，没有门店时先走建店再回来 */
+export const PRO_UPGRADE_PATH = '/app/settings?upgrade=pro';
+
+/** 定价页 Pro 卡片：登录 / 注册后直接进入升级入口（issue #16） */
+export function getAppProSignupUrl(): string {
+  return `${getAppSignupUrl()}?next=${encodeURIComponent(PRO_UPGRADE_PATH)}`;
+}

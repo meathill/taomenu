@@ -112,6 +112,8 @@
     "comingSoon": "Coming soon",
     "staffAddOn": "Buy additional staff seats separately ({price}/month each)",
     "cta": "Start with Free",
+    "proCta": "Start with Pro",
+    "proCtaNote": "Create your store in a minute, then upgrade with one tap. Cancel anytime.",
     "aiHowTitle": "What the AI tools actually do",
     "aiHowSubtitle": "TaoMenu uses AI to reduce menu setup work, while keeping the owner in control of what customers see.",
     "aiInputTitle": "You provide",

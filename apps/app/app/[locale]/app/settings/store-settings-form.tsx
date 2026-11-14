@@ -9,7 +9,7 @@ import {
   toBillingCurrency,
 } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { FieldSwitch } from '@/components/field-switch';
 import { fieldClassName } from '@/components/ui/field';
@@ -18,9 +18,16 @@ type StoreSettingsFormProps = {
   store: StoreRow;
   upgradeUrl: string;
   billingStatus?: string;
+  /** 从定价页 Pro 入口过来：滚动到并高亮升级区块 */
+  isUpgradeIntent?: boolean;
 };
 
-export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSettingsFormProps) {
+export function StoreSettingsForm({
+  store,
+  upgradeUrl,
+  billingStatus,
+  isUpgradeIntent = false,
+}: StoreSettingsFormProps) {
   const t = useTranslations('owner');
   const locale = useLocale();
   const [name, setName] = useState(store.name);
@@ -34,6 +41,14 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [billingBusy, setBillingBusy] = useState(false);
+  const upgradeSectionRef = useRef<HTMLElement>(null);
+  const shouldHighlightUpgrade = isUpgradeIntent && store.plan === 'free';
+
+  useEffect(() => {
+    if (shouldHighlightUpgrade) {
+      upgradeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [shouldHighlightUpgrade]);
   // 已有 Stripe 订阅时，改币种不会影响既有扣款，需要额外提示
   const hasSubscription = Boolean(
     store.stripePlanSubscriptionId || store.stripeStaffSeatSubscriptionId,
@@ -179,7 +194,13 @@ export function StoreSettingsForm({ store, upgradeUrl, billingStatus }: StoreSet
         <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('readOnlyHint')}</p>
       </section>
 
-      <section className="rounded-2xl border border-violet-600/30 bg-violet-600/5 p-5">
+      <section
+        ref={upgradeSectionRef}
+        id="upgrade"
+        className={`scroll-mt-20 rounded-2xl border border-violet-600/30 bg-violet-600/5 p-5 ${
+          shouldHighlightUpgrade ? 'ring-2 ring-violet-600 ring-offset-2' : ''
+        }`}
+      >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">

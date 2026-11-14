@@ -2,6 +2,9 @@ export type StoreSearchParams = {
   store?: string | string[];
   billing?: string | string[];
   menuLocale?: string | string[];
+  /** 定价页 Pro 入口带来的升级意图（issue #16） */
+  upgrade?: string | string[];
+  next?: string | string[];
 };
 
 export function resolveActiveStore<T extends { slug: string }>(

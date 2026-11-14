@@ -44,7 +44,7 @@ function loadDraft(): Draft {
   }
 }
 
-export function OnboardingForm() {
+export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
   const t = useTranslations('onboarding');
   const locale = useLocale();
   const [step, setStep] = useState<1 | 2>(1);
@@ -95,7 +95,7 @@ export function OnboardingForm() {
       }
       localStorage.removeItem(DRAFT_KEY);
       // 整页跳转，避免 SPA 导航与 session 不同步
-      window.location.assign('/app');
+      window.location.assign(nextPath);
     } catch {
       setError(t('errorCreate'));
       setIsPending(false);

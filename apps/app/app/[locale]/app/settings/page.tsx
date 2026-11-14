@@ -21,8 +21,20 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   const locale = await getLocale();
   const resolvedSearchParams = await searchParams;
   const selection = await getOwnerStoreSelection(readStoreSlug(resolvedSearchParams));
-  if (!selection) redirect('/login?next=/app/settings');
-  if (!selection.store) redirect('/app/onboarding');
+  const upgradeParam = Array.isArray(resolvedSearchParams.upgrade)
+    ? resolvedSearchParams.upgrade[0]
+    : resolvedSearchParams.upgrade;
+  const isUpgradeIntent = upgradeParam === 'pro';
+  // 从定价页 Pro 入口过来：登录、建店之后都要回到这里，不能丢掉升级意图
+  const returnPath = isUpgradeIntent ? '/app/settings?upgrade=pro' : '/app/settings';
+  if (!selection) redirect(`/login?next=${encodeURIComponent(returnPath)}`);
+  if (!selection.store) {
+    redirect(
+      isUpgradeIntent
+        ? `/app/onboarding?next=${encodeURIComponent(returnPath)}`
+        : '/app/onboarding',
+    );
+  }
 
   return (
     <PageMessages namespaces={['owner']}>
@@ -35,6 +47,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         <StoreSettingsForm
           store={selection.store}
           upgradeUrl={joinPublicUrl(getPublicWebsiteUrl(), `/${locale}/pricing`)}
+          isUpgradeIntent={isUpgradeIntent}
           billingStatus={
             Array.isArray(resolvedSearchParams.billing)
               ? resolvedSearchParams.billing[0]

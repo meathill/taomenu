@@ -2,7 +2,7 @@ import { CheckIcon } from '@phosphor-icons/react/dist/ssr';
 import { formatCurrency, getBillingCurrencyForLocale, getBillingPrice } from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { buildPageMetadata } from '@/lib/seo';
-import { getAppSignupUrl } from '@/lib/site';
+import { getAppProSignupUrl, getAppSignupUrl } from '@/lib/site';
 
 type PricingPageProps = {
   params: Promise<{ locale: string }>;
@@ -26,6 +26,9 @@ type PlanCard = {
   desc: string;
   features: PlanFeature[];
   highlight: boolean;
+  ctaLabel: string;
+  ctaHref: string;
+  ctaNote?: string;
 };
 
 export default async function PricingPage({ params }: PricingPageProps) {
@@ -52,6 +55,8 @@ export default async function PricingPage({ params }: PricingPageProps) {
         { label: staffAddOn, status: 'available' },
       ],
       highlight: false,
+      ctaLabel: t('cta'),
+      ctaHref: getAppSignupUrl(),
     },
     {
       name: t('proName'),
@@ -68,6 +73,9 @@ export default async function PricingPage({ params }: PricingPageProps) {
         { label: staffAddOn, status: 'available' },
       ],
       highlight: true,
+      ctaLabel: t('proCta'),
+      ctaHref: getAppProSignupUrl(),
+      ctaNote: t('proCtaNote'),
     },
   ];
 
@@ -109,11 +117,18 @@ export default async function PricingPage({ params }: PricingPageProps) {
               ))}
             </ul>
             <a
-              href={getAppSignupUrl()}
-              className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white hover:bg-brand-700"
+              href={plan.ctaHref}
+              className={
+                plan.highlight
+                  ? 'mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white hover:bg-brand-700'
+                  : 'mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-brand-600 bg-white px-4 py-3 text-sm font-bold text-brand-600 hover:bg-brand-50'
+              }
             >
-              {t('cta')}
+              {plan.ctaLabel}
             </a>
+            {plan.ctaNote ? (
+              <p className="mt-2 text-center text-xs text-muted-foreground">{plan.ctaNote}</p>
+            ) : null}
           </article>
         ))}
       </div>

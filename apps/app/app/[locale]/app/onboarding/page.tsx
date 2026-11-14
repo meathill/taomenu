@@ -9,6 +9,7 @@ import {
   type StoreSearchParams,
   withStore,
 } from '@/lib/active-store';
+import { safeNextPath } from '@/lib/safe-next';
 import { OnboardingForm } from './onboarding-form';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,9 @@ export async function generateMetadata() {
 
 export default async function OnboardingPage({ searchParams }: OnboardingPageProps) {
   const t = await getTranslations('onboarding');
-  const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
+  const resolvedSearchParams = await searchParams;
+  const selection = await getOwnerStoreSelection(readStoreSlug(resolvedSearchParams));
+  const nextPath = safeNextPath(resolvedSearchParams.next, '/app');
   const returnStore = selection?.store ?? selection?.stores[0] ?? null;
 
   return (
@@ -45,7 +48,7 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
         <h1 className="mt-1 text-2xl font-extrabold text-ink-900">{t('title')}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t('subtitle')}</p>
         <div className="mt-8 rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <OnboardingForm />
+          <OnboardingForm nextPath={nextPath} />
         </div>
       </div>
     </PageMessages>

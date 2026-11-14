@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import { authClient } from '@/lib/auth-client';
+import { safeNextPath } from '@/lib/safe-next';
 
 type Providers = {
   google: boolean;
@@ -38,8 +39,7 @@ export function LoginForm() {
   }, []);
 
   function nextPath(): string {
-    const next = searchParams.get('next');
-    return next?.startsWith('/') ? next : '/app';
+    return safeNextPath(searchParams.get('next'), '/app');
   }
 
   /** 登录成功后用整页跳转，确保刚写入的 session cookie 一定带上下一页请求。 */
