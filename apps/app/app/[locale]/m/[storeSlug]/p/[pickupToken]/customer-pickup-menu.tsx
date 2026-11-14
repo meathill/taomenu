@@ -302,9 +302,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
       <ul className="space-y-6 px-4 py-4">
         {menu.categories.map((category) => (
           <li key={category.id}>
-            <h2 className="mb-2 text-sm font-bold text-terracotta-600 uppercase">
-              {category.name}
-            </h2>
+            <h2 className="mb-2 text-base font-extrabold text-terracotta-600">{category.name}</h2>
             <ul className="space-y-2">
               {category.items.map((item) => (
                 <li key={item.id}>
