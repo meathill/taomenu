@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { withStore } from '@/lib/active-store-utils';
+import { planLabelKey } from '@/lib/plan-label';
 
 type StoreSwitcherProps = {
   stores: StoreRow[];
@@ -21,6 +22,7 @@ export function StoreSwitcher({
   onNavigate,
 }: StoreSwitcherProps) {
   const t = useTranslations('owner');
+  const tCommon = useTranslations('common');
   const [open, setOpen] = useState(false);
   const switcherRef = useRef<HTMLDivElement>(null);
   const mode = getStoreMode(activeStore, t);
@@ -77,7 +79,7 @@ export function StoreSwitcher({
             {activeStore.name}
           </span>
           <span className="mt-1 block truncate text-xs font-semibold text-muted-foreground">
-            {mode} · {t('plan', { plan: activeStore.plan })}
+            {mode} · {tCommon(planLabelKey(activeStore.plan))}
           </span>
         </span>
         <CaretDownIcon
@@ -112,7 +114,7 @@ export function StoreSwitcher({
                       {store.name}
                     </span>
                     <span className="mt-1 block truncate text-xs font-semibold text-muted-foreground">
-                      {getStoreMode(store, t)} · {t('plan', { plan: store.plan })}
+                      {getStoreMode(store, t)} · {tCommon(planLabelKey(store.plan))}
                     </span>
                   </span>
                   {selected ? (

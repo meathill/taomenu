@@ -5,6 +5,7 @@ import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
 import { XIcon } from '@phosphor-icons/react';
 import { cn } from '@taomenu/ui';
+import { useTranslations } from 'next-intl';
 import type React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -68,6 +69,7 @@ export function DialogPopup({
   closeProps?: DialogPrimitive.Close.Props;
   portalProps?: DialogPrimitive.Portal.Props;
 }): React.ReactElement {
+  const tCommon = useTranslations('common');
   return (
     <DialogPortal {...portalProps}>
       <DialogBackdrop />
@@ -87,7 +89,7 @@ export function DialogPopup({
           {children}
           {showCloseButton && (
             <DialogPrimitive.Close
-              aria-label="Close"
+              aria-label={tCommon('close')}
               className="absolute end-2 top-2 grid size-11 place-items-center rounded-xl text-ink-900 hover:bg-paper-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jade-600"
               {...closeProps}
             >

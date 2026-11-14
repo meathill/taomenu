@@ -17,6 +17,7 @@ import { ProBadge } from '@/components/paywall/pro-badge';
 import { TimeZoneSelect } from '@/components/time-zone-select';
 import { fieldClassName } from '@/components/ui/field';
 import { type BillingPath, requestBillingUrl } from '@/lib/billing-client';
+import { planLabelKey } from '@/lib/plan-label';
 import { StoreBrandingSection } from './store-branding-section';
 
 type StoreSettingsFormProps = {
@@ -37,6 +38,7 @@ export function StoreSettingsForm({
   isUpgradeIntent = false,
 }: StoreSettingsFormProps) {
   const t = useTranslations('owner');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   const [name, setName] = useState(store.name);
   const [serviceMode, setServiceMode] = useState(store.serviceMode);
@@ -183,7 +185,7 @@ export function StoreSettingsForm({
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-muted-foreground">{t('planLabel')}</dt>
-            <dd className="mt-1 font-bold text-ink-900">{store.plan.toUpperCase()}</dd>
+            <dd className="mt-1 font-bold text-ink-900">{tCommon(planLabelKey(store.plan))}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">{t('baseLanguage')}</dt>

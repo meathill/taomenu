@@ -8,6 +8,7 @@ import {
   type StoreSearchParams,
   withStore,
 } from '@/lib/active-store';
+import { planLabelKey } from '@/lib/plan-label';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,7 @@ function getModeKey(serviceMode: string): 'modeCounter' | 'modeHybrid' | 'modeDi
 
 export default async function StoresPage({ searchParams }: StoresPageProps) {
   const t = await getTranslations('owner');
+  const tCommon = await getTranslations('common');
   const selection = await getOwnerStoreSelection(readStoreSlug(await searchParams));
   if (!selection) redirect('/login?next=/app/stores');
 
@@ -68,7 +70,7 @@ export default async function StoresPage({ searchParams }: StoresPageProps) {
                     ) : null}
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {t(getModeKey(store.serviceMode))} · {t('plan', { plan: store.plan })}
+                    {t(getModeKey(store.serviceMode))} · {tCommon(planLabelKey(store.plan))}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {store.acceptingPublicRequests ? t('intakeEnabled') : t('intakePaused')}

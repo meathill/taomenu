@@ -8,6 +8,7 @@ import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
 import { useRender } from '@base-ui/react/use-render';
 import { CaretRightIcon, CheckIcon, XIcon } from '@phosphor-icons/react';
 import { cn } from '@taomenu/ui';
+import { useTranslations } from 'next-intl';
 import type React from 'react';
 import { createContext, useContext } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -140,6 +141,7 @@ export function DrawerPopup({
   showBar?: boolean;
   portalProps?: DrawerPrimitive.Portal.Props;
 }): React.ReactElement {
+  const tCommon = useTranslations('common');
   const { position: contextPosition } = useContext(DrawerContext);
   const position = positionProp ?? contextPosition;
 
@@ -197,7 +199,7 @@ export function DrawerPopup({
           {children}
           {showCloseButton && (
             <DrawerPrimitive.Close
-              aria-label="Close"
+              aria-label={tCommon('close')}
               className="absolute end-2 top-2 grid size-11 place-items-center rounded-xl text-ink-900 hover:bg-paper-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jade-600"
             >
               <XIcon className="size-5" weight="bold" />

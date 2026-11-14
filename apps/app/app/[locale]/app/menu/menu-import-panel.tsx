@@ -5,6 +5,7 @@ import { doLocalesShareLanguage, parseCurrencyInput } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/button';
+import { planLabelKey } from '@/lib/plan-label';
 import { MenuImportDiscardButton } from './menu-import-discard-button';
 import {
   getMenuImportFailureKey,
@@ -33,6 +34,7 @@ export function MenuImportPanel({
   isPro: boolean;
 }) {
   const t = useTranslations('menu');
+  const tCommon = useTranslations('common');
   const [view, setView] = useState<ImportView | null>(null);
   // 额度以服务端为准；加载前不显示，避免先闪出旧的默认值（issue #29）
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
@@ -242,7 +244,7 @@ export function MenuImportPanel({
         <SparkleIcon className="size-5 text-indigo-700" weight="fill" aria-hidden />
         <h2 className="text-sm font-black text-ink-900">{t('photoImport')}</h2>
         <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
-          {isPro ? 'Pro' : 'Free'}
+          {tCommon(planLabelKey(isPro ? 'pro' : 'free'))}
         </span>
       </div>
       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('importPrivacyHint')}</p>

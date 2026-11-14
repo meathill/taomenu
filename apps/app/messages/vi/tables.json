@@ -9,7 +9,7 @@
   "addTableFailed": "Tạo bàn thất bại.",
   "emptyTables": "Chưa có bàn.",
   "pickupPoints": "Điểm lấy món",
-  "pickupHint": "Điểm lấy món là lối vào chung cho order tại quầy hoặc mang đi.",
+  "pickupHint": "Điểm lấy món là lối vào chung cho đơn tại quầy hoặc mang đi.",
   "pickupPlaceholder": "Quầy",
   "addPickupFailed": "Tạo điểm lấy món thất bại.",
   "emptyPickup": "Chưa có điểm lấy món.",

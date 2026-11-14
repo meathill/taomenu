@@ -1,6 +1,6 @@
 {
   "title": "菜单",
-  "subtitle": "逐个手动录入。Free 方案：1 种语言（{locale}）。",
+  "subtitle": "逐个手动录入。免费方案：1 种语言（{locale}）。",
   "subtitlePro": "编辑 {locale} 菜单，核对草稿后再发布。",
   "loading": "菜单加载中…",
   "loadFailed": "无法加载菜单。",
@@ -208,7 +208,7 @@
   "translationLanguage": "第二菜单语言",
   "proOnlyLanguage": "Pro · 最多 5 种菜单语言",
   "freeLanguageLimitTitle": "添加{language}需要 Pro",
-  "freeLanguageLimitBody": "Free 方案只包含 1 种菜单语言（{base}），不能手工添加，也不能用 AI 翻译其他语言。Pro 最多支持 5 种语言，可以手工编辑，也可以用 AI 补全后逐项审核。",
+  "freeLanguageLimitBody": "免费方案只包含 1 种菜单语言（{base}），不能手工添加，也不能用 AI 翻译其他语言。Pro 最多支持 5 种语言，可以手工编辑，也可以用 AI 补全后逐项审核。",
   "manualOrAiTranslation": "手工编辑{language}，或使用 AI 补全缺失文案。",
   "translationModeHint": "正在编辑{language}翻译；菜单结构、价格、库存和图片保持共享。",
   "modifierTranslations": "规格翻译",
