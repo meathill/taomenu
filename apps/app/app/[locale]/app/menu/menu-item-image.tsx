@@ -5,17 +5,9 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
-import { MENU_IMAGE_MAX_BYTES, publicMediaPath } from '@/lib/menu-image';
+import { publicMediaPath } from '@/lib/menu-image';
+import { imageErrorKey, MENU_IMAGE_MAX_MB, uploadMenuItemImage } from '@/lib/menu-image-upload';
 import { MenuImageEnhancementPanel } from './menu-image-enhancement-panel';
-
-const IMAGE_ERROR_KEYS: Record<string, string> = {
-  UNSUPPORTED_TYPE: 'imageErrorUnsupportedType',
-  TOO_LARGE: 'imageErrorTooLarge',
-  EMPTY: 'imageErrorEmpty',
-  BAD_MAGIC: 'imageErrorBadMagic',
-};
-
-const MAX_MB = Math.floor(MENU_IMAGE_MAX_BYTES / (1024 * 1024));
 
 type MenuItemImageProps = {
   storeId: string;
@@ -91,16 +83,10 @@ export function MenuItemImage({
     onError(null);
     onMessage(null);
     try {
-      const body = new FormData();
-      body.set('file', file);
-      const res = await fetch(`/api/owner/stores/${storeId}/menu/items/${itemId}/image`, {
-        method: 'POST',
-        body,
-      });
-      const data = (await res.json().catch(() => null)) as { error?: string } | null;
-      if (!res.ok) {
-        const key = data?.error ? IMAGE_ERROR_KEYS[data.error] : undefined;
-        onError(key ? t(key, { maxMb: MAX_MB }) : t('uploadFailed'));
+      const result = await uploadMenuItemImage(storeId, itemId, file);
+      if (!result.ok) {
+        const key = imageErrorKey(result.error);
+        onError(key ? t(key, { maxMb: MENU_IMAGE_MAX_MB }) : t('uploadFailed'));
         return;
       }
       await onChanged();

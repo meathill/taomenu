@@ -244,3 +244,8 @@
 - 全量升级到最新：Next 16.4、React 19.3、TypeScript 7（原生版 tsc，`tsc --noEmit` 兼容）、Vitest 5、Biome 2.6、wrangler 4.161、better-auth 1.7、mermaid 12；packageManager → pnpm 12。
 - Biome 2.6 开始格式化 Markdown，会改写博客源文件；已在 `biome.json` 关闭 `markdown` formatter/linter。
 - 本地跑 `opennextjs-cloudflare build` 时，`initOpenNextCloudflareForDev` 会因 `send_email` 的 `remote: true` 去连 Cloudflare 远程代理，没有可用 token 就失败（与升级无关，Workers Builds 自带 token 不受影响）。本地验证构建可临时把 `remote` 改成 `false`。
+
+## 新增菜品：照片与批量快速添加（2026-11-14，#18）
+
+- 「添加菜品」抽屉可直接选照片：先在浏览器暂存并预检类型/体积（`lib/menu-image-upload.ts`），菜品 `POST` 成功拿到 `itemId` 后再调用现有的图片上传接口。若图片上传失败，菜品已建好，所以抽屉保持打开、清空表单并提示去「编辑」里重传，避免重复创建。
+- 同一抽屉新增「批量快速添加」页签（Free 可用）：每行 `菜名 - 价格`（也接受逗号/冒号/Tab/空格分隔、货币符号、VND 千分位、欧式小数逗号），纯函数 `parseQuickAddLines` 负责解析，负数（含 `Name -3` 这种紧贴数字的负号）、缺价格、名称超 120 字符都按行报错，不做猜测。逐条调用现有创建接口，失败的行留在输入框里方便重试。单次最多 50 行。

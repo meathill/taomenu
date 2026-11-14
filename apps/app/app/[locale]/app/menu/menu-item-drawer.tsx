@@ -13,11 +13,14 @@ import { Button } from '@/components/button';
 import { FieldSwitch } from '@/components/field-switch';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
 import { fieldClassName, textareaClassName } from '@/components/ui/field';
+import { imageErrorKey, MENU_IMAGE_MAX_MB, uploadMenuItemImage } from '@/lib/menu-image-upload';
 import { MenuCategoryDrawer } from './menu-category-drawer';
 import { buildItemFormValues, shouldHydrateItemForm } from './menu-item-form';
 import { MenuItemImage } from './menu-item-image';
 import { MenuModifierTranslations } from './menu-modifier-translations';
 import { MenuModifiersPanel } from './menu-modifiers-panel';
+import { MenuNewItemImageField } from './menu-new-item-image-field';
+import { MenuQuickAddPanel } from './menu-quick-add-panel';
 import { localizedName, type MenuCategory, type MenuItem } from './menu-types';
 
 type MenuItemDrawerProps = {
@@ -69,6 +72,11 @@ export function MenuItemDrawer({
   const [nestedCategoryOpen, setNestedCategoryOpen] = useState(false);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // 仅新增模式：可选照片（创建后上传）与「单个 / 批量」切换
+  const [newImage, setNewImage] = useState<File | null>(null);
+  const [mode, setMode] = useState<'single' | 'quick'>('single');
+  const isNewInBase = !item && isBaseMode;
+  const isQuickMode = isNewInBase && mode === 'quick';
   const itemId = item?.id ?? null;
   const formSessionRef = useRef({ open: false, itemId: null as string | null });
 
@@ -91,6 +99,8 @@ export function MenuItemDrawer({
     setIsAvailable(next.isAvailable);
     setIsSoldOut(next.isSoldOut);
     setError(null);
+    setNewImage(null);
+    setMode('single');
   }, [categories, currency, initialCategoryId, item, itemId, open, translation]);
 
   async function saveItem() {
@@ -128,6 +138,24 @@ export function MenuItemDrawer({
         const data = (await response.json().catch(() => null)) as { error?: string } | null;
         throw new Error(data?.error || t(item ? 'editItemFailed' : 'addItemFailed'));
       }
+      if (!item && newImage) {
+        const created = (await response.json().catch(() => null)) as { itemId?: string } | null;
+        const uploaded = created?.itemId
+          ? await uploadMenuItemImage(storeId, created.itemId, newImage).catch(() => null)
+          : null;
+        if (!uploaded?.ok) {
+          // 菜品已经建好：保持抽屉打开并清空表单，避免用户再点保存造成重复菜品
+          await onChanged();
+          const key = imageErrorKey(uploaded?.ok === false ? uploaded.error : undefined);
+          const reason = key ? t(key, { maxMb: MENU_IMAGE_MAX_MB }) : t('uploadFailed');
+          setError(t('itemSavedImageFailed', { reason }));
+          setName('');
+          setDescription('');
+          setPrice('');
+          setNewImage(null);
+          return;
+        }
+      }
       await onChanged();
       onOpenChange(false);
     } catch (cause) {
@@ -163,63 +191,89 @@ export function MenuItemDrawer({
             >
               {t('cancel')}
             </Button>
-            <Button
-              variant="default"
-              size="lg"
-              pending={isPending}
-              disabled={
-                !name.trim() || (isBaseMode && (!categoryId || !price || livePriceError !== null))
-              }
-              onClick={() => void saveItem()}
-              className="flex-1 sm:flex-none"
-            >
-              {t('save')}
-            </Button>
+            {isQuickMode ? null : (
+              <Button
+                variant="default"
+                size="lg"
+                pending={isPending}
+                disabled={
+                  !name.trim() || (isBaseMode && (!categoryId || !price || livePriceError !== null))
+                }
+                onClick={() => void saveItem()}
+                className="flex-1 sm:flex-none"
+              >
+                {t('save')}
+              </Button>
+            )}
           </div>
         }
       >
+        {isNewInBase ? (
+          <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl bg-muted p-1" role="tablist">
+            {(['single', 'quick'] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                role="tab"
+                aria-selected={mode === value}
+                onClick={() => setMode(value)}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold ${
+                  mode === value ? 'bg-white text-ink-900 shadow-sm' : 'text-muted-foreground'
+                }`}
+              >
+                {t(value === 'single' ? 'addModeSingle' : 'addModeQuick')}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div className="space-y-4">
-          <label className="block text-sm font-bold text-ink-900">
-            {t('itemName')}
-            <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder={
-                translation?.name ??
-                item?.translations.find((entry) => entry.locale === baseLocale)?.name ??
-                t('itemName')
-              }
-              className={`mt-1 ${fieldClassName}`}
-            />
-          </label>
-          <label className="block text-sm font-bold text-ink-900">
-            {t('description')}
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              rows={3}
-              className={`mt-1 ${textareaClassName}`}
-            />
-          </label>
-          {isBaseMode ? (
+          {isQuickMode ? null : (
             <>
               <label className="block text-sm font-bold text-ink-900">
-                {t('price', { currency })}
+                {t('itemName')}
                 <input
-                  value={price}
-                  onChange={(event) =>
-                    setPrice(sanitizeCurrencyInput(event.target.value, currency))
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder={
+                    translation?.name ??
+                    item?.translations.find((entry) => entry.locale === baseLocale)?.name ??
+                    t('itemName')
                   }
-                  inputMode={getCurrencyDecimals(currency) > 0 ? 'decimal' : 'numeric'}
-                  aria-invalid={livePriceError !== null}
-                  className={`mt-1 ${fieldClassName} tabular-nums`}
+                  className={`mt-1 ${fieldClassName}`}
                 />
-                {livePriceError ? (
-                  <span className="mt-1 block text-xs font-semibold text-brand-600" role="alert">
-                    {t(PRICE_ERROR_KEYS[livePriceError])}
-                  </span>
-                ) : null}
               </label>
+              <label className="block text-sm font-bold text-ink-900">
+                {t('description')}
+                <textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  rows={3}
+                  className={`mt-1 ${textareaClassName}`}
+                />
+              </label>
+            </>
+          )}
+          {isBaseMode ? (
+            <>
+              {isQuickMode ? null : (
+                <label className="block text-sm font-bold text-ink-900">
+                  {t('price', { currency })}
+                  <input
+                    value={price}
+                    onChange={(event) =>
+                      setPrice(sanitizeCurrencyInput(event.target.value, currency))
+                    }
+                    inputMode={getCurrencyDecimals(currency) > 0 ? 'decimal' : 'numeric'}
+                    aria-invalid={livePriceError !== null}
+                    className={`mt-1 ${fieldClassName} tabular-nums`}
+                  />
+                  {livePriceError ? (
+                    <span className="mt-1 block text-xs font-semibold text-brand-600" role="alert">
+                      {t(PRICE_ERROR_KEYS[livePriceError])}
+                    </span>
+                  ) : null}
+                </label>
+              )}
               <div>
                 <span className="text-sm font-bold text-ink-900">{t('categoryName')}</span>
                 <button
@@ -231,18 +285,35 @@ export function MenuItemDrawer({
                   <span aria-hidden>›</span>
                 </button>
               </div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <FieldSwitch
-                  label={t('available')}
-                  checked={isAvailable}
-                  onCheckedChange={setIsAvailable}
+              {isNewInBase && !isQuickMode ? (
+                <MenuNewItemImageField
+                  file={newImage}
+                  disabled={isPending}
+                  onFileChange={setNewImage}
                 />
-                <FieldSwitch
-                  label={t('soldOut')}
-                  checked={isSoldOut}
-                  onCheckedChange={setIsSoldOut}
+              ) : null}
+              {isQuickMode ? (
+                <MenuQuickAddPanel
+                  storeId={storeId}
+                  currency={currency}
+                  categoryId={categoryId}
+                  baseLocale={baseLocale}
+                  onChanged={onChanged}
                 />
-              </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <FieldSwitch
+                    label={t('available')}
+                    checked={isAvailable}
+                    onCheckedChange={setIsAvailable}
+                  />
+                  <FieldSwitch
+                    label={t('soldOut')}
+                    checked={isSoldOut}
+                    onCheckedChange={setIsSoldOut}
+                  />
+                </div>
+              )}
             </>
           ) : null}
         </div>
