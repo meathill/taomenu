@@ -137,7 +137,7 @@ export function ModifierPicker({ item, currency, onCancel, onConfirm }: Modifier
       >
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h2 className="text-lg font-extrabold text-ink-900">{item.name}</h2>
+            <h2 className="wrap-anywhere text-lg font-extrabold text-ink-900">{item.name}</h2>
             <p className="text-sm tabular-nums text-muted-foreground">
               {formatCurrency(item.priceAmount, currency, locale)}
             </p>

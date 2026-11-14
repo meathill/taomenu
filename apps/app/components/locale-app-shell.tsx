@@ -45,7 +45,7 @@ function CustomerIntlBridge({
 export function LocaleAppShell({ fallbackLocale, websiteUrl, children }: LocaleAppShellProps) {
   const pathname = usePathname();
   const body = (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh w-full min-w-0 flex-col">
       <SiteHeader />
       <div className="flex-1">{children}</div>
       <SiteFooter websiteUrl={websiteUrl} />

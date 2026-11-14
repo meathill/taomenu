@@ -47,8 +47,8 @@ export function CustomerMenuList({
   return (
     <div className="min-h-dvh">
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
+        <div className="flex min-w-0 items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-brand-600">{storeName}</p>
             <h1 className="text-xl font-extrabold text-ink-900">
               {tableName ? t('tableLabel', { name: tableName }) : t('menu')}

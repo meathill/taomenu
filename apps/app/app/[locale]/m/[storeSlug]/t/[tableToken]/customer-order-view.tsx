@@ -36,7 +36,7 @@ export function CustomerOrderView({
   const locale = useLocale();
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8">
+    <div className="mx-auto w-full min-w-0 max-w-lg px-4 py-8">
       <p className="text-sm font-semibold text-brand-600">{storeName}</p>
       <h1 className="mt-2 text-3xl font-extrabold tabular-nums text-ink-900">
         #{order.displayNumber}
@@ -52,7 +52,7 @@ export function CustomerOrderView({
       </p>
       <ul className="mt-4 space-y-1 text-sm">
         {order.items.map((item) => (
-          <li key={`${item.name}-${item.quantity}`}>
+          <li key={`${item.name}-${item.quantity}`} className="break-words">
             {item.quantity}× {item.name}
           </li>
         ))}

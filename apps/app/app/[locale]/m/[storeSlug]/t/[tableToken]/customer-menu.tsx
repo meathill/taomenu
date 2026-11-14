@@ -294,7 +294,9 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   }
 
   return (
-    <div className={`mx-auto min-h-dvh max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}>
+    <div
+      className={`mx-auto min-h-dvh w-full min-w-0 max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}
+    >
       <CustomerMenuList
         storeName={menu.store.name}
         tableName={menu.table?.name}

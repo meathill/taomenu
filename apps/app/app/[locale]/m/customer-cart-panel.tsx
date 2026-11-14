@@ -35,8 +35,8 @@ export function CustomerCartPanel({
     'grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-white text-ink-900 active:bg-paper-100';
 
   return (
-    <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg">
-      <div className="mx-auto max-w-lg space-y-3">
+    <div className="fixed inset-x-0 bottom-0 min-w-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg">
+      <div className="mx-auto w-full min-w-0 max-w-lg space-y-3">
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
           <p className="text-sm font-bold tabular-nums text-ink-900">

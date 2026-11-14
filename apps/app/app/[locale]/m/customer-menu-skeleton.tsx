@@ -29,7 +29,12 @@ function CustomerCategorySkeleton({ extraItem = false }: { extraItem?: boolean }
 
 export function CustomerMenuSkeleton({ label }: { label: string }) {
   return (
-    <div className="mx-auto min-h-dvh max-w-lg" aria-busy="true" aria-label={label} role="status">
+    <div
+      className="mx-auto min-h-dvh w-full min-w-0 max-w-lg"
+      aria-busy="true"
+      aria-label={label}
+      role="status"
+    >
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">

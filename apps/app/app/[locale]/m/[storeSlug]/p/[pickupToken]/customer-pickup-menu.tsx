@@ -231,7 +231,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
 
   if (result) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-8 text-center">
+      <div className="mx-auto w-full min-w-0 max-w-lg px-4 py-8 text-center">
         <p className="text-sm font-semibold text-brand-600">{t('pickupNumber')}</p>
         <p className="mt-2 text-6xl font-extrabold tabular-nums text-ink-900">
           {result.pickupNumber !== null
@@ -281,10 +281,12 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   }
 
   return (
-    <div className={`mx-auto min-h-dvh max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}>
+    <div
+      className={`mx-auto min-h-dvh w-full min-w-0 max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}
+    >
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
+        <div className="flex min-w-0 items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-brand-600">{menu.store.name}</p>
             <h1 className="text-xl font-extrabold text-ink-900">
               {displayPickupPointName(menu.pickupPoint?.name, t('defaultPickupPoint'))}
