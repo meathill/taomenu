@@ -161,5 +161,6 @@
   "hidePoweredByFreeHint": "Tính năng Pro: nâng cấp để bỏ dòng “Vận hành bởi TaoMenu” ở cuối thực đơn khách hàng.",
   "brandingSaved": "Đã lưu. Khách sẽ thấy thay đổi khi tải lại thực đơn.",
   "brandingSaveFailed": "Không lưu được. Vui lòng thử lại.",
-  "brandingNotReady": "Tính năng này đang được triển khai. Vui lòng thử lại sau."
+  "brandingNotReady": "Tính năng này đang được triển khai. Vui lòng thử lại sau.",
+  "freeBenefitTranslation": "Gói miễn phí đã gồm {freeTranslations} lượt dịch thực đơn bằng AI có kiểm tra mỗi tháng. Gói Pro có {proTranslations} lượt."
 }

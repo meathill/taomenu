@@ -161,5 +161,6 @@
   "hidePoweredByFreeHint": "Pro feature: upgrade to remove “Powered by TaoMenu” from the bottom of your customer menu.",
   "brandingSaved": "Saved. Customers see the change when they reload the menu.",
   "brandingSaveFailed": "Couldn’t save. Please try again.",
-  "brandingNotReady": "This feature is still rolling out. Please try again later."
+  "brandingNotReady": "This feature is still rolling out. Please try again later.",
+  "freeBenefitTranslation": "The Free plan already includes {freeTranslations} reviewed AI menu translations per month. Pro includes {proTranslations}."
 }

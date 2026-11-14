@@ -5,6 +5,7 @@ import {
   formatCurrency,
   getBillingCurrencyForStore,
   getBillingPrice,
+  PLAN_LIMITS,
   STORE_CURRENCIES,
   type StoreCurrency,
   toStoreCurrency,
@@ -223,7 +224,13 @@ export function StoreSettingsForm({
           </p>
         </div>
 
-        <ul className="mt-5 grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
+        <p className="mt-5 rounded-xl bg-white px-3 py-2 text-sm leading-6 text-ink-900">
+          {t('freeBenefitTranslation', {
+            freeTranslations: PLAN_LIMITS.free.maxAiTranslationsPerMonth,
+            proTranslations: PLAN_LIMITS.pro.maxAiTranslationsPerMonth,
+          })}
+        </p>
+        <ul className="mt-4 grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
           <li>✓ {t('proBenefitStaff')}</li>
           <li>✓ {t('proBenefitLanguages')}</li>
           <li>✓ {t('proBenefitImport')}</li>
