@@ -1,12 +1,17 @@
 'use client';
 
 import { CheckIcon, TranslateIcon } from '@phosphor-icons/react';
-import { isMenuLocaleAllowed, type PlanId } from '@taomenu/shared';
+import type { PlanId } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePaywall } from '@/components/paywall/paywall-provider';
 import { ProBadge } from '@/components/paywall/pro-badge';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
+import {
+  isMenuLocaleLocked,
+  readReservedMenuLocales,
+  rememberReservedMenuLocale,
+} from './menu-locales';
 import { MenuTranslationPanel } from './menu-translation-panel';
 
 const MENU_LOCALES = ['en', 'vi', 'zh', 'ja'] as const;
@@ -42,18 +47,34 @@ export function MenuLanguageDrawer({
     () => new Intl.DisplayNames([interfaceLocale], { type: 'language' }),
     [interfaceLocale],
   );
+  const [reservedLocales, setReservedLocales] = useState<string[]>([]);
+
+  useEffect(() => {
+    setReservedLocales(readReservedMenuLocales(storeId));
+  }, [storeId]);
+
+  useEffect(() => {
+    if (open) setPreviewLocale(activeLocale);
+  }, [open, activeLocale]);
+
   function isLocked(locale: string) {
-    return !isMenuLocaleAllowed({
+    return isMenuLocaleLocked({
       plan,
       baseLocale,
       locale,
       existingLocales,
+      activeLocale,
+      reservedLocales,
     });
   }
 
   function selectLocale(locale: string) {
     setPreviewLocale(locale);
-    if (!isLocked(locale)) onSelectLocale(locale);
+    if (isLocked(locale)) return;
+    if (locale !== baseLocale) {
+      setReservedLocales(rememberReservedMenuLocale(storeId, locale, baseLocale));
+    }
+    onSelectLocale(locale);
   }
 
   const selectedLocale = isLocked(previewLocale) ? previewLocale : activeLocale;
