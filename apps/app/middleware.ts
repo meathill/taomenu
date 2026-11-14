@@ -2,6 +2,7 @@ import { resolveUiLocale } from '@taomenu/shared';
 import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import { readLocalePrefix } from './lib/locale-prefix';
 import {
   normalizeRefCode,
   REF_COOKIE_MAX_AGE_SECONDS,
@@ -75,7 +76,8 @@ function applyRefCookie(request: NextRequest, response: NextResponse): void {
 }
 
 /**
- * 1. 语言：cookie → Accept-Language → CF 国家 → en（写入 NEXT_LOCALE）
+ * 1. 语言：URL 前缀（/zh/login）→ cookie → Accept-Language → CF 国家 → en（写入 NEXT_LOCALE）
+ *    前缀是明确意图，必须压过 cookie 与协商（issue #27）；next-intl 随后把前缀去掉
  * 2. 鉴权：/app、/admin、/agent、/terminal 未登录 → /login?next=…
  *    （只粗判 cookie，真鉴权在 layout / API 层的 requireAdmin / requireAgent）
  * 3. 归因：?ref=CODE → tm_ref cookie
@@ -83,8 +85,11 @@ function applyRefCookie(request: NextRequest, response: NextResponse): void {
  */
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const locale = resolveLocale(request);
+  const prefixLocale = readLocalePrefix(pathname);
+  const locale = prefixLocale ?? resolveLocale(request);
   const hasLocaleCookie = Boolean(request.cookies.get(LOCALE_COOKIE)?.value);
+  // 有前缀时总是以前缀为准写 cookie；无前缀时只在首次访问写入协商结果
+  const shouldWriteLocaleCookie = prefixLocale !== null || !hasLocaleCookie;
 
   // 无 cookie 时用协商结果改写 Accept-Language，让 next-intl 选对语言
   let requestForIntl = request;
@@ -122,7 +127,7 @@ export default function middleware(request: NextRequest) {
   }
 
   const response = intlMiddleware(requestForIntl);
-  if (!hasLocaleCookie) {
+  if (shouldWriteLocaleCookie) {
     applyLocaleCookie(response, locale);
   }
   applyRefCookie(request, response);

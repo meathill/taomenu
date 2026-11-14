@@ -288,3 +288,9 @@
 - 判定规则在 `packages/shared/src/plans.ts` 的 `shouldShowPoweredBy(plan, hidePoweredBy)`（`PLAN_LIMITS.*.canRemovePoweredBy`）。公开菜单接口 `store.showPoweredBy` 由服务端按「当前套餐 + 开关」算出，降级回 Free 后自动恢复水印，不需要清开关。
 - 顾客页的「Powered by」仍由根布局 `SiteFooter` 渲染，但菜单是客户端拉取的，所以用 `lib/powered-by-visibility.ts`（`useSyncExternalStore` 小 store）从 `CustomerMenu` / `CustomerPickupMenu` 把结论传给页脚；菜单未加载前不渲染，避免 Pro 店铺闪出水印。
 - 付费信号统一为 `components/paywall/pro-badge.tsx`（皇冠 + Pro，violet），付费墙为 `PaywallProvider` + `PaywallDialog`（挂在 `OwnerShell`，`usePaywall().openPaywall(feature)`），按钮直接走现有 `billing/pro/checkout`。已接入：设置页去水印开关、语言抽屉（AI 翻译）、翻译面板、菜品照片美化、菜单导入抽屉、菜单页 Pro 工具条、桌贴 Pro 模板。新增 Pro 功能时在 `paywall-features.ts` 加 key，并在 4 种语言 `owner.json` 加 `paywall*` 文案。
+
+## URL 语言前缀优先于协商（2026-11-14，#27）
+
+- 产品面（app，`localePrefix: 'never'`）：`middleware.ts` 先用 `lib/locale-prefix.ts` 读路径前缀，`/zh/login` 这类链接以前缀为准写 `NEXT_LOCALE`，再由 next-intl 307 到无前缀路径；只有无前缀 URL 才走 cookie → Accept-Language → CF 国家协商。此前首次访问时会把协商结果（如 ja）写进 cookie，覆盖了 next-intl 按前缀写的 zh。
+- 官网（`as-needed` + `localeDetection: false`）本来就以前缀为准，补了 `lib/middleware-locale.test.ts` 防回归。
+- 两个 app 的 vitest 都 `server.deps.inline: ['next-intl']`，否则 Node 下解析不了 next-intl ESM 里的 `next/server`。
