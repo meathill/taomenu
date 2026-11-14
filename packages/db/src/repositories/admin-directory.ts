@@ -53,7 +53,7 @@ export async function listAdminUsers(
   db: Db,
   input: { query: string; page: number },
 ): Promise<AdminUserList> {
-  const page = input.page < 1 ? 1 : input.page;
+  const page = Math.max(input.page, 1);
   const q = input.query.trim();
   const where = q ? or(like(user.email, `%${q}%`), like(user.name, `%${q}%`)) : undefined;
 
@@ -228,7 +228,7 @@ export async function listAdminStores(
   db: Db,
   input: { query: string; page: number },
 ): Promise<AdminStoreList> {
-  const page = input.page < 1 ? 1 : input.page;
+  const page = Math.max(input.page, 1);
   const q = input.query.trim();
   const where = q ? or(like(stores.name, `%${q}%`), like(stores.slug, `%${q}%`)) : undefined;
 

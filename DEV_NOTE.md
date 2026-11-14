@@ -238,3 +238,9 @@
 - 聚合实现：`packages/db/src/repositories/admin-stats.ts` + `admin-directory.ts`，UTC 天 bucket（`strftime(..., created_at/1000, 'unixepoch')`），固定查询数内存拼装（同 agent-stats 模式）；`max(createdAt)` 原生聚合回的是数字，repository 内统一转 Date。
 - 真 PV 缺失：顾客匿名、无 page-view 表；Phase 2 才做 visitor_hash 打点（沿 `agentLinkClicks` 模式）+ 扫码→下单漏斗。
 
+
+## 依赖升级（2026-11-14）
+
+- 全量升级到最新：Next 16.4、React 19.3、TypeScript 7（原生版 tsc，`tsc --noEmit` 兼容）、Vitest 5、Biome 2.6、wrangler 4.161、better-auth 1.7、mermaid 12；packageManager → pnpm 12。
+- Biome 2.6 开始格式化 Markdown，会改写博客源文件；已在 `biome.json` 关闭 `markdown` formatter/linter。
+- 本地跑 `opennextjs-cloudflare build` 时，`initOpenNextCloudflareForDev` 会因 `send_email` 的 `remote: true` 去连 Cloudflare 远程代理，没有可用 token 就失败（与升级无关，Workers Builds 自带 token 不受影响）。本地验证构建可临时把 `remote` 改成 `false`。

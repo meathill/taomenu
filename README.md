@@ -19,7 +19,7 @@ packages/
 
 ## 开发
 
-需要 Node.js ≥ 24 与 pnpm 11。
+需要 Node.js ≥ 24 与 pnpm 12。
 
 ```bash
 pnpm install

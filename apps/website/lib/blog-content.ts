@@ -9,7 +9,7 @@ export function stripLeadingH1(markdown: string): string {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line && line.trim()) {
+    if (line?.trim()) {
       firstNonEmptyIdx = i;
       break;
     }

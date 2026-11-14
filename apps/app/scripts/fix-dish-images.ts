@@ -111,7 +111,7 @@ async function search(query: string): Promise<Page[]> {
 function pick(pages: Page[], spec: FixSpec): Page | null {
   const candidates = pages.filter((p) => {
     const ii = p.imageinfo?.[0];
-    if (!ii || !ii.thumburl) return false;
+    if (!ii?.thumburl) return false;
     if (!/^image\/(jpeg|png|webp)$/i.test(ii.mime ?? '')) return false;
     if ((ii.width ?? 0) < 600) return false;
     if (spec.avoid?.test(p.title ?? '')) return false;

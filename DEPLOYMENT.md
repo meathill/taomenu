@@ -100,7 +100,7 @@ pnpm --filter @taomenu/ai cf-typegen
 
 ### 1. 账号与工具
 
-- Node ≥ 24、pnpm 11  
+- Node ≥ 24、pnpm 12  
 - 已登录：`npx wrangler login`  
 - 域名 `dyqr.me` 在 Cloudflare；绑定 `menu.dyqr.me` / `app.menu.dyqr.me`
 

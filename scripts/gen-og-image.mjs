@@ -3,7 +3,6 @@
 // 产物：apps/website/public/brand/og-default.png（入库，平台抓取与本地一致）
 
 import { mkdirSync } from 'node:fs';
-import { writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
