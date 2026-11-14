@@ -86,3 +86,12 @@ export function createLatestGate() {
     },
   };
 }
+
+/** 对比两次订单快照，找出新出现的订单。首次快照返回空，避免进页就当成新单提醒。 */
+export function idsOfNewOrders(
+  previousIds: Set<string> | null,
+  current: Array<{ id: string }>,
+): string[] {
+  if (!previousIds) return [];
+  return current.filter((order) => !previousIds.has(order.id)).map((order) => order.id);
+}

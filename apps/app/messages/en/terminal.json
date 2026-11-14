@@ -12,6 +12,7 @@
   "loading": "Loading orders…",
   "refresh": "Refresh",
   "noOrdersTitle": "No new orders",
+  "newOrderAlert": "New order",
   "pickup": "Pickup",
   "dineIn": "Dine-in",
   "accept": "Accept",

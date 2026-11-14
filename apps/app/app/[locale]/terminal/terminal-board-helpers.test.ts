@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   createLatestGate,
+  idsOfNewOrders,
   nextAction,
   type OrderCard,
   transitionFailureKey,
@@ -54,5 +55,22 @@ describe('createLatestGate', () => {
     const refreshAfterAction = gate.begin();
     expect(gate.isLatest(refreshAfterAction)).toBe(true);
     expect(gate.isLatest(stalePoll)).toBe(false);
+  });
+});
+
+describe('idsOfNewOrders', () => {
+  it('首次快照不提醒，避免进页就把已有订单当新单', () => {
+    expect(idsOfNewOrders(null, [pickupOrder('submitted')])).toEqual([]);
+  });
+
+  it('之后新出现的订单 id 才会被标出来', () => {
+    const existing = pickupOrder('accepted');
+    const incoming = { ...pickupOrder('submitted'), id: 'o3' };
+    expect(idsOfNewOrders(new Set([existing.id]), [existing, incoming])).toEqual(['o3']);
+    expect(idsOfNewOrders(new Set([existing.id, incoming.id]), [existing, incoming])).toEqual([]);
+  });
+
+  it('已从列表消失的旧单再次出现时也算新单', () => {
+    expect(idsOfNewOrders(new Set(['other']), [pickupOrder('submitted')])).toEqual(['o2']);
   });
 });

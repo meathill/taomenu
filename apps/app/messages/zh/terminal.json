@@ -12,6 +12,7 @@
   "loading": "正在加载订单…",
   "refresh": "刷新",
   "noOrdersTitle": "暂无新订单",
+  "newOrderAlert": "有新订单",
   "pickup": "取餐",
   "dineIn": "堂食",
   "accept": "接单",

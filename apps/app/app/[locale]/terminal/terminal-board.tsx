@@ -3,8 +3,10 @@
 import { formatCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { playNewOrderSound, unlockNewOrderSound } from './new-order-cue';
 import {
   createLatestGate,
+  idsOfNewOrders,
   type OrderCard,
   type ServiceCard,
   type SessionCard,
@@ -21,9 +23,14 @@ type TerminalBoardProps = {
   currency: string;
 };
 
+const HIGHLIGHT_MS = 12_000;
+const POLL_MS = 5_000;
+
 export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
   const t = useTranslations('terminal');
   const locale = useLocale();
+  const tRef = useRef(t);
+  tRef.current = t;
   const [orders, setOrders] = useState<OrderCard[]>([]);
   const [requests, setRequests] = useState<ServiceCard[]>([]);
   const [sessions, setSessions] = useState<SessionCard[]>([]);
@@ -34,7 +41,10 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
   const [orderError, setOrderError] = useState<{ orderId: string; message: string } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [highlightedIds, setHighlightedIds] = useState<string[]>([]);
   const loadGate = useRef(createLatestGate());
+  const knownOrderIds = useRef<Set<string> | null>(null);
+  const highlightTimer = useRef<number | null>(null);
 
   const load = useCallback(async () => {
     const requestId = loadGate.current.begin();
@@ -46,28 +56,66 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
       ]);
       if (!loadGate.current.isLatest(requestId)) return;
       if (!oRes.ok) {
-        setLoadError(t('loadFailed'));
+        setLoadError(tRef.current('loadFailed'));
         return;
       }
       const oData = (await oRes.json()) as { orders: OrderCard[] };
       const sData = sRes.ok ? ((await sRes.json()) as { requests: ServiceCard[] }) : null;
       const sessData = sessRes.ok ? ((await sessRes.json()) as { sessions: SessionCard[] }) : null;
       if (!loadGate.current.isLatest(requestId)) return;
+
+      const newcomers = idsOfNewOrders(knownOrderIds.current, oData.orders);
+      knownOrderIds.current = new Set(oData.orders.map((order) => order.id));
+      if (newcomers.length > 0) {
+        setHighlightedIds(newcomers);
+        playNewOrderSound();
+        if (highlightTimer.current) window.clearTimeout(highlightTimer.current);
+        highlightTimer.current = window.setTimeout(() => setHighlightedIds([]), HIGHLIGHT_MS);
+      }
+
       setOrders(oData.orders);
       if (sData) setRequests(sData.requests);
       if (sessData) setSessions(sessData.sessions);
       setLoadError(null);
     } catch {
-      if (loadGate.current.isLatest(requestId)) setLoadError(t('loadFailed'));
+      if (loadGate.current.isLatest(requestId)) setLoadError(tRef.current('loadFailed'));
     } finally {
-      setIsLoading(false);
+      // 过期请求不能把「仍在加载」提前关掉，否则会闪一下空列表
+      if (loadGate.current.isLatest(requestId)) setIsLoading(false);
     }
-  }, [storeId, t]);
+  }, [storeId]);
 
   useEffect(() => {
+    knownOrderIds.current = null;
+    setHighlightedIds([]);
+    setIsLoading(true);
+    setOrders([]);
+    setRequests([]);
+    setSessions([]);
     void load();
-    const timer = setInterval(() => void load(), 5000);
-    return () => clearInterval(timer);
+
+    // 后台标签页的 setInterval 会被节流到分钟级，所以切回前台时立刻再拉一次
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void load();
+    }, POLL_MS);
+
+    function refreshIfVisible() {
+      if (document.visibilityState === 'visible') void load();
+    }
+    function onPageShow() {
+      void load();
+    }
+
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    window.addEventListener('focus', refreshIfVisible);
+    window.addEventListener('pageshow', onPageShow);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.removeEventListener('focus', refreshIfVisible);
+      window.removeEventListener('pageshow', onPageShow);
+      if (highlightTimer.current) window.clearTimeout(highlightTimer.current);
+    };
   }, [load]);
 
   async function transition(orderId: string, status: string) {
@@ -75,6 +123,7 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
     setError(null);
     setOrderError(null);
     setMessage(null);
+    setHighlightedIds((ids) => ids.filter((id) => id !== orderId));
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/orders/${orderId}/transition`, {
         method: 'POST',
@@ -173,7 +222,7 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" onPointerDown={unlockNewOrderSound}>
       {loadError ? <p className="text-sm font-medium text-brand-600">{loadError}</p> : null}
       {error ? (
         <p className="text-sm font-medium text-brand-600" role="alert">
@@ -198,6 +247,7 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
         isLoading={isLoading}
         busyId={busyId}
         orderError={orderError}
+        highlightedIds={highlightedIds}
         onTransition={(id, status) => void transition(id, status)}
         onPay={(id, amount) => void payOrder(id, amount)}
         onRefresh={() => void refresh()}

@@ -12,6 +12,7 @@
   "loading": "注文を読み込み中…",
   "refresh": "更新",
   "noOrdersTitle": "新しい注文はありません",
+  "newOrderAlert": "新しい注文があります",
   "pickup": "受取",
   "dineIn": "店内",
   "accept": "受注",

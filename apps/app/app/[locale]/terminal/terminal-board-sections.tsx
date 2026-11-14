@@ -1,6 +1,7 @@
 'use client';
 
 import { formatCurrency } from '@taomenu/shared';
+import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -78,6 +79,8 @@ type OrderSectionProps = {
   busyId: string | null;
   /** 最近一次状态流转失败的订单，错误就近显示在卡片里 */
   orderError: { orderId: string; message: string } | null;
+  /** 刚刚出现的新订单，卡片高亮并在列表上方提示 */
+  highlightedIds: string[];
   onTransition: (id: string, status: string) => void;
   onPay: (id: string, amount: number) => void;
   onRefresh: () => void;
@@ -89,6 +92,7 @@ export function TerminalOrderSection({
   isLoading,
   busyId,
   orderError,
+  highlightedIds,
   onTransition,
   onPay,
   onRefresh,
@@ -109,6 +113,14 @@ export function TerminalOrderSection({
           {t('refresh')}
         </Button>
       </div>
+      {highlightedIds.length > 0 ? (
+        <p
+          className="rounded-xl border border-gold-600 bg-white px-3 py-2 text-sm font-bold text-gold-600"
+          role="alert"
+        >
+          {t('newOrderAlert')}
+        </p>
+      ) : null}
       {isLoading ? (
         <div className="space-y-3" role="status" aria-label={t('loading')} aria-busy="true">
           <div className="space-y-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
@@ -147,7 +159,12 @@ export function TerminalOrderSection({
             return (
               <li
                 key={order.id}
-                className="rounded-2xl border border-border bg-white p-4 shadow-sm"
+                className={cn(
+                  'rounded-2xl border bg-white p-4 shadow-sm',
+                  highlightedIds.includes(order.id)
+                    ? 'border-gold-600 ring-2 ring-gold-600'
+                    : 'border-border',
+                )}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
