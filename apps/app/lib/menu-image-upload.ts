@@ -59,3 +59,35 @@ export async function uploadMenuItemImage(
   const data = (await res.json().catch(() => null)) as { error?: string } | null;
   return { ok: false, error: data?.error };
 }
+
+/** 先在浏览器里缩小/转换，再上传店铺封面 */
+export async function prepareAndUploadStoreCover(
+  storeId: string,
+  file: File,
+): Promise<{ ok: true; coverImageKey: string } | { ok: false; error?: string }> {
+  const prepared = await prepareMenuImageFile(file);
+  if (!prepared.ok) return prepared;
+  const body = new FormData();
+  body.set('file', prepared.file);
+  const res = await fetch(`/api/owner/stores/${storeId}/branding/cover`, {
+    method: 'POST',
+    body,
+  });
+  const data = (await res.json().catch(() => null)) as {
+    coverImageKey?: string;
+    error?: string;
+  } | null;
+  if (res.ok && data?.coverImageKey) {
+    return { ok: true, coverImageKey: data.coverImageKey };
+  }
+  return { ok: false, error: data?.error };
+}
+
+export async function deleteStoreCover(
+  storeId: string,
+): Promise<{ ok: true } | { ok: false; error?: string }> {
+  const res = await fetch(`/api/owner/stores/${storeId}/branding/cover`, { method: 'DELETE' });
+  if (res.ok) return { ok: true };
+  const data = (await res.json().catch(() => null)) as { error?: string } | null;
+  return { ok: false, error: data?.error };
+}

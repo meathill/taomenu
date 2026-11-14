@@ -222,6 +222,7 @@ export {
   getStoreBranding,
   type StoreBranding,
   StoreBrandingError,
+  setStoreCoverImage,
   updateStoreBranding,
 } from './store-branding';
 export {

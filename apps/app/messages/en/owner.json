@@ -162,5 +162,12 @@
   "brandingSaved": "Saved. Customers see the change when they reload the menu.",
   "brandingSaveFailed": "Couldn’t save. Please try again.",
   "brandingNotReady": "This feature is still rolling out. Please try again later.",
+  "coverPhoto": "Store cover photo",
+  "coverPhotoHint": "Shown at the top of your customer menu. Take a photo or pick one from your album. Included on the Free plan.",
+  "coverPhotoAdd": "Add cover photo",
+  "coverPhotoChange": "Change photo",
+  "coverPhotoRemove": "Remove cover",
+  "coverPhotoAdded": "Cover photo added. Customers see it when they reload the menu.",
+  "coverPhotoRemoved": "Cover photo removed.",
   "freeBenefitTranslation": "The Free plan already includes {freeTranslations} reviewed AI menu translations per month. Pro includes {proTranslations}."
 }

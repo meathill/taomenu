@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { CustomerMenuCategories } from '../../../customer-menu-categories';
+import { CustomerMenuCover } from '../../../customer-menu-cover';
 import type { PublicMenuItem } from '../../../modifier-picker';
 import { CustomerLanguageSelect } from '../../customer-language-select';
 
@@ -13,6 +14,7 @@ type MenuCategoryView = {
 
 type CustomerMenuListProps = {
   storeName: string;
+  coverImageKey?: string | null;
   tableName?: string;
   acceptingPublicRequests: boolean;
   categories: MenuCategoryView[];
@@ -28,6 +30,7 @@ type CustomerMenuListProps = {
 
 export function CustomerMenuList({
   storeName,
+  coverImageKey,
   tableName,
   acceptingPublicRequests,
   categories,
@@ -44,6 +47,7 @@ export function CustomerMenuList({
 
   return (
     <div className="min-h-dvh">
+      <CustomerMenuCover coverImageKey={coverImageKey} />
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">

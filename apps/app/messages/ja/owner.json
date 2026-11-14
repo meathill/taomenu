@@ -162,5 +162,12 @@
   "brandingSaved": "保存しました。お客様がメニューを再読み込みすると反映されます。",
   "brandingSaveFailed": "保存できませんでした。もう一度お試しください。",
   "brandingNotReady": "この機能は公開準備中です。しばらくしてからお試しください。",
+  "coverPhoto": "店舗のカバー写真",
+  "coverPhotoHint": "お客様向けメニューの上部に表示されます。撮影するか、アルバムから選べます。無料プランで利用できます。",
+  "coverPhotoAdd": "カバー写真を追加",
+  "coverPhotoChange": "写真を変更",
+  "coverPhotoRemove": "カバーを削除",
+  "coverPhotoAdded": "カバー写真を追加しました。お客様がメニューを再読み込みすると表示されます。",
+  "coverPhotoRemoved": "カバー写真を削除しました。",
   "freeBenefitTranslation": "無料プランには毎月 {freeTranslations} 回のレビュー付き AI メニュー翻訳がすでに含まれます。Pro は {proTranslations} 回です。"
 }

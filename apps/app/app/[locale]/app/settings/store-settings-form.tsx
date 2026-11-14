@@ -25,6 +25,7 @@ type StoreSettingsFormProps = {
   store: StoreRow;
   /** issue #26：顾客页是否已隐藏 Powered by */
   hidePoweredBy: boolean;
+  coverImageKey: string | null;
   upgradeUrl: string;
   billingStatus?: string;
   /** 从定价页 Pro 入口过来：滚动到并高亮升级区块 */
@@ -34,6 +35,7 @@ type StoreSettingsFormProps = {
 export function StoreSettingsForm({
   store,
   hidePoweredBy,
+  coverImageKey,
   upgradeUrl,
   billingStatus,
   isUpgradeIntent = false,
@@ -179,7 +181,11 @@ export function StoreSettingsForm({
         <p className="mt-2 text-xs leading-5 text-muted-foreground">{t('acceptingOrdersHint')}</p>
       </section>
 
-      <StoreBrandingSection store={store} initialHidePoweredBy={hidePoweredBy} />
+      <StoreBrandingSection
+        store={store}
+        initialHidePoweredBy={hidePoweredBy}
+        initialCoverImageKey={coverImageKey}
+      />
 
       <section className="rounded-2xl border border-border bg-paper-50 p-5">
         <h2 className="text-lg font-black text-ink-900">{t('readOnlyDetails')}</h2>

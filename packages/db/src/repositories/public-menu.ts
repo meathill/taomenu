@@ -1,3 +1,4 @@
+import { shouldShowPoweredBy } from '@taomenu/shared';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import {
   menuCategories,
@@ -9,7 +10,7 @@ import {
 import { stores } from '../schema/stores';
 import type { Db } from '../types';
 import { loadModifierGroupsForItems } from './modifiers';
-import { getShowPoweredBy } from './store-branding';
+import { getStoreBranding } from './store-branding';
 
 export type PublicModifierOption = {
   id: string;
@@ -39,6 +40,7 @@ export type PublicMenuPayload = {
     acceptingPublicRequests: boolean;
     /** false 表示 Pro 商家已隐藏「Powered by TaoMenu」（issue #26） */
     showPoweredBy: boolean;
+    coverImageKey: string | null;
   };
   table?: { id: string; name: string };
   pickupPoint?: { id: string; name: string };
@@ -140,6 +142,7 @@ export async function getPublishedMenuForStore(
   const store = storeRows[0];
   if (!store) return null;
 
+  const branding = await getStoreBranding(db, store.id);
   const publicStore: PublicMenuPayload['store'] = {
     id: store.id,
     slug: store.slug,
@@ -148,7 +151,8 @@ export async function getPublishedMenuForStore(
     baseLocale: store.baseLocale,
     menuVersion: store.menuVersion,
     acceptingPublicRequests: store.acceptingPublicRequests,
-    showPoweredBy: await getShowPoweredBy(db, store.id, store.plan),
+    showPoweredBy: shouldShowPoweredBy(store.plan, branding.hidePoweredBy),
+    coverImageKey: branding.coverImageKey,
   };
 
   const menuRows = await db

@@ -13,6 +13,7 @@ import {
 } from '../../../customer-cart';
 import { CustomerCartPanel } from '../../../customer-cart-panel';
 import { CustomerMenuCategories } from '../../../customer-menu-categories';
+import { CustomerMenuCover } from '../../../customer-menu-cover';
 import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
@@ -32,6 +33,7 @@ type MenuPayload = {
     currency: string;
     acceptingPublicRequests: boolean;
     showPoweredBy?: boolean;
+    coverImageKey?: string | null;
   };
   pickupPoint?: { name: string };
   categories: Array<{
@@ -284,6 +286,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     <div
       className={`mx-auto min-h-dvh w-full min-w-0 max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}
     >
+      <CustomerMenuCover coverImageKey={menu.store.coverImageKey} />
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">

@@ -41,7 +41,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   const branding = await getStoreBranding(getDb(), selection.store.id);
 
   return (
-    <PageMessages namespaces={['owner']}>
+    <PageMessages namespaces={['owner', 'menu']}>
       <div className="space-y-6">
         <header className="border-b border-border/80 pb-5">
           <p className="text-sm font-bold text-jade-600">{selection.store.name}</p>
@@ -51,6 +51,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         <StoreSettingsForm
           store={selection.store}
           hidePoweredBy={branding.hidePoweredBy}
+          coverImageKey={branding.coverImageKey}
           upgradeUrl={joinPublicUrl(getPublicWebsiteUrl(), `/${locale}/pricing`)}
           isUpgradeIntent={isUpgradeIntent}
           billingStatus={

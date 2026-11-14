@@ -8,13 +8,27 @@ const KEY_RE =
   /^menu\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpe?g|png|webp)$/i;
 const ENHANCEMENT_KEY_RE =
   /^menu-enhancements\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.jpeg$/i;
+const STORE_COVER_KEY_RE =
+  /^store-covers\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpe?g|png|webp)$/i;
 
 export function isValidMenuImageKey(key: string): boolean {
   return KEY_RE.test(key);
 }
 
+export function isValidStoreCoverKey(key: string): boolean {
+  return STORE_COVER_KEY_RE.test(key);
+}
+
 export function isValidPublicMenuMediaKey(key: string): boolean {
-  return isValidMenuImageKey(key) || ENHANCEMENT_KEY_RE.test(key);
+  return isValidMenuImageKey(key) || ENHANCEMENT_KEY_RE.test(key) || isValidStoreCoverKey(key);
+}
+
+export function buildStoreCoverKey(storeId: string, mime: MenuImageMime): string {
+  const ext = extensionForMime(mime);
+  if (!ext) {
+    throw new Error('Unsupported mime');
+  }
+  return `store-covers/${storeId}/${crypto.randomUUID()}.${ext}`;
 }
 
 export function extensionForMime(mime: string): 'jpg' | 'png' | 'webp' | null {

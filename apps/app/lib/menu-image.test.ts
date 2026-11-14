@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildMenuImageKey,
+  buildStoreCoverKey,
   isValidMenuImageKey,
   isValidPublicMenuMediaKey,
+  isValidStoreCoverKey,
   publicMediaPath,
   validateMenuImageBytes,
 } from './menu-image';
@@ -34,6 +36,13 @@ describe('menu image key', () => {
     expect(isValidPublicMenuMediaKey(`menu-enhancements/${storeId}/${itemId}/${jobId}.exe`)).toBe(
       false,
     );
+  });
+
+  it('生成并校验店铺封面 key', () => {
+    const key = buildStoreCoverKey(storeId, 'image/jpeg');
+    expect(isValidStoreCoverKey(key)).toBe(true);
+    expect(isValidPublicMenuMediaKey(key)).toBe(true);
+    expect(isValidStoreCoverKey(`store-covers/${storeId}/../x.jpg`)).toBe(false);
   });
 
   it('public path 分段编码', () => {

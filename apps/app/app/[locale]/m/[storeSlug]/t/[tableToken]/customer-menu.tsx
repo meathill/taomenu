@@ -33,6 +33,7 @@ type MenuPayload = {
     acceptingPublicRequests: boolean;
     menuVersion: number;
     showPoweredBy?: boolean;
+    coverImageKey?: string | null;
   };
   table?: { name: string };
   categories: Array<{
@@ -299,6 +300,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
     >
       <CustomerMenuList
         storeName={menu.store.name}
+        coverImageKey={menu.store.coverImageKey}
         tableName={menu.table?.name}
         acceptingPublicRequests={menu.store.acceptingPublicRequests}
         categories={menu.categories}
