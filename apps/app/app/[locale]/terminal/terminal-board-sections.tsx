@@ -175,6 +175,12 @@ export function TerminalOrderSection({
                     </li>
                   ))}
                 </ul>
+                {order.note ? (
+                  <p className="mt-3 rounded-xl bg-brand-50 px-3 py-2 text-sm font-semibold break-words whitespace-pre-line text-ink-900">
+                    <span className="mr-1 text-xs font-bold text-gold-600">{t('orderNote')}</span>
+                    {order.note}
+                  </p>
+                ) : null}
                 <div className="mt-3 grid gap-2">
                   {orderError?.orderId === order.id ? (
                     <p className="text-sm font-medium text-brand-600" role="alert">

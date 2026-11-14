@@ -19,6 +19,7 @@
   "readyPickup": "Sẵn sàng lấy",
   "pickedUp": "Đã lấy",
   "recordCash": "Ghi nhận đã thu tiền mặt",
+  "orderNote": "Ghi chú",
   "recordCashAmount": "Ghi nhận tiền mặt {amount}",
   "paymentRecorded": "Đã ghi nhận thanh toán tiền mặt.",
   "closeSection": "Phiên bàn đang mở",

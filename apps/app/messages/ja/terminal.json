@@ -19,6 +19,7 @@
   "readyPickup": "受取可能",
   "pickedUp": "受取済み",
   "recordCash": "現金受領を記録",
+  "orderNote": "メモ",
   "recordCashAmount": "現金 {amount} を記録",
   "paymentRecorded": "現金支払いを記録しました。",
   "closeSection": "開いている卓セッション",

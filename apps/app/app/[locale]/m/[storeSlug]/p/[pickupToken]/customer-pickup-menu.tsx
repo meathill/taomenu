@@ -5,6 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
+import {
+  addToCart,
+  type CartLine,
+  cartSubtotal,
+  changeCartQuantity,
+  normalizeOrderNote,
+} from '../../../customer-cart';
+import { CustomerCartPanel } from '../../../customer-cart-panel';
 import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
@@ -26,8 +34,6 @@ type MenuPayload = {
   }>;
 };
 
-type CartLine = CartLineSelection & { quantity: number };
-
 export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const t = useTranslations('customer');
   const locale = useLocale();
@@ -37,6 +43,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [picking, setPicking] = useState<PublicMenuItem | null>(null);
   const [result, setResult] = useState<{
@@ -69,10 +76,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     void load();
   }, [load]);
 
-  const subtotal = useMemo(
-    () => cart.reduce((sum, line) => sum + line.priceAmount * line.quantity, 0),
-    [cart],
-  );
+  const subtotal = useMemo(() => cartSubtotal(cart), [cart]);
 
   // 下单结果页在菜单请求失败时仍会渲染，此时按 VND 回落
   const currency = toBillingCurrency(menu?.store.currency);
@@ -93,15 +97,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   }
 
   function commitSelection(selection: Omit<CartLineSelection, 'quantity'>) {
-    setCart((prev) => {
-      const existing = prev.find((l) => l.lineKey === selection.lineKey);
-      if (existing) {
-        return prev.map((l) =>
-          l.lineKey === selection.lineKey ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
-        );
-      }
-      return [...prev, { ...selection, quantity: 1 }];
-    });
+    setCart((prev) => addToCart(prev, selection));
     setPicking(null);
   }
 
@@ -119,6 +115,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             idempotencyKey,
+            note: normalizeOrderNote(note),
             lines: cart.map((l) => ({
               menuItemId: l.menuItemId,
               quantity: l.quantity,
@@ -167,6 +164,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         }
       }
       setCart([]);
+      setNote('');
     } finally {
       setSubmitting(false);
     }
@@ -271,7 +269,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   }
 
   return (
-    <div className="mx-auto min-h-dvh max-w-lg pb-28">
+    <div className={`mx-auto min-h-dvh max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}>
       <header className="sticky top-0 z-10 border-b border-border bg-paper-50/95 px-4 py-4 backdrop-blur">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -333,43 +331,19 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         ))}
       </ul>
       {cart.length > 0 ? (
-        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="mx-auto mb-3 max-w-lg">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
-              <p className="text-sm font-bold tabular-nums text-ink-900">
-                {formatCurrency(subtotal, currency, locale)}
-              </p>
-            </div>
-            <ul className="mt-2 max-h-24 space-y-1 overflow-y-auto text-xs text-muted-foreground">
-              {cart.map((line) => (
-                <li key={line.lineKey} className="flex justify-between gap-3">
-                  <span className="min-w-0 truncate">
-                    {line.quantity}× {line.name}
-                  </span>
-                  <span className="shrink-0 tabular-nums">
-                    {formatCurrency(line.priceAmount * line.quantity, currency, locale)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {!menu.store.acceptingPublicRequests ? (
-              <p className="mt-2 text-xs font-semibold text-brand-700" role="status">
-                {t('pausedCart')}
-              </p>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            disabled={submitting || !menu.store.acceptingPublicRequests}
-            onClick={() => void submitOrder()}
-            className="mx-auto min-h-12 w-full max-w-lg rounded-xl bg-brand-600 text-sm font-bold text-white disabled:bg-paper-100 disabled:text-muted-foreground"
-          >
-            {submitting
-              ? t('sending')
-              : t('sendWithPrice', { price: formatCurrency(subtotal, currency, locale) })}
-          </button>
-        </div>
+        <CustomerCartPanel
+          cart={cart}
+          subtotal={subtotal}
+          currency={currency}
+          note={note}
+          isAcceptingOrders={menu.store.acceptingPublicRequests}
+          isSubmitting={submitting}
+          onNoteChange={setNote}
+          onChangeQuantity={(lineKey, delta) =>
+            setCart((prev) => changeCartQuantity(prev, lineKey, delta))
+          }
+          onSubmit={() => void submitOrder()}
+        />
       ) : null}
       {picking ? (
         <ModifierPicker

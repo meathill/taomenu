@@ -8,6 +8,8 @@ export type OrderCard = {
   subtotalAmount: number;
   paidAmount: number;
   remainingAmount: number;
+  /** 顾客下单备注（忌口、少辣等） */
+  note?: string | null;
   items: Array<{ name: string; quantity: number }>;
 };
 

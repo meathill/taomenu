@@ -42,7 +42,7 @@ describe('isOrderVisibleInWorkbench', () => {
 });
 
 describe('transitionOrder（真实 SQL，issue #21）', () => {
-  async function seedPickupOrder(db: Db, status: OrderStatus) {
+  async function seedPickupOrder(db: Db, status: OrderStatus, note: string | null = null) {
     const now = new Date();
     await db.insert(orders).values({
       id: 'order-2',
@@ -55,6 +55,7 @@ describe('transitionOrder（真实 SQL，issue #21）', () => {
       businessDate: '2026-11-14',
       status,
       subtotalAmount: 450,
+      note,
       createdAt: now,
       updatedAt: now,
     });
@@ -104,5 +105,14 @@ describe('transitionOrder（真实 SQL，issue #21）', () => {
     expect(
       await transitionOrder({ ...ctx, storeId: 'other' }, db, 'order-2', 'ready_for_pickup'),
     ).toBeNull();
+  });
+
+  it('工作台返回顾客备注（issue #22）', async () => {
+    const db = createTestDb();
+    await seedStore(db, 'paris', { currency: 'USD' });
+    await seedPickupOrder(db, 'submitted', '不要香菜');
+
+    const [card] = await listOrderWorkbench(ctx, db);
+    expect(card?.note).toBe('不要香菜');
   });
 });

@@ -97,6 +97,7 @@ export async function listOrderWorkbench(ctx: StoreContext, db: Db) {
     subtotalAmount: order.subtotalAmount,
     paidAmount,
     remainingAmount,
+    note: order.note,
     createdAt: order.createdAt,
     items: items
       .filter((item) => item.orderId === order.id)

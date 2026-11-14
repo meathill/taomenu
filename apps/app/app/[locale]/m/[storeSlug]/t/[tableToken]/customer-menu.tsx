@@ -1,9 +1,17 @@
 'use client';
 
-import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
+import { toBillingCurrency } from '@taomenu/shared';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  addToCart,
+  type CartLine,
+  cartSubtotal,
+  changeCartQuantity,
+  normalizeOrderNote,
+} from '../../../customer-cart';
+import { CustomerCartPanel } from '../../../customer-cart-panel';
 import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
@@ -11,7 +19,6 @@ import {
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
-import { addToCart, type CartLine, cartSubtotal } from './customer-cart';
 import { CustomerMenuList } from './customer-menu-list';
 import { CustomerOrderView, type OrderStatusView } from './customer-order-view';
 
@@ -40,6 +47,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const [menu, setMenu] = useState<MenuPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [order, setOrder] = useState<OrderStatusView | null>(null);
   const [svcBusy, setSvcBusy] = useState(false);
@@ -169,6 +177,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           idempotencyKey,
+          note: normalizeOrderNote(note),
           lines: cart.map((l) => ({
             menuItemId: l.menuItemId,
             quantity: l.quantity,
@@ -197,6 +206,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         return;
       }
       setCart([]);
+      setNote('');
       try {
         localStorage.setItem(
           'taomenu.lastOrder',
@@ -271,7 +281,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   }
 
   return (
-    <div className="mx-auto min-h-dvh max-w-lg pb-28">
+    <div className={`mx-auto min-h-dvh max-w-lg ${cart.length > 0 ? 'pb-80' : 'pb-28'}`}>
       <CustomerMenuList
         storeName={menu.store.name}
         tableName={menu.table?.name}
@@ -290,43 +300,19 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
 
       {cart.length > 0 ? (
-        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg">
-          <div className="mx-auto max-w-lg space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-bold text-ink-900">{t('cartReview')}</p>
-              <p className="text-sm font-bold tabular-nums text-ink-900">
-                {formatCurrency(subtotal, currency, locale)}
-              </p>
-            </div>
-            <ul className="max-h-24 space-y-1 overflow-y-auto text-xs text-muted-foreground">
-              {cart.map((line) => (
-                <li key={line.lineKey} className="flex justify-between gap-3">
-                  <span className="min-w-0 truncate">
-                    {line.quantity}× {line.name}
-                  </span>
-                  <span className="shrink-0 tabular-nums">
-                    {formatCurrency(line.priceAmount * line.quantity, currency, locale)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {!menu.store.acceptingPublicRequests ? (
-              <p className="text-xs font-semibold text-brand-700" role="status">
-                {t('pausedCart')}
-              </p>
-            ) : null}
-            <button
-              type="button"
-              disabled={submitting || !menu.store.acceptingPublicRequests}
-              onClick={() => void submitOrder()}
-              className="min-h-12 w-full rounded-xl bg-brand-600 px-5 text-sm font-bold text-white disabled:bg-paper-100 disabled:text-muted-foreground"
-            >
-              {submitting
-                ? t('sending')
-                : t('sendWithPrice', { price: formatCurrency(subtotal, currency, locale) })}
-            </button>
-          </div>
-        </div>
+        <CustomerCartPanel
+          cart={cart}
+          subtotal={subtotal}
+          currency={currency}
+          note={note}
+          isAcceptingOrders={menu.store.acceptingPublicRequests}
+          isSubmitting={submitting}
+          onNoteChange={setNote}
+          onChangeQuantity={(lineKey, delta) =>
+            setCart((prev) => changeCartQuantity(prev, lineKey, delta))
+          }
+          onSubmit={() => void submitOrder()}
+        />
       ) : null}
 
       {picking ? (

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import type { CartLineSelection } from '../../../modifier-picker';
-import { addToCart, type CartLine, cartSubtotal } from './customer-cart';
+import {
+  addToCart,
+  type CartLine,
+  cartSubtotal,
+  changeCartQuantity,
+  normalizeOrderNote,
+} from './customer-cart';
+import type { CartLineSelection } from './modifier-picker';
 
 function selection(
   overrides: Partial<Omit<CartLineSelection, 'quantity'>> = {},
@@ -56,5 +62,38 @@ describe('cartSubtotal', () => {
 
   it('空购物车金额为 0', () => {
     expect(cartSubtotal([])).toBe(0);
+  });
+});
+
+describe('changeCartQuantity（issue #22）', () => {
+  const line: CartLine = { ...selection(), quantity: 2 };
+  const other: CartLine = {
+    ...selection({ lineKey: 'item-2-', menuItemId: 'item-2' }),
+    quantity: 1,
+  };
+
+  it('+1 / -1 调整数量', () => {
+    expect(changeCartQuantity([line], line.lineKey, 1)[0]?.quantity).toBe(3);
+    expect(changeCartQuantity([line], line.lineKey, -1)[0]?.quantity).toBe(1);
+  });
+
+  it('减到 0 移除该行，不影响其他行', () => {
+    const next = changeCartQuantity([other, line], other.lineKey, -1);
+    expect(next).toEqual([line]);
+  });
+
+  it('数量上限 99', () => {
+    expect(changeCartQuantity([{ ...line, quantity: 99 }], line.lineKey, 1)[0]?.quantity).toBe(99);
+  });
+});
+
+describe('normalizeOrderNote', () => {
+  it('空白备注不提交，其余去掉首尾空白', () => {
+    expect(normalizeOrderNote('   ')).toBeUndefined();
+    expect(normalizeOrderNote(' 不要香菜 ')).toBe('不要香菜');
+  });
+
+  it('超长截到 500 字', () => {
+    expect(normalizeOrderNote('a'.repeat(600))?.length).toBe(500);
   });
 });

@@ -19,6 +19,7 @@
   "readyPickup": "Ready for pickup",
   "pickedUp": "Picked up",
   "recordCash": "Record cash payment",
+  "orderNote": "Note",
   "recordCashAmount": "Record {amount} cash payment",
   "paymentRecorded": "Cash payment recorded.",
   "closeSection": "Open table sessions",
