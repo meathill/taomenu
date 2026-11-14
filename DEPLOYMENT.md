@@ -356,6 +356,8 @@ curl -X POST "$NEXT_PUBLIC_APP_URL/api/internal/process-outbox" \
 
 ---
 
+> Git 推送自动部署（Cloudflare Workers Builds）按路径触发：实测只改 `packages/*` 时 taomenu-ai / taomenu-website 会构建，taomenu-app 不会。共享包（如 `packages/shared` 套餐额度）的改动要让 app 生效，需要同时改动 `apps/app` 下的文件（例如升 `apps/app/package.json` 的 version），或在 Cloudflare 控制台把 `packages/**` 加进 taomenu-app 的构建路径。
+
 ## 本地开发
 
 ```bash
