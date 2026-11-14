@@ -265,3 +265,11 @@
 - 根布局的页眉/页脚形态由 `lib/site-chrome.ts` 的 `getSiteChrome(pathname)` 决定：`/app`、`/terminal` 不显示；`/m/*` 顾客页不显示页眉（没有「登录」），页脚只剩一行「Powered by TaoMenu」（带 `utm_source=menu&utm_medium=powered_by`）；其他页面完整显示。顾客页的语言切换由点单页自己的 `customer-language-select` 负责。
 - 以前用 `pathname.includes('/app')` 判断，slug 里含 `app` 的店铺（如 `/m/apple-cafe`）会被误判，现在改为前缀匹配。
 - Pro 去掉「Powered by」暂未实现，需要产品确认。
+
+## 门店币种扩充（2026-11-14，#15）
+
+- `STORE_CURRENCIES`（菜单标价）与 `BILLING_CURRENCIES`（Stripe 订阅）分开：门店币种新增 EUR、GBP、KRW、THB、SGD、MYR、IDR、PHP、HKD、TWD、AUD；计费币种仍只有 VND/USD/JPY/CNY，Stripe 同步脚本不受影响。
+- 小数位按当地菜单习惯：KRW/IDR/TWD 按 0 位，其余新增币种 2 位。存量价格都是最小单位整数，切换币种不会自动换算。
+- 门店订阅结算币种用 `getBillingCurrencyForStore`：可计费币种原样，其他门店币种按 USD 结算（以前 `toBillingCurrency` 会把非计费币种错误回落为 VND）。顾客菜单、AI 菜单识别改用 `toStoreCurrency`。
+- Onboarding 按浏览器时区猜默认币种（`guessStoreCurrencyFromTimeZone`，如 Europe/Paris → EUR、Europe/London → GBP），草稿里选过的币种优先。
+- `apps/ai` 的金额提示词也改用门店币种；ai Worker 不在 Workers Builds 自动部署范围内，需要单独部署才生效。

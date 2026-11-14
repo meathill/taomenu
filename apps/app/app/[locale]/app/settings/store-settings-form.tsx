@@ -2,11 +2,12 @@
 
 import type { StoreRow } from '@taomenu/db';
 import {
-  BILLING_CURRENCIES,
-  type BillingCurrency,
   formatCurrency,
+  getBillingCurrencyForStore,
   getBillingPrice,
-  toBillingCurrency,
+  STORE_CURRENCIES,
+  type StoreCurrency,
+  toStoreCurrency,
 } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
@@ -34,7 +35,7 @@ export function StoreSettingsForm({
   const [name, setName] = useState(store.name);
   const [serviceMode, setServiceMode] = useState(store.serviceMode);
   const [timezone, setTimezone] = useState(store.timezone);
-  const [currency, setCurrency] = useState<BillingCurrency>(toBillingCurrency(store.currency));
+  const [currency, setCurrency] = useState<StoreCurrency>(toStoreCurrency(store.currency));
   const [acceptingPublicRequests, setAcceptingPublicRequests] = useState(
     store.acceptingPublicRequests,
   );
@@ -55,7 +56,8 @@ export function StoreSettingsForm({
     store.stripePlanSubscriptionId || store.stripeStaffSeatSubscriptionId,
   );
   // 结算按已保存的门店币种进行，所以价格展示也用 store.currency 而非未保存的表单值
-  const billingCurrency = toBillingCurrency(store.currency);
+  // 非计费币种（如 EUR）的门店按 USD 结算
+  const billingCurrency = getBillingCurrencyForStore(store.currency);
   const proPrice = formatCurrency(
     getBillingPrice('pro_plan', billingCurrency),
     billingCurrency,
@@ -147,10 +149,10 @@ export function StoreSettingsForm({
             {t('currency')}
             <select
               value={currency}
-              onChange={(event) => setCurrency(event.target.value as BillingCurrency)}
+              onChange={(event) => setCurrency(event.target.value as StoreCurrency)}
               className={`mt-2 ${fieldClassName}`}
             >
-              {BILLING_CURRENCIES.map((code) => (
+              {STORE_CURRENCIES.map((code) => (
                 <option key={code} value={code}>
                   {code}
                 </option>

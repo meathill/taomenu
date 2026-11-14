@@ -1,12 +1,13 @@
 'use client';
 
 import {
-  BILLING_CURRENCIES,
   type CreateStoreBody,
   DEFAULT_STORE_TIMEZONE,
+  guessStoreCurrencyFromTimeZone,
   resolveDefaultTimeZone,
   SERVICE_MODES,
-  toBillingCurrency,
+  STORE_CURRENCIES,
+  toStoreCurrency,
 } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
@@ -22,10 +23,11 @@ type StoreCurrency = NonNullable<CreateStoreBody['currency']>;
 type Draft = {
   name: string;
   serviceMode: CreateStoreBody['serviceMode'];
-  currency: StoreCurrency;
+  /** null：草稿里没选过币种，按浏览器时区猜默认值 */
+  currency: StoreCurrency | null;
 };
 
-const EMPTY_DRAFT: Draft = { name: '', serviceMode: 'table_service', currency: 'VND' };
+const EMPTY_DRAFT: Draft = { name: '', serviceMode: 'table_service', currency: null };
 
 function loadDraft(): Draft {
   if (typeof window === 'undefined') {
@@ -40,7 +42,7 @@ function loadDraft(): Draft {
     return {
       name: parsed.name ?? EMPTY_DRAFT.name,
       serviceMode: parsed.serviceMode ?? EMPTY_DRAFT.serviceMode,
-      currency: toBillingCurrency(parsed.currency),
+      currency: parsed.currency ? toStoreCurrency(parsed.currency) : null,
     };
   } catch {
     return EMPTY_DRAFT;
@@ -63,9 +65,12 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
     const draft = loadDraft();
     setName(draft.name);
     setServiceMode(draft.serviceMode);
-    setCurrency(draft.currency);
-    // 默认用浏览器时区，不再一律写成越南时区
-    setTimezone(resolveDefaultTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone));
+    // 默认用浏览器时区，不再一律写成越南时区；币种也按时区猜（如 Europe/Paris → EUR）
+    const detectedTimeZone = resolveDefaultTimeZone(
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+    );
+    setTimezone(detectedTimeZone);
+    setCurrency(draft.currency ?? guessStoreCurrencyFromTimeZone(detectedTimeZone) ?? 'VND');
     setReady(true);
   }, []);
 
@@ -191,7 +196,7 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
             onChange={(event) => setCurrency(event.target.value as StoreCurrency)}
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
           >
-            {BILLING_CURRENCIES.map((code) => (
+            {STORE_CURRENCIES.map((code) => (
               <option key={code} value={code}>
                 {code}
               </option>

@@ -1,6 +1,6 @@
 'use client';
 
-import { formatCurrency, toBillingCurrency } from '@taomenu/shared';
+import { formatCurrency, toStoreCurrency } from '@taomenu/shared';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -79,7 +79,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const subtotal = useMemo(() => cartSubtotal(cart), [cart]);
 
   // 下单结果页在菜单请求失败时仍会渲染，此时按 VND 回落
-  const currency = toBillingCurrency(menu?.store.currency);
+  const currency = toStoreCurrency(menu?.store.currency);
 
   function requestAddItem(item: PublicMenuItem) {
     if (item.isSoldOut) return;

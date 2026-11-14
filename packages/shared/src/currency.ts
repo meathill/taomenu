@@ -16,6 +16,64 @@ export const CURRENCY_DECIMALS: Record<BillingCurrency, number> = {
   CNY: 2,
 };
 
+/**
+ * 门店币种（菜单标价用），是计费币种的超集（issue #15）。
+ * 计费（Stripe）仍只支持 BILLING_CURRENCIES；其他门店币种的订阅按 USD 结算，见 getBillingCurrencyForStore。
+ * 小数位采用当地菜单的习惯写法：KRW/IDR/TWD 菜单基本不写小数，按 0 位处理。
+ */
+export const STORE_CURRENCIES = [
+  'VND',
+  'USD',
+  'EUR',
+  'GBP',
+  'JPY',
+  'CNY',
+  'KRW',
+  'THB',
+  'SGD',
+  'MYR',
+  'IDR',
+  'PHP',
+  'HKD',
+  'TWD',
+  'AUD',
+] as const;
+
+export type StoreCurrency = (typeof STORE_CURRENCIES)[number];
+
+const STORE_CURRENCY_DECIMALS: Record<StoreCurrency, number> = {
+  ...CURRENCY_DECIMALS,
+  EUR: 2,
+  GBP: 2,
+  KRW: 0,
+  THB: 2,
+  SGD: 2,
+  MYR: 2,
+  IDR: 0,
+  PHP: 2,
+  HKD: 2,
+  TWD: 0,
+  AUD: 2,
+};
+
+export function isStoreCurrency(value: string): value is StoreCurrency {
+  return (STORE_CURRENCIES as readonly string[]).includes(value);
+}
+
+/** 解析门店币种，非法值回落 VND */
+export function toStoreCurrency(value: string | null | undefined): StoreCurrency {
+  return value && isStoreCurrency(value) ? value : 'VND';
+}
+
+/** 门店订阅的结算币种：门店币种本身可计费就用它，否则用 USD（不再错误地回落到 VND） */
+export function getBillingCurrencyForStore(
+  storeCurrency: string | null | undefined,
+): BillingCurrency {
+  if (!storeCurrency) return 'VND';
+  if (isBillingCurrency(storeCurrency)) return storeCurrency;
+  return isStoreCurrency(storeCurrency) ? 'USD' : 'VND';
+}
+
 export function isBillingCurrency(value: string): value is BillingCurrency {
   return (BILLING_CURRENCIES as readonly string[]).includes(value);
 }
@@ -27,7 +85,7 @@ export function toBillingCurrency(value: string | null | undefined): BillingCurr
 
 /** 未知币种按 0 位小数处理（与 VND 一致） */
 export function getCurrencyDecimals(currency: string): number {
-  return isBillingCurrency(currency) ? CURRENCY_DECIMALS[currency] : 0;
+  return isStoreCurrency(currency) ? STORE_CURRENCY_DECIMALS[currency] : 0;
 }
 
 /**

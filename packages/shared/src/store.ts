@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BILLING_CURRENCIES } from './currency';
+import { STORE_CURRENCIES } from './currency';
 import { isValidTimeZone } from './timezone';
 
 const timezoneSchema = z
@@ -16,7 +16,7 @@ export const createStoreSchema = z.object({
   serviceMode: z.enum(SERVICE_MODES),
   timezone: timezoneSchema.optional(),
   baseLocale: z.string().trim().min(2).max(16).optional(),
-  currency: z.enum(BILLING_CURRENCIES).optional(),
+  currency: z.enum(STORE_CURRENCIES).optional(),
 });
 
 export type CreateStoreBody = z.infer<typeof createStoreSchema>;
@@ -26,7 +26,7 @@ export const updateStoreSchema = z.object({
   serviceMode: z.enum(SERVICE_MODES).optional(),
   timezone: timezoneSchema.optional(),
   acceptingPublicRequests: z.boolean().optional(),
-  currency: z.enum(BILLING_CURRENCIES).optional(),
+  currency: z.enum(STORE_CURRENCIES).optional(),
 });
 
 export type UpdateStoreBody = z.infer<typeof updateStoreSchema>;

@@ -1,5 +1,4 @@
 import {
-  type BillingCurrency,
   getCurrencyDecimals,
   MENU_IMPORT_JSON_SCHEMA,
   MENU_TRANSLATION_JSON_SCHEMA,
@@ -8,7 +7,8 @@ import {
   type MenuTranslationOutput,
   menuImportOutputSchema,
   menuTranslationOutputSchema,
-  toBillingCurrency,
+  type StoreCurrency,
+  toStoreCurrency,
 } from '@taomenu/shared';
 import { z } from 'zod';
 
@@ -83,7 +83,7 @@ function buildAssetContent(asset: MenuImportAssetInput, index: number) {
  * 按门店币种生成金额指令。
  * 金额一律以最小单位整数返回：0 位小数币种即主单位本身，2 位小数币种是「分」。
  */
-export function buildPriceInstructions(currency: BillingCurrency): string[] {
+export function buildPriceInstructions(currency: StoreCurrency): string[] {
   const decimals = getCurrencyDecimals(currency);
   if (decimals === 0) {
     return [
@@ -116,7 +116,7 @@ export function createOpenAiMenuProvider(options: OpenAiMenuProviderOptions): Me
   const fetcher = options.fetcher ?? fetch;
   return {
     async extractMenu(input) {
-      const currency = toBillingCurrency(input.currency);
+      const currency = toStoreCurrency(input.currency);
       const content = [
         ...input.assets.map(buildAssetContent),
         {

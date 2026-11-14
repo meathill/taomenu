@@ -1,5 +1,5 @@
 import { getStore } from '@taomenu/db';
-import { toBillingCurrency } from '@taomenu/shared';
+import { getBillingCurrencyForStore } from '@taomenu/shared';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
 import { getSession } from '@/lib/session';
 import { createProCheckoutSession, getStripeConfig, StripeRequestError } from '@/lib/stripe';
@@ -31,7 +31,7 @@ export async function POST(_request: Request, context: RouteContext) {
       storeSlug: store.slug,
       ownerEmail: session.user.email,
       stripeCustomerId: store.stripeCustomerId,
-      currency: toBillingCurrency(store.currency),
+      currency: getBillingCurrencyForStore(store.currency),
     });
     return Response.json(checkout, { status: 201 });
   } catch (error) {

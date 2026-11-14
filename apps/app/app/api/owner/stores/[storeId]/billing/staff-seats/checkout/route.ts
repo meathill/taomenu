@@ -1,5 +1,5 @@
 import { getStore, updateStaffSeatBilling } from '@taomenu/db';
-import { toBillingCurrency } from '@taomenu/shared';
+import { getBillingCurrencyForStore } from '@taomenu/shared';
 import { z } from 'zod';
 import { badRequest, notFound, unauthorized } from '@/lib/api-error';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
@@ -70,7 +70,7 @@ export async function POST(request: Request, context: RouteContext) {
       ownerEmail: session.user.email,
       stripeCustomerId: store.stripeCustomerId,
       quantity: additionalSeats,
-      currency: toBillingCurrency(store.currency),
+      currency: getBillingCurrencyForStore(store.currency),
     });
     return Response.json(checkout, { status: 201 });
   } catch (error) {

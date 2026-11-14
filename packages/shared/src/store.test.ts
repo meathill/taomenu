@@ -31,7 +31,7 @@ describe('createStoreSchema', () => {
 
   it('拒绝未支持币种与小写写法', () => {
     const base = { name: 'Phở 24', serviceMode: 'table_service' };
-    expect(createStoreSchema.safeParse({ ...base, currency: 'EUR' }).success).toBe(false);
+    expect(createStoreSchema.safeParse({ ...base, currency: 'XYZ' }).success).toBe(false);
     expect(createStoreSchema.safeParse({ ...base, currency: 'usd' }).success).toBe(false);
   });
 });
@@ -44,7 +44,7 @@ describe('updateStoreSchema', () => {
   });
 
   it('拒绝未支持币种与小写写法', () => {
-    expect(updateStoreSchema.safeParse({ currency: 'EUR' }).success).toBe(false);
+    expect(updateStoreSchema.safeParse({ currency: 'XYZ' }).success).toBe(false);
     expect(updateStoreSchema.safeParse({ currency: 'usd' }).success).toBe(false);
   });
 });

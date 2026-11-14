@@ -146,7 +146,7 @@ describe('币种边界', () => {
     for (const currency of BILLING_CURRENCIES) {
       expect(getCurrencyDecimals(currency)).toBe(expected[currency]);
     }
-    expect(getCurrencyDecimals('EUR')).toBe(0);
+    expect(getCurrencyDecimals('XYZ')).toBe(0);
   });
 });
 

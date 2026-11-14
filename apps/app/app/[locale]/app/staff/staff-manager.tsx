@@ -2,10 +2,10 @@
 
 import {
   formatCurrency,
+  getBillingCurrencyForStore,
   getBillingPrice,
   getStaffSeatLimit,
   type PlanId,
-  toBillingCurrency,
 } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
@@ -174,7 +174,7 @@ export function StaffManager({
   const activeDeviceCount = devices.filter((device) => device.status === 'active').length;
   const staffSeatLimit = getStaffSeatLimit(plan, seatAddons);
   const hasAvailableSeat = hasAvailableStaffSeat(activeDeviceCount, staffSeatLimit);
-  const billingCurrency = toBillingCurrency(currency);
+  const billingCurrency = getBillingCurrencyForStore(currency);
   const seatPrice = formatCurrency(
     getBillingPrice('staff_seat', billingCurrency),
     billingCurrency,
