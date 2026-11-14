@@ -1,4 +1,4 @@
-import { getUserPreferences } from '@taomenu/db';
+import { getUserPreferences, listMenuLocales } from '@taomenu/db';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
@@ -10,7 +10,7 @@ import {
 } from '@/lib/active-store';
 import { getDb } from '@/lib/db';
 import { MenuEditor } from './menu-editor';
-import { getMenuSubtitleKey } from './menu-page-copy';
+import { getMenuSubtitleKey, resolveActiveMenuLocale } from './menu-page-copy';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,12 +34,24 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
   const requestedMenuLocale = Array.isArray(params.menuLocale)
     ? params.menuLocale[0]
     : params.menuLocale;
-  const supportedLocales = new Set(['en', 'vi', 'zh', 'ja']);
-  const activeMenuLocale =
-    store.plan === 'pro' && requestedMenuLocale && supportedLocales.has(requestedMenuLocale)
-      ? requestedMenuLocale
-      : store.baseLocale;
-  const preferences = await getUserPreferences(getDb(), selection.user.id);
+  const db = getDb();
+  const existingLocales = await listMenuLocales(
+    {
+      storeId: store.id,
+      userId: selection.user.id,
+      role: 'owner',
+      plan: store.plan,
+      staffSeatAddons: store.staffSeatAddons,
+    },
+    db,
+  );
+  const activeMenuLocale = resolveActiveMenuLocale({
+    plan: store.plan,
+    baseLocale: store.baseLocale,
+    requested: requestedMenuLocale,
+    existingLocales,
+  });
+  const preferences = await getUserPreferences(db, selection.user.id);
   const baseLanguageName =
     new Intl.DisplayNames([locale], { type: 'language' }).of(store.baseLocale) ?? store.baseLocale;
 
