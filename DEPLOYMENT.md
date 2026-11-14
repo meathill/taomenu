@@ -38,6 +38,8 @@
 |---|---|
 | `NEXT_PUBLIC_APP_URL` | app 绝对 URL（营销站 CTA、Better Auth 回退基址等） |
 | `NEXT_PUBLIC_WEBSITE_URL` | 营销站绝对 URL（sitemap、robots） |
+| `NEXT_PUBLIC_GA_ID` | GA4 Measurement ID（两站共用 `G-3SQR8Y3R6S`） |
+| `NEXT_PUBLIC_CLARITY_ID` | Microsoft Clarity 项目 ID；空串＝不加载（两站各自 `wrangler.jsonc` vars） |
 
 只放**非密钥**、可公开的配置。浏览器包体会内嵌这些值。
 
