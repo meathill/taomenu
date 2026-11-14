@@ -4,6 +4,7 @@ import {
   type CreateStoreBody,
   DEFAULT_STORE_TIMEZONE,
   guessStoreCurrencyFromTimeZone,
+  guessTimeZoneFromCurrency,
   resolveDefaultTimeZone,
   SERVICE_MODES,
   STORE_CURRENCIES,
@@ -11,7 +12,7 @@ import {
 } from '@taomenu/shared';
 import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { TimeZoneSelect } from '@/components/time-zone-select';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -61,19 +62,24 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [ready, setReady] = useState(false);
+  const timezoneTouchedRef = useRef(false);
 
   useEffect(() => {
     const draft = loadDraft();
     setName(draft.name);
     setServiceMode(draft.serviceMode);
-    // 默认用浏览器时区，不再一律写成越南时区；币种也按时区猜（如 Europe/Paris → EUR）
-    const detectedTimeZone = resolveDefaultTimeZone(
-      Intl.DateTimeFormat().resolvedOptions().timeZone,
-    );
-    setTimezone(detectedTimeZone);
-    setCurrency(draft.currency ?? guessStoreCurrencyFromTimeZone(detectedTimeZone) ?? 'VND');
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // 越南语界面默认越南盾 + 越南时区，避免电脑时区是东京时误开成日本店。
+    // 已选过的币种优先；VND 明确对应越南（GMT+7）。
+    const nextCurrency =
+      draft.currency ??
+      (locale === 'vi' ? 'VND' : null) ??
+      guessStoreCurrencyFromTimeZone(detected) ??
+      'VND';
+    setCurrency(nextCurrency);
+    setTimezone(resolveDefaultTimeZone(detected, { currency: nextCurrency, locale }));
     setReady(true);
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     if (!ready) {
@@ -196,7 +202,14 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
           <select
             id="store-currency"
             value={currency}
-            onChange={(event) => setCurrency(event.target.value as StoreCurrency)}
+            onChange={(event) => {
+              const nextCurrency = event.target.value as StoreCurrency;
+              setCurrency(nextCurrency);
+              if (!timezoneTouchedRef.current) {
+                const fromCurrency = guessTimeZoneFromCurrency(nextCurrency);
+                if (fromCurrency) setTimezone(fromCurrency);
+              }
+            }}
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
           >
             {STORE_CURRENCIES.map((code) => (
@@ -212,7 +225,10 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
           <TimeZoneSelect
             id="store-timezone"
             value={timezone}
-            onChange={setTimezone}
+            onChange={(nextTimezone) => {
+              timezoneTouchedRef.current = true;
+              setTimezone(nextTimezone);
+            }}
             className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
           />
           <p className="text-xs text-muted-foreground">{t('timezoneHint')}</p>
