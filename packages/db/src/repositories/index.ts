@@ -232,6 +232,7 @@ export {
   type CreateStoreInput,
   createStoreForOwner,
   findStoreByStripeCustomerId,
+  getActiveStoreBySlug,
   getStore,
   getStoreIfMatches,
   hasStaffStoreMembership,

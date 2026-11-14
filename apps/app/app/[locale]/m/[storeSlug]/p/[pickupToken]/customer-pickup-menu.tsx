@@ -20,6 +20,7 @@ import {
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
+import { useCustomerDocumentTitle } from '../../../use-customer-document-title';
 import { usePublicMenuLocale, useRequestGeneration } from '../../../use-public-menu-locale';
 import { CustomerLanguageSelect } from '../../customer-language-select';
 
@@ -46,6 +47,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   const { menuLocale, changeMenuLocale } = usePublicMenuLocale(locale);
   const beginRequest = useRequestGeneration();
   const [menu, setMenu] = useState<MenuPayload | null>(null);
+  useCustomerDocumentTitle(t('pickupMode'), menu?.store.name);
   const [error, setError] = useState<string | null>(null);
   // 菜单加载失败时也显示 Powered by（只有 Pro 主动隐藏才不显示）
   useSyncPoweredByVisibility(menu?.store.showPoweredBy, menu !== null || error !== null);

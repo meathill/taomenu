@@ -19,6 +19,7 @@ import {
   ModifierPicker,
   type PublicMenuItem,
 } from '../../../modifier-picker';
+import { useCustomerDocumentTitle } from '../../../use-customer-document-title';
 import { usePublicMenuLocale, useRequestGeneration } from '../../../use-public-menu-locale';
 import { CustomerMenuList } from './customer-menu-list';
 import { CustomerOrderView, type OrderStatusView } from './customer-order-view';
@@ -51,6 +52,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   const { menuLocale, changeMenuLocale } = usePublicMenuLocale(locale);
   const beginRequest = useRequestGeneration();
   const [menu, setMenu] = useState<MenuPayload | null>(null);
+  useCustomerDocumentTitle(t('menu'), menu?.store.name);
   const [error, setError] = useState<string | null>(null);
   // 菜单加载失败时也显示 Powered by（只有 Pro 主动隐藏才不显示）
   useSyncPoweredByVisibility(menu?.store.showPoweredBy, menu !== null || error !== null);

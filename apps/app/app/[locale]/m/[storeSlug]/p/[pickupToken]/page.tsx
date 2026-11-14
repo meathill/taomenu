@@ -1,17 +1,20 @@
-import { getTranslations } from 'next-intl/server';
+import { getPublicMenuMetadata } from '../../../public-menu-metadata';
 import { CustomerPickupMenu } from './customer-pickup-menu';
 
 type PickupMenuPageProps = {
   params: Promise<{ storeSlug: string; pickupToken: string }>;
 };
 
-export async function generateMetadata({ params }: PickupMenuPageProps) {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PickupMenuPageProps & { searchParams: Promise<{ locale?: string | string[] }> }) {
   const { storeSlug } = await params;
-  const t = await getTranslations('customer');
-  return {
-    title: `${t('pickupMode')} · ${storeSlug}`,
-    robots: { index: false, follow: false },
-  };
+  return getPublicMenuMetadata({
+    storeSlug,
+    pageKey: 'pickupMode',
+    searchParams,
+  });
 }
 
 export default async function PickupMenuPage({ params }: PickupMenuPageProps) {

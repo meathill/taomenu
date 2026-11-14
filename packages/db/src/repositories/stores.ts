@@ -104,6 +104,19 @@ export async function getStoreIfMatches(
   return getStore(ctx, db);
 }
 
+/** 公开页按 slug 取活跃门店的显示名（不含敏感字段） */
+export async function getActiveStoreBySlug(
+  db: Db,
+  slug: string,
+): Promise<{ id: string; slug: string; name: string } | null> {
+  const rows = await db
+    .select({ id: stores.id, slug: stores.slug, name: stores.name })
+    .from(stores)
+    .where(and(eq(stores.slug, slug), eq(stores.isActive, true)))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
 export type UpdateStoreInput = {
   name?: string;
   serviceMode?: ServiceMode;

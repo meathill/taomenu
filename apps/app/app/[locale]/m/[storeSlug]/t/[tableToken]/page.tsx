@@ -1,17 +1,20 @@
-import { getTranslations } from 'next-intl/server';
+import { getPublicMenuMetadata } from '../../../public-menu-metadata';
 import { CustomerMenu } from './customer-menu';
 
 type TableMenuPageProps = {
   params: Promise<{ storeSlug: string; tableToken: string }>;
 };
 
-export async function generateMetadata({ params }: TableMenuPageProps) {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: TableMenuPageProps & { searchParams: Promise<{ locale?: string | string[] }> }) {
   const { storeSlug } = await params;
-  const t = await getTranslations('customer');
-  return {
-    title: `${t('menu')} · ${storeSlug}`,
-    robots: { index: false, follow: false },
-  };
+  return getPublicMenuMetadata({
+    storeSlug,
+    pageKey: 'menu',
+    searchParams,
+  });
 }
 
 export default async function TableMenuPage({ params }: TableMenuPageProps) {
