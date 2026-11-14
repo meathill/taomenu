@@ -1,6 +1,6 @@
 {
   "title": "门店登录",
-  "subtitle": "使用 Google 或邮箱 OTP，无需密码。",
+  "subtitle": "用 Google 或邮箱验证码登录，无需密码。第一次登录会自动创建账号。",
   "continueGoogle": "使用 Google 继续",
   "orEmail": "或使用邮箱",
   "email": "邮箱",
@@ -15,5 +15,9 @@
   "authError": "登录失败，请重试。",
   "errorSendOtp": "无法发送验证码。",
   "errorBadOtp": "验证码不正确。",
-  "loading": "…"
+  "loading": "…",
+  "signupTitle": "免费创建你的门店",
+  "signupSubtitle": "用 Google 或邮箱注册。第一次登录即自动创建账号，不需要密码，也不需要绑卡。",
+  "needHelp": "遇到问题？",
+  "contactUs": "联系我们"
 }

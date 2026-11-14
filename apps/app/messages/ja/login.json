@@ -1,6 +1,6 @@
 {
   "title": "店舗ログイン",
-  "subtitle": "Google またはメール OTP。パスワード不要。",
+  "subtitle": "Google またはメールの確認コードでログイン。パスワードは不要です。初めてログインするとアカウントが作成されます。",
   "continueGoogle": "Google で続ける",
   "orEmail": "またはメール",
   "email": "メール",
@@ -15,5 +15,9 @@
   "authError": "ログインに失敗しました。もう一度お試しください。",
   "errorSendOtp": "OTP を送信できませんでした。",
   "errorBadOtp": "OTP が正しくありません。",
-  "loading": "…"
+  "loading": "…",
+  "signupTitle": "無料でお店を作成",
+  "signupSubtitle": "Google またはメールで登録できます。初回ログイン時にアカウントが作成されます。パスワードもクレジットカードも不要です。",
+  "needHelp": "お困りですか？",
+  "contactUs": "お問い合わせ"
 }

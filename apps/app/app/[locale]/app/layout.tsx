@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
+import { getLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { PageMessages } from '@/components/page-messages';
 import { getOwnerStoreSelection } from '@/lib/active-store';
+import { getHelpUrl } from '@/lib/public-url';
 import { OwnerShell } from './owner-shell';
 
 type OwnerLayoutProps = {
@@ -21,9 +23,10 @@ export default async function OwnerLayout({ children }: OwnerLayoutProps) {
     return children;
   }
 
+  const helpUrl = getHelpUrl(await getLocale());
   return (
     <PageMessages namespaces={['owner']}>
-      <OwnerShell stores={selection.stores} user={selection.user}>
+      <OwnerShell stores={selection.stores} user={selection.user} helpUrl={helpUrl}>
         {children}
       </OwnerShell>
     </PageMessages>

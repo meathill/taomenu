@@ -1,6 +1,6 @@
 {
   "title": "Đăng nhập cửa hàng",
-  "subtitle": "Dùng Google hoặc email OTP. Không cần mật khẩu.",
+  "subtitle": "Đăng nhập bằng Google hoặc mã gửi qua email, không cần mật khẩu. Lần đầu đăng nhập sẽ tự tạo tài khoản.",
   "continueGoogle": "Tiếp tục với Google",
   "orEmail": "hoặc dùng email",
   "email": "Email",
@@ -15,5 +15,9 @@
   "authError": "Đăng nhập thất bại. Vui lòng thử lại.",
   "errorSendOtp": "Không gửi được mã OTP.",
   "errorBadOtp": "Mã OTP không đúng.",
-  "loading": "…"
+  "loading": "…",
+  "signupTitle": "Tạo cửa hàng miễn phí",
+  "signupSubtitle": "Đăng ký bằng Google hoặc email. Lần đầu đăng nhập sẽ tự tạo tài khoản — không cần mật khẩu, không cần thẻ.",
+  "needHelp": "Cần hỗ trợ?",
+  "contactUs": "Liên hệ"
 }

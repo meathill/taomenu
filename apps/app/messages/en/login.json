@@ -1,6 +1,6 @@
 {
   "title": "Store sign-in",
-  "subtitle": "Use Google or email OTP. No password needed.",
+  "subtitle": "Use Google or an email code — no password needed. New here? Your account is created the first time you sign in.",
   "continueGoogle": "Continue with Google",
   "orEmail": "or use email",
   "email": "Email",
@@ -15,5 +15,9 @@
   "authError": "Sign-in failed. Please try again.",
   "errorSendOtp": "Could not send OTP.",
   "errorBadOtp": "Invalid OTP code.",
-  "loading": "…"
+  "loading": "…",
+  "signupTitle": "Create your free store",
+  "signupSubtitle": "Sign up with Google or your email. Signing in for the first time creates your account — no password, no credit card.",
+  "needHelp": "Need help?",
+  "contactUs": "Contact us"
 }

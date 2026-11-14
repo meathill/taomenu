@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getAppProSignupUrl, PRO_UPGRADE_PATH } from './site';
+import { getAppProSignupUrl, getAppSignupUrl, PRO_UPGRADE_PATH } from './site';
 
 describe('getAppProSignupUrl', () => {
   afterEach(() => {
@@ -11,5 +11,11 @@ describe('getAppProSignupUrl', () => {
     const url = new URL(getAppProSignupUrl());
     expect(url.origin + url.pathname).toBe('https://app.menu.dyqr.me/login');
     expect(url.searchParams.get('next')).toBe(PRO_UPGRADE_PATH);
+    expect(url.searchParams.get('intent')).toBe('signup');
+  });
+
+  it('「免费开始」带 intent=signup（issue #24）', () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://app.menu.dyqr.me');
+    expect(getAppSignupUrl()).toBe('https://app.menu.dyqr.me/login?intent=signup');
   });
 });

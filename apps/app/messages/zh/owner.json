@@ -144,5 +144,6 @@
   "billingSyncPending": "上一次购买还在同步，请稍后再试。",
   "billingFailed": "Staff 席位更新失败。",
   "billingUpdated": "Staff 席位已更新。",
-  "cancel": "取消"
+  "cancel": "取消",
+  "helpAndContact": "帮助与联系"
 }

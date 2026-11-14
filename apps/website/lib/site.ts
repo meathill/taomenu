@@ -31,8 +31,9 @@ export function getAppLoginUrl(): string {
   return `${getPublicAppUrl()}/login`;
 }
 
+/** 注册入口：同一个登录页，但带 intent=signup 显示「创建免费门店」文案（issue #24） */
 export function getAppSignupUrl(): string {
-  return `${getPublicAppUrl()}/login`;
+  return `${getPublicAppUrl()}/login?intent=signup`;
 }
 
 /** 店内升级 Pro 的落点：settings 会高亮升级区块，没有门店时先走建店再回来 */
@@ -40,5 +41,7 @@ export const PRO_UPGRADE_PATH = '/app/settings?upgrade=pro';
 
 /** 定价页 Pro 卡片：登录 / 注册后直接进入升级入口（issue #16） */
 export function getAppProSignupUrl(): string {
-  return `${getAppSignupUrl()}?next=${encodeURIComponent(PRO_UPGRADE_PATH)}`;
+  const url = new URL(getAppSignupUrl());
+  url.searchParams.set('next', PRO_UPGRADE_PATH);
+  return url.toString();
 }

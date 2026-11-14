@@ -254,3 +254,8 @@
 
 - 分类名 / 菜名 / 描述的上限统一为 `@taomenu/shared` 里的 `MENU_CATEGORY_NAME_MAX`(80) / `MENU_ITEM_NAME_MAX`(120) / `MENU_ITEM_DESCRIPTION_MAX`(1000)，zod schema 与前端 `maxLength` + `CharCount` 计数共用；接近上限（≥80%）才显示计数。
 - 店铺时区：`isValidTimeZone` 用 `Intl.DateTimeFormat` 校验 IANA 名，`createStoreSchema`/`updateStoreSchema` 拒绝无效时区。新店默认取浏览器时区（`resolveDefaultTimeZone`），Onboarding 第二步和店铺设置都改成 `TimeZoneSelect` 下拉框（选项来自 `Intl.supportedValuesOf('timeZone')`）。数据库默认值仍是 `Asia/Ho_Chi_Minh`，只作为没传时区时的兜底。
+
+## 注册入口文案与帮助链接（2026-11-14，#24）
+
+- 营销站所有「免费开始」入口 `getAppSignupUrl()` 指向 `/login?intent=signup`；app 登录页识别 `intent=signup`（`lib/login-intent.ts`），标题改成「免费创建你的门店」，并说明首次登录即创建账号。普通登录页的副标题也补充了这一点。
+- 登录页底部和商家后台侧栏新增「帮助与联系」，指向营销站对应语言的 `/contact-us`（`getHelpUrl`，在服务端组件中计算后传给客户端组件，因为 `process.env[name]` 动态读取不会被内联到客户端）。

@@ -6,6 +6,7 @@ import {
   ListBulletsIcon,
   ListChecksIcon,
   QrCodeIcon,
+  QuestionIcon,
   StorefrontIcon,
   UsersThreeIcon,
   XIcon,
@@ -28,6 +29,8 @@ type OwnerShellProps = {
     name: string | null;
     email: string;
   };
+  /** 营销站联系页（帮助入口） */
+  helpUrl: string;
   children: ReactNode;
 };
 
@@ -134,9 +137,11 @@ function OwnerNavigation({
 function OwnerSidebarFooter({
   activeStore,
   user,
+  helpUrl,
 }: {
   activeStore: StoreRow;
   user: OwnerShellProps['user'];
+  helpUrl: string;
 }) {
   const t = useTranslations('owner');
   const [busy, setBusy] = useState(false);
@@ -169,6 +174,15 @@ function OwnerSidebarFooter({
           {t('signOut')}
         </button>
       </div>
+      <a
+        href={helpUrl}
+        target="_blank"
+        rel="noopener"
+        className="flex min-h-10 items-center gap-2 rounded-xl px-2 text-xs font-bold text-muted-foreground hover:bg-brand-50 hover:text-ink-900"
+      >
+        <QuestionIcon className="size-4" weight="bold" aria-hidden />
+        {t('helpAndContact')}
+      </a>
       <p className="truncate text-xs text-muted-foreground" title={user.email}>
         {user.name || user.email}
       </p>
@@ -176,7 +190,7 @@ function OwnerSidebarFooter({
   );
 }
 
-export function OwnerShell({ stores, user, children }: OwnerShellProps) {
+export function OwnerShell({ stores, user, helpUrl, children }: OwnerShellProps) {
   const t = useTranslations('owner');
   const pathname = usePathname();
   const router = useRouter();
@@ -199,7 +213,7 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
             pathname={pathname}
             onStoreChange={handleStoreChange}
           />
-          <OwnerSidebarFooter activeStore={activeStore} user={user} />
+          <OwnerSidebarFooter activeStore={activeStore} user={user} helpUrl={helpUrl} />
         </aside>
 
         {drawerOpen ? (
@@ -233,7 +247,7 @@ export function OwnerShell({ stores, user, children }: OwnerShellProps) {
                   onNavigate={() => setDrawerOpen(false)}
                 />
               </div>
-              <OwnerSidebarFooter activeStore={activeStore} user={user} />
+              <OwnerSidebarFooter activeStore={activeStore} user={user} helpUrl={helpUrl} />
             </aside>
           </div>
         ) : null}

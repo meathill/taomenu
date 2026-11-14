@@ -45,3 +45,14 @@ export function joinPublicUrl(base: string, path: string): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${normalizedBase}${normalizedPath}`;
 }
+
+/** 营销站上某种语言的页面地址：营销站默认语言 en 用裸路径，其余语言带前缀 */
+export function getWebsitePageUrl(locale: string, path: string): string {
+  const prefix = locale === 'en' ? '' : `/${locale}`;
+  return joinPublicUrl(getPublicWebsiteUrl(), `${prefix}${path}`);
+}
+
+/** 商家后台与登录页的「帮助 / 联系我们」入口（issue #24） */
+export function getHelpUrl(locale: string): string {
+  return getWebsitePageUrl(locale, '/contact-us');
+}
