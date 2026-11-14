@@ -3,6 +3,8 @@
 import {
   BILLING_CURRENCIES,
   type CreateStoreBody,
+  DEFAULT_STORE_TIMEZONE,
+  resolveDefaultTimeZone,
   SERVICE_MODES,
   toBillingCurrency,
 } from '@taomenu/shared';
@@ -10,6 +12,7 @@ import { cn } from '@taomenu/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/button';
+import { TimeZoneSelect } from '@/components/time-zone-select';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const DRAFT_KEY = 'taomenu.onboarding.draft';
@@ -51,6 +54,7 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
   const [name, setName] = useState('');
   const [serviceMode, setServiceMode] = useState<CreateStoreBody['serviceMode']>('table_service');
   const [currency, setCurrency] = useState<StoreCurrency>('VND');
+  const [timezone, setTimezone] = useState(DEFAULT_STORE_TIMEZONE);
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [ready, setReady] = useState(false);
@@ -60,6 +64,8 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
     setName(draft.name);
     setServiceMode(draft.serviceMode);
     setCurrency(draft.currency);
+    // 默认用浏览器时区，不再一律写成越南时区
+    setTimezone(resolveDefaultTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone));
     setReady(true);
   }, []);
 
@@ -82,7 +88,7 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
         body: JSON.stringify({
           name: name.trim(),
           serviceMode,
-          timezone: 'Asia/Ho_Chi_Minh',
+          timezone,
           // 菜单内容默认语言跟当前 UI 语言一致
           baseLocale: locale,
           currency,
@@ -192,6 +198,16 @@ export function OnboardingForm({ nextPath = '/app' }: { nextPath?: string }) {
             ))}
           </select>
           <p className="text-xs text-muted-foreground">{t('currencyHint')}</p>
+          <label className="block text-sm font-semibold text-ink-900" htmlFor="store-timezone">
+            {t('timezone')}
+          </label>
+          <TimeZoneSelect
+            id="store-timezone"
+            value={timezone}
+            onChange={setTimezone}
+            className="min-h-12 w-full rounded-xl border border-border bg-white px-3 text-base text-ink-900 outline-none ring-jade-600 focus:ring-2"
+          />
+          <p className="text-xs text-muted-foreground">{t('timezoneHint')}</p>
           <div className="flex gap-2">
             <Button
               type="button"

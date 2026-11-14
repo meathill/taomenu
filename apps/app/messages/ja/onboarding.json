@@ -18,5 +18,7 @@
   "currency": "通貨",
   "currencyHint": "メニュー価格と請求に使います。後から設定で変更できます。",
   "createStore": "店舗を作成",
-  "errorCreate": "店舗を作成できませんでした。"
+  "errorCreate": "店舗を作成できませんでした。",
+  "timezone": "タイムゾーン",
+  "timezoneHint": "この端末から自動で判定しました。営業日・日次集計・注文時刻に使われます。"
 }

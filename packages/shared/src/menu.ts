@@ -1,13 +1,18 @@
 import { z } from 'zod';
 
+/** 名称/描述长度上限：前端输入框与后端校验共用 */
+export const MENU_CATEGORY_NAME_MAX = 80;
+export const MENU_ITEM_NAME_MAX = 120;
+export const MENU_ITEM_DESCRIPTION_MAX = 1000;
+
 export const createCategorySchema = z.object({
-  name: z.string().trim().min(1).max(80),
+  name: z.string().trim().min(1).max(MENU_CATEGORY_NAME_MAX),
   description: z.string().trim().max(500).optional(),
   locale: z.string().trim().min(2).max(16).optional(),
 });
 
 export const updateCategorySchema = z.object({
-  name: z.string().trim().min(1).max(80).optional(),
+  name: z.string().trim().min(1).max(MENU_CATEGORY_NAME_MAX).optional(),
   description: z.string().trim().max(500).nullable().optional(),
   isAvailable: z.boolean().optional(),
   sortOrder: z.number().int().min(0).max(10_000).optional(),
@@ -16,16 +21,16 @@ export const updateCategorySchema = z.object({
 
 export const createItemSchema = z.object({
   categoryId: z.string().uuid(),
-  name: z.string().trim().min(1).max(120),
-  description: z.string().trim().max(1000).optional(),
+  name: z.string().trim().min(1).max(MENU_ITEM_NAME_MAX),
+  description: z.string().trim().max(MENU_ITEM_DESCRIPTION_MAX).optional(),
   /** 最小单位整数（币种 0/2 位小数，见 currency.ts），最小 0 */
   priceAmount: z.number().int().min(0).max(100_000_000),
   locale: z.string().trim().min(2).max(16).optional(),
 });
 
 export const updateItemSchema = z.object({
-  name: z.string().trim().min(1).max(120).optional(),
-  description: z.string().trim().max(1000).nullable().optional(),
+  name: z.string().trim().min(1).max(MENU_ITEM_NAME_MAX).optional(),
+  description: z.string().trim().max(MENU_ITEM_DESCRIPTION_MAX).nullable().optional(),
   priceAmount: z.number().int().min(0).max(100_000_000).optional(),
   isAvailable: z.boolean().optional(),
   isSoldOut: z.boolean().optional(),

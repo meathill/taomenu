@@ -12,6 +12,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { FieldSwitch } from '@/components/field-switch';
+import { TimeZoneSelect } from '@/components/time-zone-select';
 import { fieldClassName } from '@/components/ui/field';
 
 type StoreSettingsFormProps = {
@@ -133,11 +134,12 @@ export function StoreSettingsForm({
               <option value="hybrid">{t('modeHybrid')}</option>
             </select>
           </label>
-          <label className="block text-sm font-bold text-ink-900">
+          <label className="block text-sm font-bold text-ink-900" htmlFor="store-timezone">
             {t('timezone')}
-            <input
+            <TimeZoneSelect
+              id="store-timezone"
               value={timezone}
-              onChange={(event) => setTimezone(event.target.value)}
+              onChange={setTimezone}
               className={`mt-2 ${fieldClassName}`}
             />
           </label>

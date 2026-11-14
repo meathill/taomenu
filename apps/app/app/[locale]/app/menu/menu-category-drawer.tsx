@@ -1,10 +1,12 @@
 'use client';
 
 import { CheckIcon, PlusIcon } from '@phosphor-icons/react';
+import { MENU_CATEGORY_NAME_MAX } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/button';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
+import { CharCount } from '@/components/ui/char-count';
 import { fieldClassName } from '@/components/ui/field';
 import { localizedName, type MenuCategory } from './menu-types';
 
@@ -145,10 +147,12 @@ export function MenuCategoryDrawer({
               id="category-name"
               value={name}
               onChange={(event) => setName(event.target.value)}
+              maxLength={MENU_CATEGORY_NAME_MAX}
               placeholder={t('categoryPlaceholder')}
               className={fieldClassName}
             />
           </div>
+          <CharCount value={name} max={MENU_CATEGORY_NAME_MAX} />
         </div>
       ) : null}
       {error ? <p className="mt-3 text-sm font-semibold text-brand-600">{error}</p> : null}

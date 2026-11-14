@@ -2,6 +2,8 @@
 
 import {
   getCurrencyDecimals,
+  MENU_ITEM_DESCRIPTION_MAX,
+  MENU_ITEM_NAME_MAX,
   type PriceInputError,
   parseCurrencyInput,
   sanitizeCurrencyInput,
@@ -12,6 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { FieldSwitch } from '@/components/field-switch';
 import { ResponsiveDrawer } from '@/components/responsive-drawer';
+import { CharCount } from '@/components/ui/char-count';
 import { fieldClassName, textareaClassName } from '@/components/ui/field';
 import { imageErrorKey, MENU_IMAGE_MAX_MB, uploadMenuItemImage } from '@/lib/menu-image-upload';
 import { MenuCategoryDrawer } from './menu-category-drawer';
@@ -234,6 +237,7 @@ export function MenuItemDrawer({
                 <input
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                  maxLength={MENU_ITEM_NAME_MAX}
                   placeholder={
                     translation?.name ??
                     item?.translations.find((entry) => entry.locale === baseLocale)?.name ??
@@ -241,15 +245,18 @@ export function MenuItemDrawer({
                   }
                   className={`mt-1 ${fieldClassName}`}
                 />
+                <CharCount value={name} max={MENU_ITEM_NAME_MAX} />
               </label>
               <label className="block text-sm font-bold text-ink-900">
                 {t('description')}
                 <textarea
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
+                  maxLength={MENU_ITEM_DESCRIPTION_MAX}
                   rows={3}
                   className={`mt-1 ${textareaClassName}`}
                 />
+                <CharCount value={description} max={MENU_ITEM_DESCRIPTION_MAX} />
               </label>
             </>
           )}

@@ -18,5 +18,7 @@
   "currency": "币种",
   "currencyHint": "用于菜品价格和订阅计费。之后可在设置中修改。",
   "createStore": "创建门店",
-  "errorCreate": "无法创建门店。"
+  "errorCreate": "无法创建门店。",
+  "timezone": "时区",
+  "timezoneHint": "已根据当前设备自动识别，用于营业日、每日统计和订单时间。"
 }

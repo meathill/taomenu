@@ -249,3 +249,8 @@
 
 - 「添加菜品」抽屉可直接选照片：先在浏览器暂存并预检类型/体积（`lib/menu-image-upload.ts`），菜品 `POST` 成功拿到 `itemId` 后再调用现有的图片上传接口。若图片上传失败，菜品已建好，所以抽屉保持打开、清空表单并提示去「编辑」里重传，避免重复创建。
 - 同一抽屉新增「批量快速添加」页签（Free 可用）：每行 `菜名 - 价格`（也接受逗号/冒号/Tab/空格分隔、货币符号、VND 千分位、欧式小数逗号），纯函数 `parseQuickAddLines` 负责解析，负数（含 `Name -3` 这种紧贴数字的负号）、缺价格、名称超 120 字符都按行报错，不做猜测。逐条调用现有创建接口，失败的行留在输入框里方便重试。单次最多 50 行。
+
+## 名称长度与店铺时区（2026-11-14，#19）
+
+- 分类名 / 菜名 / 描述的上限统一为 `@taomenu/shared` 里的 `MENU_CATEGORY_NAME_MAX`(80) / `MENU_ITEM_NAME_MAX`(120) / `MENU_ITEM_DESCRIPTION_MAX`(1000)，zod schema 与前端 `maxLength` + `CharCount` 计数共用；接近上限（≥80%）才显示计数。
+- 店铺时区：`isValidTimeZone` 用 `Intl.DateTimeFormat` 校验 IANA 名，`createStoreSchema`/`updateStoreSchema` 拒绝无效时区。新店默认取浏览器时区（`resolveDefaultTimeZone`），Onboarding 第二步和店铺设置都改成 `TimeZoneSelect` 下拉框（选项来自 `Intl.supportedValuesOf('timeZone')`）。数据库默认值仍是 `Asia/Ho_Chi_Minh`，只作为没传时区时的兜底。

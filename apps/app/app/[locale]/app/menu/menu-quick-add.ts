@@ -1,7 +1,7 @@
-import { getCurrencyDecimals, parseCurrencyInput } from '@taomenu/shared';
+import { getCurrencyDecimals, MENU_ITEM_NAME_MAX, parseCurrencyInput } from '@taomenu/shared';
 
 /** 与 createItemSchema 的 name.max 一致 */
-export const QUICK_ADD_NAME_MAX = 120;
+export const QUICK_ADD_NAME_MAX = MENU_ITEM_NAME_MAX;
 /** 单次批量添加的行数上限，避免一次发出过多请求 */
 export const QUICK_ADD_MAX_LINES = 50;
 

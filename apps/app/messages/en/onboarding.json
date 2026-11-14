@@ -18,5 +18,7 @@
   "currency": "Currency",
   "currencyHint": "Used for menu prices and billing. You can change it later in settings.",
   "createStore": "Create store",
-  "errorCreate": "Could not create the store."
+  "errorCreate": "Could not create the store.",
+  "timezone": "Time zone",
+  "timezoneHint": "Detected from this device. Used for business days, daily stats and order times."
 }

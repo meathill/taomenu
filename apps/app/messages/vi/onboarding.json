@@ -18,5 +18,7 @@
   "currency": "Tiền tệ",
   "currencyHint": "Dùng cho giá món và thanh toán gói. Có thể đổi sau trong phần cài đặt.",
   "createStore": "Tạo cửa hàng",
-  "errorCreate": "Tạo cửa hàng thất bại."
+  "errorCreate": "Tạo cửa hàng thất bại.",
+  "timezone": "Múi giờ",
+  "timezoneHint": "Tự nhận từ thiết bị này. Dùng cho ngày kinh doanh, thống kê theo ngày và giờ đơn hàng."
 }
