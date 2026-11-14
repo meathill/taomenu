@@ -200,7 +200,7 @@ export function MenuTranslationPanel({
         <SparkleIcon className="size-5 text-indigo-700" weight="fill" aria-hidden />
         <h2 className="text-sm font-black text-ink-900">{t('aiTranslate')}</h2>
         <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-700">
-          Luna AI
+          MiMo AI
         </span>
       </div>
       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('translationHint')}</p>

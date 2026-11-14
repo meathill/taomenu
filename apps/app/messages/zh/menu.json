@@ -112,7 +112,7 @@
   "close": "关闭",
   "moreProToolsTitle": "更多 Pro 工具",
   "moreProToolsHint": "Pro 已支持 AI 翻译、越南语语音录入，以及先审核再采用的图片美化。",
-  "importPrivacyHint": "所选文件会发送给 OpenAI 做一次识别。写入草稿前，请逐项核对菜名和价格。",
+  "importPrivacyHint": "所选文件会发送给小米 MiMo 做一次识别。写入草稿前，请逐项核对菜名和价格。",
   "importMonthlyUsage": "本月已使用 {used} / {limit} 次识别",
   "importMonthlyLimitReached": "本月菜单识别额度已用完，下月会自动恢复。",
   "importChooseFile": "拍照或选择 PDF",
@@ -237,6 +237,6 @@
   "quickAddProgress": "正在添加 {done}/{total}…",
   "quickAddSubmit": "添加 {count} 道菜",
   "importFreeMonthlyUsage": "免费版：本月已使用 {used} / {limit} 次识别",
-  "importFreeUpsell": "Pro 每月 20 次识别，用识别更准的 AI 模型直接读取 PDF，还包含 AI 翻译和菜品图片工具。",
+  "importFreeUpsell": "Pro 每月 20 次识别，还包含 AI 翻译和菜品图片工具。",
   "importPdfNoText": "这个 PDF 里没有可识别的文字（看起来是扫描件），请改为上传菜单照片。"
 }

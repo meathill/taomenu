@@ -123,7 +123,7 @@
     "aiOutputBody": "Danh mục, tên món, giá, lựa chọn, bản dịch hoặc ảnh xem trước có thể chỉnh sửa — không tự đưa lên menu thật.",
     "aiReviewTitle": "Bạn xác nhận",
     "aiReviewBody": "Kiểm tra chữ, giá và thay đổi chưa chắc chắn. Áp dụng bản nháp AI vẫn chưa xuất bản menu.",
-    "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 2 lượt nhập menu ảnh/PDF. Pro: 20 lượt nhập menu ảnh/PDF (mô hình chính xác hơn), 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt."
+    "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 2 lượt nhập menu ảnh/PDF. Pro: 20 lượt nhập menu ảnh/PDF, 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt."
   },
   "footer": {
     "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",

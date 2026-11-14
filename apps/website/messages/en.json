@@ -123,7 +123,7 @@
     "aiOutputBody": "Editable categories, item names, prices, options, translations or image previews — never a live menu automatically.",
     "aiReviewTitle": "You confirm",
     "aiReviewBody": "Review uncertain text, prices and changes. Applying an AI draft still does not publish it.",
-    "aiLimit": "Monthly allowance per store — Free: 2 photo/PDF menu imports. Pro: 20 photo/PDF menu imports (higher-accuracy model), 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once."
+    "aiLimit": "Monthly allowance per store — Free: 2 photo/PDF menu imports. Pro: 20 photo/PDF menu imports, 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once."
   },
   "footer": {
     "tagline": "QR ordering software for small restaurants.",

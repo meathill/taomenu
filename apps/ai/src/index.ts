@@ -15,7 +15,6 @@ import {
 } from '@taomenu/db';
 import { createMimoMenuProvider } from './mimo-menu-provider';
 import { createOpenAiImageProvider } from './openai-image-provider';
-import { createOpenAiMenuProvider } from './openai-menu-provider';
 
 type AiQueueMessage =
   | { type?: 'menu_import'; importId: string }
@@ -61,12 +60,8 @@ async function processMenuImport(env: AiWorkerEnv, importId: string) {
         return { mimeType: asset.mimeType, bytes: new Uint8Array(await object.arrayBuffer()) };
       }),
     );
-    // Free 套餐的导入记录 provider = 'mimo'（issue #25），Pro 仍走 OpenAI
-    const provider =
-      job.menuImport.provider === 'mimo'
-        ? createMimoProvider(env)
-        : createOpenAiMenuProvider({ apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MENU_MODEL });
-    const result = await provider.extractMenu({
+    // 所有套餐的菜单识别都走 MiMo（issue #28）；历史上记成 openai 的待处理任务也一并由 MiMo 处理
+    const result = await createMimoProvider(env).extractMenu({
       assets,
       expectedLocale: job.menuImport.sourceLocale,
       currency: job.storeCurrency,
@@ -96,11 +91,8 @@ async function processMenuTranslation(env: AiWorkerEnv, translationId: string) {
   try {
     const job = await getMenuTranslationJob(db, translationId);
     if (!job || job.entities.length === 0) throw new Error('TRANSLATION_INPUT_MISSING');
-    const provider = createOpenAiMenuProvider({
-      apiKey: env.OPENAI_API_KEY,
-      model: env.OPENAI_MENU_MODEL,
-    });
-    const result = await provider.translateMenu({
+    // AI 菜单翻译同样走 MiMo（issue #28）
+    const result = await createMimoProvider(env).translateMenu({
       sourceLocale: job.job.sourceLocale,
       targetLocale: job.job.targetLocale,
       entities: job.entities,
@@ -123,6 +115,7 @@ async function processMenuImageEnhancement(env: AiWorkerEnv, enhancementId: stri
     if (!job) throw new Error('IMAGE_ENHANCEMENT_JOB_MISSING');
     const source = await env.MEDIA.get(job.sourceImageKey);
     if (!source) throw new Error('SOURCE_IMAGE_MISSING');
+    // MiMo 没有图像生成/编辑模型，照片美化仍走 OpenAI（issue #28）
     const provider = createOpenAiImageProvider({
       apiKey: env.OPENAI_API_KEY,
       model: env.OPENAI_IMAGE_MODEL,

@@ -67,8 +67,8 @@
 | `CRON_SECRET` | 可选，保护 `POST /api/internal/process-outbox` |
 | `STRIPE_SECRET_KEY` | Stripe 服务端 Restricted API Key（建议 `rk_`，仅支付 API） |
 | `STRIPE_WEBHOOK_SECRET` | Stripe Webhook 签名密钥 |
-| `OPENAI_API_KEY` | 仅供 `taomenu-ai` 调用 GPT-5.6 Luna（Pro 菜单导入/翻译/图片），不配置在 app Worker |
-| `MIMO_API_KEY` | 仅供 `taomenu-ai` 调用小米 MiMo（Free 菜单导入，#25）；未配置时 Free 导入失败并提示“暂不可用”，不影响 Pro |
+| `OPENAI_API_KEY` | 仅供 `taomenu-ai` 做菜品照片美化（`OPENAI_IMAGE_MODEL`，MiMo 没有图像生成模型），不配置在 app Worker |
+| `MIMO_API_KEY` | 仅供 `taomenu-ai` 调用小米 MiMo（所有套餐的菜单导入与 AI 翻译，#25/#28）；未配置时导入/翻译失败并提示“暂不可用” |
 
 ### Cloudflare Bindings（不是 env 字符串）
 

@@ -112,7 +112,7 @@
   "close": "Đóng",
   "moreProToolsTitle": "Thêm công cụ Pro",
   "moreProToolsHint": "Pro đã có dịch AI, nhập giọng nói tiếng Việt và làm đẹp ảnh có bước duyệt.",
-  "importPrivacyHint": "File đã chọn sẽ được gửi một lần tới OpenAI để nhận diện. Hãy kiểm tra từng món và giá trước khi áp dụng.",
+  "importPrivacyHint": "File đã chọn sẽ được gửi một lần tới Xiaomi MiMo để nhận diện. Hãy kiểm tra từng món và giá trước khi áp dụng.",
   "importMonthlyUsage": "Đã dùng {used}/{limit} lượt nhập trong tháng này",
   "importMonthlyLimitReached": "Bạn đã dùng hết lượt nhập menu tháng này. Hạn mức sẽ được đặt lại vào tháng sau.",
   "importChooseFile": "Chụp ảnh hoặc chọn PDF",
@@ -237,6 +237,6 @@
   "quickAddProgress": "Đang thêm {done}/{total}…",
   "quickAddSubmit": "Thêm {count} món",
   "importFreeMonthlyUsage": "Gói Free: đã dùng {used}/{limit} lượt nhập trong tháng này",
-  "importFreeUpsell": "Pro có 20 lượt nhập mỗi tháng, đọc PDF trực tiếp bằng mô hình AI chính xác hơn, kèm dịch AI và công cụ ảnh món.",
+  "importFreeUpsell": "Pro có 20 lượt nhập mỗi tháng, kèm dịch AI và công cụ ảnh món.",
   "importPdfNoText": "PDF này không có chữ đọc được (có vẻ là bản scan). Hãy tải ảnh chụp menu lên."
 }

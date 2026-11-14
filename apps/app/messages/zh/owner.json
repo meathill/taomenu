@@ -153,7 +153,7 @@
   "paywallTranslation": "升级 Pro 后，菜单可同时提供最多 {languages} 种语言，并用 AI 一键翻译整份菜单。",
   "paywallPhotoEnhance": "升级 Pro 后，可以用 AI 一键美化菜品照片，让菜单更有食欲。",
   "paywallQrTemplates": "升级 Pro 后，可以使用全部精美桌贴模板打印二维码。",
-  "paywallMenuImport": "免费版每月可导入 {free} 次。升级 Pro 后每月 {pro} 次，并使用识别更准确的模型。",
+  "paywallMenuImport": "免费版每月可导入 {free} 次，升级 Pro 后每月 {pro} 次，还能用 AI 翻译和菜品照片美化。",
   "paywallAiTools": "升级 Pro 后解锁 AI 翻译、照片美化、更多导入次数、更多员工席位等全部 Pro 工具。",
   "brandingTitle": "顾客页品牌",
   "hidePoweredBy": "隐藏「Powered by TaoMenu」",

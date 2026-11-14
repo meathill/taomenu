@@ -112,7 +112,7 @@
   "close": "Close",
   "moreProToolsTitle": "More Pro tools",
   "moreProToolsHint": "Translation, Vietnamese voice entry, and reviewed photo enhancement are available on Pro.",
-  "importPrivacyHint": "The selected file is sent to OpenAI once for recognition. Review every item and price before applying it to your draft.",
+  "importPrivacyHint": "The selected file is sent to Xiaomi MiMo once for recognition. Review every item and price before applying it to your draft.",
   "importMonthlyUsage": "{used} of {limit} imports used this month",
   "importMonthlyLimitReached": "You have used all menu imports for this month. The allowance resets next month.",
   "importChooseFile": "Take a photo or choose a PDF",
@@ -237,6 +237,6 @@
   "quickAddProgress": "Adding {done}/{total}…",
   "quickAddSubmit": "Add items ({count})",
   "importFreeMonthlyUsage": "Free plan: {used} of {limit} imports used this month",
-  "importFreeUpsell": "Pro includes 20 imports a month, reads PDFs directly with a higher-accuracy AI model, and adds AI translation and photo tools.",
+  "importFreeUpsell": "Pro includes 20 imports a month, plus AI translation and photo tools.",
   "importPdfNoText": "This PDF has no readable text (it looks like a scan). Upload a photo of the menu instead."
 }

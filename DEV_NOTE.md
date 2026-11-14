@@ -127,12 +127,12 @@
 
 ## AI 菜单导入（2026-08-09）
 
-- Provider 边界使用版本化 `MenuImportOutput`；当前实现为 OpenAI Responses API + `gpt-5.6-luna`
-- 图片使用 `detail: original`，PDF 使用 `input_file` + `detail: high`；Structured Outputs 后仍用 Zod 二次校验
+- Provider 边界使用版本化 `MenuImportOutput`；最初为 OpenAI Responses API + `gpt-5.6-luna`，2026-11-14 起全部改为小米 MiMo（见 #28 一节）
+- 模型输出一律再用 Zod 校验
 - Web API 只负责 Pro 权益、文件校验、R2 和 Queue；模型请求由 `apps/ai` 异步消费
 - 识别结果按分类/菜品保存为 suggestion，逐项接受、编辑或拒绝后才可写入菜单草稿；不会自动发布
 - 成功识别并落库后删除 R2 原始素材；失败时保留素材以便重试
-- `OPENAI_API_KEY` 只存 `taomenu-ai` Worker secret；业务 app 不持有模型密钥
+- 模型密钥（`MIMO_API_KEY`、`OPENAI_API_KEY`）只存 `taomenu-ai` Worker secret；业务 app 不持有模型密钥
 - BCP-47 地区标签按主语言比较：`vi` 与 `vi-VN` 视为同语言，并统一写入门店 `baseLocale`
 - 空菜单首次导入其他语言时，审核页明确提示并采用检测语言作为 `baseLocale`；已有菜单则阻止混入另一种源语言
 
@@ -294,3 +294,10 @@
 - 产品面（app，`localePrefix: 'never'`）：`middleware.ts` 先用 `lib/locale-prefix.ts` 读路径前缀，`/zh/login` 这类链接以前缀为准写 `NEXT_LOCALE`，再由 next-intl 307 到无前缀路径；只有无前缀 URL 才走 cookie → Accept-Language → CF 国家协商。此前首次访问时会把协商结果（如 ja）写进 cookie，覆盖了 next-intl 按前缀写的 zh。
 - 官网（`as-needed` + `localeDetection: false`）本来就以前缀为准，补了 `lib/middleware-locale.test.ts` 防回归。
 - 两个 app 的 vitest 都 `server.deps.inline: ['next-intl']`，否则 Node 下解析不了 next-intl ESM 里的 `next/server`。
+
+## 菜单导入与 AI 翻译全部改用 MiMo（2026-11-14，#28）
+
+- `menu_imports.provider/model` 统一写 `mimo / mimo-v2.6-flash`（`MENU_AI_PROVIDER` / `MENU_AI_MODEL`），删掉了按套餐分流的 `getMenuAiRoute`。`taomenu-ai` 不再看记录里的 provider，导入一律走 MiMo，历史上记成 openai 的待处理任务也由 MiMo 处理。
+- AI 菜单翻译也改走 MiMo：`createMimoMenuProvider().translateMenu`，同样是 json_object + 系统提示词里的 JSON Schema + `menuTranslationOutputSchema` 校验。翻译落库校验失败的错误码由 `OPENAI_INVALID_OUTPUT` 改为 `AI_INVALID_OUTPUT`。
+- 菜品照片美化需要图像编辑，MiMo 官方模型列表只有全模态理解（输出文本）、ASR、TTS，没有图像生成，所以仍走 OpenAI `OPENAI_IMAGE_MODEL`；`OPENAI_API_KEY` 仅用于这一项。`OPENAI_MENU_MODEL` 与 `openai-menu-provider.ts` 已删除，提示词放在 `apps/ai/src/menu-prompts.ts`。
+- 代价：MiMo 不读 PDF，PDF 先经 Workers AI `toMarkdown` 转文本；纯扫描 PDF（没有文字层）对 Pro 也会报 `MIMO_PDF_NO_TEXT`，提示改传照片。以前 Pro 走 OpenAI 时能直接读扫描件。

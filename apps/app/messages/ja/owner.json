@@ -153,7 +153,7 @@
   "paywallTranslation": "Pro では最大 {languages} 言語のメニューを提供でき、AI がメニュー全体をワンクリックで翻訳します。",
   "paywallPhotoEnhance": "Pro では AI が料理写真をワンクリックで補正し、よりおいしそうなメニューにします。",
   "paywallQrTemplates": "Pro ではすべてのテーブルカードテンプレートで QR コードを印刷できます。",
-  "paywallMenuImport": "無料プランは月 {free} 回までインポートできます。Pro は月 {pro} 回、より精度の高いモデルを使います。",
+  "paywallMenuImport": "無料プランは月 {free} 回までインポートできます。Pro なら月 {pro} 回に増え、AI 翻訳と料理写真の補正も使えます。",
   "paywallAiTools": "Pro では AI 翻訳、写真補正、インポート回数の追加、スタッフ席の追加など、すべての Pro ツールが使えます。",
   "brandingTitle": "お客様向けページのブランド",
   "hidePoweredBy": "「Powered by TaoMenu」を非表示",

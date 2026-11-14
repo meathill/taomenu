@@ -40,7 +40,7 @@ export async function saveMenuTranslationResult(
     outputIds.size !== current.entities.length ||
     output.translations.length !== current.entities.length
   ) {
-    throw new MenuImportError('OPENAI_INVALID_OUTPUT', 'Translation output is incomplete');
+    throw new MenuImportError('AI_INVALID_OUTPUT', 'Translation output is incomplete');
   }
 
   const statements: BatchItem<'sqlite'>[] = [
@@ -49,7 +49,7 @@ export async function saveMenuTranslationResult(
   for (const translation of output.translations) {
     const source = inputById.get(translation.entityId);
     if (!source || source.entityType !== translation.entityType) {
-      throw new MenuImportError('OPENAI_INVALID_OUTPUT', 'Translation entity does not match input');
+      throw new MenuImportError('AI_INVALID_OUTPUT', 'Translation entity does not match input');
     }
     statements.push(
       db.insert(menuTranslationSuggestions).values({

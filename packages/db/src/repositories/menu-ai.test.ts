@@ -44,12 +44,12 @@ describe('AI 菜单导入权益（issue #25）', () => {
     } satisfies Partial<MenuImportError>);
   });
 
-  it('Pro 门店继续走 OpenAI', async () => {
+  it('Pro 门店同样走 MiMo（issue #28）', async () => {
     const db = createTestDb();
     await seedUser(db, 'owner-1', 'owner@example.com');
     await seedStore(db, 'store-pro', { plan: 'pro' });
     await createMenuImport(ctxFor('store-pro', 'pro'), db, importInput(1));
     const rows = await db.select().from(menuImports);
-    expect(rows[0]).toMatchObject({ provider: 'openai', model: 'gpt-5.6-luna' });
+    expect(rows[0]).toMatchObject({ provider: 'mimo', model: 'mimo-v2.6-flash' });
   });
 });
