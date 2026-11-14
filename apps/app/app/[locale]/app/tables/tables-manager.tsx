@@ -1,6 +1,7 @@
 'use client';
 
 import { PrinterIcon } from '@phosphor-icons/react';
+import { CANONICAL_DEFAULT_PICKUP_POINT_NAME, displayPickupPointName } from '@taomenu/shared';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
@@ -60,7 +61,8 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
 
   async function addEntry(event: FormEvent<HTMLFormElement>, type: QrEntryType) {
     event.preventDefault();
-    const name = (type === 'table' ? tableName : pointName).trim();
+    let name = (type === 'table' ? tableName : pointName).trim();
+    if (type === 'point' && !name) name = CANONICAL_DEFAULT_PICKUP_POINT_NAME;
     if (!name) return;
     setBusyAction(`add-${type}`);
     setError(null);
@@ -148,19 +150,24 @@ export function TablesManager({ storeId, storeSlug }: TablesManagerProps) {
     });
   }
 
+  function displayName(type: QrEntryType, name: string) {
+    return type === 'point' ? displayPickupPointName(name, t('pickupPlaceholder')) : name;
+  }
+
   function renderEntry(type: QrEntryType, entry: QrEntry) {
     const url = customerEntryUrl(type, storeSlug, entry.token);
+    const visibleName = displayName(type, entry.name);
     return (
       <QrEntryRow
         key={entry.id}
-        entry={entry}
+        entry={{ ...entry, name: visibleName }}
         url={url}
-        downloadFilename={qrDownloadFilename(storeSlug, entry.name)}
+        downloadFilename={qrDownloadFilename(storeSlug, visibleName)}
         isEditing={editing?.type === type && editing.id === entry.id}
         editingName={editingName}
         busyAction={busyAction}
         onEditingNameChange={setEditingName}
-        onStartRename={() => startRename(type, entry.id, entry.name)}
+        onStartRename={() => startRename(type, entry.id, visibleName)}
         onSaveRename={() => void saveRename()}
         onCancelRename={() => setEditing(null)}
         onToggleActive={() => requestToggle(type, entry.id, entry.isActive)}

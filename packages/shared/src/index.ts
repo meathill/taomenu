@@ -81,6 +81,13 @@ export {
   createTableSchema,
 } from './order';
 export {
+  CANONICAL_DEFAULT_PICKUP_POINT_NAME,
+  canonicalizePickupPointName,
+  displayPickupPointName,
+  isSystemDefaultPickupPointName,
+  SYSTEM_DEFAULT_PICKUP_POINT_NAMES,
+} from './pickup-point-name';
+export {
   FREE_AI_MENU_IMPORTS_PER_MONTH,
   FREE_AI_TRANSLATIONS_PER_MONTH,
   getPlanLimits,

@@ -25,6 +25,7 @@
   "statusPickedUp": "已取餐",
   "pickupNumber": "取餐号",
   "pickupMode": "取餐",
+  "defaultPickupPoint": "柜台",
   "required": "（必选）",
   "optional": "（可选）",
   "callStaff": "呼叫服务员",

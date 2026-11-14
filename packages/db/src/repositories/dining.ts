@@ -1,3 +1,4 @@
+import { canonicalizePickupPointName } from '@taomenu/shared';
 import { and, asc, eq } from 'drizzle-orm';
 import { generateToken } from '../crypto-token';
 import { diningTables, pickupPoints } from '../schema/tables-orders';
@@ -121,7 +122,7 @@ export async function createPickupPoint(
   await db.insert(pickupPoints).values({
     id,
     storeId: ctx.storeId,
-    name: input.name.trim(),
+    name: canonicalizePickupPointName(input.name),
     sortOrder: existing.length,
     token,
     isActive: true,
@@ -131,7 +132,7 @@ export async function createPickupPoint(
 
   return {
     id,
-    name: input.name.trim(),
+    name: canonicalizePickupPointName(input.name),
     sortOrder: existing.length,
     isActive: true,
     token,
@@ -156,14 +157,14 @@ export async function updatePickupPoint(
   await db
     .update(pickupPoints)
     .set({
-      name: input.name?.trim() || row.name,
+      name: input.name !== undefined ? canonicalizePickupPointName(input.name) : row.name,
       isActive: input.isActive ?? row.isActive,
       updatedAt,
     })
     .where(and(eq(pickupPoints.id, pointId), eq(pickupPoints.storeId, ctx.storeId)));
   return {
     id: row.id,
-    name: input.name?.trim() || row.name,
+    name: input.name !== undefined ? canonicalizePickupPointName(input.name) : row.name,
     sortOrder: row.sortOrder,
     isActive: input.isActive ?? row.isActive,
     token: row.token,

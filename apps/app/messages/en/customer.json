@@ -25,6 +25,7 @@
   "statusPickedUp": "Picked up",
   "pickupNumber": "Pickup number",
   "pickupMode": "Pickup",
+  "defaultPickupPoint": "Counter",
   "required": "(required)",
   "optional": "(optional)",
   "callStaff": "Call staff",

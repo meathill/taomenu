@@ -1,6 +1,6 @@
 'use client';
 
-import { formatCurrency, toStoreCurrency } from '@taomenu/shared';
+import { displayPickupPointName, formatCurrency, toStoreCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
@@ -287,7 +287,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-brand-600">{menu.store.name}</p>
             <h1 className="text-xl font-extrabold text-ink-900">
-              {menu.pickupPoint?.name ?? t('pickupMode')}
+              {displayPickupPointName(menu.pickupPoint?.name, t('defaultPickupPoint'))}
             </h1>
           </div>
           <CustomerLanguageSelect

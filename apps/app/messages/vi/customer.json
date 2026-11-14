@@ -25,6 +25,7 @@
   "statusPickedUp": "Đã lấy",
   "pickupNumber": "Số lấy món",
   "pickupMode": "Lấy món",
+  "defaultPickupPoint": "Quầy",
   "required": "(bắt buộc)",
   "optional": "(tùy chọn)",
   "callStaff": "Gọi nhân viên",
