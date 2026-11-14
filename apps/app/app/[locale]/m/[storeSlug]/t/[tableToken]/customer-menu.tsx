@@ -130,25 +130,32 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
     };
   }, [loadMenu]);
 
-  // 后台不轮询：切回前台 / pageshow / 下拉时刷新
+  // 订单未结束时前台每 5 秒刷新；切回前台 / pageshow 时立刻再拉一次
   useEffect(() => {
     if (!order?.publicToken) return;
+    if (order.status === 'served' || order.status === 'picked_up' || order.status === 'cancelled') {
+      return;
+    }
+    const token = order.publicToken;
 
-    function onVisible() {
-      if (document.visibilityState === 'visible' && order?.publicToken) {
-        void refreshOrder(order.publicToken);
-      }
+    function refreshIfVisible() {
+      if (document.visibilityState === 'visible') void refreshOrder(token);
     }
     function onPageShow() {
-      if (order?.publicToken) void refreshOrder(order.publicToken);
+      void refreshOrder(token);
     }
-    document.addEventListener('visibilitychange', onVisible);
+
+    const timer = window.setInterval(refreshIfVisible, 5000);
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    window.addEventListener('focus', refreshIfVisible);
     window.addEventListener('pageshow', onPageShow);
     return () => {
-      document.removeEventListener('visibilitychange', onVisible);
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.removeEventListener('focus', refreshIfVisible);
       window.removeEventListener('pageshow', onPageShow);
     };
-  }, [order?.publicToken, refreshOrder]);
+  }, [order?.publicToken, order?.status, refreshOrder]);
 
   const subtotal = useMemo(() => cartSubtotal(cart), [cart]);
 

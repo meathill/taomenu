@@ -180,9 +180,11 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
 
   useEffect(() => {
     if (!result?.publicToken) return;
+    if (result.status === 'picked_up' || result.status === 'cancelled') return;
+    const token = result.publicToken;
+
     function refresh() {
-      if (!result?.publicToken) return;
-      void fetch(`/api/public/orders/${encodeURIComponent(result.publicToken)}`)
+      void fetch(`/api/public/orders/${encodeURIComponent(token)}`)
         .then((r) =>
           r.ok ? (r.json() as Promise<{ status?: string; pickupNumber?: number | null }>) : null,
         )
@@ -199,16 +201,21 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
           );
         });
     }
-    function onVisible() {
+    function refreshIfVisible() {
       if (document.visibilityState === 'visible') refresh();
     }
-    document.addEventListener('visibilitychange', onVisible);
+
+    const timer = window.setInterval(refreshIfVisible, 5000);
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    window.addEventListener('focus', refreshIfVisible);
     window.addEventListener('pageshow', refresh);
     return () => {
-      document.removeEventListener('visibilitychange', onVisible);
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.removeEventListener('focus', refreshIfVisible);
       window.removeEventListener('pageshow', refresh);
     };
-  }, [result?.publicToken]);
+  }, [result?.publicToken, result?.status]);
 
   useEffect(() => {
     function onVisible() {
