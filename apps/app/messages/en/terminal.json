@@ -29,6 +29,8 @@
   "tableClosed": "Table session closed.",
   "loadFailed": "Could not load orders.",
   "updateFailed": "Update failed.",
+  "statusChanged": "This order was already updated elsewhere. The list has been refreshed.",
+  "sessionExpired": "Your sign-in has expired. Please sign in again.",
   "requestUpdateFailed": "Could not update request.",
   "paymentFailed": "Could not record payment.",
   "closeFailed": "Could not close table.",

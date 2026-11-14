@@ -76,6 +76,8 @@ type OrderSectionProps = {
   currency: string;
   isLoading: boolean;
   busyId: string | null;
+  /** 最近一次状态流转失败的订单，错误就近显示在卡片里 */
+  orderError: { orderId: string; message: string } | null;
   onTransition: (id: string, status: string) => void;
   onPay: (id: string, amount: number) => void;
   onRefresh: () => void;
@@ -86,6 +88,7 @@ export function TerminalOrderSection({
   currency,
   isLoading,
   busyId,
+  orderError,
   onTransition,
   onPay,
   onRefresh,
@@ -173,10 +176,16 @@ export function TerminalOrderSection({
                   ))}
                 </ul>
                 <div className="mt-3 grid gap-2">
+                  {orderError?.orderId === order.id ? (
+                    <p className="text-sm font-medium text-brand-600" role="alert">
+                      {orderError.message}
+                    </p>
+                  ) : null}
                   {action ? (
                     <Button
                       type="button"
                       pending={busyId === order.id}
+                      busy={busyId !== null}
                       onClick={() => onTransition(order.id, action.status)}
                       className="min-h-12 w-full rounded-xl bg-jade-600 text-sm font-bold text-white"
                     >

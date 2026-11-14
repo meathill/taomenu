@@ -29,6 +29,8 @@
   "tableClosed": "桌台已关台。",
   "loadFailed": "无法加载订单。",
   "updateFailed": "更新失败。",
+  "statusChanged": "订单状态已在别处更新，列表已刷新。",
+  "sessionExpired": "登录已过期，请重新登录。",
   "requestUpdateFailed": "无法更新请求。",
   "paymentFailed": "无法记录收款。",
   "closeFailed": "无法关台。",

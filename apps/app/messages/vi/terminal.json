@@ -29,6 +29,8 @@
   "tableClosed": "Đã đóng phiên bàn.",
   "loadFailed": "Không tải được order.",
   "updateFailed": "Cập nhật thất bại.",
+  "statusChanged": "Đơn này đã được cập nhật ở nơi khác. Danh sách đã được làm mới.",
+  "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
   "requestUpdateFailed": "Cập nhật yêu cầu thất bại.",
   "paymentFailed": "Ghi nhận thanh toán thất bại.",
   "closeFailed": "Đóng bàn thất bại.",

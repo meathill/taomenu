@@ -54,3 +54,33 @@ export const REQUEST_STATUS_KEYS: Record<string, string> = {
   open: 'reqStatusOpen',
   acknowledged: 'reqStatusAcknowledged',
 };
+
+export type TransitionFailureKey = 'statusChanged' | 'sessionExpired' | 'updateFailed';
+
+/** 把状态流转接口的失败映射成店员能看懂的提示。 */
+export function transitionFailureKey(
+  httpStatus: number,
+  errorCode: string | undefined,
+): TransitionFailureKey {
+  if (httpStatus === 401) return 'sessionExpired';
+  if (errorCode === 'INVALID_TRANSITION') return 'statusChanged';
+  return 'updateFailed';
+}
+
+/**
+ * 只采纳最后一次发起的加载结果。
+ * 轮询与操作后的刷新会并发；先发出的旧请求晚到时不能覆盖新状态，
+ * 否则卡片会回到旧状态，店员再点按钮就会提交过期的流转（issue #21）。
+ */
+export function createLatestGate() {
+  let latest = 0;
+  return {
+    begin(): number {
+      latest += 1;
+      return latest;
+    },
+    isLatest(id: number): boolean {
+      return id === latest;
+    },
+  };
+}

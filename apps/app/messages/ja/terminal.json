@@ -29,6 +29,8 @@
   "tableClosed": "卓セッションを閉じました。",
   "loadFailed": "注文を読み込めませんでした。",
   "updateFailed": "更新に失敗しました。",
+  "statusChanged": "この注文は別の端末で更新済みです。一覧を更新しました。",
+  "sessionExpired": "ログインの有効期限が切れました。もう一度ログインしてください。",
   "requestUpdateFailed": "リクエストを更新できませんでした。",
   "paymentFailed": "支払いを記録できませんでした。",
   "closeFailed": "卓を締められませんでした。",

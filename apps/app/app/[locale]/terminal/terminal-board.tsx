@@ -2,8 +2,14 @@
 
 import { formatCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
-import type { OrderCard, ServiceCard, SessionCard } from './terminal-board-helpers';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  createLatestGate,
+  type OrderCard,
+  type ServiceCard,
+  type SessionCard,
+  transitionFailureKey,
+} from './terminal-board-helpers';
 import {
   TerminalOrderSection,
   TerminalRequestSection,
@@ -22,34 +28,37 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
   const [requests, setRequests] = useState<ServiceCard[]>([]);
   const [sessions, setSessions] = useState<SessionCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // 加载失败与操作失败分开：轮询成功只清掉加载错误，不能把店员操作的报错悄悄抹掉
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [orderError, setOrderError] = useState<{ orderId: string; message: string } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const loadGate = useRef(createLatestGate());
 
   const load = useCallback(async () => {
+    const requestId = loadGate.current.begin();
     try {
       const [oRes, sRes, sessRes] = await Promise.all([
         fetch(`/api/owner/stores/${storeId}/orders`, { cache: 'no-store' }),
         fetch(`/api/owner/stores/${storeId}/service-requests`, { cache: 'no-store' }),
         fetch(`/api/owner/stores/${storeId}/sessions`, { cache: 'no-store' }),
       ]);
+      if (!loadGate.current.isLatest(requestId)) return;
       if (!oRes.ok) {
-        setError(t('loadFailed'));
+        setLoadError(t('loadFailed'));
         return;
       }
       const oData = (await oRes.json()) as { orders: OrderCard[] };
+      const sData = sRes.ok ? ((await sRes.json()) as { requests: ServiceCard[] }) : null;
+      const sessData = sessRes.ok ? ((await sessRes.json()) as { sessions: SessionCard[] }) : null;
+      if (!loadGate.current.isLatest(requestId)) return;
       setOrders(oData.orders);
-      if (sRes.ok) {
-        const sData = (await sRes.json()) as { requests: ServiceCard[] };
-        setRequests(sData.requests);
-      }
-      if (sessRes.ok) {
-        const sessData = (await sessRes.json()) as { sessions: SessionCard[] };
-        setSessions(sessData.sessions);
-      }
-      setError(null);
+      if (sData) setRequests(sData.requests);
+      if (sessData) setSessions(sessData.sessions);
+      setLoadError(null);
     } catch {
-      setError(t('loadFailed'));
+      if (loadGate.current.isLatest(requestId)) setLoadError(t('loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +73,7 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
   async function transition(orderId: string, status: string) {
     setBusyId(orderId);
     setError(null);
+    setOrderError(null);
     setMessage(null);
     try {
       const res = await fetch(`/api/owner/stores/${storeId}/orders/${orderId}/transition`, {
@@ -72,10 +82,13 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
         body: JSON.stringify({ status }),
       });
       if (!res.ok) {
-        setError(t('updateFailed'));
-        return;
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        setOrderError({ orderId, message: t(transitionFailureKey(res.status, data?.error)) });
       }
+      // 失败也刷新：状态可能已被其他终端改动，按钮要跟上最新状态
       await load();
+    } catch {
+      setOrderError({ orderId, message: t('updateFailed') });
     } finally {
       setBusyId(null);
     }
@@ -161,7 +174,12 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
 
   return (
     <div className="space-y-6">
-      {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
+      {loadError ? <p className="text-sm font-medium text-brand-600">{loadError}</p> : null}
+      {error ? (
+        <p className="text-sm font-medium text-brand-600" role="alert">
+          {error}
+        </p>
+      ) : null}
       {message ? (
         <p className="text-sm font-semibold text-jade-700" role="status">
           {message}
@@ -179,6 +197,7 @@ export function TerminalBoard({ storeId, currency }: TerminalBoardProps) {
         currency={currency}
         isLoading={isLoading}
         busyId={busyId}
+        orderError={orderError}
         onTransition={(id, status) => void transition(id, status)}
         onPay={(id, amount) => void payOrder(id, amount)}
         onRefresh={() => void refresh()}
