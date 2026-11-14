@@ -7,6 +7,7 @@ import { MenuItemRow } from './menu-item-row';
 import { localizedName, type MenuCategory } from './menu-types';
 
 type MenuCategoryCardProps = {
+  storeId: string;
   category: MenuCategory;
   activeLocale: string;
   baseLocale: string;
@@ -21,9 +22,14 @@ type MenuCategoryCardProps = {
   onCopy: (itemId: string) => void;
   onDelete: (itemId: string, name: string) => void;
   onToggleSoldOut: (itemId: string, isSoldOut: boolean) => void;
+  onBusy: (action: string | null) => void;
+  onError: (message: string | null) => void;
+  onMessage: (message: string | null) => void;
+  onChanged: () => Promise<void>;
 };
 
 export function MenuCategoryCard({
+  storeId,
   category,
   activeLocale,
   baseLocale,
@@ -38,6 +44,10 @@ export function MenuCategoryCard({
   onCopy,
   onDelete,
   onToggleSoldOut,
+  onBusy,
+  onError,
+  onMessage,
+  onChanged,
 }: MenuCategoryCardProps) {
   const t = useTranslations('menu');
   const categoryName = localizedName(category.translations, activeLocale, baseLocale);
@@ -88,6 +98,7 @@ export function MenuCategoryCard({
           return (
             <li key={item.id}>
               <MenuItemRow
+                storeId={storeId}
                 item={item}
                 currency={currency}
                 label={itemName.label}
@@ -100,6 +111,10 @@ export function MenuCategoryCard({
                 onCopy={() => onCopy(item.id)}
                 onDelete={() => onDelete(item.id, itemName.label)}
                 onToggleSoldOut={() => onToggleSoldOut(item.id, item.isSoldOut)}
+                onBusy={onBusy}
+                onError={onError}
+                onMessage={onMessage}
+                onChanged={onChanged}
               />
             </li>
           );

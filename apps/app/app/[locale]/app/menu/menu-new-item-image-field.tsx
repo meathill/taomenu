@@ -5,11 +5,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
-import {
-  IMAGE_ERROR_KEYS,
-  MENU_IMAGE_MAX_MB,
-  precheckMenuImageFile,
-} from '@/lib/menu-image-upload';
+import { IMAGE_ERROR_KEYS, MENU_IMAGE_MAX_MB } from '@/lib/menu-image-upload';
+import { MENU_IMAGE_ACCEPT, prepareMenuImageFile } from '@/lib/prepare-menu-image';
 
 type MenuNewItemImageFieldProps = {
   file: File | null;
@@ -38,16 +35,23 @@ export function MenuNewItemImageField({
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  function handleSelect(selected: File | undefined) {
+  const [isPreparing, setIsPreparing] = useState(false);
+
+  async function handleSelect(selected: File | undefined) {
     if (inputRef.current) inputRef.current.value = '';
     if (!selected) return;
-    const problem = precheckMenuImageFile(selected);
-    if (problem) {
-      setError(t(IMAGE_ERROR_KEYS[problem], { maxMb: MENU_IMAGE_MAX_MB }));
-      return;
-    }
+    setIsPreparing(true);
     setError(null);
-    onFileChange(selected);
+    try {
+      const prepared = await prepareMenuImageFile(selected);
+      if (!prepared.ok) {
+        setError(t(IMAGE_ERROR_KEYS[prepared.error], { maxMb: MENU_IMAGE_MAX_MB }));
+        return;
+      }
+      onFileChange(prepared.file);
+    } finally {
+      setIsPreparing(false);
+    }
   }
 
   return (
@@ -71,7 +75,7 @@ export function MenuNewItemImageField({
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept={MENU_IMAGE_ACCEPT}
           className="hidden"
           onChange={(event) => handleSelect(event.target.files?.[0])}
         />
@@ -79,7 +83,8 @@ export function MenuNewItemImageField({
           type="button"
           variant="outline"
           size="sm"
-          disabled={disabled}
+          disabled={disabled || isPreparing}
+          pending={isPreparing}
           onClick={() => inputRef.current?.click()}
         >
           <ImageIcon className="size-4" weight="bold" aria-hidden />

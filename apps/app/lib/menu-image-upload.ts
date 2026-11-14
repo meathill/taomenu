@@ -1,11 +1,14 @@
 import { type ImageValidationError, MENU_IMAGE_MAX_BYTES, MENU_IMAGE_MIME } from './menu-image';
+import { type PrepareMenuImageError, prepareMenuImageFile } from './prepare-menu-image';
 
 /** 服务端错误码 → menu 命名空间的文案 key */
-export const IMAGE_ERROR_KEYS: Record<ImageValidationError, string> = {
+export const IMAGE_ERROR_KEYS: Record<PrepareMenuImageError, string> = {
   UNSUPPORTED_TYPE: 'imageErrorUnsupportedType',
   TOO_LARGE: 'imageErrorTooLarge',
   EMPTY: 'imageErrorEmpty',
   BAD_MAGIC: 'imageErrorBadMagic',
+  HEIC_UNSUPPORTED: 'imageErrorHeicUnsupported',
+  COMPRESS_FAILED: 'imageErrorCompressFailed',
 };
 
 export const MENU_IMAGE_MAX_MB = Math.floor(MENU_IMAGE_MAX_BYTES / (1024 * 1024));
@@ -26,7 +29,18 @@ export function precheckMenuImageFile(file: {
 
 export function imageErrorKey(code: string | undefined): string | null {
   if (!code || !Object.hasOwn(IMAGE_ERROR_KEYS, code)) return null;
-  return IMAGE_ERROR_KEYS[code as ImageValidationError];
+  return IMAGE_ERROR_KEYS[code as PrepareMenuImageError];
+}
+
+/** 先在浏览器里缩小/转换，再上传 */
+export async function prepareAndUploadMenuItemImage(
+  storeId: string,
+  itemId: string,
+  file: File,
+): Promise<{ ok: true } | { ok: false; error?: string }> {
+  const prepared = await prepareMenuImageFile(file);
+  if (!prepared.ok) return prepared;
+  return uploadMenuItemImage(storeId, itemId, prepared.file);
 }
 
 /** 上传菜品图片；失败时返回服务端错误码（若有） */

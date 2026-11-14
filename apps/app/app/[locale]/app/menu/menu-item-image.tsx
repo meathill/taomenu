@@ -7,7 +7,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { usePaywall } from '@/components/paywall/paywall-provider';
 import { publicMediaPath } from '@/lib/menu-image';
-import { imageErrorKey, MENU_IMAGE_MAX_MB, uploadMenuItemImage } from '@/lib/menu-image-upload';
+import {
+  imageErrorKey,
+  MENU_IMAGE_MAX_MB,
+  prepareAndUploadMenuItemImage,
+} from '@/lib/menu-image-upload';
+import { MENU_IMAGE_ACCEPT } from '@/lib/prepare-menu-image';
 import { MenuImageEnhancementPanel } from './menu-image-enhancement-panel';
 
 type MenuItemImageProps = {
@@ -85,7 +90,7 @@ export function MenuItemImage({
     onError(null);
     onMessage(null);
     try {
-      const result = await uploadMenuItemImage(storeId, itemId, file);
+      const result = await prepareAndUploadMenuItemImage(storeId, itemId, file);
       if (!result.ok) {
         const key = imageErrorKey(result.error);
         onError(key ? t(key, { maxMb: MENU_IMAGE_MAX_MB }) : t('uploadFailed'));
@@ -191,8 +196,7 @@ export function MenuItemImage({
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
-          capture="environment"
+          accept={MENU_IMAGE_ACCEPT}
           className="hidden"
           onChange={(e) => void handleFile(e.target.files?.[0])}
         />

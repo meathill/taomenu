@@ -4,9 +4,11 @@ import { CopyIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import { formatCurrency } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
+import { MenuItemPhotoButton } from './menu-item-photo-button';
 import type { MenuItem } from './menu-types';
 
 type MenuItemRowProps = {
+  storeId: string;
   item: MenuItem;
   currency: string;
   label: string;
@@ -19,9 +21,14 @@ type MenuItemRowProps = {
   onCopy: () => void;
   onDelete: () => void;
   onToggleSoldOut: () => void;
+  onBusy: (action: string | null) => void;
+  onError: (message: string | null) => void;
+  onMessage: (message: string | null) => void;
+  onChanged: () => Promise<void>;
 };
 
 export function MenuItemRow({
+  storeId,
   item,
   currency,
   label,
@@ -34,12 +41,29 @@ export function MenuItemRow({
   onCopy,
   onDelete,
   onToggleSoldOut,
+  onBusy,
+  onError,
+  onMessage,
+  onChanged,
 }: MenuItemRowProps) {
   const t = useTranslations('menu');
   const locale = useLocale();
   return (
     <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 flex-1 items-start gap-3">
+        {selectMode ? null : (
+          <MenuItemPhotoButton
+            storeId={storeId}
+            itemId={item.id}
+            imageKey={item.imageKey ?? null}
+            disabled={busyAction !== null}
+            pending={busyAction === `upload-${item.id}`}
+            onBusy={onBusy}
+            onError={onError}
+            onMessage={onMessage}
+            onChanged={onChanged}
+          />
+        )}
         {selectMode ? (
           <input
             type="checkbox"

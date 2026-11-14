@@ -229,6 +229,12 @@ export function MenuEditor({
     new Intl.DisplayNames([interfaceLocale], { type: 'language' }).of(activeMenuLocale) ??
     activeMenuLocale;
 
+  const missingPhotoCount =
+    tree?.categories.reduce(
+      (total, category) => total + category.items.filter((item) => !item.imageKey).length,
+      0,
+    ) ?? 0;
+
   return (
     <div className="space-y-5 pb-24 lg:pb-0">
       <MenuEditorHeader
@@ -302,6 +308,11 @@ export function MenuEditor({
 
       {error ? <p className="text-sm font-medium text-brand-600">{error}</p> : null}
       {message ? <p className="text-sm font-semibold text-jade-700">{message}</p> : null}
+      {missingPhotoCount > 0 ? (
+        <p className="rounded-xl border border-border bg-white px-3 py-2 text-sm text-ink-900">
+          {t('missingPhotosHint', { count: missingPhotoCount })}
+        </p>
+      ) : null}
 
       {tree.categories.length === 0 ? (
         <section className="rounded-2xl border border-jade-600 bg-jade-50 p-5">
@@ -313,6 +324,7 @@ export function MenuEditor({
           {tree.categories.map((category) => (
             <MenuCategoryCard
               key={category.id}
+              storeId={storeId}
               category={category}
               activeLocale={activeMenuLocale}
               baseLocale={baseLocale}
@@ -332,6 +344,10 @@ export function MenuEditor({
               onToggleSoldOut={(itemId, isSoldOut) =>
                 void updateItem(itemId, { isSoldOut: !isSoldOut }, `soldOut-${itemId}`)
               }
+              onBusy={setBusyAction}
+              onError={setError}
+              onMessage={setMessage}
+              onChanged={load}
             />
           ))}
         </ul>
