@@ -4,5 +4,6 @@
   "appHome": "Bảng điều khiển",
   "terminal": "Terminal nhân viên",
   "tagline": "Order QR cho nhà hàng nhỏ",
-  "rights": "Ứng dụng TaoMenu"
+  "rights": "Ứng dụng TaoMenu",
+  "poweredBy": "Vận hành bởi {app}"
 }

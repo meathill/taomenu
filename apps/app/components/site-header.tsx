@@ -5,13 +5,13 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import { getSiteChrome } from '@/lib/site-chrome';
 
 export function SiteHeader() {
   const pathname = usePathname();
   const t = useTranslations('shell');
-  const isWorkspace = pathname.includes('/app') || pathname.includes('/terminal');
-
-  if (isWorkspace) {
+  // 后台/终端有自己的外壳；顾客点单页不需要「登录」等产品入口（issue #20）
+  if (getSiteChrome(pathname) !== 'full') {
     return null;
   }
 

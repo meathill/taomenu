@@ -4,5 +4,6 @@
   "appHome": "Dashboard",
   "terminal": "Staff terminal",
   "tagline": "QR ordering for small restaurants",
-  "rights": "TaoMenu product app"
+  "rights": "TaoMenu product app",
+  "poweredBy": "Powered by {app}"
 }

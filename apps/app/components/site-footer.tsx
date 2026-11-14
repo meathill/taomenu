@@ -4,13 +4,31 @@ import { APP_NAME } from '@taomenu/shared';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { getPoweredByUrl, getSiteChrome } from '@/lib/site-chrome';
 
-export function SiteFooter() {
+export function SiteFooter({ websiteUrl }: { websiteUrl: string }) {
   const pathname = usePathname();
   const t = useTranslations('shell');
+  const chrome = getSiteChrome(pathname);
 
-  if (pathname.includes('/app') || pathname.includes('/terminal')) {
+  if (chrome === 'workspace') {
     return null;
+  }
+
+  if (chrome === 'customer') {
+    // 顾客页只留一行小字，兼作获客入口
+    return (
+      <footer className="mt-auto py-4 text-center text-xs text-muted-foreground">
+        <a
+          href={getPoweredByUrl(websiteUrl)}
+          target="_blank"
+          rel="noopener"
+          className="hover:text-ink-900"
+        >
+          {t('poweredBy', { app: APP_NAME })}
+        </a>
+      </footer>
+    );
   }
 
   return (

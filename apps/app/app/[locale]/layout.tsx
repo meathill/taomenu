@@ -12,6 +12,7 @@ import { SiteHeader } from '@/components/site-header';
 import { pickMessages } from '@/i18n/load-messages';
 import { SHELL_NAMESPACES } from '@/i18n/namespaces';
 import { routing } from '@/i18n/routing';
+import { getPublicWebsiteUrl } from '@/lib/public-url';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -80,7 +81,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <div className="flex min-h-dvh flex-col">
             <SiteHeader />
             <div className="flex-1">{children}</div>
-            <SiteFooter />
+            <SiteFooter websiteUrl={getPublicWebsiteUrl()} />
           </div>
         </NextIntlClientProvider>
       </body>

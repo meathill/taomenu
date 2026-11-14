@@ -259,3 +259,9 @@
 
 - 营销站所有「免费开始」入口 `getAppSignupUrl()` 指向 `/login?intent=signup`；app 登录页识别 `intent=signup`（`lib/login-intent.ts`），标题改成「免费创建你的门店」，并说明首次登录即创建账号。普通登录页的副标题也补充了这一点。
 - 登录页底部和商家后台侧栏新增「帮助与联系」，指向营销站对应语言的 `/contact-us`（`getHelpUrl`，在服务端组件中计算后传给客户端组件，因为 `process.env[name]` 动态读取不会被内联到客户端）。
+
+## 顾客点单页的站点外壳（2026-11-14，#20）
+
+- 根布局的页眉/页脚形态由 `lib/site-chrome.ts` 的 `getSiteChrome(pathname)` 决定：`/app`、`/terminal` 不显示；`/m/*` 顾客页不显示页眉（没有「登录」），页脚只剩一行「Powered by TaoMenu」（带 `utm_source=menu&utm_medium=powered_by`）；其他页面完整显示。顾客页的语言切换由点单页自己的 `customer-language-select` 负责。
+- 以前用 `pathname.includes('/app')` 判断，slug 里含 `app` 的店铺（如 `/m/apple-cafe`）会被误判，现在改为前缀匹配。
+- Pro 去掉「Powered by」暂未实现，需要产品确认。
