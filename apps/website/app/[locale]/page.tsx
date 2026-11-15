@@ -224,26 +224,13 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
           <div className="absolute top-[12%] right-0 w-[58%] origin-top-right rotate-8">
             <div className="flex flex-col items-center">
               <DeviceLabel>{t('heroOwnerLabel')}</DeviceLabel>
-              {owner.isPhone ? (
-                <PhoneFrame
-                  src={owner.src}
-                  alt={t('altOrders')}
-                  width={owner.width}
-                  height={owner.height}
-                  sizes="(min-width: 1024px) 200px, 40vw"
-                />
-              ) : (
-                <div className="overflow-hidden rounded-[1.4rem] border-[8px] border-ink-900 bg-ink-900 shadow-xl">
-                  <Image
-                    src={owner.src}
-                    alt={t('altOrders')}
-                    width={owner.width}
-                    height={owner.height}
-                    sizes="(min-width: 1024px) 200px, 40vw"
-                    className="h-auto w-full rounded-[0.9rem] bg-paper-50"
-                  />
-                </div>
-              )}
+              <PhoneFrame
+                src={owner.src}
+                alt={t('altOrders')}
+                width={owner.width}
+                height={owner.height}
+                sizes="(min-width: 1024px) 200px, 40vw"
+              />
             </div>
           </div>
           <div className="absolute top-0 left-0 z-10 w-[66%]">
@@ -375,30 +362,19 @@ function HowItWorks({ t, locale }: { t: HomeT; locale: string }) {
         </li>
         <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid">
           <HowImageBox>
-            {owner.isPhone ? (
-              <div className="h-full w-auto max-h-full">
-                <div className="h-full aspect-[780/1688]">
-                  <PhoneFrame
-                    src={owner.src}
-                    alt={t('altOrders')}
-                    width={owner.width}
-                    height={owner.height}
-                    sizes="200px"
-                    className="h-full w-full"
-                    fit="fill"
-                  />
-                </div>
+            <div className="h-full w-auto max-h-full">
+              <div className="h-full aspect-[780/1688]">
+                <PhoneFrame
+                  src={owner.src}
+                  alt={t('altOrders')}
+                  width={owner.width}
+                  height={owner.height}
+                  sizes="200px"
+                  className="h-full w-full"
+                  fit="fill"
+                />
               </div>
-            ) : (
-              <Image
-                src={owner.src}
-                alt={t('altOrders')}
-                width={owner.width}
-                height={owner.height}
-                sizes="(min-width: 640px) 360px, 90vw"
-                className="h-full w-auto max-h-full max-w-full rounded-xl border border-border bg-white object-contain shadow-sm"
-              />
-            )}
+            </div>
           </HowImageBox>
           <HowStep index={3} t={t} />
         </li>

@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   guestShotLocale,
-  HOME_OWNER_FALLBACK_SIZE,
-  HOME_PHONE_SIZE,
+  HOME_OWNER_PHONE_SIZE,
   homeGuestSrc,
   homeOwnerShot,
+  OWNER_PHONE_LOCALES,
+  ownerShotLocale,
 } from './home-screenshots';
 
 describe('guestShotLocale', () => {
@@ -28,17 +29,16 @@ describe('homeGuestSrc', () => {
 });
 
 describe('homeOwnerShot', () => {
-  it('uses the shared fallback until per-locale mobile captures exist', () => {
-    for (const locale of ['en', 'vi', 'zh', 'ja']) {
+  it('uses a mobile owner inbox shot for every site locale', () => {
+    for (const locale of OWNER_PHONE_LOCALES) {
       const shot = homeOwnerShot(locale);
-      expect(shot.isFallback).toBe(true);
-      expect(shot.isPhone).toBe(false);
-      expect(shot.src).toBe('/images/home/owner-orders.webp');
-      expect(shot).toMatchObject(HOME_OWNER_FALLBACK_SIZE);
+      expect(shot.src).toBe(`/images/home/owner-orders-${locale}.webp`);
+      expect(shot).toMatchObject(HOME_OWNER_PHONE_SIZE);
     }
   });
 
-  it('keeps the phone intrinsic size constant for future mobile shots', () => {
-    expect(HOME_PHONE_SIZE).toEqual({ width: 780, height: 1688 });
+  it('falls back to the English owner shot for an unknown locale', () => {
+    expect(ownerShotLocale('fr')).toBe('en');
+    expect(homeOwnerShot('fr').src).toBe('/images/home/owner-orders-en.webp');
   });
 });
