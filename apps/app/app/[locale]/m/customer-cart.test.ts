@@ -35,6 +35,20 @@ describe('addToCart', () => {
     expect(two[0]?.quantity).toBe(2);
   });
 
+  it('一次加入指定数量', () => {
+    const next = addToCart([], selection(), 2);
+    expect(next).toHaveLength(1);
+    expect(next[0]?.quantity).toBe(2);
+  });
+
+  it('已有行再加入多份时累加，且不超过 99', () => {
+    const one = addToCart([], selection(), 2);
+    const two = addToCart(one, selection(), 3);
+    expect(two[0]?.quantity).toBe(5);
+    const full: CartLine = { ...selection(), quantity: 97 };
+    expect(addToCart([full], selection(), 5)[0]?.quantity).toBe(99);
+  });
+
   it('数量达到 99 后不再累加', () => {
     const full: CartLine = { ...selection(), quantity: 99 };
     const next = addToCart([full], selection());

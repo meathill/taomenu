@@ -55,5 +55,7 @@
   "modifierMinError": "Choose {name} (at least {min}).",
   "modifierMaxError": "{name}: max {max}.",
   "addWithPrice": "Add · {price}",
+  "addToOrderWithPrice": "Add to order · {price}",
+  "quickAdd": "Add {name} to order",
   "menuLanguage": "Menu language"
 }

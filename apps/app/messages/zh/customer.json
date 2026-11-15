@@ -55,5 +55,7 @@
   "modifierMinError": "请选择{name}（至少 {min} 项）。",
   "modifierMaxError": "{name}：最多 {max} 项。",
   "addWithPrice": "添加 · {price}",
+  "addToOrderWithPrice": "加入订单 · {price}",
+  "quickAdd": "将{name}加入订单",
   "menuLanguage": "菜单语言"
 }

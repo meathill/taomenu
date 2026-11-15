@@ -55,5 +55,7 @@
   "modifierMinError": "Chọn {name} (tối thiểu {min}).",
   "modifierMaxError": "{name}: tối đa {max}.",
   "addWithPrice": "Thêm · {price}",
+  "addToOrderWithPrice": "Thêm vào đơn · {price}",
+  "quickAdd": "Thêm {name} vào đơn",
   "menuLanguage": "Ngôn ngữ thực đơn"
 }

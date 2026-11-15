@@ -13,7 +13,8 @@ type CustomerMenuCategoriesProps = {
   categories: MenuCategoryView[];
   currency: string;
   acceptingPublicRequests: boolean;
-  onPickItem: (item: PublicMenuItem) => void;
+  onOpenItem: (item: PublicMenuItem) => void;
+  onQuickAddItem: (item: PublicMenuItem) => void;
 };
 
 /** 分类标题与菜品列表：分类之间留白更清楚，无图时不加占位框 */
@@ -21,7 +22,8 @@ export function CustomerMenuCategories({
   categories,
   currency,
   acceptingPublicRequests,
-  onPickItem,
+  onOpenItem,
+  onQuickAddItem,
 }: CustomerMenuCategoriesProps) {
   return (
     <ul className="space-y-8 px-4 py-5">
@@ -37,7 +39,8 @@ export function CustomerMenuCategories({
                   item={item}
                   currency={currency}
                   disabled={item.isSoldOut || !acceptingPublicRequests}
-                  onPick={() => onPickItem(item)}
+                  onOpenDetail={() => onOpenItem(item)}
+                  onQuickAdd={() => onQuickAddItem(item)}
                 />
               </li>
             ))}

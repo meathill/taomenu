@@ -2,18 +2,22 @@ import type { CartLineSelection } from './modifier-picker';
 
 export type CartLine = CartLineSelection;
 
-/** 已有同 key 行则数量 +1（上限 99），否则追加新行。 */
+/** 已有同 key 行则累加数量（上限 99），否则按给定数量追加新行。 */
 export function addToCart(
   cart: CartLine[],
   selection: Omit<CartLineSelection, 'quantity'>,
+  quantity = 1,
 ): CartLine[] {
+  const increment = Math.min(99, Math.max(1, Math.floor(quantity)));
   const existing = cart.find((l) => l.lineKey === selection.lineKey);
   if (existing) {
     return cart.map((l) =>
-      l.lineKey === selection.lineKey ? { ...l, quantity: Math.min(99, l.quantity + 1) } : l,
+      l.lineKey === selection.lineKey
+        ? { ...l, quantity: Math.min(99, l.quantity + increment) }
+        : l,
     );
   }
-  return [...cart, { ...selection, quantity: 1 }];
+  return [...cart, { ...selection, quantity: increment }];
 }
 
 export function cartSubtotal(cart: CartLine[]): number {

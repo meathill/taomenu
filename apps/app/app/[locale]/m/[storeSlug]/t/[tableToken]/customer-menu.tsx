@@ -12,11 +12,12 @@ import {
   normalizeOrderNote,
 } from '../../../customer-cart';
 import { CustomerCartPanel } from '../../../customer-cart-panel';
+import { CustomerItemSheet } from '../../../customer-item-sheet';
 import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
   cartLineKey,
-  ModifierPicker,
+  itemHasRequiredOptions,
   type PublicMenuItem,
 } from '../../../modifier-picker';
 import { useCustomerDocumentTitle } from '../../../use-customer-document-title';
@@ -160,22 +161,31 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
   // 订单状态页可能先于菜单渲染（从 localStorage 恢复订单），此时按 VND 回落
   const currency = toStoreCurrency(menu?.store.currency);
 
-  function requestAddItem(item: PublicMenuItem) {
-    if (item.modifierGroups && item.modifierGroups.length > 0) {
+  function openItem(item: PublicMenuItem) {
+    if (item.isSoldOut) return;
+    setPicking(item);
+  }
+
+  function quickAddItem(item: PublicMenuItem) {
+    if (item.isSoldOut) return;
+    if (itemHasRequiredOptions(item)) {
       setPicking(item);
       return;
     }
-    commitSelection({
-      menuItemId: item.id,
-      name: item.name,
-      priceAmount: item.priceAmount,
-      modifierIds: [],
-      lineKey: cartLineKey(item.id, []),
-    });
+    commitSelection(
+      {
+        menuItemId: item.id,
+        name: item.name,
+        priceAmount: item.priceAmount,
+        modifierIds: [],
+        lineKey: cartLineKey(item.id, []),
+      },
+      1,
+    );
   }
 
-  function commitSelection(selection: Omit<CartLineSelection, 'quantity'>) {
-    setCart((prev) => addToCart(prev, selection));
+  function commitSelection(selection: Omit<CartLineSelection, 'quantity'>, quantity = 1) {
+    setCart((prev) => addToCart(prev, selection, quantity));
     setPicking(null);
   }
 
@@ -311,7 +321,8 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
         svcBusy={svcBusy}
         svcMsg={svcMsg}
         onSendService={(type) => void sendService(type)}
-        onPickItem={requestAddItem}
+        onOpenItem={openItem}
+        onQuickAddItem={quickAddItem}
       />
 
       {error ? <p className="px-4 pt-3 text-sm font-medium text-brand-600">{error}</p> : null}
@@ -333,7 +344,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       ) : null}
 
       {picking ? (
-        <ModifierPicker
+        <CustomerItemSheet
           item={picking}
           currency={currency}
           onCancel={() => setPicking(null)}

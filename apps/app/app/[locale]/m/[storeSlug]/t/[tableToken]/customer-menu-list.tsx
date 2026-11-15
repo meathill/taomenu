@@ -24,7 +24,8 @@ type CustomerMenuListProps = {
   svcBusy: boolean;
   svcMsg: string | null;
   onSendService: (type: 'call_staff' | 'request_bill') => void;
-  onPickItem: (item: PublicMenuItem) => void;
+  onOpenItem: (item: PublicMenuItem) => void;
+  onQuickAddItem: (item: PublicMenuItem) => void;
   onLocaleChange: (locale: string) => void;
 };
 
@@ -40,7 +41,8 @@ export function CustomerMenuList({
   svcBusy,
   svcMsg,
   onSendService,
-  onPickItem,
+  onOpenItem,
+  onQuickAddItem,
   onLocaleChange,
 }: CustomerMenuListProps) {
   const t = useTranslations('customer');
@@ -93,7 +95,8 @@ export function CustomerMenuList({
           categories={categories}
           currency={currency}
           acceptingPublicRequests={acceptingPublicRequests}
-          onPickItem={onPickItem}
+          onOpenItem={onOpenItem}
+          onQuickAddItem={onQuickAddItem}
         />
       )}
     </div>

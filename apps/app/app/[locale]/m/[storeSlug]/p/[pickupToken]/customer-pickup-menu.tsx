@@ -12,13 +12,14 @@ import {
   normalizeOrderNote,
 } from '../../../customer-cart';
 import { CustomerCartPanel } from '../../../customer-cart-panel';
+import { CustomerItemSheet } from '../../../customer-item-sheet';
 import { CustomerMenuCategories } from '../../../customer-menu-categories';
 import { CustomerMenuCover } from '../../../customer-menu-cover';
 import { CustomerMenuSkeleton } from '../../../customer-menu-skeleton';
 import {
   type CartLineSelection,
   cartLineKey,
-  ModifierPicker,
+  itemHasRequiredOptions,
   type PublicMenuItem,
 } from '../../../modifier-picker';
 import { useCustomerDocumentTitle } from '../../../use-customer-document-title';
@@ -88,23 +89,31 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
   // 下单结果页在菜单请求失败时仍会渲染，此时按 VND 回落
   const currency = toStoreCurrency(menu?.store.currency);
 
-  function requestAddItem(item: PublicMenuItem) {
+  function openItem(item: PublicMenuItem) {
     if (item.isSoldOut) return;
-    if ((item.modifierGroups?.length ?? 0) > 0) {
+    setPicking(item);
+  }
+
+  function quickAddItem(item: PublicMenuItem) {
+    if (item.isSoldOut) return;
+    if (itemHasRequiredOptions(item)) {
       setPicking(item);
       return;
     }
-    commitSelection({
-      menuItemId: item.id,
-      name: item.name,
-      priceAmount: item.priceAmount,
-      modifierIds: [],
-      lineKey: cartLineKey(item.id, []),
-    });
+    commitSelection(
+      {
+        menuItemId: item.id,
+        name: item.name,
+        priceAmount: item.priceAmount,
+        modifierIds: [],
+        lineKey: cartLineKey(item.id, []),
+      },
+      1,
+    );
   }
 
-  function commitSelection(selection: Omit<CartLineSelection, 'quantity'>) {
-    setCart((prev) => addToCart(prev, selection));
+  function commitSelection(selection: Omit<CartLineSelection, 'quantity'>, quantity = 1) {
+    setCart((prev) => addToCart(prev, selection, quantity));
     setPicking(null);
   }
 
@@ -310,7 +319,8 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         categories={menu.categories}
         currency={currency}
         acceptingPublicRequests={menu.store.acceptingPublicRequests}
-        onPickItem={requestAddItem}
+        onOpenItem={openItem}
+        onQuickAddItem={quickAddItem}
       />
       {cart.length > 0 ? (
         <CustomerCartPanel
@@ -328,7 +338,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         />
       ) : null}
       {picking ? (
-        <ModifierPicker
+        <CustomerItemSheet
           item={picking}
           currency={currency}
           onCancel={() => setPicking(null)}

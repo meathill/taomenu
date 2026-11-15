@@ -55,5 +55,7 @@
   "modifierMinError": "{name} を選択してください（最低 {min}）。",
   "modifierMaxError": "{name}：最大 {max}。",
   "addWithPrice": "追加 · {price}",
+  "addToOrderWithPrice": "注文に追加 · {price}",
+  "quickAdd": "{name}を注文に追加",
   "menuLanguage": "メニュー言語"
 }
