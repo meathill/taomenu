@@ -173,7 +173,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
 function DeviceLabel({ children }: { children: ReactNode }) {
   return (
-    <span className="absolute -top-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink-900 px-2.5 py-1 text-[0.6875rem] font-bold text-white shadow-sm">
+    <span className="mb-2 inline-block rounded-full bg-ink-900 px-2.5 py-1 text-[0.6875rem] font-bold text-white shadow-sm">
       {children}
     </span>
   );
@@ -219,10 +219,10 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
         </div>
       </div>
 
-      <div className="relative mx-auto w-full min-w-0 max-w-[22rem] overflow-x-clip sm:max-w-[24rem] lg:max-w-[26rem]">
-        <div className="relative aspect-[5/8] w-full pt-4">
-          <div className="absolute top-[14%] right-0 w-[58%] origin-top-right rotate-8">
-            <div className="relative">
+      <div className="relative mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:max-w-[26rem]">
+        <div className="relative aspect-[5/8] w-full">
+          <div className="absolute top-[12%] right-0 w-[58%] origin-top-right rotate-8">
+            <div className="flex flex-col items-center">
               <DeviceLabel>{t('heroOwnerLabel')}</DeviceLabel>
               {owner.isPhone ? (
                 <PhoneFrame
@@ -247,7 +247,7 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
             </div>
           </div>
           <div className="absolute top-0 left-0 z-10 w-[66%]">
-            <div className="relative">
+            <div className="flex flex-col items-center">
               <DeviceLabel>{t('heroGuestLabel')}</DeviceLabel>
               <PhoneFrame
                 src={homeGuestSrc('menu', locale)}
