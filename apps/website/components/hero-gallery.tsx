@@ -140,7 +140,7 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
         <div className="relative aspect-[390/844] w-full">
           <div
             ref={scrollerRef}
-            className="absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
             onScroll={onScroll}
             onPointerDown={pause}
           >

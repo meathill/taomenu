@@ -34,10 +34,11 @@ export function PhoneFrame({
         height={height}
         priority={priority}
         sizes={sizes}
+        draggable={false}
         className={
           fit === 'fill'
-            ? 'h-full w-full rounded-[1.4rem] object-cover'
-            : 'h-auto w-full rounded-[1.4rem]'
+            ? 'h-full w-full rounded-[1.4rem] object-cover select-none'
+            : 'h-auto w-full rounded-[1.4rem] select-none'
         }
       />
     </div>
