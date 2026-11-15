@@ -17,10 +17,17 @@ import {
 import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { HeroGallery } from '@/components/hero-gallery';
 import { JsonLd } from '@/components/json-ld';
 import { PhoneFrame } from '@/components/phone-frame';
 import { Link } from '@/i18n/routing';
-import { HOME_PHONE_SIZE, HOME_QR_SIZE, homeGuestSrc, homeOwnerShot } from '@/lib/home-screenshots';
+import {
+  HOME_PHONE_SIZE,
+  HOME_QR_SIZE,
+  homeGuestSrc,
+  homeHeroSlides,
+  homeOwnerShot,
+} from '@/lib/home-screenshots';
 import { buildPageMetadata } from '@/lib/seo';
 import { getAppSignupUrl, getDemoMenuUrl } from '@/lib/site';
 
@@ -171,16 +178,31 @@ export default async function HomePage({ params }: HomePageProps) {
   );
 }
 
-function DeviceLabel({ children }: { children: ReactNode }) {
-  return (
-    <span className="mb-2 inline-block rounded-full bg-ink-900 px-2.5 py-1 text-[0.6875rem] font-bold text-white shadow-sm">
-      {children}
-    </span>
-  );
-}
-
 function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
-  const owner = homeOwnerShot(locale);
+  const altBySlide = {
+    menu: t('altMenu'),
+    detail: t('altDetail'),
+    cart: t('altCart'),
+    orders: t('altOrders'),
+  } as const;
+  const tabBySlide = {
+    menu: t('heroSlideMenuTab'),
+    detail: t('heroSlideDetailTab'),
+    cart: t('heroSlideCartTab'),
+    orders: t('heroSlideOrdersTab'),
+  } as const;
+  const captionBySlide = {
+    menu: t('heroSlideMenuCaption'),
+    detail: t('heroSlideDetailCaption'),
+    cart: t('heroSlideCartCaption'),
+    orders: t('heroSlideOrdersCaption'),
+  } as const;
+  const slides = homeHeroSlides(locale).map((slide) => ({
+    ...slide,
+    alt: altBySlide[slide.id],
+    tab: tabBySlide[slide.id],
+    caption: captionBySlide[slide.id],
+  }));
 
   return (
     <section className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
@@ -219,34 +241,13 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
         </div>
       </div>
 
-      <div className="relative mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:max-w-[26rem]">
-        <div className="relative aspect-[5/8] w-full">
-          <div className="absolute top-[12%] right-0 w-[58%] origin-top-right rotate-8">
-            <div className="flex flex-col items-center">
-              <DeviceLabel>{t('heroOwnerLabel')}</DeviceLabel>
-              <PhoneFrame
-                src={owner.src}
-                alt={t('altOrders')}
-                width={owner.width}
-                height={owner.height}
-                sizes="(min-width: 1024px) 200px, 40vw"
-              />
-            </div>
-          </div>
-          <div className="absolute top-0 left-0 z-10 w-[66%]">
-            <div className="flex flex-col items-center">
-              <DeviceLabel>{t('heroGuestLabel')}</DeviceLabel>
-              <PhoneFrame
-                src={homeGuestSrc('menu', locale)}
-                alt={t('altMenu')}
-                width={HOME_PHONE_SIZE.width}
-                height={HOME_PHONE_SIZE.height}
-                priority
-                sizes="(min-width: 1024px) 280px, 60vw"
-              />
-            </div>
-          </div>
-        </div>
+      <div className="mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:max-w-[26rem]">
+        <HeroGallery
+          slides={slides}
+          label={t('heroGalleryLabel')}
+          previousLabel={t('heroPrev')}
+          nextLabel={t('heroNext')}
+        />
       </div>
     </section>
   );

@@ -47,3 +47,43 @@ export function homeOwnerShot(pageLocale: string): OwnerShot {
     height: HOME_OWNER_PHONE_SIZE.height,
   };
 }
+
+export const HOME_HERO_SLIDE_IDS = ['menu', 'detail', 'cart', 'orders'] as const;
+export type HomeHeroSlideId = (typeof HOME_HERO_SLIDE_IDS)[number];
+
+export type HomeHeroSlide = {
+  id: HomeHeroSlideId;
+  src: string;
+  width: number;
+  height: number;
+};
+
+/** Hero gallery slides in story order. Guest shots follow published menu languages. */
+export function homeHeroSlides(pageLocale: string): HomeHeroSlide[] {
+  const menu: HomeHeroSlide = {
+    id: 'menu',
+    src: homeGuestSrc('menu', pageLocale),
+    width: HOME_PHONE_SIZE.width,
+    height: HOME_PHONE_SIZE.height,
+  };
+  const detail: HomeHeroSlide = {
+    id: 'detail',
+    src: homeGuestSrc('detail', pageLocale),
+    width: HOME_PHONE_SIZE.width,
+    height: HOME_PHONE_SIZE.height,
+  };
+  const cart: HomeHeroSlide = {
+    id: 'cart',
+    src: homeGuestSrc('cart', pageLocale),
+    width: HOME_PHONE_SIZE.width,
+    height: HOME_PHONE_SIZE.height,
+  };
+  const owner = homeOwnerShot(pageLocale);
+  const orders: HomeHeroSlide = {
+    id: 'orders',
+    src: owner.src,
+    width: owner.width,
+    height: owner.height,
+  };
+  return [menu, detail, cart, orders];
+}
