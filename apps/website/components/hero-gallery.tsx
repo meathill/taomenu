@@ -136,6 +136,33 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
       <p className="mb-3 min-h-6 text-center text-sm font-bold text-ink-900" aria-live="polite">
         {current.caption}
       </p>
+      <div className="mb-3 grid grid-cols-4 gap-1.5" role="tablist" aria-label={label}>
+        {slides.map((slide, slideIndex) => {
+          const selected = slideIndex === index;
+          return (
+            <button
+              key={slide.id}
+              type="button"
+              role="tab"
+              id={`${baseId}-tab-${slide.id}`}
+              aria-selected={selected}
+              aria-controls={`${baseId}-${slide.id}`}
+              tabIndex={selected ? 0 : -1}
+              className={`min-h-11 min-w-0 rounded-xl px-1 text-center text-xs font-bold leading-tight sm:text-sm ${
+                selected
+                  ? 'bg-brand-600 text-white'
+                  : 'border border-border bg-white text-ink-900 hover:bg-brand-50'
+              }`}
+              onClick={() => {
+                pause();
+                goTo(slideIndex);
+              }}
+            >
+              {slide.tab}
+            </button>
+          );
+        })}
+      </div>
       <div className="relative mx-auto w-full max-w-[20rem] sm:max-w-[22rem]">
         <div className="relative aspect-[390/844] w-full">
           <div
@@ -189,33 +216,6 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
             <CaretRightIcon className="size-6" weight="bold" aria-hidden />
           </button>
         </div>
-      </div>
-      <div className="mt-4 grid grid-cols-4 gap-1.5" role="tablist" aria-label={label}>
-        {slides.map((slide, slideIndex) => {
-          const selected = slideIndex === index;
-          return (
-            <button
-              key={slide.id}
-              type="button"
-              role="tab"
-              id={`${baseId}-tab-${slide.id}`}
-              aria-selected={selected}
-              aria-controls={`${baseId}-${slide.id}`}
-              tabIndex={selected ? 0 : -1}
-              className={`min-h-11 min-w-0 rounded-xl px-1 text-center text-xs font-bold leading-tight sm:text-sm ${
-                selected
-                  ? 'bg-brand-600 text-white'
-                  : 'border border-border bg-white text-ink-900 hover:bg-brand-50'
-              }`}
-              onClick={() => {
-                pause();
-                goTo(slideIndex);
-              }}
-            >
-              {slide.tab}
-            </button>
-          );
-        })}
       </div>
     </section>
   );

@@ -205,7 +205,7 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
   }));
 
   return (
-    <section className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
+    <section className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12">
       <div className="min-w-0">
         <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
           {t('badge')}
