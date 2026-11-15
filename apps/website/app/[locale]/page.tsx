@@ -20,15 +20,9 @@ import type { ReactNode } from 'react';
 import { JsonLd } from '@/components/json-ld';
 import { PhoneFrame } from '@/components/phone-frame';
 import { Link } from '@/i18n/routing';
+import { HOME_PHONE_SIZE, HOME_QR_SIZE, homeGuestSrc, homeOwnerShot } from '@/lib/home-screenshots';
 import { buildPageMetadata } from '@/lib/seo';
 import { getAppSignupUrl, getDemoMenuUrl } from '@/lib/site';
-
-const PHONE_WIDTH = 780;
-const PHONE_HEIGHT = 1688;
-const QR_WIDTH = 900;
-const QR_HEIGHT = 1100;
-const ORDERS_WIDTH = 1200;
-const ORDERS_HEIGHT = 565;
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -55,10 +49,10 @@ export default async function HomePage({ params }: HomePageProps) {
   }));
 
   return (
-    <div className="pt-6 sm:pt-12">
-      <HeroSection t={t} />
+    <div className="pt-6 pb-16 sm:pt-12 sm:pb-20">
+      <HeroSection t={t} locale={locale} />
 
-      <VisualFeatures t={t} />
+      <VisualFeatures t={t} locale={locale} />
 
       <PainSection t={t} />
 
@@ -69,7 +63,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <HighlightCard icon={<MoneyIcon className="size-6" aria-hidden />} t={t} index={4} />
       </section>
 
-      <HowItWorks t={t} />
+      <HowItWorks t={t} locale={locale} />
 
       <section className="mt-14">
         <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
@@ -177,7 +171,17 @@ export default async function HomePage({ params }: HomePageProps) {
   );
 }
 
-function HeroSection({ t }: { t: HomeT }) {
+function DeviceLabel({ children }: { children: ReactNode }) {
+  return (
+    <span className="absolute -top-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink-900 px-2.5 py-1 text-[0.6875rem] font-bold text-white shadow-sm">
+      {children}
+    </span>
+  );
+}
+
+function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
+  const owner = homeOwnerShot(locale);
+
   return (
     <section className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
       <div className="min-w-0">
@@ -216,25 +220,44 @@ function HeroSection({ t }: { t: HomeT }) {
       </div>
 
       <div className="relative mx-auto w-full min-w-0 max-w-[22rem] overflow-x-clip sm:max-w-[24rem] lg:max-w-[26rem]">
-        <div className="relative aspect-[5/8] w-full">
-          <div className="absolute top-[12%] right-0 w-[58%] origin-top-right rotate-8">
-            <PhoneFrame
-              src="/images/home/menu-en.webp"
-              alt={t('altMenuEn')}
-              width={PHONE_WIDTH}
-              height={PHONE_HEIGHT}
-              sizes="(min-width: 1024px) 200px, 40vw"
-            />
+        <div className="relative aspect-[5/8] w-full pt-4">
+          <div className="absolute top-[14%] right-0 w-[58%] origin-top-right rotate-8">
+            <div className="relative">
+              <DeviceLabel>{t('heroOwnerLabel')}</DeviceLabel>
+              {owner.isPhone ? (
+                <PhoneFrame
+                  src={owner.src}
+                  alt={t('altOrders')}
+                  width={owner.width}
+                  height={owner.height}
+                  sizes="(min-width: 1024px) 200px, 40vw"
+                />
+              ) : (
+                <div className="overflow-hidden rounded-[1.4rem] border-[8px] border-ink-900 bg-ink-900 shadow-xl">
+                  <Image
+                    src={owner.src}
+                    alt={t('altOrders')}
+                    width={owner.width}
+                    height={owner.height}
+                    sizes="(min-width: 1024px) 200px, 40vw"
+                    className="h-auto w-full rounded-[0.9rem] bg-paper-50"
+                  />
+                </div>
+              )}
+            </div>
           </div>
           <div className="absolute top-0 left-0 z-10 w-[66%]">
-            <PhoneFrame
-              src="/images/home/menu-vi.webp"
-              alt={t('altMenuVi')}
-              width={PHONE_WIDTH}
-              height={PHONE_HEIGHT}
-              priority
-              sizes="(min-width: 1024px) 280px, 60vw"
-            />
+            <div className="relative">
+              <DeviceLabel>{t('heroGuestLabel')}</DeviceLabel>
+              <PhoneFrame
+                src={homeGuestSrc('menu', locale)}
+                alt={t('altMenu')}
+                width={HOME_PHONE_SIZE.width}
+                height={HOME_PHONE_SIZE.height}
+                priority
+                sizes="(min-width: 1024px) 280px, 60vw"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -242,22 +265,22 @@ function HeroSection({ t }: { t: HomeT }) {
   );
 }
 
-function VisualFeatures({ t }: { t: HomeT }) {
+function VisualFeatures({ t, locale }: { t: HomeT; locale: string }) {
   const cards = [
     {
-      src: '/images/home/menu-vi.webp',
-      alt: t('altMenuVi'),
+      src: homeGuestSrc('menu', locale),
+      alt: t('altMenu'),
       title: t('visual1Title'),
       body: t('visual1Body'),
     },
     {
-      src: '/images/home/detail-en.webp',
+      src: homeGuestSrc('detail', locale),
       alt: t('altDetail'),
       title: t('visual2Title'),
       body: t('visual2Body'),
     },
     {
-      src: '/images/home/cart-en.webp',
+      src: homeGuestSrc('cart', locale),
       alt: t('altCart'),
       title: t('visual3Title'),
       body: t('visual3Body'),
@@ -269,21 +292,25 @@ function VisualFeatures({ t }: { t: HomeT }) {
       <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
         {t('visualTitle')}
       </h2>
-      <ul className="mt-6 grid gap-4 sm:grid-cols-3">
+      <ul className="mt-6 grid gap-4 sm:grid-cols-3 sm:grid-rows-[auto_auto]">
         {cards.map((card) => (
           <li
             key={card.title}
-            className="min-w-0 overflow-hidden rounded-2xl border border-border bg-white shadow-sm"
+            className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid"
           >
-            <div className="flex justify-center bg-brand-50 px-6 pt-6 pb-2">
-              <div className="w-full max-w-[200px]">
-                <PhoneFrame
-                  src={card.src}
-                  alt={card.alt}
-                  width={PHONE_WIDTH}
-                  height={PHONE_HEIGHT}
-                  sizes="200px"
-                />
+            <div className="flex h-72 items-center justify-center bg-brand-50 px-6 py-5 sm:h-80">
+              <div className="h-full w-auto max-h-full">
+                <div className="h-full aspect-[780/1688]">
+                  <PhoneFrame
+                    src={card.src}
+                    alt={card.alt}
+                    width={HOME_PHONE_SIZE.width}
+                    height={HOME_PHONE_SIZE.height}
+                    sizes="200px"
+                    className="h-full w-full"
+                    fit="fill"
+                  />
+                </div>
               </div>
             </div>
             <div className="p-5">
@@ -297,7 +324,15 @@ function VisualFeatures({ t }: { t: HomeT }) {
   );
 }
 
-function HowItWorks({ t }: { t: HomeT }) {
+function HowImageBox({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex h-72 items-center justify-center bg-brand-50 p-5 sm:h-80">{children}</div>
+  );
+}
+
+function HowItWorks({ t, locale }: { t: HomeT; locale: string }) {
+  const owner = homeOwnerShot(locale);
+
   return (
     <section className="mt-14">
       <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
@@ -306,45 +341,65 @@ function HowItWorks({ t }: { t: HomeT }) {
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {t('howSubtitle')}
       </p>
-      <ol className="mt-6 grid gap-4 sm:grid-cols-3">
-        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-          <div className="flex items-center justify-center bg-brand-50 p-5">
+      <ol className="mt-6 grid gap-4 sm:grid-cols-3 sm:grid-rows-[auto_auto]">
+        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid">
+          <HowImageBox>
             <Image
               src="/images/home/qr-scan.webp"
               alt={t('altQr')}
-              width={QR_WIDTH}
-              height={QR_HEIGHT}
+              width={HOME_QR_SIZE.width}
+              height={HOME_QR_SIZE.height}
               sizes="(min-width: 640px) 220px, 70vw"
-              className="h-auto w-full max-w-[220px] rounded-2xl border border-border bg-paper-50 shadow-sm"
+              className="h-full w-auto max-h-full max-w-full rounded-2xl border border-border bg-paper-50 object-contain shadow-sm"
             />
-          </div>
+          </HowImageBox>
           <HowStep index={1} t={t} />
         </li>
-        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-          <div className="flex items-center justify-center bg-brand-50 px-6 pt-6 pb-4">
-            <div className="w-full max-w-[200px]">
-              <PhoneFrame
-                src="/images/home/menu-en.webp"
-                alt={t('altMenuEn')}
-                width={PHONE_WIDTH}
-                height={PHONE_HEIGHT}
-                sizes="200px"
-              />
+        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid">
+          <HowImageBox>
+            <div className="h-full w-auto max-h-full">
+              <div className="h-full aspect-[780/1688]">
+                <PhoneFrame
+                  src={homeGuestSrc('menu', locale)}
+                  alt={t('altMenu')}
+                  width={HOME_PHONE_SIZE.width}
+                  height={HOME_PHONE_SIZE.height}
+                  sizes="200px"
+                  className="h-full w-full"
+                  fit="fill"
+                />
+              </div>
             </div>
-          </div>
+          </HowImageBox>
           <HowStep index={2} t={t} />
         </li>
-        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-          <div className="flex flex-1 items-center justify-center bg-brand-50 p-5">
-            <Image
-              src="/images/home/owner-orders.webp"
-              alt={t('altOrders')}
-              width={ORDERS_WIDTH}
-              height={ORDERS_HEIGHT}
-              sizes="(min-width: 640px) 360px, 90vw"
-              className="h-auto w-full rounded-xl border border-border bg-white shadow-sm"
-            />
-          </div>
+        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid">
+          <HowImageBox>
+            {owner.isPhone ? (
+              <div className="h-full w-auto max-h-full">
+                <div className="h-full aspect-[780/1688]">
+                  <PhoneFrame
+                    src={owner.src}
+                    alt={t('altOrders')}
+                    width={owner.width}
+                    height={owner.height}
+                    sizes="200px"
+                    className="h-full w-full"
+                    fit="fill"
+                  />
+                </div>
+              </div>
+            ) : (
+              <Image
+                src={owner.src}
+                alt={t('altOrders')}
+                width={owner.width}
+                height={owner.height}
+                sizes="(min-width: 640px) 360px, 90vw"
+                className="h-full w-auto max-h-full max-w-full rounded-xl border border-border bg-white object-contain shadow-sm"
+              />
+            )}
+          </HowImageBox>
           <HowStep index={3} t={t} />
         </li>
       </ol>
@@ -354,7 +409,7 @@ function HowItWorks({ t }: { t: HomeT }) {
 
 function HowStep({ index, t }: { index: 1 | 2 | 3; t: HomeT }) {
   return (
-    <div className="flex gap-4 p-5">
+    <div className="flex h-full gap-4 p-5">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-base font-extrabold text-white">
         {index}
       </span>
