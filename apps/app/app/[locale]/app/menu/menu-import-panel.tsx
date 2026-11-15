@@ -3,8 +3,9 @@
 import { CameraIcon, FilePdfIcon, SparkleIcon } from '@phosphor-icons/react';
 import { doLocalesShareLanguage, parseCurrencyInput } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import { HiddenFileInput } from '@/components/hidden-file-input';
 import { planLabelKey } from '@/lib/plan-label';
 import { MenuImportDiscardButton } from './menu-import-discard-button';
 import {
@@ -40,6 +41,7 @@ export function MenuImportPanel({
   const [view, setView] = useState<ImportView | null>(null);
   // 额度以服务端为准；加载前不显示，避免先闪出旧的默认值（issue #29）
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -368,7 +370,11 @@ export function MenuImportPanel({
 
       {canUpload ? (
         <form onSubmit={(event) => void handleUpload(event)} className="mt-4 space-y-3">
-          <label className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-indigo-300 bg-white px-4 text-center">
+          <button
+            type="button"
+            onClick={() => importInputRef.current?.click()}
+            className="flex min-h-24 w-full cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-indigo-300 bg-white px-4 text-center"
+          >
             <span className="flex items-center gap-2 text-sm font-bold text-indigo-700">
               <CameraIcon className="size-5" weight="bold" aria-hidden />
               <FilePdfIcon className="size-5" weight="bold" aria-hidden />
@@ -377,13 +383,12 @@ export function MenuImportPanel({
             <span className="mt-1 text-xs text-muted-foreground">
               {file?.name ?? t('importFileHint')}
             </span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,application/pdf"
-              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              className="sr-only"
-            />
-          </label>
+          </button>
+          <HiddenFileInput
+            ref={importInputRef}
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+          />
           <Button
             type="submit"
             variant="default"

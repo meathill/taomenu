@@ -4,6 +4,7 @@ import type { StoreRow } from '@taomenu/db';
 import { useTranslations } from 'next-intl';
 import { useId, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import { HiddenFileInput } from '@/components/hidden-file-input';
 import { usePaywall } from '@/components/paywall/paywall-provider';
 import { ProBadge } from '@/components/paywall/pro-badge';
 import { Switch } from '@/components/ui/switch';
@@ -143,11 +144,9 @@ export function StoreBrandingSection({
             </Button>
           ) : null}
         </div>
-        <input
+        <HiddenFileInput
           ref={coverInputRef}
-          type="file"
           accept={MENU_IMAGE_ACCEPT}
-          className="sr-only"
           onChange={(event) => void handleCoverPicked(event.target.files?.[0])}
         />
       </div>

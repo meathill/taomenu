@@ -1,6 +1,6 @@
 {
   "title": "Thực đơn",
-  "subtitle": "Nhập tay từng món. Gói miễn phí: 2 ngôn ngữ — ngôn ngữ gốc cộng thêm 1 ({locale}).",
+  "subtitle": "Nhập từng món bằng tay. Gói miễn phí dùng được 2 ngôn ngữ thực đơn: {locale} và thêm 1 ngôn ngữ.",
   "subtitlePro": "Chỉnh sửa thực đơn {locale}, kiểm tra bản nháp rồi mới xuất bản.",
   "loading": "Đang tải thực đơn…",
   "loadFailed": "Không tải được thực đơn.",
@@ -209,7 +209,7 @@
   "translationLanguage": "Ngôn ngữ thực đơn bổ sung",
   "proOnlyLanguage": "Pro · tối đa 5 ngôn ngữ thực đơn",
   "freeLanguageLimitTitle": "Cần gói Pro để thêm {language}",
-  "freeLanguageLimitBody": "Gói miễn phí gồm ngôn ngữ gốc ({base}) và thêm 1 ngôn ngữ, có thể sửa tay hoặc dùng AI trong hạn mức tháng. Muốn thêm ngôn ngữ nữa cần gói Pro (tối đa 5 ngôn ngữ).",
+  "freeLanguageLimitBody": "Gói miễn phí gồm ngôn ngữ chính ({base}) và thêm 1 ngôn ngữ. Nâng cấp lên Pro để thêm ngôn ngữ, tối đa 5.",
   "manualOrAiTranslation": "Tự sửa {language} hoặc dùng AI điền phần còn thiếu.",
   "translationModeHint": "Đang sửa bản dịch {language}. Cấu trúc, giá, tồn kho và ảnh được dùng chung.",
   "modifierTranslations": "Bản dịch tùy chọn",

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import { HiddenFileInput } from '@/components/hidden-file-input';
 import { IMAGE_ERROR_KEYS, MENU_IMAGE_MAX_MB } from '@/lib/menu-image-upload';
 import { MENU_IMAGE_ACCEPT, prepareMenuImageFile } from '@/lib/prepare-menu-image';
 
@@ -72,11 +73,9 @@ export function MenuNewItemImageField({
             <ImageIcon className="size-5" weight="bold" aria-hidden />
           </div>
         )}
-        <input
+        <HiddenFileInput
           ref={inputRef}
-          type="file"
           accept={MENU_IMAGE_ACCEPT}
-          className="hidden"
           onChange={(event) => handleSelect(event.target.files?.[0])}
         />
         <Button

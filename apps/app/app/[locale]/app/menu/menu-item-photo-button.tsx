@@ -4,6 +4,7 @@ import { ImageIcon } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
+import { HiddenFileInput } from '@/components/hidden-file-input';
 import { publicMediaPath } from '@/lib/menu-image';
 import {
   imageErrorKey,
@@ -62,11 +63,9 @@ export function MenuItemPhotoButton({
 
   return (
     <>
-      <input
+      <HiddenFileInput
         ref={inputRef}
-        type="file"
         accept={MENU_IMAGE_ACCEPT}
-        className="hidden"
         onChange={(event) => void handleFile(event.target.files?.[0])}
       />
       <button

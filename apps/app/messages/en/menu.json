@@ -1,6 +1,6 @@
 {
   "title": "Menu",
-  "subtitle": "Enter items by hand. Free plan: 2 languages — your original plus one more ({locale}).",
+  "subtitle": "Add dishes by hand. The Free plan includes 2 menu languages: {locale} and one more.",
   "subtitlePro": "Edit your {locale} menu, review the draft, then publish when ready.",
   "loading": "Loading menu…",
   "loadFailed": "Could not load menu.",
@@ -209,7 +209,7 @@
   "translationLanguage": "Additional menu language",
   "proOnlyLanguage": "Pro · up to 5 menu languages",
   "freeLanguageLimitTitle": "{language} needs Pro",
-  "freeLanguageLimitBody": "The Free plan includes your main language ({base}) plus 1 more, with manual editing and AI translation in the monthly quota. Adding another language needs Pro, which supports up to 5 languages.",
+  "freeLanguageLimitBody": "The Free plan includes your main language ({base}) and one more. Upgrade to Pro to add more languages (up to 5).",
   "manualOrAiTranslation": "Edit {language} by hand or use AI to fill missing text.",
   "translationModeHint": "Editing {language} translations. Menu structure, prices, stock and photos remain shared.",
   "modifierTranslations": "Option translations",

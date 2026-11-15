@@ -1,6 +1,6 @@
 {
   "title": "メニュー",
-  "subtitle": "1 品ずつ手入力。無料プラン：メニュー言語は 2 つ（元の言語 + 1、{locale}）。",
+  "subtitle": "料理は手入力できます。無料プランではメニュー言語を 2 つ使えます（{locale} と、もう 1 言語）。",
   "subtitlePro": "{locale}メニューを編集し、下書きを確認してから公開します。",
   "loading": "メニューを読み込み中…",
   "loadFailed": "メニューを読み込めませんでした。",
@@ -209,7 +209,7 @@
   "translationLanguage": "追加メニュー言語",
   "proOnlyLanguage": "Pro・最大 5 言語",
   "freeLanguageLimitTitle": "{language}の追加には Pro が必要です",
-  "freeLanguageLimitBody": "無料プランは基本言語（{base}）に加えてもう 1 言語まで使え、手入力も月間枠内の AI 翻訳もできます。さらに言語を追加するには、最大 5 言語の Pro が必要です。",
+  "freeLanguageLimitBody": "無料プランでは基本言語（{base}）ともう 1 言語まで使えます。さらに追加するには、最大 5 言語まで使える Pro にアップグレードしてください。",
   "manualOrAiTranslation": "{language}を手動編集するか、AI で不足分を補います。",
   "translationModeHint": "{language}の翻訳を編集中です。構成、価格、在庫、写真は共通です。",
   "modifierTranslations": "オプション翻訳",

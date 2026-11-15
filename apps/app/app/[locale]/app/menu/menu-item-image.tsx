@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
+import { HiddenFileInput } from '@/components/hidden-file-input';
 import { usePaywall } from '@/components/paywall/paywall-provider';
 import { publicMediaPath } from '@/lib/menu-image';
 import {
@@ -193,11 +194,9 @@ export function MenuItemImage({
             <ImageIcon className="size-4" weight="bold" aria-hidden />
           </div>
         )}
-        <input
+        <HiddenFileInput
           ref={inputRef}
-          type="file"
           accept={MENU_IMAGE_ACCEPT}
-          className="hidden"
           onChange={(e) => void handleFile(e.target.files?.[0])}
         />
         <Button
