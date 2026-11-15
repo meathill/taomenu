@@ -1,7 +1,6 @@
 import {
   BrowserIcon,
   ChatsIcon,
-  CheckCircleIcon,
   CoffeeIcon,
   DesktopTowerIcon,
   DeviceMobileIcon,
@@ -15,12 +14,21 @@ import {
   TagIcon,
   TranslateIcon,
 } from '@phosphor-icons/react/dist/ssr';
+import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { JsonLd } from '@/components/json-ld';
+import { PhoneFrame } from '@/components/phone-frame';
 import { Link } from '@/i18n/routing';
 import { buildPageMetadata } from '@/lib/seo';
-import { getAppSignupUrl } from '@/lib/site';
+import { getAppSignupUrl, getDemoMenuUrl } from '@/lib/site';
+
+const PHONE_WIDTH = 780;
+const PHONE_HEIGHT = 1688;
+const QR_WIDTH = 900;
+const QR_HEIGHT = 1100;
+const ORDERS_WIDTH = 1200;
+const ORDERS_HEIGHT = 565;
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -34,17 +42,12 @@ export async function generateMetadata({ params }: HomePageProps) {
 }
 
 type FaqItem = { q: string; a: string };
+type HomeT = Awaited<ReturnType<typeof getTranslations>>;
 
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('home');
-
-  const features = [
-    { title: t('feature1Title'), body: t('feature1Body') },
-    { title: t('feature2Title'), body: t('feature2Body') },
-    { title: t('feature3Title'), body: t('feature3Body') },
-  ];
 
   const faq: FaqItem[] = [1, 2, 3, 4, 5, 6].map((index) => ({
     q: t(`faq${index}Q`),
@@ -53,32 +56,9 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <div className="pt-6 sm:pt-12">
-      <section className="max-w-2xl">
-        <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
-          {t('badge')}
-        </p>
-        <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
-          {t('title')}
-        </h1>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          {t('subtitle')}
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a
-            href={getAppSignupUrl()}
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-600 px-5 py-3 text-base font-bold text-white hover:bg-brand-700"
-          >
-            {t('primaryCta')}
-          </a>
-          <Link
-            href="/pricing"
-            prefetch={false}
-            className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-base font-bold text-ink-900 hover:bg-brand-50"
-          >
-            {t('secondaryCta')}
-          </Link>
-        </div>
-      </section>
+      <HeroSection t={t} />
+
+      <VisualFeatures t={t} />
 
       <PainSection t={t} />
 
@@ -89,32 +69,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <HighlightCard icon={<MoneyIcon className="size-6" aria-hidden />} t={t} index={4} />
       </section>
 
-      <section className="mt-14">
-        <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
-          {t('howTitle')}
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {t('howSubtitle')}
-        </p>
-        <ol className="mt-6 grid gap-4 sm:grid-cols-3">
-          {[1, 2, 3].map((index) => (
-            <li
-              key={index}
-              className="flex gap-4 rounded-2xl border border-border bg-white p-5 shadow-sm"
-            >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-base font-extrabold text-white">
-                {index}
-              </span>
-              <div>
-                <h3 className="font-bold text-ink-900">{t(`howStep${index}Title`)}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  {t(`howStep${index}Body`)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <HowItWorks t={t} />
 
       <section className="mt-14">
         <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
@@ -222,7 +177,198 @@ export default async function HomePage({ params }: HomePageProps) {
   );
 }
 
-function PainSection({ t }: { t: Awaited<ReturnType<typeof getTranslations>> }) {
+function HeroSection({ t }: { t: HomeT }) {
+  return (
+    <section className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
+      <div className="min-w-0">
+        <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
+          {t('badge')}
+        </p>
+        <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
+          {t('title')}
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          {t('subtitle')}
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a
+            href={getAppSignupUrl()}
+            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-600 px-5 py-3 text-base font-bold text-white hover:bg-brand-700"
+          >
+            {t('primaryCta')}
+          </a>
+          <Link
+            href="/pricing"
+            prefetch={false}
+            className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-base font-bold text-ink-900 hover:bg-brand-50"
+          >
+            {t('secondaryCta')}
+          </Link>
+          <a
+            href={getDemoMenuUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 items-center justify-center px-1 py-3 text-base font-bold text-brand-700 hover:underline"
+          >
+            {t('demoCta')}
+          </a>
+        </div>
+      </div>
+
+      <div className="relative mx-auto w-full min-w-0 max-w-[22rem] overflow-x-clip sm:max-w-[24rem] lg:max-w-[26rem]">
+        <div className="relative aspect-[5/8] w-full">
+          <div className="absolute top-[12%] right-0 w-[58%] origin-top-right rotate-8">
+            <PhoneFrame
+              src="/images/home/menu-en.webp"
+              alt={t('altMenuEn')}
+              width={PHONE_WIDTH}
+              height={PHONE_HEIGHT}
+              sizes="(min-width: 1024px) 200px, 40vw"
+            />
+          </div>
+          <div className="absolute top-0 left-0 z-10 w-[66%]">
+            <PhoneFrame
+              src="/images/home/menu-vi.webp"
+              alt={t('altMenuVi')}
+              width={PHONE_WIDTH}
+              height={PHONE_HEIGHT}
+              priority
+              sizes="(min-width: 1024px) 280px, 60vw"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VisualFeatures({ t }: { t: HomeT }) {
+  const cards = [
+    {
+      src: '/images/home/menu-vi.webp',
+      alt: t('altMenuVi'),
+      title: t('visual1Title'),
+      body: t('visual1Body'),
+    },
+    {
+      src: '/images/home/detail-en.webp',
+      alt: t('altDetail'),
+      title: t('visual2Title'),
+      body: t('visual2Body'),
+    },
+    {
+      src: '/images/home/cart-en.webp',
+      alt: t('altCart'),
+      title: t('visual3Title'),
+      body: t('visual3Body'),
+    },
+  ];
+
+  return (
+    <section className="mt-14">
+      <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        {t('visualTitle')}
+      </h2>
+      <ul className="mt-6 grid gap-4 sm:grid-cols-3">
+        {cards.map((card) => (
+          <li
+            key={card.title}
+            className="min-w-0 overflow-hidden rounded-2xl border border-border bg-white shadow-sm"
+          >
+            <div className="flex justify-center bg-brand-50 px-6 pt-6 pb-2">
+              <div className="w-full max-w-[200px]">
+                <PhoneFrame
+                  src={card.src}
+                  alt={card.alt}
+                  width={PHONE_WIDTH}
+                  height={PHONE_HEIGHT}
+                  sizes="200px"
+                />
+              </div>
+            </div>
+            <div className="p-5">
+              <h3 className="font-bold text-ink-900">{card.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{card.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function HowItWorks({ t }: { t: HomeT }) {
+  return (
+    <section className="mt-14">
+      <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        {t('howTitle')}
+      </h2>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        {t('howSubtitle')}
+      </p>
+      <ol className="mt-6 grid gap-4 sm:grid-cols-3">
+        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+          <div className="flex items-center justify-center bg-brand-50 p-5">
+            <Image
+              src="/images/home/qr-scan.webp"
+              alt={t('altQr')}
+              width={QR_WIDTH}
+              height={QR_HEIGHT}
+              sizes="(min-width: 640px) 220px, 70vw"
+              className="h-auto w-full max-w-[220px] rounded-2xl border border-border bg-paper-50 shadow-sm"
+            />
+          </div>
+          <HowStep index={1} t={t} />
+        </li>
+        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+          <div className="flex items-center justify-center bg-brand-50 px-6 pt-6 pb-4">
+            <div className="w-full max-w-[200px]">
+              <PhoneFrame
+                src="/images/home/menu-en.webp"
+                alt={t('altMenuEn')}
+                width={PHONE_WIDTH}
+                height={PHONE_HEIGHT}
+                sizes="200px"
+              />
+            </div>
+          </div>
+          <HowStep index={2} t={t} />
+        </li>
+        <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+          <div className="flex flex-1 items-center justify-center bg-brand-50 p-5">
+            <Image
+              src="/images/home/owner-orders.webp"
+              alt={t('altOrders')}
+              width={ORDERS_WIDTH}
+              height={ORDERS_HEIGHT}
+              sizes="(min-width: 640px) 360px, 90vw"
+              className="h-auto w-full rounded-xl border border-border bg-white shadow-sm"
+            />
+          </div>
+          <HowStep index={3} t={t} />
+        </li>
+      </ol>
+    </section>
+  );
+}
+
+function HowStep({ index, t }: { index: 1 | 2 | 3; t: HomeT }) {
+  return (
+    <div className="flex gap-4 p-5">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-base font-extrabold text-white">
+        {index}
+      </span>
+      <div className="min-w-0">
+        <h3 className="font-bold text-ink-900">{t(`howStep${index}Title`)}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          {t(`howStep${index}Body`)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PainSection({ t }: { t: HomeT }) {
   const pains = [
     { icon: <TranslateIcon className="size-6" aria-hidden />, index: 1 },
     { icon: <ChatsIcon className="size-6" aria-hidden />, index: 2 },
@@ -254,15 +400,7 @@ function PainSection({ t }: { t: Awaited<ReturnType<typeof getTranslations>> }) 
   );
 }
 
-function HighlightCard({
-  icon,
-  t,
-  index,
-}: {
-  icon: ReactNode;
-  t: Awaited<ReturnType<typeof getTranslations>>;
-  index: number;
-}) {
+function HighlightCard({ icon, t, index }: { icon: ReactNode; t: HomeT; index: number }) {
   return (
     <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
       <div className="flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
@@ -302,15 +440,7 @@ function ScenarioCard({
   );
 }
 
-function BeyondCard({
-  icon,
-  t,
-  index,
-}: {
-  icon: ReactNode;
-  t: Awaited<ReturnType<typeof getTranslations>>;
-  index: number;
-}) {
+function BeyondCard({ icon, t, index }: { icon: ReactNode; t: HomeT; index: number }) {
   return (
     <li className="rounded-2xl border border-border bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">

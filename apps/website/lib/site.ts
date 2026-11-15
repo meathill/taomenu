@@ -45,3 +45,10 @@ export function getAppProSignupUrl(): string {
   url.searchParams.set('next', PRO_UPGRADE_PATH);
   return url.toString();
 }
+
+/** Public pickup menu used as the marketing live demo (QA store, presentable display name). */
+const DEMO_PICKUP_PATH = '/m/qa-pho-chi-mai-hoi-an/p/j3q_KRyu-tVFlvFT3poG0piyCzMaHMcv';
+
+export function getDemoMenuUrl(): string {
+  return `${getPublicAppUrl()}${DEMO_PICKUP_PATH}`;
+}
