@@ -3,6 +3,7 @@ import { getPublicAppUrl } from './public-url';
 import {
   buildProCheckoutParams,
   buildStaffSeatCheckoutParams,
+  getProCheckoutPriceId,
   isSubscriptionUsable,
   toStripeCheckoutLocale,
   verifyStripeWebhookSignature,
@@ -89,6 +90,15 @@ describe('Stripe Checkout 参数构造', () => {
     expect(params.get('cancel_url')).toBe(`${appUrl}/app/settings?store=pho-hanoi&billing=cancel`);
     expect(params.get('customer')).toBe('cus_123');
     expect(params.get('customer_email')).toBeNull();
+  });
+
+  it('Pro：年付写入 interval 元数据，默认月付', () => {
+    const yearly = buildProCheckoutParams({ ...baseInput, interval: 'year' });
+    expect(yearly.get('metadata[interval]')).toBe('year');
+    expect(yearly.get('subscription_data[metadata][interval]')).toBe('year');
+
+    const monthly = buildProCheckoutParams(baseInput);
+    expect(monthly.get('metadata[interval]')).toBe('month');
   });
 
   it('Pro：没有 Stripe 客户时回落到 customer_email', () => {
@@ -178,5 +188,25 @@ describe('Checkout locale and currency together', () => {
     });
     expect(params.get('locale')).toBe('vi');
     expect(params.get('currency')).toBe('vnd');
+  });
+});
+
+describe('getProCheckoutPriceId', () => {
+  const config = {
+    secretKey: 'sk_test',
+    webhookSecret: 'whsec_test',
+    proPriceId: 'price_month',
+    proAnnualPriceId: 'price_year',
+  };
+
+  it('按周期选择月付或年付 Price', () => {
+    expect(getProCheckoutPriceId(config, 'month')).toBe('price_month');
+    expect(getProCheckoutPriceId(config, 'year')).toBe('price_year');
+  });
+
+  it('年付 Price 未配置时返回 undefined，让路由返回未开通结算', () => {
+    expect(
+      getProCheckoutPriceId({ ...config, proAnnualPriceId: undefined }, 'year'),
+    ).toBeUndefined();
   });
 });

@@ -100,12 +100,19 @@ export {
   shouldShowPoweredBy,
 } from './plans';
 export {
+  ANNUAL_MONTHS_CHARGED,
+  ANNUAL_MONTHS_INCLUDED,
+  BILLING_INTERVALS,
   BILLING_PRICES,
   BILLING_PRODUCTS,
+  type BillingInterval,
   type BillingProduct,
+  getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForLocale,
   getBillingPrice,
+  isBillingInterval,
   LOCALE_TO_BILLING_CURRENCY,
+  parseBillingInterval,
 } from './pricing';
 export {
   appendRefToAppLink,

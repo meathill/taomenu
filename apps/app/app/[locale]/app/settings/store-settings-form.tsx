@@ -2,7 +2,9 @@
 
 import type { StoreRow } from '@taomenu/db';
 import {
+  type BillingInterval,
   formatCurrency,
+  getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForStore,
   getBillingPrice,
   PLAN_LIMITS,
@@ -14,6 +16,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/button';
 import { FieldSwitch } from '@/components/field-switch';
+import { BillingIntervalToggle } from '@/components/paywall/billing-interval-toggle';
 import { ProBadge } from '@/components/paywall/pro-badge';
 import { TimeZoneSelect } from '@/components/time-zone-select';
 import { fieldClassName } from '@/components/ui/field';
@@ -54,6 +57,7 @@ export function StoreSettingsForm({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [billingBusy, setBillingBusy] = useState(false);
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('year');
   const upgradeSectionRef = useRef<HTMLElement>(null);
   const shouldHighlightUpgrade = isUpgradeIntent && store.plan === 'free';
 
@@ -70,16 +74,28 @@ export function StoreSettingsForm({
   // 非计费币种（如 EUR）的门店按 USD 结算
   const billingCurrency = getBillingCurrencyForStore(store.currency);
   const proPrice = formatCurrency(
-    getBillingPrice('pro_plan', billingCurrency),
+    getBillingPrice('pro_plan', billingCurrency, billingInterval),
     billingCurrency,
     locale,
   );
+  const yearlyEquivalent = formatCurrency(
+    getAnnualEquivalentMonthlyPrice('pro_plan', billingCurrency),
+    billingCurrency,
+    locale,
+  );
+  const proPriceLabel =
+    billingInterval === 'year'
+      ? t('proPriceYear', { price: proPrice })
+      : t('proPrice', { price: proPrice });
 
   async function openBilling(path: BillingPath) {
     setBillingBusy(true);
     setMessage(null);
     setError(null);
-    const result = await requestBillingUrl(store.id, path, { locale });
+    const result = await requestBillingUrl(store.id, path, {
+      locale,
+      interval: path === 'pro/checkout' ? billingInterval : undefined,
+    });
     if (result.ok) {
       window.location.assign(result.url);
       return;
@@ -225,9 +241,26 @@ export function StoreSettingsForm({
               {store.plan === 'pro' ? t('proActiveSubtitle') : t('upgradeSubtitle')}
             </p>
           </div>
-          <p className="shrink-0 text-xl font-black tabular-nums text-ink-900">
-            {t('proPrice', { price: proPrice })}
-          </p>
+          {store.plan === 'free' ? (
+            <div className="shrink-0 sm:text-right">
+              <BillingIntervalToggle
+                value={billingInterval}
+                onChange={setBillingInterval}
+                monthlyLabel={t('billingMonthly')}
+                yearlyLabel={t('billingYearly')}
+                yearlyBadge={t('billingYearlyBadge')}
+                groupLabel={t('billingIntervalLabel')}
+              />
+              <p className="mt-3 text-xl font-black tabular-nums text-ink-900">{proPriceLabel}</p>
+              {billingInterval === 'year' ? (
+                <p className="mt-1 text-sm font-medium text-jade-700">
+                  {t('yearlyHint', { price: yearlyEquivalent })}
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <p className="shrink-0 text-xl font-black tabular-nums text-ink-900">{proPriceLabel}</p>
+          )}
         </div>
 
         <p className="mt-5 rounded-xl bg-white px-3 py-2 text-sm leading-6 text-ink-900">

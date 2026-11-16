@@ -1,6 +1,11 @@
-import { CheckIcon } from '@phosphor-icons/react/dist/ssr';
-import { formatCurrency, getBillingCurrencyForLocale, getBillingPrice } from '@taomenu/shared';
+import {
+  formatCurrency,
+  getAnnualEquivalentMonthlyPrice,
+  getBillingCurrencyForLocale,
+  getBillingPrice,
+} from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { PricingPlans } from '@/components/pricing-plans';
 import { buildPageMetadata } from '@/lib/seo';
 import { getAppProSignupUrl, getAppSignupUrl } from '@/lib/site';
 
@@ -15,22 +20,6 @@ export async function generateMetadata({ params }: PricingPageProps) {
   return buildPageMetadata(locale, '/pricing', t('title'), t('subtitle'));
 }
 
-type PlanFeature = {
-  label: string;
-  status: 'available' | 'comingSoon';
-};
-
-type PlanCard = {
-  name: string;
-  price: string;
-  desc: string;
-  features: PlanFeature[];
-  highlight: boolean;
-  ctaLabel: string;
-  ctaHref: string;
-  ctaNote?: string;
-};
-
 export default async function PricingPage({ params }: PricingPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -39,47 +28,19 @@ export default async function PricingPage({ params }: PricingPageProps) {
   // 定价按界面语言映射币种展示，唯一事实来源在 @taomenu/shared
   const currency = getBillingCurrencyForLocale(locale);
   const freePrice = formatCurrency(0, currency, locale);
-  const proPrice = formatCurrency(getBillingPrice('pro_plan', currency), currency, locale);
+  const proMonthly = formatCurrency(
+    getBillingPrice('pro_plan', currency, 'month'),
+    currency,
+    locale,
+  );
+  const proYearly = formatCurrency(getBillingPrice('pro_plan', currency, 'year'), currency, locale);
+  const yearlyEquivalent = formatCurrency(
+    getAnnualEquivalentMonthlyPrice('pro_plan', currency),
+    currency,
+    locale,
+  );
   const staffSeatPrice = formatCurrency(getBillingPrice('staff_seat', currency), currency, locale);
   const staffAddOn = t('staffAddOn', { price: staffSeatPrice });
-
-  const plans: PlanCard[] = [
-    {
-      name: t('freeName'),
-      price: freePrice,
-      desc: t('freeDesc'),
-      features: [
-        { label: t('freeF1'), status: 'available' },
-        { label: t('freeF2'), status: 'available' },
-        { label: t('freeF3'), status: 'available' },
-        { label: t('freeF4'), status: 'available' },
-        { label: staffAddOn, status: 'available' },
-      ],
-      highlight: false,
-      ctaLabel: t('cta'),
-      ctaHref: getAppSignupUrl(),
-    },
-    {
-      name: t('proName'),
-      price: t('proPrice', { price: proPrice }),
-      desc: t('proDesc'),
-      features: [
-        { label: t('proF1'), status: 'available' },
-        { label: t('proF2'), status: 'available' },
-        { label: t('proImport'), status: 'available' },
-        { label: t('proQr'), status: 'available' },
-        { label: t('proTranslation'), status: 'available' },
-        { label: t('proVoice'), status: 'available' },
-        { label: t('proEnhance'), status: 'available' },
-        { label: t('proBranding'), status: 'available' },
-        { label: staffAddOn, status: 'available' },
-      ],
-      highlight: true,
-      ctaLabel: t('proCta'),
-      ctaHref: getAppProSignupUrl(),
-      ctaNote: t('proCtaNote'),
-    },
-  ];
 
   return (
     <div className="pt-6 sm:pt-10">
@@ -90,50 +51,54 @@ export default async function PricingPage({ params }: PricingPageProps) {
         <p className="mt-3 text-base text-muted-foreground sm:text-lg">{t('subtitle')}</p>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
-        {plans.map((plan) => (
-          <article
-            key={plan.name}
-            className={
-              plan.highlight
-                ? 'rounded-2xl border-2 border-brand-600 bg-white p-6 shadow-sm'
-                : 'rounded-2xl border border-border bg-white p-6 shadow-sm'
-            }
-          >
-            <h2 className="text-xl font-bold text-ink-900">{plan.name}</h2>
-            <p className="mt-2 text-3xl font-extrabold tabular-nums text-ink-900">{plan.price}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
-            <ul className="mt-6 space-y-3">
-              {plan.features.map((feature) => (
-                <li key={feature.label} className="flex items-start gap-2 text-sm text-ink-900">
-                  <CheckIcon className="mt-0.5 size-5 shrink-0 text-jade-600" weight="bold" />
-                  <span>
-                    {feature.label}
-                    {feature.status === 'comingSoon' ? (
-                      <span className="ml-2 inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-[0.6875rem] font-bold text-indigo-700">
-                        {t('comingSoon')}
-                      </span>
-                    ) : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <a
-              href={plan.ctaHref}
-              className={
-                plan.highlight
-                  ? 'mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white hover:bg-brand-700'
-                  : 'mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-brand-600 bg-white px-4 py-3 text-sm font-bold text-brand-600 hover:bg-brand-50'
-              }
-            >
-              {plan.ctaLabel}
-            </a>
-            {plan.ctaNote ? (
-              <p className="mt-2 text-center text-xs text-muted-foreground">{plan.ctaNote}</p>
-            ) : null}
-          </article>
-        ))}
-      </div>
+      <PricingPlans
+        comingSoonLabel={t('comingSoon')}
+        intervalLabels={{
+          monthly: t('billingMonthly'),
+          yearly: t('billingYearly'),
+          yearlyBadge: t('billingYearlyBadge'),
+          groupLabel: t('billingIntervalLabel'),
+        }}
+        free={{
+          id: 'free',
+          name: t('freeName'),
+          desc: t('freeDesc'),
+          features: [
+            { label: t('freeF1'), status: 'available' },
+            { label: t('freeF2'), status: 'available' },
+            { label: t('freeF3'), status: 'available' },
+            { label: t('freeF4'), status: 'available' },
+            { label: staffAddOn, status: 'available' },
+          ],
+          highlight: false,
+          ctaLabel: t('cta'),
+          ctaHref: getAppSignupUrl(),
+        }}
+        freePrice={freePrice}
+        pro={{
+          id: 'pro',
+          name: t('proName'),
+          desc: t('proDesc'),
+          features: [
+            { label: t('proF1'), status: 'available' },
+            { label: t('proF2'), status: 'available' },
+            { label: t('proImport'), status: 'available' },
+            { label: t('proQr'), status: 'available' },
+            { label: t('proTranslation'), status: 'available' },
+            { label: t('proVoice'), status: 'available' },
+            { label: t('proEnhance'), status: 'available' },
+            { label: t('proBranding'), status: 'available' },
+            { label: staffAddOn, status: 'available' },
+          ],
+          highlight: true,
+          ctaLabel: t('proCta'),
+          ctaHref: getAppProSignupUrl(),
+          ctaNote: t('proCtaNote'),
+        }}
+        proMonthlyPrice={t('proPrice', { price: proMonthly })}
+        proYearlyPrice={t('proPriceYear', { price: proYearly })}
+        yearlyHint={t('yearlyHint', { price: yearlyEquivalent })}
+      />
 
       <section className="mt-10 rounded-2xl border border-border bg-white p-6 sm:p-8">
         <h2 className="text-2xl font-extrabold text-ink-900">{t('aiHowTitle')}</h2>

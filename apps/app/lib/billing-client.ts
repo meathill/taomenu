@@ -1,3 +1,5 @@
+import type { BillingInterval } from '@taomenu/shared';
+
 export type BillingPath = 'pro/checkout' | 'portal';
 
 export type BillingUrlResult =
@@ -8,13 +10,13 @@ export type BillingUrlResult =
 export async function requestBillingUrl(
   storeId: string,
   path: BillingPath,
-  options?: { locale?: string },
+  options?: { locale?: string; interval?: BillingInterval },
 ): Promise<BillingUrlResult> {
   try {
     const response = await fetch(`/api/owner/stores/${storeId}/billing/${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ locale: options?.locale }),
+      body: JSON.stringify({ locale: options?.locale, interval: options?.interval }),
     });
     const data = (await response.json().catch(() => null)) as {
       error?: string;

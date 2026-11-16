@@ -1,9 +1,14 @@
 import { getStore } from '@taomenu/db';
-import { getBillingCurrencyForStore } from '@taomenu/shared';
+import { getBillingCurrencyForStore, parseBillingInterval } from '@taomenu/shared';
 import { resolveCheckoutLocale } from '@/lib/checkout-locale';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
 import { getSession } from '@/lib/session';
-import { createProCheckoutSession, getStripeConfig, StripeRequestError } from '@/lib/stripe';
+import {
+  createProCheckoutSession,
+  getProCheckoutPriceId,
+  getStripeConfig,
+  StripeRequestError,
+} from '@/lib/stripe';
 
 type RouteContext = { params: Promise<{ storeId: string }> };
 
@@ -15,8 +20,14 @@ export async function POST(request: Request, context: RouteContext) {
   const session = await getSession();
   if (!session?.user) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });
 
+  const body = await request.json().catch(() => null);
+  const requestedLocale = body && typeof body === 'object' && 'locale' in body ? body.locale : null;
+  const interval = parseBillingInterval(
+    body && typeof body === 'object' && 'interval' in body ? body.interval : undefined,
+  );
+
   const config = getStripeConfig();
-  if (!config?.proPriceId) {
+  if (!config || !getProCheckoutPriceId(config, interval)) {
     return Response.json({ error: 'BILLING_NOT_CONFIGURED' }, { status: 503 });
   }
 
@@ -27,9 +38,6 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const body = await request.json().catch(() => null);
-    const requestedLocale =
-      body && typeof body === 'object' && 'locale' in body ? body.locale : null;
     const checkout = await createProCheckoutSession(config, {
       storeId: store.id,
       storeSlug: store.slug,
@@ -39,6 +47,7 @@ export async function POST(request: Request, context: RouteContext) {
       locale: await resolveCheckoutLocale(
         typeof requestedLocale === 'string' ? requestedLocale : null,
       ),
+      interval,
     });
     return Response.json(checkout, { status: 201 });
   } catch (error) {

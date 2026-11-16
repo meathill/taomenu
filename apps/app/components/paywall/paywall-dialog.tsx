@@ -3,7 +3,9 @@
 import { CheckIcon, CrownIcon } from '@phosphor-icons/react';
 import type { StoreRow } from '@taomenu/db';
 import {
+  type BillingInterval,
   formatCurrency,
+  getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForStore,
   getBillingPrice,
   PLAN_LIMITS,
@@ -19,6 +21,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { requestBillingUrl } from '@/lib/billing-client';
+import { BillingIntervalToggle } from './billing-interval-toggle';
 import { getUpgradeSettingsHref, type PaywallFeature } from './paywall-features';
 
 type PaywallDialogProps = {
@@ -61,17 +64,27 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
   const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [interval, setInterval] = useState<BillingInterval>('year');
   const billingCurrency = getBillingCurrencyForStore(store.currency);
   const proPrice = formatCurrency(
-    getBillingPrice('pro_plan', billingCurrency),
+    getBillingPrice('pro_plan', billingCurrency, interval),
     billingCurrency,
     locale,
   );
+  const yearlyEquivalent = formatCurrency(
+    getAnnualEquivalentMonthlyPrice('pro_plan', billingCurrency),
+    billingCurrency,
+    locale,
+  );
+  const priceLabel =
+    interval === 'year'
+      ? t('proPriceYear', { price: proPrice })
+      : t('proPrice', { price: proPrice });
 
   async function handleUpgrade() {
     setBusy(true);
     setError(null);
-    const result = await requestBillingUrl(store.id, 'pro/checkout', { locale });
+    const result = await requestBillingUrl(store.id, 'pro/checkout', { locale, interval });
     if (result.ok) {
       window.location.assign(result.url);
       return;
@@ -97,9 +110,20 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
           </DialogDescription>
         </DialogHeader>
         <div className="px-6">
-          <p className="text-lg font-black tabular-nums text-ink-900">
-            {t('proPrice', { price: proPrice })}
-          </p>
+          <BillingIntervalToggle
+            value={interval}
+            onChange={setInterval}
+            monthlyLabel={t('billingMonthly')}
+            yearlyLabel={t('billingYearly')}
+            yearlyBadge={t('billingYearlyBadge')}
+            groupLabel={t('billingIntervalLabel')}
+          />
+          <p className="mt-3 text-lg font-black tabular-nums text-ink-900">{priceLabel}</p>
+          {interval === 'year' ? (
+            <p className="mt-1 text-sm font-medium text-jade-700">
+              {t('yearlyHint', { price: yearlyEquivalent })}
+            </p>
+          ) : null}
           <ul className="mt-3 space-y-1.5 text-sm text-ink-900">
             {BENEFIT_KEYS.map((key) => (
               <li key={key} className="flex items-start gap-2">

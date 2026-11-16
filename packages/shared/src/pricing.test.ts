@@ -2,11 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { BILLING_CURRENCIES } from './currency';
 import { LOCALES } from './locale';
 import {
+  ANNUAL_MONTHS_CHARGED,
+  ANNUAL_MONTHS_INCLUDED,
   BILLING_PRICES,
   BILLING_PRODUCTS,
+  getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForLocale,
   getBillingPrice,
   LOCALE_TO_BILLING_CURRENCY,
+  parseBillingInterval,
 } from './pricing';
 
 describe('BILLING_PRICES', () => {
@@ -50,5 +54,39 @@ describe('getBillingCurrencyForLocale', () => {
     expect(getBillingCurrencyForLocale('zh')).toBe('CNY');
     expect(getBillingCurrencyForLocale('xx')).toBe('VND');
     expect(getBillingCurrencyForLocale('')).toBe('VND');
+  });
+});
+
+describe('年付价格', () => {
+  it('年付等于 10 个月月费，且为各币种正整数', () => {
+    expect(ANNUAL_MONTHS_CHARGED).toBe(10);
+    expect(ANNUAL_MONTHS_INCLUDED).toBe(12);
+    expect(getBillingPrice('pro_plan', 'VND', 'year')).toBe(1_490_000);
+    expect(getBillingPrice('pro_plan', 'USD', 'year')).toBe(5_990);
+    expect(getBillingPrice('pro_plan', 'JPY', 'year')).toBe(9_000);
+    expect(getBillingPrice('pro_plan', 'CNY', 'year')).toBe(42_000);
+    for (const currency of BILLING_CURRENCIES) {
+      const yearly = getBillingPrice('pro_plan', currency, 'year');
+      expect(Number.isInteger(yearly)).toBe(true);
+      expect(yearly).toBe(getBillingPrice('pro_plan', currency, 'month') * ANNUAL_MONTHS_CHARGED);
+    }
+  });
+
+  it('默认仍返回月付，兼容旧调用', () => {
+    expect(getBillingPrice('pro_plan', 'USD')).toBe(599);
+  });
+
+  it('约合月价按 12 个月四舍五入', () => {
+    expect(getAnnualEquivalentMonthlyPrice('pro_plan', 'USD')).toBe(499);
+    expect(getAnnualEquivalentMonthlyPrice('pro_plan', 'VND')).toBe(124_167);
+    expect(getAnnualEquivalentMonthlyPrice('pro_plan', 'JPY')).toBe(750);
+    expect(getAnnualEquivalentMonthlyPrice('pro_plan', 'CNY')).toBe(3_500);
+  });
+
+  it('parseBillingInterval 只接受 month/year，其余回落 month', () => {
+    expect(parseBillingInterval('year')).toBe('year');
+    expect(parseBillingInterval('month')).toBe('month');
+    expect(parseBillingInterval('yearly')).toBe('month');
+    expect(parseBillingInterval(undefined)).toBe('month');
   });
 });

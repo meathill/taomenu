@@ -1,4 +1,4 @@
-import { isLocale, type Locale } from '@taomenu/shared';
+import { type BillingInterval, isLocale, type Locale } from '@taomenu/shared';
 import { getEnv } from './cf';
 import { getPublicAppUrl, joinPublicUrl } from './public-url';
 
@@ -16,7 +16,16 @@ export type StripeConfig = {
   webhookSecret: string;
   staffSeatPriceId?: string;
   proPriceId?: string;
+  /** 年付 Pro Price ID；未配置时年付 Checkout 不可用。 */
+  proAnnualPriceId?: string;
 };
+
+export function getProCheckoutPriceId(
+  config: StripeConfig,
+  interval: BillingInterval,
+): string | undefined {
+  return interval === 'year' ? config.proAnnualPriceId : config.proPriceId;
+}
 
 export function getStripeConfig(): StripeConfig | null {
   const env = getEnv();
@@ -28,6 +37,7 @@ export function getStripeConfig(): StripeConfig | null {
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
     staffSeatPriceId: env.STRIPE_STAFF_SEAT_PRICE_ID,
     proPriceId: env.STRIPE_PRO_PRICE_ID,
+    proAnnualPriceId: env.STRIPE_PRO_ANNUAL_PRICE_ID,
   };
 }
 
@@ -81,7 +91,7 @@ type CheckoutInputBase = {
 
 export type StaffSeatCheckoutInput = CheckoutInputBase & { quantity: number };
 
-export type ProCheckoutInput = CheckoutInputBase;
+export type ProCheckoutInput = CheckoutInputBase & { interval?: BillingInterval };
 
 function setCheckoutCustomer(params: URLSearchParams, input: CheckoutInputBase): void {
   if (input.stripeCustomerId) {
@@ -131,10 +141,13 @@ export function buildProCheckoutParams(
   params.set('line_items[0][price]', input.priceId);
   params.set('line_items[0][quantity]', '1');
   params.set('client_reference_id', input.storeId);
+  const interval = input.interval ?? 'month';
   params.set('metadata[storeId]', input.storeId);
   params.set('metadata[kind]', 'pro_plan');
+  params.set('metadata[interval]', interval);
   params.set('subscription_data[metadata][storeId]', input.storeId);
   params.set('subscription_data[metadata][kind]', 'pro_plan');
+  params.set('subscription_data[metadata][interval]', interval);
   params.set(
     'success_url',
     joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=success`),
@@ -165,8 +178,10 @@ export async function createProCheckoutSession(
   config: StripeConfig,
   input: ProCheckoutInput,
 ): Promise<{ url: string }> {
-  if (!config.proPriceId) throw new StripeRequestError(503);
-  const params = buildProCheckoutParams({ ...input, priceId: config.proPriceId });
+  const interval = input.interval ?? 'month';
+  const priceId = getProCheckoutPriceId(config, interval);
+  if (!priceId) throw new StripeRequestError(503);
+  const params = buildProCheckoutParams({ ...input, interval, priceId });
 
   const data = await stripeRequest(config, '/checkout/sessions', params);
   if (!data.url) throw new StripeRequestError(502);
