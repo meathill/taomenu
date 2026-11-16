@@ -324,3 +324,81 @@ describe('圣诞促销 Checkout 参数', () => {
     );
   });
 });
+
+describe('Pro+ Checkout 参数矩阵', () => {
+  const config = {
+    secretKey: 'sk_test',
+    webhookSecret: 'whsec_test',
+    proPlusPriceId: 'price_plus_month',
+    proPlusAnnualPriceId: 'price_plus_year',
+    proPlusPromoPriceId: 'price_plus_promo_month',
+    proPlusAnnualPromoPriceId: 'price_plus_promo_year',
+  };
+  const appUrl = getPublicAppUrl();
+  const cases = [
+    {
+      name: '早鸟期内月付',
+      interval: 'month' as const,
+      now: new Date('2027-02-16T10:00:00+07:00'),
+      priceId: 'price_plus_promo_month',
+    },
+    {
+      name: '早鸟期内年付',
+      interval: 'year' as const,
+      now: new Date('2027-02-16T10:00:00+07:00'),
+      priceId: 'price_plus_promo_year',
+    },
+    {
+      name: '早鸟结束后月付',
+      interval: 'month' as const,
+      now: new Date('2027-02-17T00:00:00+07:00'),
+      priceId: 'price_plus_month',
+    },
+    {
+      name: '早鸟结束后年付',
+      interval: 'year' as const,
+      now: new Date('2027-02-17T00:00:00+07:00'),
+      priceId: 'price_plus_year',
+    },
+  ];
+
+  for (const testCase of cases) {
+    it(`${testCase.name}：选对 Price，成功回跳无片段，且不带圣诞优惠`, () => {
+      expect(getProPlusCheckoutPriceId(config, testCase.interval, testCase.now)).toBe(
+        testCase.priceId,
+      );
+      const params = buildProCheckoutParams({
+        priceId: testCase.priceId,
+        storeId: 'store_1',
+        storeSlug: 'pho-hanoi',
+        ownerEmail: 'owner@example.com',
+        stripeCustomerId: null,
+        currency: 'VND',
+        locale: 'vi',
+        interval: testCase.interval,
+        kind: 'pro_plus_plan',
+      });
+      expect(params.get('mode')).toBe('subscription');
+      expect(params.get('currency')).toBe('vnd');
+      expect(params.get('locale')).toBe('vi');
+      expect(params.get('line_items[0][price]')).toBe(testCase.priceId);
+      expect(params.get('line_items[0][quantity]')).toBe('1');
+      expect(params.get('client_reference_id')).toBe('store_1');
+      expect(params.get('customer_email')).toBe('owner@example.com');
+      expect(params.get('metadata[kind]')).toBe('pro_plus_plan');
+      expect(params.get('metadata[interval]')).toBe(testCase.interval);
+      expect(params.get('metadata[priceId]')).toBe(testCase.priceId);
+      expect(params.get('subscription_data[metadata][kind]')).toBe('pro_plus_plan');
+      expect(params.get('success_url')).toBe(
+        `${appUrl}/app/settings?store=pho-hanoi&billing=success&plan=pro-plus`,
+      );
+      expect(params.get('cancel_url')).toBe(
+        `${appUrl}/app/settings?store=pho-hanoi&billing=cancel`,
+      );
+      expect(params.get('success_url')).not.toContain('#');
+      expect(params.get('cancel_url')).not.toContain('#');
+      expect(params.get('discounts[0][coupon]')).toBeNull();
+      expect(params.get('subscription_data[trial_period_days]')).toBeNull();
+    });
+  }
+});

@@ -48,8 +48,12 @@
       }
     ]
   },
+  // Needed so billing errors (e.g. Stripe Checkout rejections) show up in Workers Logs.
   "observability": {
-    "enabled": false
+    "enabled": true,
+    "logs": {
+      "invocation_logs": true
+    }
   },
   "placement": {
     "mode": "smart"
