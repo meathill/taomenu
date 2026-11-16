@@ -74,26 +74,25 @@ describe('带前缀的请求当场改用前缀语言', () => {
     expect(locationPath(ja)).toContain('/login?next=');
   });
 
-  it('公开的 /vi/m/… 带 en cookie 时，本次请求就按 vi 处理', () => {
+  it('公开的 /vi/m/… 带 en cookie 时，307 到去前缀路径并写入 vi', () => {
     const response = middleware(
-      request('/vi/m/qa-pho-chi-mai-hoi-an/p/token', { cookie: 'NEXT_LOCALE=en' }),
+      request('/vi/m/qa-pho-chi-mai-hoi-an/p/token?x=1', { cookie: 'NEXT_LOCALE=en' }),
     );
-    expect(response.status).toBe(200);
+    expect(response.status).toBeGreaterThanOrEqual(300);
+    expect(response.status).toBeLessThan(400);
     expect(localeCookie(response)).toBe('vi');
-    expect(response.headers.get('x-middleware-request-x-next-intl-locale')).toBe('vi');
-    expect(response.headers.get('x-middleware-request-accept-language')).toBe('vi');
-    expect(response.headers.get('x-middleware-rewrite')).toContain(
-      '/vi/m/qa-pho-chi-mai-hoi-an/p/token',
-    );
+    expect(locationPath(response)).toBe('/m/qa-pho-chi-mai-hoi-an/p/token?x=1');
     expect(response.headers.get('cache-control')).toMatch(/no-store/);
+    expect(response.headers.get('vary')).toMatch(/Cookie/i);
   });
 
-  it('GET /vi/login 且已有 en cookie 时，本次即渲染 vi，不必再刷新', () => {
+  it('GET /vi/login 且已有 en cookie 时，307 到 /login 并写入 vi', () => {
     const response = middleware(request('/vi/login', { cookie: 'NEXT_LOCALE=en' }));
-    expect(response.status).toBe(200);
+    expect(response.status).toBeGreaterThanOrEqual(300);
+    expect(response.status).toBeLessThan(400);
     expect(localeCookie(response)).toBe('vi');
-    expect(response.headers.get('x-middleware-request-x-next-intl-locale')).toBe('vi');
-    expect(response.headers.get('x-middleware-rewrite')).toContain('/vi/login');
+    expect(locationPath(response)).toBe('/login');
+    expect(response.headers.get('cache-control')).toMatch(/no-store/);
   });
 
   it('无前缀的 /m/… 与 /login 不覆盖已有 cookie', () => {

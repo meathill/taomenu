@@ -180,6 +180,18 @@ export default function middleware(request: NextRequest) {
     return response;
   }
 
+  // localePrefix: never，浏览器不应停留在 /vi/m/… 这类前缀 URL 上，否则顾客页文案会丢。
+  // 307 到去前缀路径，并带上刚写的 NEXT_LOCALE；后续请求由下面的 intl 按 cookie 处理。
+  if (prefixLocale && request.nextUrl.pathname !== unprefixedPath) {
+    const canonical = request.nextUrl.clone();
+    canonical.pathname = unprefixedPath;
+    const response = NextResponse.redirect(canonical);
+    applyLocaleCookie(response, prefixLocale);
+    applyLocaleCacheHeaders(response, true);
+    applyRefCookie(request, response);
+    return response;
+  }
+
   const response = intlMiddleware(requestForIntl);
   if (shouldWriteLocaleCookie) {
     applyLocaleCookie(response, locale);
