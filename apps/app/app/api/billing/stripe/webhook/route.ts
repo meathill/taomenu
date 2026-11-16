@@ -8,13 +8,19 @@ import {
 } from '@taomenu/db';
 import { badRequest } from '@/lib/api-error';
 import { getDb } from '@/lib/db';
-import { getStripeConfig, isSubscriptionUsable, verifyStripeWebhookSignature } from '@/lib/stripe';
+import {
+  getStripeConfig,
+  isSubscriptionUsable,
+  type StripeConfig,
+  verifyStripeWebhookSignature,
+} from '@/lib/stripe';
 import {
   parsePaidInvoice,
   readString,
   resolveAgentRevenueKind,
   type StripeObject,
 } from '@/lib/stripe-invoice-attribution';
+import { resolvePlanFromStripe } from '@/lib/stripe-plan';
 import { handleStripeEventOnce } from '@/lib/stripe-webhook';
 
 type StripeEvent = {
@@ -48,16 +54,34 @@ function readSubscriptionItem(object: StripeObject): {
   return { id: readString(item.id), quantity: Math.max(0, quantity) };
 }
 
-async function handleCheckoutCompleted(object: StripeObject): Promise<void> {
+function readPriceId(object: StripeObject, metadata: Record<string, string>): string | null {
+  if (metadata.priceId) return metadata.priceId;
+  const items = object.items;
+  if (!items || typeof items !== 'object') return null;
+  const data = (items as { data?: unknown }).data;
+  if (!Array.isArray(data) || !data[0] || typeof data[0] !== 'object') return null;
+  const item = data[0] as StripeObject;
+  const price = item.price;
+  if (typeof price === 'string') return price;
+  if (price && typeof price === 'object') return readString((price as StripeObject).id);
+  return readString(item.price);
+}
+
+async function handleCheckoutCompleted(config: StripeConfig, object: StripeObject): Promise<void> {
   const metadata = readMetadata(object);
   if (!metadata.storeId) return;
 
-  if (metadata.kind === 'pro_plan') {
+  const plan = resolvePlanFromStripe({
+    config,
+    kind: metadata.kind,
+    priceId: readPriceId(object, metadata),
+  });
+  if (plan === 'pro' || plan === 'pro_plus') {
     const subscriptionId = readString(object.subscription);
     const customerId = readString(object.customer);
     if (!subscriptionId) return;
     await updatePlanBilling(getDb(), metadata.storeId, {
-      plan: 'pro',
+      plan,
       stripeCustomerId: customerId,
       stripePlanSubscriptionId: subscriptionId,
     });
@@ -78,7 +102,11 @@ async function handleCheckoutCompleted(object: StripeObject): Promise<void> {
   });
 }
 
-async function handleSubscriptionEvent(object: StripeObject, deleted: boolean): Promise<void> {
+async function handleSubscriptionEvent(
+  config: StripeConfig,
+  object: StripeObject,
+  deleted: boolean,
+): Promise<void> {
   const metadata = readMetadata(object);
   if (!metadata.storeId) return;
 
@@ -87,10 +115,15 @@ async function handleSubscriptionEvent(object: StripeObject, deleted: boolean): 
   const subscriptionId = readString(object.id);
   if (!subscriptionId) return;
 
-  if (metadata.kind === 'pro_plan') {
+  const plan = resolvePlanFromStripe({
+    config,
+    kind: metadata.kind,
+    priceId: readPriceId(object, metadata),
+  });
+  if (plan === 'pro' || plan === 'pro_plus') {
     const status = readString(object.status);
     await updatePlanBilling(getDb(), metadata.storeId, {
-      plan: !deleted && isSubscriptionUsable(status) ? 'pro' : 'free',
+      plan: !deleted && isSubscriptionUsable(status) ? plan : 'free',
       stripeCustomerId: customerId,
       stripePlanSubscriptionId: deleted ? null : subscriptionId,
       stripePlanItemId: deleted ? null : subscriptionItem.id,
@@ -142,15 +175,19 @@ async function handleInvoicePaid(object: StripeObject): Promise<void> {
   });
 }
 
-async function dispatchEvent(type: string, object: StripeObject): Promise<void> {
+async function dispatchEvent(
+  config: StripeConfig,
+  type: string,
+  object: StripeObject,
+): Promise<void> {
   if (type === 'checkout.session.completed') {
-    await handleCheckoutCompleted(object);
+    await handleCheckoutCompleted(config, object);
   } else if (type === 'customer.subscription.created') {
-    await handleSubscriptionEvent(object, false);
+    await handleSubscriptionEvent(config, object, false);
   } else if (type === 'customer.subscription.updated') {
-    await handleSubscriptionEvent(object, false);
+    await handleSubscriptionEvent(config, object, false);
   } else if (type === 'customer.subscription.deleted') {
-    await handleSubscriptionEvent(object, true);
+    await handleSubscriptionEvent(config, object, true);
   } else if (type === 'invoice.paid') {
     await handleInvoicePaid(object);
   }
@@ -182,7 +219,7 @@ export async function POST(request: Request) {
   const eventId = readString(event.id);
   // 理论上不会发生：没有 event.id 就无从去重，维持原有行为直接处理
   if (!eventId) {
-    await dispatchEvent(event.type, object);
+    await dispatchEvent(config, event.type, object);
     return Response.json({ received: true });
   }
 
@@ -194,7 +231,7 @@ export async function POST(request: Request) {
       claim: (id) => claimStripeWebhookEvent(db, id),
       release: (id) => releaseStripeWebhookEvent(db, id),
     },
-    () => dispatchEvent(event.type, object),
+    () => dispatchEvent(config, event.type, object),
   );
 
   return Response.json({ received: true });

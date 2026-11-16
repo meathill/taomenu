@@ -24,6 +24,12 @@ interface CloudflareEnv {
   STRIPE_PRO_PRICE_ID?: string;
   /** Stripe recurring Price ID for the Pro plan (yearly, 10 months charged). */
   STRIPE_PRO_ANNUAL_PRICE_ID?: string;
+  STRIPE_PRO_PLUS_PRICE_ID?: string;
+  STRIPE_PRO_PLUS_ANNUAL_PRICE_ID?: string;
+  STRIPE_PRO_PLUS_PROMO_PRICE_ID?: string;
+  STRIPE_PRO_PLUS_ANNUAL_PROMO_PRICE_ID?: string;
+  /** Christmas Pro annual 50% off coupon; attach only to yearly Pro checkout. */
+  STRIPE_PROMO_PRO_ANNUAL_COUPON_ID?: string;
   /** Stripe recurring Price ID for one additional staff seat. */
   STRIPE_STAFF_SEAT_PRICE_ID?: string;
   NEXT_PUBLIC_APP_URL?: string;

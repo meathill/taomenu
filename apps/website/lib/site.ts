@@ -52,3 +52,12 @@ const DEMO_PICKUP_PATH = '/m/qa-pho-chi-mai-hoi-an/p/j3q_KRyu-tVFlvFT3poG0piyCzM
 export function getDemoMenuUrl(): string {
   return `${getPublicAppUrl()}${DEMO_PICKUP_PATH}`;
 }
+
+/** 定价页 Pro+ 卡片：登录后进入设置页并滚到 Pro+ 升级区 */
+export const PRO_PLUS_UPGRADE_PATH = '/app/settings?upgrade=pro-plus';
+
+export function getAppProPlusSignupUrl(): string {
+  const url = new URL(getAppSignupUrl());
+  url.searchParams.set('next', PRO_PLUS_UPGRADE_PATH);
+  return url.toString();
+}

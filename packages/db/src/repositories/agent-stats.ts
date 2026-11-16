@@ -6,7 +6,7 @@
  * 保证与门店真实 plan 永远一致，不会出现统计表与业务表对不上的经典问题。
  */
 
-import type { PlanId } from '@taomenu/shared';
+import { hasProEntitlements, type PlanId } from '@taomenu/shared';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import type { AgentRevenueKind } from '../schema/agents';
 import { agentLinkClicks, agentReferrals, agentRevenueEvents, agents } from '../schema/agents';
@@ -117,7 +117,7 @@ export async function getAgentStats(db: Db, agentId: string): Promise<AgentStats
     totalClicks: toCount(clickRows[0]?.total),
     referredUsers: toCount(referralRows[0]?.total),
     stores: storeRows,
-    proStoreCount: storeRows.filter((row) => row.plan === 'pro').length,
+    proStoreCount: storeRows.filter((row) => hasProEntitlements(row.plan)).length,
     revenueByCurrency: revenueRows.map((row) => ({
       currency: row.currency,
       totalMinor: toCount(row.totalMinor),

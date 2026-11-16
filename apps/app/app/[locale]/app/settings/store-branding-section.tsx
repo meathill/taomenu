@@ -1,6 +1,7 @@
 'use client';
 
 import type { StoreRow } from '@taomenu/db';
+import { hasProEntitlements } from '@taomenu/shared';
 import { useTranslations } from 'next-intl';
 import { useId, useRef, useState } from 'react';
 import { Button } from '@/components/button';
@@ -34,7 +35,7 @@ export function StoreBrandingSection({
   const { openPaywall } = usePaywall();
   const switchId = useId();
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const isPro = store.plan === 'pro';
+  const isPro = hasProEntitlements(store.plan);
   const [hidePoweredBy, setHidePoweredBy] = useState(isPro && initialHidePoweredBy);
   const [coverImageKey, setCoverImageKey] = useState(initialCoverImageKey);
   const [busy, setBusy] = useState(false);

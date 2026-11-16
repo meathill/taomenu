@@ -1,5 +1,5 @@
 import type { AgentRevenueKind, AgentStats } from '@taomenu/db';
-import { formatCurrency } from '@taomenu/shared';
+import { formatCurrency, hasProEntitlements } from '@taomenu/shared';
 import { AgentStatCards } from '@/components/agent-stat-cards';
 
 /**
@@ -95,7 +95,7 @@ export function AgentStatsView({ stats, locale, labels }: AgentStatsViewProps) {
                     <td className={CELL}>
                       <span
                         className={
-                          store.plan === 'pro'
+                          hasProEntitlements(store.plan)
                             ? 'rounded-full bg-jade-50 px-2.5 py-1 text-xs font-bold text-jade-600'
                             : 'rounded-full bg-paper-50 px-2.5 py-1 text-xs font-bold text-muted-foreground'
                         }

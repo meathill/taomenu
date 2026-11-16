@@ -230,6 +230,11 @@ export {
   resolveStoreContext,
 } from './store-context';
 export {
+  getStoreSocialOnboarding,
+  type StoreSocialOnboarding,
+  upsertStoreSocialOnboarding,
+} from './store-social-onboarding';
+export {
   type CreateStoreInput,
   createStoreForOwner,
   findStoreByStripeCustomerId,

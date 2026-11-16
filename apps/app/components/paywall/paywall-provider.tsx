@@ -1,6 +1,7 @@
 'use client';
 
 import type { StoreRow } from '@taomenu/db';
+import { hasProEntitlements } from '@taomenu/shared';
 import { createContext, type ReactNode, useContext, useState } from 'react';
 import { PaywallDialog } from './paywall-dialog';
 import type { PaywallFeature } from './paywall-features';
@@ -28,7 +29,9 @@ export function PaywallProvider({ store, children }: PaywallProviderProps) {
   }
 
   return (
-    <PaywallContext.Provider value={{ isPro: store.plan === 'pro', openPaywall: setFeature }}>
+    <PaywallContext.Provider
+      value={{ isPro: hasProEntitlements(store.plan), openPaywall: setFeature }}
+    >
       {children}
       <PaywallDialog store={store} feature={feature} onOpenChange={handleOpenChange} />
     </PaywallContext.Provider>

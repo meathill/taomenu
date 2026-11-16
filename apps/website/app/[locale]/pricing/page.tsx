@@ -7,7 +7,7 @@ import {
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PricingPlans } from '@/components/pricing-plans';
 import { buildPageMetadata } from '@/lib/seo';
-import { getAppProSignupUrl, getAppSignupUrl } from '@/lib/site';
+import { getAppProPlusSignupUrl, getAppProSignupUrl, getAppSignupUrl } from '@/lib/site';
 
 type PricingPageProps = {
   params: Promise<{ locale: string }>;
@@ -36,6 +36,21 @@ export default async function PricingPage({ params }: PricingPageProps) {
   const proYearly = formatCurrency(getBillingPrice('pro_plan', currency, 'year'), currency, locale);
   const yearlyEquivalent = formatCurrency(
     getAnnualEquivalentMonthlyPrice('pro_plan', currency),
+    currency,
+    locale,
+  );
+  const proPlusMonthly = formatCurrency(
+    getBillingPrice('pro_plus_plan', currency, 'month'),
+    currency,
+    locale,
+  );
+  const proPlusYearly = formatCurrency(
+    getBillingPrice('pro_plus_plan', currency, 'year'),
+    currency,
+    locale,
+  );
+  const proPlusYearlyEquivalent = formatCurrency(
+    getAnnualEquivalentMonthlyPrice('pro_plus_plan', currency),
     currency,
     locale,
   );
@@ -90,14 +105,33 @@ export default async function PricingPage({ params }: PricingPageProps) {
             { label: t('proBranding'), status: 'available' },
             { label: staffAddOn, status: 'available' },
           ],
-          highlight: true,
+          highlight: false,
           ctaLabel: t('proCta'),
           ctaHref: getAppProSignupUrl(),
           ctaNote: t('proCtaNote'),
+          monthlyPrice: t('proPrice', { price: proMonthly }),
+          yearlyPrice: t('proPriceYear', { price: proYearly }),
+          yearlyHint: t('yearlyHint', { price: yearlyEquivalent }),
         }}
-        proMonthlyPrice={t('proPrice', { price: proMonthly })}
-        proYearlyPrice={t('proPriceYear', { price: proYearly })}
-        yearlyHint={t('yearlyHint', { price: yearlyEquivalent })}
+        proPlus={{
+          id: 'pro_plus',
+          name: t('proPlusName'),
+          desc: t('proPlusDesc'),
+          features: [
+            { label: t('proPlusF1'), status: 'available' },
+            { label: t('proPlusF2'), status: 'available' },
+            { label: t('proPlusF3'), status: 'available' },
+            { label: t('proPlusF4'), status: 'available' },
+            { label: staffAddOn, status: 'available' },
+          ],
+          highlight: true,
+          ctaLabel: t('proPlusCta'),
+          ctaHref: getAppProPlusSignupUrl(),
+          ctaNote: t('proPlusCtaNote'),
+          monthlyPrice: t('proPlusPrice', { price: proPlusMonthly }),
+          yearlyPrice: t('proPlusPriceYear', { price: proPlusYearly }),
+          yearlyHint: t('proPlusYearlyHint', { price: proPlusYearlyEquivalent }),
+        }}
       />
 
       <section className="mt-10 rounded-2xl border border-border bg-white p-6 sm:p-8">

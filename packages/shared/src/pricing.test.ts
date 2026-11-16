@@ -65,6 +65,14 @@ describe('年付价格', () => {
     expect(getBillingPrice('pro_plan', 'USD', 'year')).toBe(5_990);
     expect(getBillingPrice('pro_plan', 'JPY', 'year')).toBe(9_000);
     expect(getBillingPrice('pro_plan', 'CNY', 'year')).toBe(42_000);
+    expect(getBillingPrice('pro_plus_plan', 'VND', 'month')).toBe(375_000);
+    expect(getBillingPrice('pro_plus_plan', 'USD', 'month')).toBe(1_499);
+    expect(getBillingPrice('pro_plus_plan', 'JPY', 'month')).toBe(2_250);
+    expect(getBillingPrice('pro_plus_plan', 'CNY', 'month')).toBe(10_500);
+    expect(getBillingPrice('pro_plus_plan', 'VND', 'year')).toBe(3_750_000);
+    expect(getBillingPrice('pro_plus_plan', 'USD', 'year')).toBe(14_990);
+    expect(getBillingPrice('pro_plus_plan', 'JPY', 'year')).toBe(22_500);
+    expect(getBillingPrice('pro_plus_plan', 'CNY', 'year')).toBe(105_000);
     for (const currency of BILLING_CURRENCIES) {
       const yearly = getBillingPrice('pro_plan', currency, 'year');
       expect(Number.isInteger(yearly)).toBe(true);

@@ -1,13 +1,14 @@
 'use client';
 
-import type { StoreRow } from '@taomenu/db';
+import type { StoreRow, StoreSocialOnboarding } from '@taomenu/db';
 import {
   type BillingInterval,
   formatCurrency,
   getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForStore,
   getBillingPrice,
-  PLAN_LIMITS,
+  hasProEntitlements,
+  isProPlusPlan,
   STORE_CURRENCIES,
   type StoreCurrency,
   toStoreCurrency,
@@ -22,6 +23,7 @@ import { TimeZoneSelect } from '@/components/time-zone-select';
 import { fieldClassName } from '@/components/ui/field';
 import { type BillingPath, requestBillingUrl } from '@/lib/billing-client';
 import { planLabelKey } from '@/lib/plan-label';
+import { ProPlusOnboardingForm } from './pro-plus-onboarding-form';
 import { StoreBrandingSection } from './store-branding-section';
 
 type StoreSettingsFormProps = {
@@ -31,8 +33,10 @@ type StoreSettingsFormProps = {
   coverImageKey: string | null;
   upgradeUrl: string;
   billingStatus?: string;
-  /** 从定价页 Pro 入口过来：滚动到并高亮升级区块 */
+  /** 从定价页付费入口过来：滚动到并高亮升级区块 */
   isUpgradeIntent?: boolean;
+  upgradeIntent?: 'pro' | 'pro-plus';
+  socialOnboarding?: StoreSocialOnboarding;
 };
 
 export function StoreSettingsForm({
@@ -42,6 +46,8 @@ export function StoreSettingsForm({
   upgradeUrl,
   billingStatus,
   isUpgradeIntent = false,
+  upgradeIntent,
+  socialOnboarding,
 }: StoreSettingsFormProps) {
   const t = useTranslations('owner');
   const tCommon = useTranslations('common');
@@ -59,7 +65,9 @@ export function StoreSettingsForm({
   const [billingBusy, setBillingBusy] = useState(false);
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('year');
   const upgradeSectionRef = useRef<HTMLElement>(null);
-  const shouldHighlightUpgrade = isUpgradeIntent && store.plan === 'free';
+  const shouldHighlightUpgrade =
+    isUpgradeIntent &&
+    (store.plan === 'free' || (store.plan === 'pro' && upgradeIntent === 'pro-plus'));
 
   useEffect(() => {
     if (shouldHighlightUpgrade) {
@@ -87,6 +95,20 @@ export function StoreSettingsForm({
     billingInterval === 'year'
       ? t('proPriceYear', { price: proPrice })
       : t('proPrice', { price: proPrice });
+  const proPlusPrice = formatCurrency(
+    getBillingPrice('pro_plus_plan', billingCurrency, billingInterval),
+    billingCurrency,
+    locale,
+  );
+  const proPlusYearlyEquivalent = formatCurrency(
+    getAnnualEquivalentMonthlyPrice('pro_plus_plan', billingCurrency),
+    billingCurrency,
+    locale,
+  );
+  const proPlusPriceLabel =
+    billingInterval === 'year'
+      ? t('proPlusPriceYear', { price: proPlusPrice })
+      : t('proPlusPrice', { price: proPlusPrice });
 
   async function openBilling(path: BillingPath) {
     setBillingBusy(true);
@@ -94,7 +116,7 @@ export function StoreSettingsForm({
     setError(null);
     const result = await requestBillingUrl(store.id, path, {
       locale,
-      interval: path === 'pro/checkout' ? billingInterval : undefined,
+      interval: path === 'portal' ? undefined : billingInterval,
     });
     if (result.ok) {
       window.location.assign(result.url);
@@ -233,15 +255,23 @@ export function StoreSettingsForm({
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-black text-ink-900">
-                {store.plan === 'pro' ? t('proActiveTitle') : t('upgradeTitle')}
+                {isProPlusPlan(store.plan)
+                  ? t('proPlusActiveTitle')
+                  : store.plan === 'pro'
+                    ? t('proActiveTitle')
+                    : t('upgradeTitle')}
               </h2>
               <ProBadge />
             </div>
             <p className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
-              {store.plan === 'pro' ? t('proActiveSubtitle') : t('upgradeSubtitle')}
+              {isProPlusPlan(store.plan)
+                ? t('proPlusActiveSubtitle')
+                : store.plan === 'pro'
+                  ? t('proActiveSubtitle')
+                  : t('upgradeSubtitle')}
             </p>
           </div>
-          {store.plan === 'free' ? (
+          {store.plan !== 'pro_plus' ? (
             <div className="shrink-0 sm:text-right">
               <BillingIntervalToggle
                 value={billingInterval}
@@ -251,34 +281,120 @@ export function StoreSettingsForm({
                 yearlyBadge={t('billingYearlyBadge')}
                 groupLabel={t('billingIntervalLabel')}
               />
-              <p className="mt-3 text-xl font-black tabular-nums text-ink-900">{proPriceLabel}</p>
+            </div>
+          ) : null}
+        </div>
+
+        {store.plan === 'free' ? (
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <article className="rounded-xl border border-violet-600/20 bg-white p-4">
+              <h3 className="text-base font-black text-ink-900">{tCommon('planPro')}</h3>
+              <p className="mt-2 text-xl font-black tabular-nums text-ink-900">{proPriceLabel}</p>
               {billingInterval === 'year' ? (
                 <p className="mt-1 text-sm font-medium text-jade-700">
                   {t('yearlyHint', { price: yearlyEquivalent })}
                 </p>
               ) : null}
-            </div>
-          ) : (
-            <p className="shrink-0 text-xl font-black tabular-nums text-ink-900">{proPriceLabel}</p>
-          )}
-        </div>
+              <ul className="mt-3 grid gap-1.5 text-sm font-semibold text-ink-900">
+                <li>✓ {t('proBenefitStaff')}</li>
+                <li>✓ {t('proBenefitLanguages')}</li>
+                <li>✓ {t('proBenefitImport')}</li>
+                <li>✓ {t('proBenefitQr')}</li>
+                <li>✓ {t('proBenefitTranslation')}</li>
+                <li>✓ {t('proBenefitVoice')}</li>
+                <li>✓ {t('proBenefitEnhance')}</li>
+                <li>✓ {t('proBenefitBranding')}</li>
+              </ul>
+              <Button
+                type="button"
+                pending={billingBusy}
+                onClick={() => void openBilling('pro/checkout')}
+                className="mt-4 min-h-12 w-full rounded-xl border border-violet-600/30 bg-white px-5 text-sm font-bold text-violet-700"
+              >
+                {t('upgradeNow')}
+              </Button>
+            </article>
+            <article className="rounded-xl border-2 border-violet-600 bg-white p-4">
+              <h3 className="text-base font-black text-ink-900">{tCommon('planProPlus')}</h3>
+              <p className="mt-2 text-xl font-black tabular-nums text-ink-900">
+                {proPlusPriceLabel}
+              </p>
+              {billingInterval === 'year' ? (
+                <p className="mt-1 text-sm font-medium text-jade-700">
+                  {t('proPlusYearlyHint', { price: proPlusYearlyEquivalent })}
+                </p>
+              ) : null}
+              <ul className="mt-3 grid gap-1.5 text-sm font-semibold text-ink-900">
+                <li>✓ {t('proPlusBenefitAllPro')}</li>
+                <li>✓ {t('proPlusBenefitManage')}</li>
+                <li>✓ {t('proPlusBenefitAuto')}</li>
+                <li>✓ {t('proPlusBenefitPrepare')}</li>
+              </ul>
+              <Button
+                type="button"
+                pending={billingBusy}
+                onClick={() => void openBilling('pro-plus/checkout')}
+                className="mt-4 min-h-12 w-full rounded-xl bg-violet-600 px-5 text-sm font-bold text-white"
+              >
+                {t('upgradeToProPlus')}
+              </Button>
+            </article>
+          </div>
+        ) : null}
 
-        <p className="mt-5 rounded-xl bg-white px-3 py-2 text-sm leading-6 text-ink-900">
-          {t('freeBenefitTranslation', {
-            freeTranslations: PLAN_LIMITS.free.maxAiTranslationsPerMonth,
-            proTranslations: PLAN_LIMITS.pro.maxAiTranslationsPerMonth,
-          })}
-        </p>
-        <ul className="mt-4 grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
-          <li>✓ {t('proBenefitStaff')}</li>
-          <li>✓ {t('proBenefitLanguages')}</li>
-          <li>✓ {t('proBenefitImport')}</li>
-          <li>✓ {t('proBenefitQr')}</li>
-          <li>✓ {t('proBenefitTranslation')}</li>
-          <li>✓ {t('proBenefitVoice')}</li>
-          <li>✓ {t('proBenefitEnhance')}</li>
-          <li>✓ {t('proBenefitBranding')}</li>
-        </ul>
+        {store.plan === 'pro' ? (
+          <div className="mt-5">
+            <ul className="grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
+              <li>✓ {t('proBenefitStaff')}</li>
+              <li>✓ {t('proBenefitLanguages')}</li>
+              <li>✓ {t('proBenefitImport')}</li>
+              <li>✓ {t('proBenefitQr')}</li>
+              <li>✓ {t('proBenefitTranslation')}</li>
+              <li>✓ {t('proBenefitVoice')}</li>
+              <li>✓ {t('proBenefitEnhance')}</li>
+              <li>✓ {t('proBenefitBranding')}</li>
+            </ul>
+            <article className="mt-4 rounded-xl border-2 border-violet-600 bg-white p-4">
+              <h3 className="text-base font-black text-ink-900">{tCommon('planProPlus')}</h3>
+              <p className="mt-2 text-xl font-black tabular-nums text-ink-900">
+                {proPlusPriceLabel}
+              </p>
+              {billingInterval === 'year' ? (
+                <p className="mt-1 text-sm font-medium text-jade-700">
+                  {t('proPlusYearlyHint', { price: proPlusYearlyEquivalent })}
+                </p>
+              ) : null}
+              <ul className="mt-3 grid gap-1.5 text-sm font-semibold text-ink-900">
+                <li>✓ {t('proPlusBenefitManage')}</li>
+                <li>✓ {t('proPlusBenefitAuto')}</li>
+                <li>✓ {t('proPlusBenefitPrepare')}</li>
+              </ul>
+              <Button
+                type="button"
+                pending={billingBusy}
+                onClick={() => void openBilling('pro-plus/checkout')}
+                className="mt-4 min-h-12 w-full rounded-xl bg-violet-600 px-5 text-sm font-bold text-white sm:w-auto"
+              >
+                {t('upgradeToProPlus')}
+              </Button>
+            </article>
+          </div>
+        ) : null}
+
+        {isProPlusPlan(store.plan) ? (
+          <div className="mt-5">
+            <ul className="grid gap-2 text-sm font-semibold text-ink-900 sm:grid-cols-2">
+              <li>✓ {t('proPlusBenefitAllPro')}</li>
+              <li>✓ {t('proPlusBenefitManage')}</li>
+              <li>✓ {t('proPlusBenefitAuto')}</li>
+              <li>✓ {t('proPlusBenefitPrepare')}</li>
+            </ul>
+            {socialOnboarding ? (
+              <ProPlusOnboardingForm storeId={store.id} initial={socialOnboarding} />
+            ) : null}
+          </div>
+        ) : null}
+
         <p className="mt-4 text-xs leading-5 text-muted-foreground">{t('aiReviewRule')}</p>
 
         {billingStatus === 'success' ? (
@@ -293,16 +409,7 @@ export function StoreSettingsForm({
         ) : null}
 
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          {store.plan === 'free' ? (
-            <Button
-              type="button"
-              pending={billingBusy}
-              onClick={() => void openBilling('pro/checkout')}
-              className="min-h-12 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white"
-            >
-              {t('upgradeNow')}
-            </Button>
-          ) : store.stripeCustomerId ? (
+          {hasProEntitlements(store.plan) && store.stripeCustomerId ? (
             <Button
               type="button"
               pending={billingBusy}

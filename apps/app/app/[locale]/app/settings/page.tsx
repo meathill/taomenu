@@ -1,4 +1,4 @@
-import { getStoreBranding } from '@taomenu/db';
+import { getStoreBranding, getStoreSocialOnboarding } from '@taomenu/db';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
@@ -26,9 +26,9 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   const upgradeParam = Array.isArray(resolvedSearchParams.upgrade)
     ? resolvedSearchParams.upgrade[0]
     : resolvedSearchParams.upgrade;
-  const isUpgradeIntent = upgradeParam === 'pro';
-  // 从定价页 Pro 入口过来：登录、建店之后都要回到这里，不能丢掉升级意图
-  const returnPath = isUpgradeIntent ? '/app/settings?upgrade=pro' : '/app/settings';
+  const isUpgradeIntent = upgradeParam === 'pro' || upgradeParam === 'pro-plus';
+  // 从定价页付费入口过来：登录、建店之后都要回到这里，不能丢掉升级意图
+  const returnPath = isUpgradeIntent ? `/app/settings?upgrade=${upgradeParam}` : '/app/settings';
   if (!selection) redirect(`/login?next=${encodeURIComponent(returnPath)}`);
   if (!selection.store) {
     redirect(
@@ -38,7 +38,9 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
     );
   }
 
-  const branding = await getStoreBranding(getDb(), selection.store.id);
+  const db = getDb();
+  const branding = await getStoreBranding(db, selection.store.id);
+  const socialOnboarding = await getStoreSocialOnboarding(db, selection.store.id);
 
   return (
     <PageMessages namespaces={['owner', 'menu']}>
@@ -54,6 +56,10 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
           coverImageKey={branding.coverImageKey}
           upgradeUrl={joinPublicUrl(getPublicWebsiteUrl(), `/${locale}/pricing`)}
           isUpgradeIntent={isUpgradeIntent}
+          upgradeIntent={
+            upgradeParam === 'pro-plus' ? 'pro-plus' : isUpgradeIntent ? 'pro' : undefined
+          }
+          socialOnboarding={socialOnboarding}
           billingStatus={
             Array.isArray(resolvedSearchParams.billing)
               ? resolvedSearchParams.billing[0]

@@ -1,6 +1,6 @@
 import type { BillingInterval } from '@taomenu/shared';
 
-export type BillingPath = 'pro/checkout' | 'portal';
+export type BillingPath = 'pro/checkout' | 'pro-plus/checkout' | 'portal';
 
 export type BillingUrlResult =
   | { ok: true; url: string }

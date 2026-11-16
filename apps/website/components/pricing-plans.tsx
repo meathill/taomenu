@@ -11,7 +11,7 @@ type PlanFeature = {
 };
 
 type PlanCard = {
-  id: 'free' | 'pro';
+  id: 'free' | 'pro' | 'pro_plus';
   name: string;
   desc: string;
   features: PlanFeature[];
@@ -19,6 +19,12 @@ type PlanCard = {
   ctaLabel: string;
   ctaHref: string;
   ctaNote?: string;
+};
+
+type PricedPlan = PlanCard & {
+  monthlyPrice: string;
+  yearlyPrice: string;
+  yearlyHint?: string;
 };
 
 type PricingPlansProps = {
@@ -31,10 +37,8 @@ type PricingPlansProps = {
   };
   free: PlanCard;
   freePrice: string;
-  pro: PlanCard;
-  proMonthlyPrice: string;
-  proYearlyPrice: string;
-  yearlyHint: string;
+  pro: PricedPlan;
+  proPlus: PricedPlan;
 };
 
 export function PricingPlans({
@@ -43,18 +47,18 @@ export function PricingPlans({
   free,
   freePrice,
   pro,
-  proMonthlyPrice,
-  proYearlyPrice,
-  yearlyHint,
+  proPlus,
 }: PricingPlansProps) {
   const [interval, setInterval] = useState<BillingInterval>('year');
+  const priced = (plan: PricedPlan) => ({
+    ...plan,
+    price: interval === 'year' ? plan.yearlyPrice : plan.monthlyPrice,
+    hint: interval === 'year' ? plan.yearlyHint : undefined,
+  });
   const plans: Array<PlanCard & { price: string; hint?: string }> = [
     { ...free, price: freePrice },
-    {
-      ...pro,
-      price: interval === 'year' ? proYearlyPrice : proMonthlyPrice,
-      hint: interval === 'year' ? yearlyHint : undefined,
-    },
+    priced(pro),
+    priced(proPlus),
   ];
 
   return (
@@ -70,7 +74,7 @@ export function PricingPlans({
         />
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-8 grid gap-4 lg:grid-cols-3">
         {plans.map((plan) => (
           <article
             key={plan.id}

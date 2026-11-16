@@ -1,4 +1,4 @@
-export const PLAN_IDS = ['free', 'pro'] as const;
+export const PLAN_IDS = ['free', 'pro', 'pro_plus'] as const;
 
 export type PlanId = (typeof PLAN_IDS)[number];
 
@@ -13,6 +13,8 @@ export type PlanLimits = {
   canUseProQrTemplates: boolean;
   /** 能否在顾客点单页隐藏「Powered by TaoMenu」（issue #26） */
   canRemovePoweredBy: boolean;
+  /** Pro+：由我们协助运营 Google / 社交平台（能自动则自动，否则出物料+教程） */
+  canUseManagedSocialOps: boolean;
   maxAiMenuImportsPerMonth: number;
   maxAiTranslationsPerMonth: number;
   maxAiImageEnhancementsPerMonth: number;
@@ -34,6 +36,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseVoiceAssistant: false,
     canUseProQrTemplates: false,
     canRemovePoweredBy: false,
+    canUseManagedSocialOps: false,
     maxAiMenuImportsPerMonth: FREE_AI_MENU_IMPORTS_PER_MONTH,
     maxAiTranslationsPerMonth: FREE_AI_TRANSLATIONS_PER_MONTH,
     maxAiImageEnhancementsPerMonth: 0,
@@ -47,6 +50,21 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     canUseVoiceAssistant: true,
     canUseProQrTemplates: true,
     canRemovePoweredBy: true,
+    canUseManagedSocialOps: false,
+    maxAiMenuImportsPerMonth: 20,
+    maxAiTranslationsPerMonth: 20,
+    maxAiImageEnhancementsPerMonth: 10,
+  },
+  pro_plus: {
+    maxStaffTerminals: 4,
+    maxMenuLocales: 5,
+    canUseAiMenuImport: true,
+    canUseAiTranslation: true,
+    canUseAiImageEnhancement: true,
+    canUseVoiceAssistant: true,
+    canUseProQrTemplates: true,
+    canRemovePoweredBy: true,
+    canUseManagedSocialOps: true,
     maxAiMenuImportsPerMonth: 20,
     maxAiTranslationsPerMonth: 20,
     maxAiImageEnhancementsPerMonth: 10,
@@ -77,4 +95,13 @@ export function isMenuLocaleAllowed(input: {
   const next = new Set(input.existingLocales);
   next.add(input.locale);
   return next.size <= getPlanLimits(input.plan).maxMenuLocales;
+}
+
+/** Pro 与 Pro+ 共享的付费功能权益（语言、AI、席位、去品牌等） */
+export function hasProEntitlements(planId: PlanId | string): boolean {
+  return planId === 'pro' || planId === 'pro_plus';
+}
+
+export function isProPlusPlan(planId: PlanId | string): boolean {
+  return planId === 'pro_plus';
 }

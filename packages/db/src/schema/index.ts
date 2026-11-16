@@ -6,6 +6,7 @@ export * from './menu-image-enhancement';
 export * from './menu-translation';
 export * from './push';
 export * from './store-branding';
+export * from './store-social-onboarding';
 export * from './stores';
 export * from './stripe-webhook-events';
 export * from './tables-orders';

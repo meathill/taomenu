@@ -68,6 +68,11 @@
     // 空串按未配置处理（升级入口显示未开通）；生产 Price 建好后填入
     "STRIPE_PRO_PRICE_ID": "price_1U2YcYIl4ac8nxMLazjcqCiW",
     "STRIPE_PRO_ANNUAL_PRICE_ID": "price_1UcQfTIl4ac8nxML6phcQ3iM",
+    "STRIPE_PRO_PLUS_PRICE_ID": "price_1UcQl9Il4ac8nxMLBd0gLngi",
+    "STRIPE_PRO_PLUS_ANNUAL_PRICE_ID": "price_1UcQlCIl4ac8nxMLUAuuPg0w",
+    "STRIPE_PRO_PLUS_PROMO_PRICE_ID": "price_1UcQlFIl4ac8nxMLzEnCIvtb",
+    "STRIPE_PRO_PLUS_ANNUAL_PROMO_PRICE_ID": "price_1UcQlHIl4ac8nxMLoXqhhXX3",
+    "STRIPE_PROMO_PRO_ANNUAL_COUPON_ID": "r3D3HF5U",
     "STRIPE_STAFF_SEAT_PRICE_ID": "price_1U1U0FIl4ac8nxMLURDk4j6W",
     "VAPID_SUBJECT": "mailto:ops@dyqr.me",
     // root 管理员邮箱（/admin 入口）。空串按未配置处理：admin 后台对所有人 404。

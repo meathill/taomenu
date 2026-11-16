@@ -3,7 +3,7 @@
 import type { BillingCurrency } from './currency';
 import { isLocale, type Locale } from './locale';
 
-export const BILLING_PRODUCTS = ['pro_plan', 'staff_seat'] as const;
+export const BILLING_PRODUCTS = ['pro_plan', 'pro_plus_plan', 'staff_seat'] as const;
 
 export type BillingProduct = (typeof BILLING_PRODUCTS)[number];
 
@@ -19,6 +19,8 @@ export const ANNUAL_MONTHS_INCLUDED = 12;
 /** 月付价格。VND/JPY 为整数主单位，USD/CNY 为分。 */
 export const BILLING_PRICES: Record<BillingProduct, Record<BillingCurrency, number>> = {
   pro_plan: { VND: 149_000, USD: 599, JPY: 900, CNY: 4_200 },
+  // 用户定价：月费 VND 375,000 / USD $14.99 / JPY 2,250 / CNY ¥105；年付 = 10 个月
+  pro_plus_plan: { VND: 375_000, USD: 1_499, JPY: 2_250, CNY: 10_500 },
   staff_seat: { VND: 125_000, USD: 498, JPY: 750, CNY: 3_500 },
 };
 

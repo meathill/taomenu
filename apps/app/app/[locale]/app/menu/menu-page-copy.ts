@@ -1,9 +1,9 @@
-import { isMenuLocaleAllowed, type PlanId } from '@taomenu/shared';
+import { hasProEntitlements, isMenuLocaleAllowed, type PlanId } from '@taomenu/shared';
 
 const SUPPORTED_MENU_LOCALES = new Set(['en', 'vi', 'zh', 'ja']);
 
-export function getMenuSubtitleKey(plan: 'free' | 'pro') {
-  return plan === 'pro' ? 'subtitlePro' : 'subtitle';
+export function getMenuSubtitleKey(plan: PlanId) {
+  return hasProEntitlements(plan) ? 'subtitlePro' : 'subtitle';
 }
 
 /** Free 也能切到额外的一种语言；只有超出套餐上限时才退回基础语言 */

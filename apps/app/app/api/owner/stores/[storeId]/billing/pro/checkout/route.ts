@@ -1,5 +1,9 @@
 import { getStore } from '@taomenu/db';
-import { getBillingCurrencyForStore, parseBillingInterval } from '@taomenu/shared';
+import {
+  getBillingCurrencyForStore,
+  hasProEntitlements,
+  parseBillingInterval,
+} from '@taomenu/shared';
 import { resolveCheckoutLocale } from '@/lib/checkout-locale';
 import { isErrorResponse, requireOwnerStore } from '@/lib/owner-context';
 import { getSession } from '@/lib/session';
@@ -33,7 +37,7 @@ export async function POST(request: Request, context: RouteContext) {
 
   const store = await getStore(owner.storeCtx, owner.db);
   if (!store) return Response.json({ error: 'NOT_FOUND' }, { status: 404 });
-  if (store.plan === 'pro' || store.stripePlanSubscriptionId) {
+  if (hasProEntitlements(store.plan) || store.stripePlanSubscriptionId) {
     return Response.json({ error: 'ALREADY_PRO' }, { status: 409 });
   }
 

@@ -1,4 +1,5 @@
 import { getUserPreferences, listMenuLocales } from '@taomenu/db';
+import { hasProEntitlements } from '@taomenu/shared';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { PageMessages } from '@/components/page-messages';
@@ -76,7 +77,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
           storeId={store.id}
           currency={store.currency}
           activeMenuLocale={activeMenuLocale}
-          isPro={store.plan === 'pro'}
+          isPro={hasProEntitlements(store.plan)}
           initialHideProTools={preferences.hideMenuProTools}
         />
       </div>

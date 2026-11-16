@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   getPlanLimits,
   getStaffSeatLimit,
+  hasProEntitlements,
   isMenuLocaleAllowed,
+  isProPlusPlan,
   PLAN_IDS,
   shouldShowPoweredBy,
 } from './plans';
@@ -40,8 +42,24 @@ describe('getPlanLimits', () => {
     expect(getStaffSeatLimit('free', -1)).toBe(1);
   });
 
-  it('PLAN_IDS 覆盖 free 与 pro', () => {
-    expect(PLAN_IDS).toEqual(['free', 'pro']);
+  it('PLAN_IDS 覆盖 free、pro 与 pro_plus', () => {
+    expect(PLAN_IDS).toEqual(['free', 'pro', 'pro_plus']);
+  });
+
+  it('Pro+ 继承全部 Pro 权益，并增加社交运营协助', () => {
+    const pro = getPlanLimits('pro');
+    const plus = getPlanLimits('pro_plus');
+    expect(plus.maxStaffTerminals).toBe(pro.maxStaffTerminals);
+    expect(plus.maxMenuLocales).toBe(pro.maxMenuLocales);
+    expect(plus.canUseAiImageEnhancement).toBe(true);
+    expect(plus.canRemovePoweredBy).toBe(true);
+    expect(plus.canUseManagedSocialOps).toBe(true);
+    expect(pro.canUseManagedSocialOps).toBe(false);
+    expect(hasProEntitlements('pro')).toBe(true);
+    expect(hasProEntitlements('pro_plus')).toBe(true);
+    expect(hasProEntitlements('free')).toBe(false);
+    expect(isProPlusPlan('pro_plus')).toBe(true);
+    expect(isProPlusPlan('pro')).toBe(false);
   });
 });
 
@@ -49,6 +67,7 @@ describe('shouldShowPoweredBy', () => {
   it('只有 Pro 且商家主动关闭时才隐藏 Powered by', () => {
     expect(shouldShowPoweredBy('pro', true)).toBe(false);
     expect(shouldShowPoweredBy('pro', false)).toBe(true);
+    expect(shouldShowPoweredBy('pro_plus', true)).toBe(false);
   });
 
   it('Free（包括降级后残留的开关）始终显示 Powered by', () => {

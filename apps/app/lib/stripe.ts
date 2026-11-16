@@ -18,6 +18,11 @@ export type StripeConfig = {
   proPriceId?: string;
   /** 年付 Pro Price ID；未配置时年付 Checkout 不可用。 */
   proAnnualPriceId?: string;
+  proPlusPriceId?: string;
+  proPlusAnnualPriceId?: string;
+  proPlusPromoPriceId?: string;
+  proPlusAnnualPromoPriceId?: string;
+  promoProAnnualCouponId?: string;
 };
 
 export function getProCheckoutPriceId(
@@ -25,6 +30,14 @@ export function getProCheckoutPriceId(
   interval: BillingInterval,
 ): string | undefined {
   return interval === 'year' ? config.proAnnualPriceId : config.proPriceId;
+}
+
+/** 步骤 (b) 只走标价；早鸟价在步骤 (c) 的促销窗口内再选用。 */
+export function getProPlusCheckoutPriceId(
+  config: StripeConfig,
+  interval: BillingInterval,
+): string | undefined {
+  return interval === 'year' ? config.proPlusAnnualPriceId : config.proPlusPriceId;
 }
 
 export function getStripeConfig(): StripeConfig | null {
@@ -38,6 +51,11 @@ export function getStripeConfig(): StripeConfig | null {
     staffSeatPriceId: env.STRIPE_STAFF_SEAT_PRICE_ID,
     proPriceId: env.STRIPE_PRO_PRICE_ID,
     proAnnualPriceId: env.STRIPE_PRO_ANNUAL_PRICE_ID,
+    proPlusPriceId: env.STRIPE_PRO_PLUS_PRICE_ID,
+    proPlusAnnualPriceId: env.STRIPE_PRO_PLUS_ANNUAL_PRICE_ID,
+    proPlusPromoPriceId: env.STRIPE_PRO_PLUS_PROMO_PRICE_ID,
+    proPlusAnnualPromoPriceId: env.STRIPE_PRO_PLUS_ANNUAL_PROMO_PRICE_ID,
+    promoProAnnualCouponId: env.STRIPE_PROMO_PRO_ANNUAL_COUPON_ID,
   };
 }
 
@@ -131,9 +149,10 @@ export function buildStaffSeatCheckoutParams(
 }
 
 export function buildProCheckoutParams(
-  input: ProCheckoutInput & { priceId: string },
+  input: ProCheckoutInput & { priceId: string; kind?: 'pro_plan' | 'pro_plus_plan' },
 ): URLSearchParams {
   const encodedStore = encodeURIComponent(input.storeSlug);
+  const kind = input.kind ?? 'pro_plan';
   const params = new URLSearchParams();
   params.set('mode', 'subscription');
   params.set('currency', input.currency.toLowerCase());
@@ -143,21 +162,42 @@ export function buildProCheckoutParams(
   params.set('client_reference_id', input.storeId);
   const interval = input.interval ?? 'month';
   params.set('metadata[storeId]', input.storeId);
-  params.set('metadata[kind]', 'pro_plan');
+  params.set('metadata[kind]', kind);
   params.set('metadata[interval]', interval);
+  params.set('metadata[priceId]', input.priceId);
   params.set('subscription_data[metadata][storeId]', input.storeId);
-  params.set('subscription_data[metadata][kind]', 'pro_plan');
+  params.set('subscription_data[metadata][kind]', kind);
   params.set('subscription_data[metadata][interval]', interval);
-  params.set(
-    'success_url',
-    joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=success`),
-  );
+  params.set('subscription_data[metadata][priceId]', input.priceId);
+  const successQuery =
+    kind === 'pro_plus_plan'
+      ? `/app/settings?store=${encodedStore}&billing=success&plan=pro-plus#pro-plus-onboarding`
+      : `/app/settings?store=${encodedStore}&billing=success`;
+  params.set('success_url', joinPublicUrl(getPublicAppUrl(), successQuery));
   params.set(
     'cancel_url',
     joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=cancel`),
   );
   setCheckoutCustomer(params, input);
   return params;
+}
+
+export async function createProPlusCheckoutSession(
+  config: StripeConfig,
+  input: ProCheckoutInput,
+): Promise<{ url: string }> {
+  const interval = input.interval ?? 'month';
+  const priceId = getProPlusCheckoutPriceId(config, interval);
+  if (!priceId) throw new StripeRequestError(503);
+  const params = buildProCheckoutParams({
+    ...input,
+    interval,
+    priceId,
+    kind: 'pro_plus_plan',
+  });
+  const data = await stripeRequest(config, '/checkout/sessions', params);
+  if (!data.url) throw new StripeRequestError(502);
+  return { url: data.url };
 }
 
 export async function createStaffSeatCheckoutSession(
@@ -186,6 +226,24 @@ export async function createProCheckoutSession(
   const data = await stripeRequest(config, '/checkout/sessions', params);
   if (!data.url) throw new StripeRequestError(502);
   return { url: data.url };
+}
+
+export async function updatePlanSubscriptionPrice(
+  config: StripeConfig,
+  input: {
+    subscriptionId: string;
+    itemId: string;
+    priceId: string;
+    kind: 'pro_plan' | 'pro_plus_plan';
+  },
+): Promise<void> {
+  const params = new URLSearchParams();
+  params.set('items[0][id]', input.itemId);
+  params.set('items[0][price]', input.priceId);
+  params.set('proration_behavior', 'create_prorations');
+  params.set('metadata[kind]', input.kind);
+  params.set('metadata[priceId]', input.priceId);
+  await stripeRequest(config, `/subscriptions/${encodeURIComponent(input.subscriptionId)}`, params);
 }
 
 export async function createBillingPortalSession(

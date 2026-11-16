@@ -61,10 +61,12 @@ const FEATURE_VALUES = {
 
 export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogProps) {
   const t = useTranslations('owner');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [interval, setInterval] = useState<BillingInterval>('year');
+  const [selectedPlan, setSelectedPlan] = useState<'pro' | 'pro_plus'>('pro');
   const billingCurrency = getBillingCurrencyForStore(store.currency);
   const proPrice = formatCurrency(
     getBillingPrice('pro_plan', billingCurrency, interval),
@@ -76,15 +78,43 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
     billingCurrency,
     locale,
   );
+  const proPlusPrice = formatCurrency(
+    getBillingPrice('pro_plus_plan', billingCurrency, interval),
+    billingCurrency,
+    locale,
+  );
+  const proPlusYearlyEquivalent = formatCurrency(
+    getAnnualEquivalentMonthlyPrice('pro_plus_plan', billingCurrency),
+    billingCurrency,
+    locale,
+  );
   const priceLabel =
-    interval === 'year'
-      ? t('proPriceYear', { price: proPrice })
-      : t('proPrice', { price: proPrice });
+    selectedPlan === 'pro_plus'
+      ? interval === 'year'
+        ? t('proPlusPriceYear', { price: proPlusPrice })
+        : t('proPlusPrice', { price: proPlusPrice })
+      : interval === 'year'
+        ? t('proPriceYear', { price: proPrice })
+        : t('proPrice', { price: proPrice });
+  const yearlyHint =
+    selectedPlan === 'pro_plus'
+      ? t('proPlusYearlyHint', { price: proPlusYearlyEquivalent })
+      : t('yearlyHint', { price: yearlyEquivalent });
+  const benefitKeys =
+    selectedPlan === 'pro_plus'
+      ? ([
+          'proPlusBenefitAllPro',
+          'proPlusBenefitManage',
+          'proPlusBenefitAuto',
+          'proPlusBenefitPrepare',
+        ] as const)
+      : BENEFIT_KEYS;
 
   async function handleUpgrade() {
     setBusy(true);
     setError(null);
-    const result = await requestBillingUrl(store.id, 'pro/checkout', { locale, interval });
+    const path = selectedPlan === 'pro_plus' ? 'pro-plus/checkout' : 'pro/checkout';
+    const result = await requestBillingUrl(store.id, path, { locale, interval });
     if (result.ok) {
       window.location.assign(result.url);
       return;
@@ -99,7 +129,7 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
 
   return (
     <Dialog open={feature !== null} onOpenChange={onOpenChange}>
-      <DialogPopup className="sm:max-w-md">
+      <DialogPopup className="sm:max-w-lg">
         <DialogHeader>
           <span className="grid size-12 place-items-center rounded-2xl bg-violet-600/10 text-violet-700">
             <CrownIcon className="size-6" weight="fill" aria-hidden />
@@ -118,14 +148,29 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
             yearlyBadge={t('billingYearlyBadge')}
             groupLabel={t('billingIntervalLabel')}
           />
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {(['pro', 'pro_plus'] as const).map((plan) => (
+              <button
+                key={plan}
+                type="button"
+                aria-pressed={selectedPlan === plan}
+                onClick={() => setSelectedPlan(plan)}
+                className={
+                  selectedPlan === plan
+                    ? 'rounded-xl border-2 border-violet-600 bg-violet-600/5 px-3 py-2 text-sm font-bold text-ink-900'
+                    : 'rounded-xl border border-violet-600/20 bg-white px-3 py-2 text-sm font-semibold text-muted-foreground'
+                }
+              >
+                {plan === 'pro' ? tCommon('planPro') : tCommon('planProPlus')}
+              </button>
+            ))}
+          </div>
           <p className="mt-3 text-lg font-black tabular-nums text-ink-900">{priceLabel}</p>
           {interval === 'year' ? (
-            <p className="mt-1 text-sm font-medium text-jade-700">
-              {t('yearlyHint', { price: yearlyEquivalent })}
-            </p>
+            <p className="mt-1 text-sm font-medium text-jade-700">{yearlyHint}</p>
           ) : null}
           <ul className="mt-3 space-y-1.5 text-sm text-ink-900">
-            {BENEFIT_KEYS.map((key) => (
+            {benefitKeys.map((key) => (
               <li key={key} className="flex items-start gap-2">
                 <CheckIcon className="mt-0.5 size-4 shrink-0 text-violet-700" weight="bold" />
                 <span>{t(key)}</span>
@@ -145,7 +190,7 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
             onClick={() => void handleUpgrade()}
             className="min-h-12 flex-1 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white"
           >
-            {t('upgradeNow')}
+            {selectedPlan === 'pro_plus' ? t('upgradeToProPlus') : t('upgradeNow')}
           </Button>
           <a
             href={getUpgradeSettingsHref(store.slug)}

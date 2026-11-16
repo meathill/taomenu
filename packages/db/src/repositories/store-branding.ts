@@ -53,9 +53,6 @@ export async function getStoreBranding(db: Db, storeId: string): Promise<StoreBr
 
 /** 公开菜单用：套餐 + 开关共同决定，降级回 Free 后自动恢复显示 */
 export async function getShowPoweredBy(db: Db, storeId: string, plan: PlanId): Promise<boolean> {
-  if (plan !== 'pro') {
-    return true;
-  }
   const branding = await getStoreBranding(db, storeId);
   return shouldShowPoweredBy(plan, branding.hidePoweredBy);
 }
