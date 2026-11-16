@@ -170,7 +170,14 @@
     "aiReviewTitle": "你确认",
     "aiReviewBody": "检查不确定的文字、价格和改动。采纳 AI 草稿也仍未发布菜单。",
     "aiLimit": "每家门店每月额度 — 免费版：10 次照片/PDF 菜单导入、10 次 AI 翻译。Pro：20 次照片/PDF 菜单导入、20 次 AI 翻译、10 次菜品照片预览。每开始一次新任务计一次。",
-    "freeF4": "每月 10 次人工审核的 AI 菜单翻译"
+    "freeF4": "每月 10 次人工审核的 AI 菜单翻译",
+    "promoChristmasBanner": "截至 {date}：Pro 月付首月免费，或年付半价。两选一，不可叠加。{countdown}",
+    "promoCountdownDays": "还剩 {count} 天",
+    "promoCountdownToday": "今天截止",
+    "promoChristmasMonthly": "首月免费",
+    "promoChristmasYearly": "首年半价",
+    "promoEarlyBirdUntil": "早鸟价截至 {date}。{countdown}",
+    "promoThenListPrice": "之后新购为 {price}"
   },
   "footer": {
     "tagline": "面向中小餐厅的扫码点餐软件。",

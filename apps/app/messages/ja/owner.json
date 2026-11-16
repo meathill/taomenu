@@ -197,5 +197,12 @@
   "coverPhotoRemove": "カバーを削除",
   "coverPhotoAdded": "カバー写真を追加しました。お客様がメニューを再読み込みすると表示されます。",
   "coverPhotoRemoved": "カバー写真を削除しました。",
-  "freeBenefitTranslation": "無料プランには毎月 {freeTranslations} 回のレビュー付き AI メニュー翻訳がすでに含まれます。Pro は {proTranslations} 回です。"
+  "freeBenefitTranslation": "無料プランには毎月 {freeTranslations} 回のレビュー付き AI メニュー翻訳がすでに含まれます。Pro は {proTranslations} 回です。",
+  "promoChristmasBanner": "{date}まで：Pro月額は初月無料、または年額が半額。どちらか一方のみで、併用はできません。{countdown}",
+  "promoCountdownDays": "残り{count}日",
+  "promoCountdownToday": "本日終了",
+  "promoChristmasMonthly": "初月無料",
+  "promoChristmasYearly": "初年度半額",
+  "promoEarlyBirdUntil": "早期価格は{date}まで。{countdown}",
+  "promoThenListPrice": "以降の新規は{price}"
 }

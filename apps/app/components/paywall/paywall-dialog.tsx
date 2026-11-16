@@ -3,12 +3,18 @@
 import { CheckIcon, CrownIcon } from '@phosphor-icons/react';
 import type { StoreRow } from '@taomenu/db';
 import {
+  BILLING_PROMOS,
   type BillingInterval,
   formatCurrency,
+  formatPromoEndDate,
   getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForStore,
   getBillingPrice,
+  getChristmasProAnnualPrice,
+  isChristmasPromoActive,
+  isProPlusEarlyBirdActive,
   PLAN_LIMITS,
+  promoDaysRemaining,
 } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -88,16 +94,66 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
     billingCurrency,
     locale,
   );
+  const christmasActive = isChristmasPromoActive();
+  const earlyBirdActive = isProPlusEarlyBirdActive();
+  const countdownFor = (endDate: string) => {
+    const days = promoDaysRemaining(endDate);
+    return days === 0 ? t('promoCountdownToday') : t('promoCountdownDays', { count: days });
+  };
+  const proListLabel =
+    interval === 'year'
+      ? t('proPriceYear', { price: proPrice })
+      : t('proPrice', { price: proPrice });
+  const proPlusListLabel =
+    interval === 'year'
+      ? t('proPlusPriceYear', { price: proPlusPrice })
+      : t('proPlusPrice', { price: proPlusPrice });
+  const christmasYearly = formatCurrency(
+    getChristmasProAnnualPrice(billingCurrency),
+    billingCurrency,
+    locale,
+  );
   const priceLabel =
     selectedPlan === 'pro_plus'
+      ? earlyBirdActive
+        ? interval === 'year'
+          ? t('proPlusPriceYear', {
+              price: formatCurrency(
+                getBillingPrice('pro_plan', billingCurrency, 'year'),
+                billingCurrency,
+                locale,
+              ),
+            })
+          : t('proPlusPrice', {
+              price: formatCurrency(
+                getBillingPrice('pro_plan', billingCurrency, 'month'),
+                billingCurrency,
+                locale,
+              ),
+            })
+        : proPlusListLabel
+      : christmasActive && interval === 'year'
+        ? t('proPriceYear', { price: christmasYearly })
+        : proListLabel;
+  const listPriceLabel =
+    selectedPlan === 'pro_plus' && earlyBirdActive
+      ? proPlusListLabel
+      : selectedPlan === 'pro' && christmasActive && interval === 'year'
+        ? proListLabel
+        : null;
+  const offerLabel =
+    selectedPlan === 'pro' && christmasActive
       ? interval === 'year'
-        ? t('proPlusPriceYear', { price: proPlusPrice })
-        : t('proPlusPrice', { price: proPlusPrice })
-      : interval === 'year'
-        ? t('proPriceYear', { price: proPrice })
-        : t('proPrice', { price: proPrice });
+        ? t('promoChristmasYearly')
+        : t('promoChristmasMonthly')
+      : selectedPlan === 'pro_plus' && earlyBirdActive
+        ? t('promoEarlyBirdUntil', {
+            date: formatPromoEndDate(BILLING_PROMOS.proPlusEarlyBird.endDate, locale),
+            countdown: countdownFor(BILLING_PROMOS.proPlusEarlyBird.endDate),
+          })
+        : null;
   const yearlyHint =
-    selectedPlan === 'pro_plus'
+    selectedPlan === 'pro_plus' && !earlyBirdActive
       ? t('proPlusYearlyHint', { price: proPlusYearlyEquivalent })
       : t('yearlyHint', { price: yearlyEquivalent });
   const benefitKeys =
@@ -148,6 +204,14 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
             yearlyBadge={t('billingYearlyBadge')}
             groupLabel={t('billingIntervalLabel')}
           />
+          {christmasActive ? (
+            <p className="mt-3 rounded-xl bg-violet-600/5 px-3 py-2 text-sm font-medium leading-5 text-ink-900">
+              {t('promoChristmasBanner', {
+                date: formatPromoEndDate(BILLING_PROMOS.christmas.endDate, locale),
+                countdown: countdownFor(BILLING_PROMOS.christmas.endDate),
+              })}
+            </p>
+          ) : null}
           <div className="mt-3 grid grid-cols-2 gap-2">
             {(['pro', 'pro_plus'] as const).map((plan) => (
               <button
@@ -165,8 +229,22 @@ export function PaywallDialog({ store, feature, onOpenChange }: PaywallDialogPro
               </button>
             ))}
           </div>
-          <p className="mt-3 text-lg font-black tabular-nums text-ink-900">{priceLabel}</p>
-          {interval === 'year' ? (
+          {listPriceLabel ? (
+            <p className="mt-3 text-sm text-muted-foreground line-through tabular-nums">
+              {listPriceLabel}
+            </p>
+          ) : null}
+          <p
+            className={`${listPriceLabel ? 'mt-1' : 'mt-3'} text-lg font-black tabular-nums text-ink-900`}
+          >
+            {priceLabel}
+          </p>
+          {offerLabel ? (
+            <p className="mt-1 text-sm font-semibold text-jade-700">{offerLabel}</p>
+          ) : null}
+          {interval === 'year' && !offerLabel ? (
+            <p className="mt-1 text-sm font-medium text-jade-700">{yearlyHint}</p>
+          ) : interval === 'year' && selectedPlan === 'pro_plus' && earlyBirdActive ? (
             <p className="mt-1 text-sm font-medium text-jade-700">{yearlyHint}</p>
           ) : null}
           <ul className="mt-3 space-y-1.5 text-sm text-ink-900">

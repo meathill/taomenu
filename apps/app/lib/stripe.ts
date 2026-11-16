@@ -1,4 +1,10 @@
-import { type BillingInterval, isLocale, type Locale } from '@taomenu/shared';
+import {
+  type BillingInterval,
+  isChristmasPromoActive,
+  isLocale,
+  isProPlusEarlyBirdActive,
+  type Locale,
+} from '@taomenu/shared';
 import { getEnv } from './cf';
 import { getPublicAppUrl, joinPublicUrl } from './public-url';
 
@@ -32,12 +38,32 @@ export function getProCheckoutPriceId(
   return interval === 'year' ? config.proAnnualPriceId : config.proPriceId;
 }
 
-/** 步骤 (b) 只走标价；早鸟价在步骤 (c) 的促销窗口内再选用。 */
 export function getProPlusCheckoutPriceId(
   config: StripeConfig,
   interval: BillingInterval,
+  now: Date = new Date(),
 ): string | undefined {
+  if (isProPlusEarlyBirdActive(now)) {
+    return interval === 'year' ? config.proPlusAnnualPromoPriceId : config.proPlusPromoPriceId;
+  }
   return interval === 'year' ? config.proPlusAnnualPriceId : config.proPlusPriceId;
+}
+
+/**
+ * 圣诞促销：月付 trial 30 天，年付半价优惠券。二选一、绝不叠加。
+ * 优惠券 applies_to 整个 Pro product，因此绝不能加到月付 Checkout。
+ */
+export function getChristmasProCheckoutOffers(
+  config: StripeConfig,
+  interval: BillingInterval,
+  now: Date = new Date(),
+): { trialPeriodDays?: number; couponId?: string } {
+  if (!isChristmasPromoActive(now)) return {};
+  if (interval === 'month') return { trialPeriodDays: 30 };
+  if (interval === 'year' && config.promoProAnnualCouponId) {
+    return { couponId: config.promoProAnnualCouponId };
+  }
+  return {};
 }
 
 export function getStripeConfig(): StripeConfig | null {
@@ -149,7 +175,12 @@ export function buildStaffSeatCheckoutParams(
 }
 
 export function buildProCheckoutParams(
-  input: ProCheckoutInput & { priceId: string; kind?: 'pro_plan' | 'pro_plus_plan' },
+  input: ProCheckoutInput & {
+    priceId: string;
+    kind?: 'pro_plan' | 'pro_plus_plan';
+    trialPeriodDays?: number;
+    couponId?: string;
+  },
 ): URLSearchParams {
   const encodedStore = encodeURIComponent(input.storeSlug);
   const kind = input.kind ?? 'pro_plan';
@@ -179,6 +210,13 @@ export function buildProCheckoutParams(
     joinPublicUrl(getPublicAppUrl(), `/app/settings?store=${encodedStore}&billing=cancel`),
   );
   setCheckoutCustomer(params, input);
+  // 圣诞优惠：只应由 Pro Checkout 传入，且月付/年付互斥
+  if (input.trialPeriodDays && input.trialPeriodDays > 0 && !input.couponId) {
+    params.set('subscription_data[trial_period_days]', String(input.trialPeriodDays));
+  }
+  if (input.couponId && !input.trialPeriodDays) {
+    params.set('discounts[0][coupon]', input.couponId);
+  }
   return params;
 }
 
@@ -221,7 +259,14 @@ export async function createProCheckoutSession(
   const interval = input.interval ?? 'month';
   const priceId = getProCheckoutPriceId(config, interval);
   if (!priceId) throw new StripeRequestError(503);
-  const params = buildProCheckoutParams({ ...input, interval, priceId });
+  const offers = getChristmasProCheckoutOffers(config, interval);
+  const params = buildProCheckoutParams({
+    ...input,
+    interval,
+    priceId,
+    kind: 'pro_plan',
+    ...offers,
+  });
 
   const data = await stripeRequest(config, '/checkout/sessions', params);
   if (!data.url) throw new StripeRequestError(502);

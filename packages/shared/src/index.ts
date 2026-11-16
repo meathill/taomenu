@@ -112,6 +112,7 @@ export {
   getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForLocale,
   getBillingPrice,
+  getChristmasProAnnualPrice,
   isBillingInterval,
   LOCALE_TO_BILLING_CURRENCY,
   parseBillingInterval,
@@ -155,6 +156,16 @@ export {
   matchLocaleFromCountry,
   resolveUiLocale,
 } from './locale';
+export {
+  BILLING_PROMOS,
+  calendarDateInTimeZone,
+  formatPromoEndDate,
+  isChristmasPromoActive,
+  isOnOrBeforeEndDate,
+  isProPlusEarlyBirdActive,
+  PROMO_TIME_ZONE,
+  promoDaysRemaining,
+} from './promos';
 export { getPushCopy, type PushCopy } from './push-copy';
 export {
   COMMON_TIME_ZONES,

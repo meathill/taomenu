@@ -170,7 +170,14 @@
     "aiReviewTitle": "You confirm",
     "aiReviewBody": "Review uncertain text, prices and changes. Applying an AI draft still does not publish it.",
     "aiLimit": "Monthly allowance per store — Free: 10 photo/PDF menu imports and 10 AI translation jobs. Pro: 20 photo/PDF menu imports, 20 AI translation jobs, and 10 dish photo previews. Starting a new job counts once.",
-    "freeF4": "10 reviewed AI menu translations per month"
+    "freeF4": "10 reviewed AI menu translations per month",
+    "promoChristmasBanner": "Until {date}: get the first month of Pro free, or Pro yearly at half price. Choose one — they don’t stack. {countdown}",
+    "promoCountdownDays": "{count} days left",
+    "promoCountdownToday": "Ends today",
+    "promoChristmasMonthly": "First month free",
+    "promoChristmasYearly": "Half price for the first year",
+    "promoEarlyBirdUntil": "Early-bird price until {date}. {countdown}",
+    "promoThenListPrice": "Then {price} for new sign-ups"
   },
   "footer": {
     "tagline": "QR ordering software for small restaurants.",

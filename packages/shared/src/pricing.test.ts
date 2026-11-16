@@ -9,6 +9,7 @@ import {
   getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForLocale,
   getBillingPrice,
+  getChristmasProAnnualPrice,
   LOCALE_TO_BILLING_CURRENCY,
   parseBillingInterval,
 } from './pricing';
@@ -96,5 +97,14 @@ describe('年付价格', () => {
     expect(parseBillingInterval('month')).toBe('month');
     expect(parseBillingInterval('yearly')).toBe('month');
     expect(parseBillingInterval(undefined)).toBe('month');
+  });
+});
+
+describe('圣诞年付半价', () => {
+  it('各币种均为年费的一半且为整数', () => {
+    expect(getChristmasProAnnualPrice('VND')).toBe(745_000);
+    expect(getChristmasProAnnualPrice('USD')).toBe(2_995);
+    expect(getChristmasProAnnualPrice('JPY')).toBe(4_500);
+    expect(getChristmasProAnnualPrice('CNY')).toBe(21_000);
   });
 });

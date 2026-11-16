@@ -170,7 +170,14 @@
     "aiReviewTitle": "あなたが確認",
     "aiReviewBody": "不確かな文字・価格・変更を確認します。AI下書きを採用しても、まだメニューは公開されません。",
     "aiLimit": "店舗ごとの月間利用枠 — Free：写真／PDFメニュー取り込み10回、AI翻訳10回。Pro：写真／PDFメニュー取り込み20回、AI翻訳20回、料理写真プレビュー10回。新規タスク1回につき1回分消費します。",
-    "freeF4": "毎月10回のレビュー付きAIメニュー翻訳"
+    "freeF4": "毎月10回のレビュー付きAIメニュー翻訳",
+    "promoChristmasBanner": "{date}まで：Pro月額は初月無料、または年額が半額。どちらか一方のみで、併用はできません。{countdown}",
+    "promoCountdownDays": "残り{count}日",
+    "promoCountdownToday": "本日終了",
+    "promoChristmasMonthly": "初月無料",
+    "promoChristmasYearly": "初年度半額",
+    "promoEarlyBirdUntil": "早期価格は{date}まで。{countdown}",
+    "promoThenListPrice": "以降の新規は{price}"
   },
   "footer": {
     "tagline": "小さな飲食店向けQRオーダーソフト。",

@@ -1,8 +1,14 @@
 import {
+  BILLING_PROMOS,
   formatCurrency,
+  formatPromoEndDate,
   getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForLocale,
   getBillingPrice,
+  getChristmasProAnnualPrice,
+  isChristmasPromoActive,
+  isProPlusEarlyBirdActive,
+  promoDaysRemaining,
 } from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PricingPlans } from '@/components/pricing-plans';
@@ -57,6 +63,22 @@ export default async function PricingPage({ params }: PricingPageProps) {
   const staffSeatPrice = formatCurrency(getBillingPrice('staff_seat', currency), currency, locale);
   const staffAddOn = t('staffAddOn', { price: staffSeatPrice });
 
+  const christmasActive = isChristmasPromoActive();
+  const earlyBirdActive = isProPlusEarlyBirdActive();
+  const countdownLabel = (endDate: string) => {
+    const days = promoDaysRemaining(endDate);
+    return days === 0 ? t('promoCountdownToday') : t('promoCountdownDays', { count: days });
+  };
+  const christmasEnd = formatPromoEndDate(BILLING_PROMOS.christmas.endDate, locale);
+  const earlyBirdEnd = formatPromoEndDate(BILLING_PROMOS.proPlusEarlyBird.endDate, locale);
+  const proYearlyPromo = formatCurrency(getChristmasProAnnualPrice(currency), currency, locale);
+  const displayedProYearly = christmasActive ? proYearlyPromo : proYearly;
+  const displayedProPlusMonthly = earlyBirdActive ? proMonthly : proPlusMonthly;
+  const displayedProPlusYearly = earlyBirdActive ? proYearly : proPlusYearly;
+  const displayedProPlusHint = earlyBirdActive
+    ? t('yearlyHint', { price: yearlyEquivalent })
+    : t('proPlusYearlyHint', { price: proPlusYearlyEquivalent });
+
   return (
     <div className="pt-6 sm:pt-10">
       <div className="max-w-2xl">
@@ -74,6 +96,22 @@ export default async function PricingPage({ params }: PricingPageProps) {
           yearlyBadge: t('billingYearlyBadge'),
           groupLabel: t('billingIntervalLabel'),
         }}
+        banner={
+          christmasActive
+            ? t('promoChristmasBanner', {
+                date: christmasEnd,
+                countdown: countdownLabel(BILLING_PROMOS.christmas.endDate),
+              })
+            : undefined
+        }
+        earlyBirdLabel={
+          earlyBirdActive
+            ? t('promoEarlyBirdUntil', {
+                date: earlyBirdEnd,
+                countdown: countdownLabel(BILLING_PROMOS.proPlusEarlyBird.endDate),
+              })
+            : undefined
+        }
         free={{
           id: 'free',
           name: t('freeName'),
@@ -110,8 +148,11 @@ export default async function PricingPage({ params }: PricingPageProps) {
           ctaHref: getAppProSignupUrl(),
           ctaNote: t('proCtaNote'),
           monthlyPrice: t('proPrice', { price: proMonthly }),
-          yearlyPrice: t('proPriceYear', { price: proYearly }),
-          yearlyHint: t('yearlyHint', { price: yearlyEquivalent }),
+          yearlyPrice: t('proPriceYear', { price: displayedProYearly }),
+          yearlyHint: christmasActive ? undefined : t('yearlyHint', { price: yearlyEquivalent }),
+          monthlyOfferLabel: christmasActive ? t('promoChristmasMonthly') : undefined,
+          yearlyOfferLabel: christmasActive ? t('promoChristmasYearly') : undefined,
+          yearlyListPrice: christmasActive ? t('proPriceYear', { price: proYearly }) : undefined,
         }}
         proPlus={{
           id: 'pro_plus',
@@ -128,9 +169,21 @@ export default async function PricingPage({ params }: PricingPageProps) {
           ctaLabel: t('proPlusCta'),
           ctaHref: getAppProPlusSignupUrl(),
           ctaNote: t('proPlusCtaNote'),
-          monthlyPrice: t('proPlusPrice', { price: proPlusMonthly }),
-          yearlyPrice: t('proPlusPriceYear', { price: proPlusYearly }),
-          yearlyHint: t('proPlusYearlyHint', { price: proPlusYearlyEquivalent }),
+          monthlyPrice: t('proPlusPrice', { price: displayedProPlusMonthly }),
+          yearlyPrice: t('proPlusPriceYear', { price: displayedProPlusYearly }),
+          yearlyHint: displayedProPlusHint,
+          monthlyListPrice: earlyBirdActive
+            ? t('proPlusPrice', { price: proPlusMonthly })
+            : undefined,
+          yearlyListPrice: earlyBirdActive
+            ? t('proPlusPriceYear', { price: proPlusYearly })
+            : undefined,
+          thenMonthlyLabel: earlyBirdActive
+            ? t('promoThenListPrice', { price: t('proPlusPrice', { price: proPlusMonthly }) })
+            : undefined,
+          thenYearlyLabel: earlyBirdActive
+            ? t('promoThenListPrice', { price: t('proPlusPriceYear', { price: proPlusYearly }) })
+            : undefined,
         }}
       />
 

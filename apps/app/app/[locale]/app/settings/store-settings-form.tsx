@@ -2,13 +2,19 @@
 
 import type { StoreRow, StoreSocialOnboarding } from '@taomenu/db';
 import {
+  BILLING_PROMOS,
   type BillingInterval,
   formatCurrency,
+  formatPromoEndDate,
   getAnnualEquivalentMonthlyPrice,
   getBillingCurrencyForStore,
   getBillingPrice,
+  getChristmasProAnnualPrice,
   hasProEntitlements,
+  isChristmasPromoActive,
+  isProPlusEarlyBirdActive,
   isProPlusPlan,
+  promoDaysRemaining,
   STORE_CURRENCIES,
   type StoreCurrency,
   toStoreCurrency,
@@ -109,6 +115,50 @@ export function StoreSettingsForm({
     billingInterval === 'year'
       ? t('proPlusPriceYear', { price: proPlusPrice })
       : t('proPlusPrice', { price: proPlusPrice });
+  const christmasActive = isChristmasPromoActive();
+  const earlyBirdActive = isProPlusEarlyBirdActive();
+  const countdownFor = (endDate: string) => {
+    const days = promoDaysRemaining(endDate);
+    return days === 0 ? t('promoCountdownToday') : t('promoCountdownDays', { count: days });
+  };
+  const christmasBanner = christmasActive
+    ? t('promoChristmasBanner', {
+        date: formatPromoEndDate(BILLING_PROMOS.christmas.endDate, locale),
+        countdown: countdownFor(BILLING_PROMOS.christmas.endDate),
+      })
+    : null;
+  const earlyBirdLabel = earlyBirdActive
+    ? t('promoEarlyBirdUntil', {
+        date: formatPromoEndDate(BILLING_PROMOS.proPlusEarlyBird.endDate, locale),
+        countdown: countdownFor(BILLING_PROMOS.proPlusEarlyBird.endDate),
+      })
+    : null;
+  const christmasYearlyPrice = formatCurrency(
+    getChristmasProAnnualPrice(billingCurrency),
+    billingCurrency,
+    locale,
+  );
+  const displayedProPriceLabel =
+    christmasActive && billingInterval === 'year'
+      ? t('proPriceYear', { price: christmasYearlyPrice })
+      : proPriceLabel;
+  const displayedProPlusPriceLabel = earlyBirdActive
+    ? billingInterval === 'year'
+      ? t('proPlusPriceYear', {
+          price: formatCurrency(
+            getBillingPrice('pro_plan', billingCurrency, 'year'),
+            billingCurrency,
+            locale,
+          ),
+        })
+      : t('proPlusPrice', {
+          price: formatCurrency(
+            getBillingPrice('pro_plan', billingCurrency, 'month'),
+            billingCurrency,
+            locale,
+          ),
+        })
+    : proPlusPriceLabel;
 
   async function openBilling(path: BillingPath) {
     setBillingBusy(true);
@@ -284,13 +334,31 @@ export function StoreSettingsForm({
             </div>
           ) : null}
         </div>
+        {christmasBanner ? (
+          <p className="mt-4 rounded-xl bg-white px-3 py-2 text-sm font-medium leading-6 text-ink-900">
+            {christmasBanner}
+          </p>
+        ) : null}
 
         {store.plan === 'free' ? (
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
             <article className="rounded-xl border border-violet-600/20 bg-white p-4">
               <h3 className="text-base font-black text-ink-900">{tCommon('planPro')}</h3>
-              <p className="mt-2 text-xl font-black tabular-nums text-ink-900">{proPriceLabel}</p>
-              {billingInterval === 'year' ? (
+              {christmasActive && billingInterval === 'year' ? (
+                <p className="text-sm text-muted-foreground line-through tabular-nums">
+                  {proPriceLabel}
+                </p>
+              ) : null}
+              <p className="mt-2 text-xl font-black tabular-nums text-ink-900">
+                {displayedProPriceLabel}
+              </p>
+              {christmasActive ? (
+                <p className="mt-1 text-sm font-semibold text-jade-700">
+                  {billingInterval === 'year'
+                    ? t('promoChristmasYearly')
+                    : t('promoChristmasMonthly')}
+                </p>
+              ) : billingInterval === 'year' ? (
                 <p className="mt-1 text-sm font-medium text-jade-700">
                   {t('yearlyHint', { price: yearlyEquivalent })}
                 </p>
@@ -316,12 +384,22 @@ export function StoreSettingsForm({
             </article>
             <article className="rounded-xl border-2 border-violet-600 bg-white p-4">
               <h3 className="text-base font-black text-ink-900">{tCommon('planProPlus')}</h3>
+              {earlyBirdActive ? (
+                <p className="text-sm text-muted-foreground line-through tabular-nums">
+                  {proPlusPriceLabel}
+                </p>
+              ) : null}
               <p className="mt-2 text-xl font-black tabular-nums text-ink-900">
-                {proPlusPriceLabel}
+                {displayedProPlusPriceLabel}
               </p>
+              {earlyBirdLabel ? (
+                <p className="mt-1 text-sm font-medium text-jade-700">{earlyBirdLabel}</p>
+              ) : null}
               {billingInterval === 'year' ? (
                 <p className="mt-1 text-sm font-medium text-jade-700">
-                  {t('proPlusYearlyHint', { price: proPlusYearlyEquivalent })}
+                  {t(earlyBirdActive ? 'yearlyHint' : 'proPlusYearlyHint', {
+                    price: earlyBirdActive ? yearlyEquivalent : proPlusYearlyEquivalent,
+                  })}
                 </p>
               ) : null}
               <ul className="mt-3 grid gap-1.5 text-sm font-semibold text-ink-900">
@@ -356,12 +434,22 @@ export function StoreSettingsForm({
             </ul>
             <article className="mt-4 rounded-xl border-2 border-violet-600 bg-white p-4">
               <h3 className="text-base font-black text-ink-900">{tCommon('planProPlus')}</h3>
+              {earlyBirdActive ? (
+                <p className="text-sm text-muted-foreground line-through tabular-nums">
+                  {proPlusPriceLabel}
+                </p>
+              ) : null}
               <p className="mt-2 text-xl font-black tabular-nums text-ink-900">
-                {proPlusPriceLabel}
+                {displayedProPlusPriceLabel}
               </p>
+              {earlyBirdLabel ? (
+                <p className="mt-1 text-sm font-medium text-jade-700">{earlyBirdLabel}</p>
+              ) : null}
               {billingInterval === 'year' ? (
                 <p className="mt-1 text-sm font-medium text-jade-700">
-                  {t('proPlusYearlyHint', { price: proPlusYearlyEquivalent })}
+                  {t(earlyBirdActive ? 'yearlyHint' : 'proPlusYearlyHint', {
+                    price: earlyBirdActive ? yearlyEquivalent : proPlusYearlyEquivalent,
+                  })}
                 </p>
               ) : null}
               <ul className="mt-3 grid gap-1.5 text-sm font-semibold text-ink-900">

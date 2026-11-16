@@ -197,5 +197,12 @@
   "coverPhotoRemove": "Gỡ ảnh bìa",
   "coverPhotoAdded": "Đã thêm ảnh bìa. Khách sẽ thấy khi tải lại thực đơn.",
   "coverPhotoRemoved": "Đã gỡ ảnh bìa.",
-  "freeBenefitTranslation": "Gói miễn phí đã gồm {freeTranslations} lượt dịch thực đơn bằng AI có kiểm tra mỗi tháng. Gói Pro có {proTranslations} lượt."
+  "freeBenefitTranslation": "Gói miễn phí đã gồm {freeTranslations} lượt dịch thực đơn bằng AI có kiểm tra mỗi tháng. Gói Pro có {proTranslations} lượt.",
+  "promoChristmasBanner": "Đến hết {date}: tháng đầu Pro miễn phí, hoặc gói năm giảm nửa giá. Chỉ chọn một, không cộng dồn. {countdown}",
+  "promoCountdownDays": "Còn {count} ngày",
+  "promoCountdownToday": "Hết hạn hôm nay",
+  "promoChristmasMonthly": "Miễn phí tháng đầu",
+  "promoChristmasYearly": "Năm đầu giảm nửa giá",
+  "promoEarlyBirdUntil": "Giá sớm đến hết {date}. {countdown}",
+  "promoThenListPrice": "Sau đó {price} cho đăng ký mới"
 }

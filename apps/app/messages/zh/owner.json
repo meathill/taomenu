@@ -197,5 +197,12 @@
   "coverPhotoRemove": "移除封面",
   "coverPhotoAdded": "封面图已添加。顾客刷新菜单后即可看到。",
   "coverPhotoRemoved": "已移除封面图。",
-  "freeBenefitTranslation": "免费方案已包含每月 {freeTranslations} 次人工审核的 AI 菜单翻译。Pro 为 {proTranslations} 次。"
+  "freeBenefitTranslation": "免费方案已包含每月 {freeTranslations} 次人工审核的 AI 菜单翻译。Pro 为 {proTranslations} 次。",
+  "promoChristmasBanner": "截至 {date}：Pro 月付首月免费，或年付半价。两选一，不可叠加。{countdown}",
+  "promoCountdownDays": "还剩 {count} 天",
+  "promoCountdownToday": "今天截止",
+  "promoChristmasMonthly": "首月免费",
+  "promoChristmasYearly": "首年半价",
+  "promoEarlyBirdUntil": "早鸟价截至 {date}。{countdown}",
+  "promoThenListPrice": "之后新购为 {price}"
 }

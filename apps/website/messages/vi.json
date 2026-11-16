@@ -170,7 +170,14 @@
     "aiReviewTitle": "Bạn xác nhận",
     "aiReviewBody": "Kiểm tra chữ, giá và thay đổi chưa chắc chắn. Áp dụng bản nháp AI vẫn chưa xuất bản menu.",
     "aiLimit": "Hạn mức mỗi tháng cho mỗi quán — Free: 10 lượt nhập menu ảnh/PDF và 10 lượt dịch AI. Pro: 20 lượt nhập menu ảnh/PDF, 20 lượt dịch AI và 10 bản xem trước ảnh món. Mỗi tác vụ mới tính một lượt.",
-    "freeF4": "10 lượt dịch menu AI có kiểm tra mỗi tháng"
+    "freeF4": "10 lượt dịch menu AI có kiểm tra mỗi tháng",
+    "promoChristmasBanner": "Đến hết {date}: tháng đầu gói Pro miễn phí, hoặc gói năm giảm nửa giá. Chỉ chọn một, không cộng dồn. {countdown}",
+    "promoCountdownDays": "Còn {count} ngày",
+    "promoCountdownToday": "Hết hạn hôm nay",
+    "promoChristmasMonthly": "Miễn phí tháng đầu",
+    "promoChristmasYearly": "Năm đầu giảm nửa giá",
+    "promoEarlyBirdUntil": "Giá sớm đến hết {date}. {countdown}",
+    "promoThenListPrice": "Sau đó {price} cho đăng ký mới"
   },
   "footer": {
     "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",

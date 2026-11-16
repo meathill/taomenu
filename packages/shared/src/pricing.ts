@@ -62,3 +62,8 @@ export const LOCALE_TO_BILLING_CURRENCY: Record<Locale, BillingCurrency> = {
 export function getBillingCurrencyForLocale(locale: string): BillingCurrency {
   return isLocale(locale) ? LOCALE_TO_BILLING_CURRENCY[locale] : 'VND';
 }
+
+/** 圣诞年付半价金额（各币种年费均可整除）。 */
+export function getChristmasProAnnualPrice(currency: BillingCurrency): number {
+  return getBillingPrice('pro_plan', currency, 'year') / 2;
+}

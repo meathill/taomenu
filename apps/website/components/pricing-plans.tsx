@@ -25,6 +25,12 @@ type PricedPlan = PlanCard & {
   monthlyPrice: string;
   yearlyPrice: string;
   yearlyHint?: string;
+  monthlyOfferLabel?: string;
+  yearlyOfferLabel?: string;
+  yearlyListPrice?: string;
+  monthlyListPrice?: string;
+  thenMonthlyLabel?: string;
+  thenYearlyLabel?: string;
 };
 
 type PricingPlansProps = {
@@ -35,6 +41,8 @@ type PricingPlansProps = {
     yearlyBadge: string;
     groupLabel: string;
   };
+  banner?: string;
+  earlyBirdLabel?: string;
   free: PlanCard;
   freePrice: string;
   pro: PricedPlan;
@@ -44,21 +52,44 @@ type PricingPlansProps = {
 export function PricingPlans({
   comingSoonLabel,
   intervalLabels,
+  banner,
+  earlyBirdLabel,
   free,
   freePrice,
   pro,
   proPlus,
 }: PricingPlansProps) {
   const [interval, setInterval] = useState<BillingInterval>('year');
-  const priced = (plan: PricedPlan) => ({
-    ...plan,
-    price: interval === 'year' ? plan.yearlyPrice : plan.monthlyPrice,
-    hint: interval === 'year' ? plan.yearlyHint : undefined,
-  });
-  const plans: Array<PlanCard & { price: string; hint?: string }> = [
+
+  const priced = (plan: PricedPlan, showEarlyBird: boolean) => {
+    const isYear = interval === 'year';
+    const price = isYear ? plan.yearlyPrice : plan.monthlyPrice;
+    const listPrice = isYear ? plan.yearlyListPrice : plan.monthlyListPrice;
+    const offerLabel = isYear ? plan.yearlyOfferLabel : plan.monthlyOfferLabel;
+    const thenLabel = isYear ? plan.thenYearlyLabel : plan.thenMonthlyLabel;
+    return {
+      ...plan,
+      price,
+      listPrice: listPrice && listPrice !== price ? listPrice : undefined,
+      hint: isYear && !offerLabel ? plan.yearlyHint : undefined,
+      offerLabel,
+      thenLabel: showEarlyBird ? thenLabel : undefined,
+    };
+  };
+
+  const plans: Array<
+    PlanCard & {
+      price: string;
+      hint?: string;
+      listPrice?: string;
+      offerLabel?: string;
+      thenLabel?: string;
+      earlyBird?: boolean;
+    }
+  > = [
     { ...free, price: freePrice },
-    priced(pro),
-    priced(proPlus),
+    priced(pro, false),
+    { ...priced(proPlus, Boolean(earlyBirdLabel)), earlyBird: Boolean(earlyBirdLabel) },
   ];
 
   return (
@@ -73,6 +104,11 @@ export function PricingPlans({
           groupLabel={intervalLabels.groupLabel}
         />
       </div>
+      {banner ? (
+        <p className="mx-auto mt-5 max-w-3xl rounded-xl bg-brand-50 px-4 py-3 text-center text-sm font-medium leading-6 text-ink-900">
+          {banner}
+        </p>
+      ) : null}
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
         {plans.map((plan) => (
@@ -85,9 +121,23 @@ export function PricingPlans({
             }
           >
             <h2 className="text-xl font-bold text-ink-900">{plan.name}</h2>
+            {plan.listPrice ? (
+              <p className="mt-2 text-sm text-muted-foreground line-through tabular-nums">
+                {plan.listPrice}
+              </p>
+            ) : null}
             <p className="mt-2 text-3xl font-extrabold tabular-nums text-ink-900">{plan.price}</p>
+            {plan.offerLabel ? (
+              <p className="mt-1 text-sm font-semibold text-jade-700">{plan.offerLabel}</p>
+            ) : null}
             {plan.hint ? (
               <p className="mt-1 text-sm font-medium text-jade-700">{plan.hint}</p>
+            ) : null}
+            {plan.earlyBird && earlyBirdLabel ? (
+              <p className="mt-1 text-sm font-medium text-jade-700">{earlyBirdLabel}</p>
+            ) : null}
+            {plan.thenLabel ? (
+              <p className="mt-1 text-xs text-muted-foreground">{plan.thenLabel}</p>
             ) : null}
             <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
             <ul className="mt-6 space-y-3">

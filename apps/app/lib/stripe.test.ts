@@ -3,7 +3,9 @@ import { getPublicAppUrl } from './public-url';
 import {
   buildProCheckoutParams,
   buildStaffSeatCheckoutParams,
+  getChristmasProCheckoutOffers,
   getProCheckoutPriceId,
+  getProPlusCheckoutPriceId,
   isSubscriptionUsable,
   toStripeCheckoutLocale,
   verifyStripeWebhookSignature,
@@ -222,5 +224,100 @@ describe('getProCheckoutPriceId', () => {
     expect(
       getProCheckoutPriceId({ ...config, proAnnualPriceId: undefined }, 'year'),
     ).toBeUndefined();
+  });
+});
+
+describe('圣诞促销 Checkout 参数', () => {
+  const config = {
+    secretKey: 'sk_test',
+    webhookSecret: 'whsec_test',
+    proPriceId: 'price_pro_month',
+    proAnnualPriceId: 'price_pro_year',
+    promoProAnnualCouponId: 'r3D3HF5U',
+    proPlusPriceId: 'price_plus_month',
+    proPlusAnnualPriceId: 'price_plus_year',
+    proPlusPromoPriceId: 'price_plus_promo_month',
+    proPlusAnnualPromoPriceId: 'price_plus_promo_year',
+  };
+
+  it('窗口内：月付只有 trial，没有优惠券', () => {
+    const offers = getChristmasProCheckoutOffers(
+      config,
+      'month',
+      new Date('2026-12-25T10:00:00+07:00'),
+    );
+    expect(offers).toEqual({ trialPeriodDays: 30 });
+    const params = buildProCheckoutParams({
+      priceId: 'price_pro_month',
+      storeId: 'store_1',
+      storeSlug: 'pho-hanoi',
+      ownerEmail: 'owner@example.com',
+      stripeCustomerId: null,
+      currency: 'VND',
+      locale: 'vi',
+      interval: 'month',
+      ...offers,
+    });
+    expect(params.get('subscription_data[trial_period_days]')).toBe('30');
+    expect(params.get('discounts[0][coupon]')).toBeNull();
+  });
+
+  it('窗口内：年付只有优惠券，没有 trial', () => {
+    const offers = getChristmasProCheckoutOffers(
+      config,
+      'year',
+      new Date('2026-12-25T10:00:00+07:00'),
+    );
+    expect(offers).toEqual({ couponId: 'r3D3HF5U' });
+    const params = buildProCheckoutParams({
+      priceId: 'price_pro_year',
+      storeId: 'store_1',
+      storeSlug: 'pho-hanoi',
+      ownerEmail: 'owner@example.com',
+      stripeCustomerId: null,
+      currency: 'VND',
+      locale: 'vi',
+      interval: 'year',
+      ...offers,
+    });
+    expect(params.get('discounts[0][coupon]')).toBe('r3D3HF5U');
+    expect(params.get('subscription_data[trial_period_days]')).toBeNull();
+  });
+
+  it('窗口结束后不再附带任何圣诞优惠', () => {
+    expect(
+      getChristmasProCheckoutOffers(config, 'month', new Date('2026-12-26T00:00:00+07:00')),
+    ).toEqual({});
+    expect(
+      getChristmasProCheckoutOffers(config, 'year', new Date('2026-12-26T00:00:00+07:00')),
+    ).toEqual({});
+  });
+
+  it('早鸟期内 Pro+ 使用促销 Price，圣诞优惠不会写进 Pro+ Checkout', () => {
+    expect(getProPlusCheckoutPriceId(config, 'month', new Date('2027-02-16T10:00:00+07:00'))).toBe(
+      'price_plus_promo_month',
+    );
+    expect(getProPlusCheckoutPriceId(config, 'year', new Date('2027-02-16T10:00:00+07:00'))).toBe(
+      'price_plus_promo_year',
+    );
+    const params = buildProCheckoutParams({
+      priceId: 'price_plus_promo_year',
+      storeId: 'store_1',
+      storeSlug: 'pho-hanoi',
+      ownerEmail: 'owner@example.com',
+      stripeCustomerId: null,
+      currency: 'VND',
+      locale: 'vi',
+      interval: 'year',
+      kind: 'pro_plus_plan',
+    });
+    expect(params.get('discounts[0][coupon]')).toBeNull();
+    expect(params.get('subscription_data[trial_period_days]')).toBeNull();
+  });
+
+  it('早鸟结束后 Pro+ 回到标价', () => {
+    expect(getProPlusCheckoutPriceId(config, 'month', new Date('2027-02-17T00:00:00+07:00'))).toBe(
+      'price_plus_month',
+    );
   });
 });

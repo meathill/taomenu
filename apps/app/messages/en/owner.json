@@ -197,5 +197,12 @@
   "coverPhotoRemove": "Remove cover",
   "coverPhotoAdded": "Cover photo added. Customers see it when they reload the menu.",
   "coverPhotoRemoved": "Cover photo removed.",
-  "freeBenefitTranslation": "The Free plan already includes {freeTranslations} reviewed AI menu translations per month. Pro includes {proTranslations}."
+  "freeBenefitTranslation": "The Free plan already includes {freeTranslations} reviewed AI menu translations per month. Pro includes {proTranslations}.",
+  "promoChristmasBanner": "Until {date}: first month of Pro free, or Pro yearly at half price. Choose one — they don’t stack. {countdown}",
+  "promoCountdownDays": "{count} days left",
+  "promoCountdownToday": "Ends today",
+  "promoChristmasMonthly": "First month free",
+  "promoChristmasYearly": "Half price for the first year",
+  "promoEarlyBirdUntil": "Early-bird price until {date}. {countdown}",
+  "promoThenListPrice": "Then {price} for new sign-ups"
 }
