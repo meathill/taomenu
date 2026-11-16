@@ -59,7 +59,7 @@ export async function POST(request: Request, context: RouteContext) {
         {
           url: joinPublicUrl(
             getPublicAppUrl(),
-            `/app/settings?store=${encodedStore}&billing=success&plan=pro-plus#pro-plus-onboarding`,
+            `/app/settings?store=${encodedStore}&billing=success&plan=pro-plus`,
           ),
         },
         { status: 201 },

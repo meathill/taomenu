@@ -94,7 +94,7 @@ describe('Stripe Checkout 参数构造', () => {
     expect(params.get('customer_email')).toBeNull();
   });
 
-  it('Pro+：kind 与成功回跳带 onboarding 锚点', () => {
+  it('Pro+：kind 与成功回跳带 plan=pro-plus（Stripe 不允许 URL 片段）', () => {
     const params = buildProCheckoutParams({
       ...baseInput,
       priceId: 'price_plus_year',
@@ -105,7 +105,10 @@ describe('Stripe Checkout 参数构造', () => {
     expect(params.get('metadata[priceId]')).toBe('price_plus_year');
     expect(params.get('subscription_data[metadata][kind]')).toBe('pro_plus_plan');
     expect(params.get('success_url')).toContain('plan=pro-plus');
-    expect(params.get('success_url')).toContain('pro-plus-onboarding');
+    expect(params.get('success_url')).not.toContain('#');
+    expect(params.get('success_url')).toBe(
+      `${appUrl}/app/settings?store=pho-hanoi&billing=success&plan=pro-plus`,
+    );
   });
 
   it('Pro：年付写入 interval 元数据，默认月付', () => {

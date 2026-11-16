@@ -117,6 +117,11 @@ async function stripeRequest(
   });
   const data = (await response.json().catch(() => ({}))) as StripeResponse;
   if (!response.ok) {
+    console.error('Stripe request failed', {
+      path,
+      status: response.status,
+      message: data.error?.message,
+    });
     throw new StripeRequestError(response.status);
   }
   return data;
@@ -200,9 +205,11 @@ export function buildProCheckoutParams(
   params.set('subscription_data[metadata][kind]', kind);
   params.set('subscription_data[metadata][interval]', interval);
   params.set('subscription_data[metadata][priceId]', input.priceId);
+  // Stripe Checkout rejects success_url / cancel_url with a # fragment.
+  // The settings page scrolls to the onboarding form when billing=success and plan=pro-plus.
   const successQuery =
     kind === 'pro_plus_plan'
-      ? `/app/settings?store=${encodedStore}&billing=success&plan=pro-plus#pro-plus-onboarding`
+      ? `/app/settings?store=${encodedStore}&billing=success&plan=pro-plus`
       : `/app/settings?store=${encodedStore}&billing=success`;
   params.set('success_url', joinPublicUrl(getPublicAppUrl(), successQuery));
   params.set(

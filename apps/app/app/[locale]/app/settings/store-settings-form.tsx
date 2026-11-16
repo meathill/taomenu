@@ -80,6 +80,15 @@ export function StoreSettingsForm({
       upgradeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [shouldHighlightUpgrade]);
+
+  useEffect(() => {
+    if (billingStatus === 'success' && isProPlusPlan(store.plan)) {
+      document.getElementById('pro-plus-onboarding')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  }, [billingStatus, store.plan]);
   // 已有 Stripe 订阅时，改币种不会影响既有扣款，需要额外提示
   const hasSubscription = Boolean(
     store.stripePlanSubscriptionId || store.stripeStaffSeatSubscriptionId,
