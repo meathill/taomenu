@@ -24,7 +24,7 @@ describe('guestShotLocale', () => {
 describe('homeGuestSrc', () => {
   it('picks per-locale guest assets and falls back to en', () => {
     expect(homeGuestSrc('menu', 'vi')).toBe('/images/home/menu-vi.webp');
-    expect(homeGuestSrc('detail', 'en')).toBe('/images/home/detail-en.webp');
+    expect(homeGuestSrc('detail', 'en')).toBe('/images/home/detail-en-v2.webp');
     expect(homeGuestSrc('cart', 'zh')).toBe('/images/home/cart-en.webp');
   });
 });
@@ -60,7 +60,7 @@ describe('homeHeroSlides', () => {
     const byId = Object.fromEntries(homeHeroSlides('vi').map((slide) => [slide.id, slide.src]));
     expect(byId).toEqual({
       menu: '/images/home/menu-vi.webp',
-      detail: '/images/home/detail-vi.webp',
+      detail: '/images/home/detail-vi-v2.webp',
       cart: '/images/home/cart-vi.webp',
       orders: '/images/home/owner-orders-vi.webp',
       editor: '/images/home/owner-menu-vi.webp',

@@ -26,7 +26,12 @@ export function guestShotLocale(pageLocale: string): GuestShotLocale {
 }
 
 export function homeGuestSrc(kind: GuestShotKind, pageLocale: string): string {
-  return `/images/home/${kind}-${guestShotLocale(pageLocale)}.webp`;
+  const locale = guestShotLocale(pageLocale);
+  // v2 busts the Cloudflare Image Resizing cache after recapturing dish-detail shots.
+  if (kind === 'detail') {
+    return `/images/home/detail-${locale}-v2.webp`;
+  }
+  return `/images/home/${kind}-${locale}.webp`;
 }
 
 export function ownerShotLocale(pageLocale: string): OwnerShotLocale {
