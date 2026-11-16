@@ -23,14 +23,67 @@ type HeroGalleryProps = {
 };
 
 const AUTOPLAY_MS = 6000;
+const PROGRAMMATIC_SCROLL_TIMEOUT_MS = 800;
+
+function slideOffset(scroller: HTMLDivElement, index: number): number {
+  const child = scroller.children[index] as HTMLElement | undefined;
+  return child ? child.offsetLeft : index * scroller.clientWidth;
+}
+
+function measuredIndex(scroller: HTMLDivElement, slideCount: number): number {
+  if (scroller.clientWidth === 0) {
+    return 0;
+  }
+  const next = Math.round(scroller.scrollLeft / scroller.clientWidth);
+  return Math.min(slideCount - 1, Math.max(0, next));
+}
 
 export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGalleryProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef(0);
+  const pausedRef = useRef(true);
+  const programmaticTargetRef = useRef<number | null>(null);
+  const scrollEndTimerRef = useRef(0);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(true);
   const reduceMotionRef = useRef(false);
   const baseId = useId();
+
+  const applyIndex = useCallback((next: number) => {
+    indexRef.current = next;
+    setIndex(next);
+  }, []);
+
+  const clearProgrammaticScroll = useCallback(() => {
+    programmaticTargetRef.current = null;
+    if (scrollEndTimerRef.current) {
+      window.clearTimeout(scrollEndTimerRef.current);
+      scrollEndTimerRef.current = 0;
+    }
+  }, []);
+
+  const finishProgrammaticScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    const target = programmaticTargetRef.current;
+    clearProgrammaticScroll();
+    if (!el) {
+      return;
+    }
+    if (target !== null) {
+      const left = slideOffset(el, target);
+      if (Math.abs(el.scrollLeft - left) > 1) {
+        el.scrollTo({ left, behavior: 'auto' });
+      }
+      if (indexRef.current !== target) {
+        applyIndex(target);
+      }
+      return;
+    }
+    const measured = measuredIndex(el, slides.length);
+    if (measured !== indexRef.current) {
+      applyIndex(measured);
+    }
+  }, [applyIndex, clearProgrammaticScroll, slides.length]);
 
   const goTo = useCallback(
     (next: number) => {
@@ -39,20 +92,30 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
         return;
       }
       const bounded = ((next % slides.length) + slides.length) % slides.length;
-      el.scrollTo({
-        left: bounded * el.clientWidth,
-        behavior: reduceMotionRef.current ? 'auto' : 'smooth',
-      });
-      indexRef.current = bounded;
-      setIndex(bounded);
+      applyIndex(bounded);
+      if (reduceMotionRef.current) {
+        clearProgrammaticScroll();
+        el.scrollTo({ left: slideOffset(el, bounded), behavior: 'auto' });
+        return;
+      }
+      programmaticTargetRef.current = bounded;
+      if (scrollEndTimerRef.current) {
+        window.clearTimeout(scrollEndTimerRef.current);
+      }
+      scrollEndTimerRef.current = window.setTimeout(
+        finishProgrammaticScroll,
+        PROGRAMMATIC_SCROLL_TIMEOUT_MS,
+      );
+      el.scrollTo({ left: slideOffset(el, bounded), behavior: 'smooth' });
     },
-    [slides.length],
+    [applyIndex, clearProgrammaticScroll, finishProgrammaticScroll, slides.length],
   );
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     const sync = () => {
       reduceMotionRef.current = mq.matches;
+      pausedRef.current = mq.matches;
       setPaused(mq.matches);
     };
     sync();
@@ -65,32 +128,51 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
       return;
     }
     const timer = window.setInterval(() => {
+      if (pausedRef.current || programmaticTargetRef.current !== null) {
+        return;
+      }
       goTo(indexRef.current + 1);
     }, AUTOPLAY_MS);
     return () => window.clearInterval(timer);
   }, [goTo, paused, slides.length]);
 
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) {
+      return;
+    }
+    const onEnd = () => finishProgrammaticScroll();
+    el.addEventListener('scrollend', onEnd);
+    return () => el.removeEventListener('scrollend', onEnd);
+  }, [finishProgrammaticScroll]);
+
   function pause() {
+    pausedRef.current = true;
     setPaused(true);
   }
 
   function resume() {
     if (!reduceMotionRef.current) {
+      pausedRef.current = false;
       setPaused(false);
     }
   }
 
   function onScroll() {
     const el = scrollerRef.current;
-    if (!el || el.clientWidth === 0) {
+    if (!el || el.clientWidth === 0 || programmaticTargetRef.current !== null) {
       return;
     }
-    const next = Math.round(el.scrollLeft / el.clientWidth);
-    const bounded = Math.min(slides.length - 1, Math.max(0, next));
+    const bounded = measuredIndex(el, slides.length);
     if (bounded !== indexRef.current) {
-      indexRef.current = bounded;
-      setIndex(bounded);
+      applyIndex(bounded);
     }
+  }
+
+  function onScrollerPointerDown() {
+    pause();
+    // A finger/mouse drag takes over from a programmatic scroll.
+    clearProgrammaticScroll();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -153,10 +235,10 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
               aria-selected={selected}
               aria-controls={`${baseId}-${slide.id}`}
               tabIndex={selected ? 0 : -1}
-              className={`min-h-11 min-w-0 rounded-xl px-0.5 text-center text-[0.6875rem] font-bold leading-tight sm:px-1 sm:text-xs ${
+              className={`min-h-11 min-w-0 rounded-xl border px-0.5 text-center text-[0.6875rem] font-bold leading-tight sm:px-1 sm:text-xs ${
                 selected
-                  ? 'bg-brand-600 text-white'
-                  : 'border border-border bg-white text-ink-900 hover:bg-brand-50'
+                  ? 'border-transparent bg-brand-600 text-white'
+                  : 'border-border bg-white text-ink-900 hover:bg-brand-50'
               }`}
               onClick={() => {
                 pause();
@@ -174,7 +256,7 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
             ref={scrollerRef}
             className="absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
             onScroll={onScroll}
-            onPointerDown={pause}
+            onPointerDown={onScrollerPointerDown}
           >
             {slides.map((slide, slideIndex) => (
               <div
