@@ -136,7 +136,12 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
       <p className="mb-3 min-h-6 text-center text-sm font-bold text-ink-900" aria-live="polite">
         {current.caption}
       </p>
-      <div className="mb-3 grid grid-cols-4 gap-1.5" role="tablist" aria-label={label}>
+      <div
+        className="mb-3 grid gap-1 sm:gap-1.5"
+        style={{ gridTemplateColumns: `repeat(${slides.length}, minmax(0, 1fr))` }}
+        role="tablist"
+        aria-label={label}
+      >
         {slides.map((slide, slideIndex) => {
           const selected = slideIndex === index;
           return (
@@ -148,7 +153,7 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
               aria-selected={selected}
               aria-controls={`${baseId}-${slide.id}`}
               tabIndex={selected ? 0 : -1}
-              className={`min-h-11 min-w-0 rounded-xl px-1 text-center text-xs font-bold leading-tight sm:text-sm ${
+              className={`min-h-11 min-w-0 rounded-xl px-0.5 text-center text-[0.6875rem] font-bold leading-tight sm:px-1 sm:text-xs ${
                 selected
                   ? 'bg-brand-600 text-white'
                   : 'border border-border bg-white text-ink-900 hover:bg-brand-50'

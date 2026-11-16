@@ -184,18 +184,21 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
     detail: t('altDetail'),
     cart: t('altCart'),
     orders: t('altOrders'),
+    editor: t('altEditor'),
   } as const;
   const tabBySlide = {
     menu: t('heroSlideMenuTab'),
     detail: t('heroSlideDetailTab'),
     cart: t('heroSlideCartTab'),
     orders: t('heroSlideOrdersTab'),
+    editor: t('heroSlideEditorTab'),
   } as const;
   const captionBySlide = {
     menu: t('heroSlideMenuCaption'),
     detail: t('heroSlideDetailCaption'),
     cart: t('heroSlideCartCaption'),
     orders: t('heroSlideOrdersCaption'),
+    editor: t('heroSlideEditorCaption'),
   } as const;
   const slides = homeHeroSlides(locale).map((slide) => ({
     ...slide,

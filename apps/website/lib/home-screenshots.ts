@@ -3,8 +3,8 @@
  *
  * Guest menu / detail / cart: only locales the QA store has actually published
  * (Free plan = base + one more → vi and en). Other page locales fall back to en.
- * Owner inbox: mobile-width captures in en, vi, zh, and ja (owner chrome matches
- * the page locale). Unknown locales fall back to the English owner shot.
+ * Owner inbox and menu editor: mobile-width captures in en, vi, zh, and ja
+ * (owner chrome matches the page locale). Unknown locales fall back to the English owner shot.
  */
 
 export const HOME_PHONE_SIZE = { width: 780, height: 1688 } as const;
@@ -39,16 +39,18 @@ export type OwnerShot = {
   height: number;
 };
 
-export function homeOwnerShot(pageLocale: string): OwnerShot {
+export type OwnerShotKind = 'orders' | 'menu';
+
+export function homeOwnerShot(pageLocale: string, kind: OwnerShotKind = 'orders'): OwnerShot {
   const locale = ownerShotLocale(pageLocale);
   return {
-    src: `/images/home/owner-orders-${locale}.webp`,
+    src: `/images/home/owner-${kind}-${locale}.webp`,
     width: HOME_OWNER_PHONE_SIZE.width,
     height: HOME_OWNER_PHONE_SIZE.height,
   };
 }
 
-export const HOME_HERO_SLIDE_IDS = ['menu', 'detail', 'cart', 'orders'] as const;
+export const HOME_HERO_SLIDE_IDS = ['menu', 'detail', 'cart', 'orders', 'editor'] as const;
 export type HomeHeroSlideId = (typeof HOME_HERO_SLIDE_IDS)[number];
 
 export type HomeHeroSlide = {
@@ -78,12 +80,19 @@ export function homeHeroSlides(pageLocale: string): HomeHeroSlide[] {
     width: HOME_PHONE_SIZE.width,
     height: HOME_PHONE_SIZE.height,
   };
-  const owner = homeOwnerShot(pageLocale);
+  const ordersShot = homeOwnerShot(pageLocale, 'orders');
   const orders: HomeHeroSlide = {
     id: 'orders',
-    src: owner.src,
-    width: owner.width,
-    height: owner.height,
+    src: ordersShot.src,
+    width: ordersShot.width,
+    height: ordersShot.height,
   };
-  return [menu, detail, cart, orders];
+  const editorShot = homeOwnerShot(pageLocale, 'menu');
+  const editor: HomeHeroSlide = {
+    id: 'editor',
+    src: editorShot.src,
+    width: editorShot.width,
+    height: editorShot.height,
+  };
+  return [menu, detail, cart, orders, editor];
 }
