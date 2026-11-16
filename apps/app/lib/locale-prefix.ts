@@ -9,3 +9,16 @@ export function readLocalePrefix(pathname: string): Locale | null {
   const segment = pathname.split('/')[1];
   return isLocale(segment) ? segment : null;
 }
+
+/** `/vi/app/menu` → `/app/menu`；`/vi` → `/`；无前缀则原样返回。 */
+export function stripLocalePrefix(pathname: string): string {
+  const locale = readLocalePrefix(pathname);
+  if (!locale) {
+    return pathname;
+  }
+  const stripped = pathname.slice(`/${locale}`.length);
+  if (!stripped) {
+    return '/';
+  }
+  return stripped.startsWith('/') ? stripped : `/${stripped}`;
+}

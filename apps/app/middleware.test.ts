@@ -36,3 +36,71 @@ describe('语言前缀优先（issue #27）', () => {
     expect(localeCookie(withCookie)).toBeUndefined();
   });
 });
+
+function locationPath(response: Response): string {
+  const location = response.headers.get('location');
+  if (!location) {
+    return '';
+  }
+  return (
+    new URL(location, 'https://app.example.com').pathname +
+    new URL(location, 'https://app.example.com').search
+  );
+}
+
+describe('带前缀的请求当场改用前缀语言', () => {
+  it('GET /vi/app/menu 且已有 NEXT_LOCALE=en 时，未登录跳转登录并把语言写成 vi', () => {
+    const response = middleware(
+      request('/vi/app/menu?store=qa-pho-chi-mai-hoi-an', { cookie: 'NEXT_LOCALE=en' }),
+    );
+    expect(response.status).toBeGreaterThanOrEqual(300);
+    expect(response.status).toBeLessThan(400);
+    expect(localeCookie(response)).toBe('vi');
+    expect(locationPath(response)).toBe(
+      '/login?next=%2Fapp%2Fmenu%3Fstore%3Dqa-pho-chi-mai-hoi-an',
+    );
+    expect(response.headers.get('cache-control')).toMatch(/no-store/);
+    expect(response.headers.get('vary')).toMatch(/Cookie/i);
+  });
+
+  it('GET /zh/app/menu、/ja/app/menu 同样在本次跳转写入对应语言', () => {
+    const zh = middleware(request('/zh/app/menu', { cookie: 'NEXT_LOCALE=en' }));
+    expect(localeCookie(zh)).toBe('zh');
+    expect(locationPath(zh).startsWith('/login?next=')).toBe(true);
+    expect(locationPath(zh)).not.toContain('/zh/');
+
+    const ja = middleware(request('/ja/app/menu', { cookie: 'NEXT_LOCALE=en' }));
+    expect(localeCookie(ja)).toBe('ja');
+    expect(locationPath(ja)).toContain('/login?next=');
+  });
+
+  it('公开的 /vi/m/… 带 en cookie 时，本次请求就按 vi 处理', () => {
+    const response = middleware(
+      request('/vi/m/qa-pho-chi-mai-hoi-an/p/token', { cookie: 'NEXT_LOCALE=en' }),
+    );
+    expect(response.status).toBe(200);
+    expect(localeCookie(response)).toBe('vi');
+    expect(response.headers.get('x-middleware-request-x-next-intl-locale')).toBe('vi');
+    expect(response.headers.get('x-middleware-request-accept-language')).toBe('vi');
+    expect(response.headers.get('x-middleware-rewrite')).toContain(
+      '/vi/m/qa-pho-chi-mai-hoi-an/p/token',
+    );
+    expect(response.headers.get('cache-control')).toMatch(/no-store/);
+  });
+
+  it('GET /vi/login 且已有 en cookie 时，本次即渲染 vi，不必再刷新', () => {
+    const response = middleware(request('/vi/login', { cookie: 'NEXT_LOCALE=en' }));
+    expect(response.status).toBe(200);
+    expect(localeCookie(response)).toBe('vi');
+    expect(response.headers.get('x-middleware-request-x-next-intl-locale')).toBe('vi');
+    expect(response.headers.get('x-middleware-rewrite')).toContain('/vi/login');
+  });
+
+  it('无前缀的 /m/… 与 /login 不覆盖已有 cookie', () => {
+    const menu = middleware(request('/m/qa-shop/p/token', { cookie: 'NEXT_LOCALE=zh' }));
+    expect(localeCookie(menu)).toBeUndefined();
+
+    const login = middleware(request('/login', { cookie: 'NEXT_LOCALE=zh', acceptLanguage: 'vi' }));
+    expect(localeCookie(login)).toBeUndefined();
+  });
+});
