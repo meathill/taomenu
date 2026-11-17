@@ -192,7 +192,11 @@
     "promoChristmasMonthly": "First month free",
     "promoChristmasYearly": "Half price for the first year",
     "promoEarlyBirdUntil": "Early-bird price until {date}. {countdown}",
-    "promoThenListPrice": "Then {price} for new sign-ups"
+    "promoThenListPrice": "Then {price} for new sign-ups",
+    "promoBadgeChristmasMonthly": "Christmas: first month free",
+    "promoBadgeChristmasYearly": "Christmas: 50% off first year",
+    "promoBadgeEarlyBird": "Early-bird price",
+    "promoBadgeUntil": "Until {date} · {countdown}"
   },
   "footer": {
     "tagline": "QR ordering software for small restaurants.",

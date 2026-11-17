@@ -192,7 +192,11 @@
     "promoChristmasMonthly": "首月免费",
     "promoChristmasYearly": "首年半价",
     "promoEarlyBirdUntil": "早鸟价截至 {date}。{countdown}",
-    "promoThenListPrice": "之后新购为 {price}"
+    "promoThenListPrice": "之后新购为 {price}",
+    "promoBadgeChristmasMonthly": "圣诞：首月免费",
+    "promoBadgeChristmasYearly": "圣诞：首年半价",
+    "promoBadgeEarlyBird": "早鸟价",
+    "promoBadgeUntil": "截至 {date} · {countdown}"
   },
   "footer": {
     "tagline": "面向中小餐厅的扫码点餐软件。",

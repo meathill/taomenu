@@ -61,14 +61,18 @@ const DATE_LOCALE: Record<string, string> = {
   ja: 'ja-JP',
 };
 
-/** 把配置里的结束日格式化为店主语言，不随浏览时区错日。 */
-export function formatPromoEndDate(endDate: string, locale: string): string {
+/** 把配置里的结束日格式化为店主语言，不随浏览时区错日。short 用缩写月份（价签等窄位置）。 */
+export function formatPromoEndDate(
+  endDate: string,
+  locale: string,
+  monthStyle: 'long' | 'short' = 'long',
+): string {
   const [year, month, day] = endDate.split('-').map(Number);
   if (!year || !month || !day) return endDate;
   const intlLocale = DATE_LOCALE[locale] ?? 'en-US';
   return new Intl.DateTimeFormat(intlLocale, {
     year: 'numeric',
-    month: 'long',
+    month: monthStyle,
     day: 'numeric',
     timeZone: 'UTC',
   }).format(new Date(Date.UTC(year, month - 1, day)));

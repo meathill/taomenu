@@ -192,7 +192,11 @@
     "promoChristmasMonthly": "初月無料",
     "promoChristmasYearly": "初年度半額",
     "promoEarlyBirdUntil": "早期価格は{date}まで。{countdown}",
-    "promoThenListPrice": "以降の新規は{price}"
+    "promoThenListPrice": "以降の新規は{price}",
+    "promoBadgeChristmasMonthly": "クリスマス：初月無料",
+    "promoBadgeChristmasYearly": "クリスマス：初年度半額",
+    "promoBadgeEarlyBird": "早期割引価格",
+    "promoBadgeUntil": "{date}まで · {countdown}"
   },
   "footer": {
     "tagline": "小さな飲食店向けQRオーダーソフト。",

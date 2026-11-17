@@ -192,7 +192,11 @@
     "promoChristmasMonthly": "Miễn phí tháng đầu",
     "promoChristmasYearly": "Năm đầu giảm nửa giá",
     "promoEarlyBirdUntil": "Giá sớm đến hết {date}. {countdown}",
-    "promoThenListPrice": "Sau đó {price} cho đăng ký mới"
+    "promoThenListPrice": "Sau đó {price} cho đăng ký mới",
+    "promoBadgeChristmasMonthly": "Giáng sinh: miễn phí tháng đầu",
+    "promoBadgeChristmasYearly": "Giáng sinh: năm đầu giảm 50%",
+    "promoBadgeEarlyBird": "Giá ưu đãi sớm",
+    "promoBadgeUntil": "Đến {date} · {countdown}"
   },
   "footer": {
     "tagline": "Phần mềm order QR cho nhà hàng vừa và nhỏ.",

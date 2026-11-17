@@ -11,7 +11,7 @@ import {
   promoDaysRemaining,
 } from '@taomenu/shared';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { PricingPlans } from '@/components/pricing-plans';
+import { PricingPlans, type PromoBadge } from '@/components/pricing-plans';
 import { buildPageMetadata } from '@/lib/seo';
 import { getAppProPlusSignupUrl, getAppProSignupUrl, getAppSignupUrl } from '@/lib/site';
 
@@ -70,7 +70,26 @@ export default async function PricingPage({ params }: PricingPageProps) {
     return days === 0 ? t('promoCountdownToday') : t('promoCountdownDays', { count: days });
   };
   const christmasEnd = formatPromoEndDate(BILLING_PROMOS.christmas.endDate, locale);
-  const earlyBirdEnd = formatPromoEndDate(BILLING_PROMOS.proPlusEarlyBird.endDate, locale);
+  // 价签：只在促销进行中显示，过期自动消失（日期判断与 Checkout 共用 @taomenu/shared）
+  const badgeNote = (endDate: string) =>
+    t('promoBadgeUntil', {
+      date: formatPromoEndDate(endDate, locale, 'short'),
+      countdown: countdownLabel(endDate),
+    });
+  const christmasNote = badgeNote(BILLING_PROMOS.christmas.endDate);
+  const proMonthlyBadge: PromoBadge | undefined = christmasActive
+    ? { title: t('promoBadgeChristmasMonthly'), note: christmasNote, tone: 'brand' }
+    : undefined;
+  const proYearlyBadge: PromoBadge | undefined = christmasActive
+    ? { title: t('promoBadgeChristmasYearly'), note: christmasNote, tone: 'brand' }
+    : undefined;
+  const earlyBirdBadge: PromoBadge | undefined = earlyBirdActive
+    ? {
+        title: t('promoBadgeEarlyBird'),
+        note: badgeNote(BILLING_PROMOS.proPlusEarlyBird.endDate),
+        tone: 'jade',
+      }
+    : undefined;
   const proYearlyPromo = formatCurrency(getChristmasProAnnualPrice(currency), currency, locale);
   const displayedProYearly = christmasActive ? proYearlyPromo : proYearly;
   const displayedProPlusMonthly = earlyBirdActive ? proMonthly : proPlusMonthly;
@@ -101,14 +120,6 @@ export default async function PricingPage({ params }: PricingPageProps) {
             ? t('promoChristmasBanner', {
                 date: christmasEnd,
                 countdown: countdownLabel(BILLING_PROMOS.christmas.endDate),
-              })
-            : undefined
-        }
-        earlyBirdLabel={
-          earlyBirdActive
-            ? t('promoEarlyBirdUntil', {
-                date: earlyBirdEnd,
-                countdown: countdownLabel(BILLING_PROMOS.proPlusEarlyBird.endDate),
               })
             : undefined
         }
@@ -153,6 +164,8 @@ export default async function PricingPage({ params }: PricingPageProps) {
           monthlyOfferLabel: christmasActive ? t('promoChristmasMonthly') : undefined,
           yearlyOfferLabel: christmasActive ? t('promoChristmasYearly') : undefined,
           yearlyListPrice: christmasActive ? t('proPriceYear', { price: proYearly }) : undefined,
+          monthlyBadge: proMonthlyBadge,
+          yearlyBadge: proYearlyBadge,
         }}
         proPlus={{
           id: 'pro_plus',
@@ -172,6 +185,8 @@ export default async function PricingPage({ params }: PricingPageProps) {
           monthlyPrice: t('proPlusPrice', { price: displayedProPlusMonthly }),
           yearlyPrice: t('proPlusPriceYear', { price: displayedProPlusYearly }),
           yearlyHint: displayedProPlusHint,
+          monthlyBadge: earlyBirdBadge,
+          yearlyBadge: earlyBirdBadge,
           monthlyListPrice: earlyBirdActive
             ? t('proPlusPrice', { price: proPlusMonthly })
             : undefined,

@@ -51,5 +51,7 @@ describe('促销窗口（Asia/Ho_Chi_Minh 含结束日当天）', () => {
     expect(formatPromoEndDate('2026-12-25', 'en')).toContain('25');
     expect(formatPromoEndDate('2026-12-25', 'zh')).toContain('2026');
     expect(formatPromoEndDate('2027-02-16', 'vi')).toContain('2027');
+    expect(formatPromoEndDate('2027-02-16', 'en', 'short')).toBe('Feb 16, 2027');
+    expect(formatPromoEndDate('2026-12-25', 'zh', 'short')).toBe('2026年12月25日');
   });
 });
