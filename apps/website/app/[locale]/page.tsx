@@ -243,13 +243,8 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
         <CompactHighlights t={t} />
       </div>
 
-      <div className="mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:max-w-[18rem] lg:justify-self-end">
-        <HeroGallery
-          slides={slides}
-          label={t('heroGalleryLabel')}
-          previousLabel={t('heroPrev')}
-          nextLabel={t('heroNext')}
-        />
+      <div className="mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:max-w-[20rem] lg:justify-self-end">
+        <HeroGallery slides={slides} label={t('heroGalleryLabel')} />
       </div>
     </section>
   );

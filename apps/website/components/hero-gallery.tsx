@@ -1,7 +1,14 @@
 'use client';
 
-import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
-import { type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
+import {
+  type KeyboardEvent,
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { PhoneFrame } from '@/components/phone-frame';
 import type { HomeHeroSlideId } from '@/lib/home-screenshots';
 
@@ -18,12 +25,11 @@ export type HeroGallerySlide = {
 type HeroGalleryProps = {
   slides: HeroGallerySlide[];
   label: string;
-  previousLabel: string;
-  nextLabel: string;
 };
 
 const AUTOPLAY_MS = 6000;
 const PROGRAMMATIC_SCROLL_TIMEOUT_MS = 800;
+const INDICATOR_BAR_CLASS = 'h-7';
 
 function slideOffset(scroller: HTMLDivElement, index: number): number {
   const child = scroller.children[index] as HTMLElement | undefined;
@@ -38,14 +44,16 @@ function measuredIndex(scroller: HTMLDivElement, slideCount: number): number {
   return Math.min(slideCount - 1, Math.max(0, next));
 }
 
-export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGalleryProps) {
+export function HeroGallery({ slides, label }: HeroGalleryProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef(0);
   const pausedRef = useRef(true);
   const programmaticTargetRef = useRef<number | null>(null);
   const scrollEndTimerRef = useRef(0);
+  const dragRef = useRef<{ startX: number; startScroll: number; pointerId: number } | null>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(true);
+  const [dragging, setDragging] = useState(false);
   const reduceMotionRef = useRef(false);
   const baseId = useId();
 
@@ -181,29 +189,93 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
     }
   }
 
-  function onScrollerPointerDown() {
+  function onScrollerPointerDown(event: PointerEvent<HTMLDivElement>) {
     pause();
     // A finger/mouse drag takes over from a programmatic scroll.
     clearProgrammaticScroll();
+    if (event.pointerType === 'touch') {
+      return;
+    }
+    const el = scrollerRef.current;
+    if (!el) {
+      return;
+    }
+    dragRef.current = {
+      startX: event.clientX,
+      startScroll: el.scrollLeft,
+      pointerId: event.pointerId,
+    };
+    el.setPointerCapture(event.pointerId);
+    el.style.scrollBehavior = 'auto';
+    setDragging(true);
+  }
+
+  function onScrollerPointerMove(event: PointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current;
+    const el = scrollerRef.current;
+    if (!drag || !el) {
+      return;
+    }
+    el.scrollLeft = drag.startScroll - (event.clientX - drag.startX);
+  }
+
+  function endDrag(event: PointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current;
+    const el = scrollerRef.current;
+    if (!drag) {
+      return;
+    }
+    dragRef.current = null;
+    setDragging(false);
+    if (el) {
+      if (el.hasPointerCapture(drag.pointerId)) {
+        el.releasePointerCapture(drag.pointerId);
+      }
+      el.style.scrollBehavior = '';
+      const snapped = measuredIndex(el, slides.length);
+      goTo(snapped);
+    }
+    event.preventDefault();
+  }
+
+  function focusDot(slideIndex: number) {
+    if (slides.length === 0) {
+      return;
+    }
+    const bounded = ((slideIndex % slides.length) + slides.length) % slides.length;
+    const target = slides[bounded];
+    if (!target) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      document.getElementById(`${baseId}-tab-${target.id}`)?.focus();
+    });
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       pause();
-      goTo(indexRef.current - 1);
+      const next = indexRef.current - 1;
+      goTo(next);
+      focusDot(next);
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
       pause();
-      goTo(indexRef.current + 1);
+      const next = indexRef.current + 1;
+      goTo(next);
+      focusDot(next);
     } else if (event.key === 'Home') {
       event.preventDefault();
       pause();
       goTo(0);
+      focusDot(0);
     } else if (event.key === 'End') {
       event.preventDefault();
       pause();
-      goTo(slides.length - 1);
+      const last = slides.length - 1;
+      goTo(last);
+      focusDot(last);
     }
   }
 
@@ -227,48 +299,21 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
       }}
       onKeyDown={onKeyDown}
     >
-      <p className="mb-3 min-h-6 text-center text-sm font-bold text-ink-900" aria-live="polite">
+      <p className="sr-only" aria-live="polite">
         {current.caption}
       </p>
-      <div
-        className="mb-3 grid gap-1 sm:gap-1.5"
-        style={{ gridTemplateColumns: `repeat(${slides.length}, minmax(0, 1fr))` }}
-        role="tablist"
-        aria-label={label}
-      >
-        {slides.map((slide, slideIndex) => {
-          const selected = slideIndex === index;
-          return (
-            <button
-              key={slide.id}
-              type="button"
-              role="tab"
-              id={`${baseId}-tab-${slide.id}`}
-              aria-selected={selected}
-              aria-controls={`${baseId}-${slide.id}`}
-              tabIndex={selected ? 0 : -1}
-              className={`min-h-11 min-w-0 rounded-xl border px-0.5 text-center text-[0.6875rem] font-bold leading-tight sm:px-1 sm:text-xs ${
-                selected
-                  ? 'border-transparent bg-brand-600 text-white'
-                  : 'border-border bg-white text-ink-900 hover:bg-brand-50'
-              }`}
-              onClick={() => {
-                pause();
-                goTo(slideIndex);
-              }}
-            >
-              {slide.tab}
-            </button>
-          );
-        })}
-      </div>
-      <div className="relative w-full">
-        <div className="relative aspect-[390/844] w-full overflow-hidden rounded-[2.2rem] shadow-xl">
+      <div className="hero-gallery-frame relative w-full overflow-hidden rounded-[2.2rem] bg-ink-900 shadow-xl">
+        <div className="relative aspect-[390/844] w-full">
           <div
             ref={scrollerRef}
-            className="absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
+            className={`absolute inset-x-0 top-0 bottom-7 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden ${
+              dragging ? 'cursor-grabbing' : 'cursor-grab'
+            }`}
             onScroll={onScroll}
             onPointerDown={onScrollerPointerDown}
+            onPointerMove={onScrollerPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
           >
             {slides.map((slide, slideIndex) => (
               <div
@@ -283,38 +328,48 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
                   width={slide.width}
                   height={slide.height}
                   priority={slideIndex === 0}
-                  sizes="(min-width: 1024px) 288px, 80vw"
+                  sizes="(min-width: 1024px) 320px, 80vw"
                   className="h-full w-full"
                   fit="fill"
                   shadow={false}
+                  flushBottom
                 />
               </div>
             ))}
           </div>
         </div>
-        <div className="mt-4 flex items-center justify-center gap-3">
-          <button
-            type="button"
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-white text-ink-900 shadow-md hover:bg-brand-50"
-            onClick={() => {
-              pause();
-              goTo(indexRef.current - 1);
-            }}
-            aria-label={previousLabel}
-          >
-            <CaretLeftIcon className="size-6" weight="bold" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-white text-ink-900 shadow-md hover:bg-brand-50"
-            onClick={() => {
-              pause();
-              goTo(indexRef.current + 1);
-            }}
-            aria-label={nextLabel}
-          >
-            <CaretRightIcon className="size-6" weight="bold" aria-hidden />
-          </button>
+        <div
+          className={`absolute inset-x-0 bottom-0 ${INDICATOR_BAR_CLASS} flex items-center justify-center`}
+          role="tablist"
+          aria-label={label}
+        >
+          {slides.map((slide, slideIndex) => {
+            const selected = slideIndex === index;
+            return (
+              <button
+                key={slide.id}
+                type="button"
+                role="tab"
+                id={`${baseId}-tab-${slide.id}`}
+                aria-label={slide.tab}
+                aria-selected={selected}
+                aria-controls={`${baseId}-${slide.id}`}
+                tabIndex={selected ? 0 : -1}
+                className="flex h-7 w-5 items-center justify-center"
+                onClick={() => {
+                  pause();
+                  goTo(slideIndex);
+                }}
+              >
+                <span
+                  className={`block rounded-full transition-[width,background-color] duration-200 ${
+                    selected ? 'h-1.5 w-3.5 bg-white' : 'size-1.5 bg-white/45'
+                  }`}
+                  aria-hidden
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>
