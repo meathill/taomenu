@@ -283,7 +283,7 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
                   width={slide.width}
                   height={slide.height}
                   priority={slideIndex === 0}
-                  sizes="(min-width: 1024px) 384px, 80vw"
+                  sizes="(min-width: 1024px) 288px, 80vw"
                   className="h-full w-full"
                   fit="fill"
                   shadow={false}
