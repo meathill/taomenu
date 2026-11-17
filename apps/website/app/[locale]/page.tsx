@@ -205,41 +205,39 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
   }));
 
   return (
-    <section className="grid items-start gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-12">
-      <div className="flex min-w-0 flex-col lg:justify-between lg:gap-8">
-        <div className="min-w-0">
-          <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
-            {t('badge')}
-          </p>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
-            {t('title')}
-          </h1>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t('subtitle')}
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <a
-              href={getAppSignupUrl()}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-600 px-5 py-3 text-base font-bold text-white hover:bg-brand-700"
-            >
-              {t('primaryCta')}
-            </a>
-            <Link
-              href="/pricing"
-              prefetch={false}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-base font-bold text-ink-900 hover:bg-brand-50"
-            >
-              {t('secondaryCta')}
-            </Link>
-            <a
-              href={getDemoMenuUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center justify-center px-1 py-3 text-base font-bold text-brand-700 hover:underline"
-            >
-              {t('demoCta')}
-            </a>
-          </div>
+    <section className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12">
+      <div className="min-w-0">
+        <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
+          {t('badge')}
+        </p>
+        <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
+          {t('title')}
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          {t('subtitle')}
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a
+            href={getAppSignupUrl()}
+            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-600 px-5 py-3 text-base font-bold text-white hover:bg-brand-700"
+          >
+            {t('primaryCta')}
+          </a>
+          <Link
+            href="/pricing"
+            prefetch={false}
+            className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-base font-bold text-ink-900 hover:bg-brand-50"
+          >
+            {t('secondaryCta')}
+          </Link>
+          <a
+            href={getDemoMenuUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 items-center justify-center px-1 py-3 text-base font-bold text-brand-700 hover:underline"
+          >
+            {t('demoCta')}
+          </a>
         </div>
 
         <CompactHighlights t={t} />
@@ -358,7 +356,7 @@ const HIGHLIGHTS: { index: 1 | 2 | 3 | 4; icon: ReactNode }[] = [
 
 function CompactHighlights({ t }: { t: HomeT }) {
   return (
-    <div className="mt-8 hidden min-w-0 lg:mt-0 lg:block">
+    <div className="mt-8 hidden min-w-0 lg:block">
       <h2 className="text-sm font-bold tracking-tight text-ink-900">{t('highlightsTitle')}</h2>
       <ul className="mt-3 grid grid-cols-2 gap-4">
         {HIGHLIGHTS.map((item) => (
