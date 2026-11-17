@@ -63,23 +63,14 @@ export default async function HomePage({ params }: HomePageProps) {
 
       <HowItWorks t={t} locale={locale} />
 
-      <section className="mt-14">
+      <section className="mt-14 lg:hidden">
         <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
           {t('highlightsTitle')}
         </h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <HighlightCard
-            icon={<DesktopTowerIcon className="size-6" aria-hidden />}
-            t={t}
-            index={1}
-          />
-          <HighlightCard icon={<BrowserIcon className="size-6" aria-hidden />} t={t} index={2} />
-          <HighlightCard
-            icon={<DeviceMobileIcon className="size-6" aria-hidden />}
-            t={t}
-            index={3}
-          />
-          <HighlightCard icon={<MoneyIcon className="size-6" aria-hidden />} t={t} index={4} />
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {HIGHLIGHTS.map((item) => (
+            <HighlightCard key={item.index} icon={item.icon} t={t} index={item.index} />
+          ))}
         </div>
       </section>
 
@@ -214,7 +205,7 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
   }));
 
   return (
-    <section className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12">
+    <section className="grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-stretch lg:gap-x-12 lg:gap-y-8">
       <div className="min-w-0">
         <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
           {t('badge')}
@@ -250,7 +241,7 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
         </div>
       </div>
 
-      <div className="mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:max-w-[26rem]">
+      <div className="mx-auto w-full min-w-0 max-w-[22rem] sm:max-w-[24rem] lg:row-span-2 lg:max-w-[24rem] lg:justify-self-end">
         <HeroGallery
           slides={slides}
           label={t('heroGalleryLabel')}
@@ -258,6 +249,8 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
           nextLabel={t('heroNext')}
         />
       </div>
+
+      <CompactHighlights t={t} />
     </section>
   );
 }
@@ -350,6 +343,36 @@ function HowStep({ index, t }: { index: 1 | 2 | 3; t: HomeT }) {
           {t(`howStep${index}Body`)}
         </p>
       </div>
+    </div>
+  );
+}
+
+const HIGHLIGHTS: { index: 1 | 2 | 3 | 4; icon: ReactNode }[] = [
+  { index: 1, icon: <DesktopTowerIcon className="size-6" aria-hidden /> },
+  { index: 2, icon: <BrowserIcon className="size-6" aria-hidden /> },
+  { index: 3, icon: <DeviceMobileIcon className="size-6" aria-hidden /> },
+  { index: 4, icon: <MoneyIcon className="size-6" aria-hidden /> },
+];
+
+function CompactHighlights({ t }: { t: HomeT }) {
+  return (
+    <div className="hidden min-w-0 lg:flex lg:h-full lg:flex-col">
+      <h2 className="text-sm font-bold tracking-tight text-ink-900">{t('highlightsTitle')}</h2>
+      <ul className="mt-4 flex flex-1 flex-col justify-between gap-3">
+        {HIGHLIGHTS.map((item) => (
+          <li key={item.index} className="flex gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+              {item.icon}
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-sm font-bold text-ink-900">{t(`highlight${item.index}Title`)}</h3>
+              <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
+                {t(`highlight${item.index}Body`)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

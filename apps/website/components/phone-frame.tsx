@@ -11,6 +11,8 @@ type PhoneFrameProps = {
   /** `fill` stretches the shot to a height-constrained frame (equal card rows). */
   fit?: 'intrinsic' | 'fill';
   loading?: 'eager' | 'lazy';
+  /** Set false when a parent already draws the drop shadow (e.g. a clipped carousel). */
+  shadow?: boolean;
 };
 
 /** Static phone bezel for marketing screenshots. No lightbox — hero LCP stays a plain image. */
@@ -24,10 +26,11 @@ export function PhoneFrame({
   className,
   fit = 'intrinsic',
   loading,
+  shadow = true,
 }: PhoneFrameProps) {
   return (
     <div
-      className={`overflow-hidden rounded-[2.2rem] border-[10px] border-ink-900 bg-ink-900 shadow-xl ${className ?? ''}`}
+      className={`overflow-hidden rounded-[2.2rem] border-[10px] border-ink-900 bg-ink-900 ${shadow ? 'shadow-xl' : ''} ${className ?? ''}`}
     >
       <Image
         src={src}

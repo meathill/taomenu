@@ -146,6 +146,18 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
     return () => el.removeEventListener('scrollend', onEnd);
   }, [finishProgrammaticScroll]);
 
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) {
+      return;
+    }
+    const ro = new ResizeObserver(() => {
+      el.scrollTo({ left: slideOffset(el, indexRef.current), behavior: 'auto' });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   function pause() {
     pausedRef.current = true;
     setPaused(true);
@@ -250,8 +262,8 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
           );
         })}
       </div>
-      <div className="relative mx-auto w-full max-w-[20rem] sm:max-w-[22rem]">
-        <div className="relative aspect-[390/844] w-full">
+      <div className="relative w-full">
+        <div className="relative aspect-[390/844] w-full overflow-hidden rounded-[2.2rem] shadow-xl">
           <div
             ref={scrollerRef}
             className="absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
@@ -262,7 +274,7 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
               <div
                 key={slide.id}
                 id={`${baseId}-${slide.id}`}
-                className="h-full w-full shrink-0 snap-center"
+                className="box-border h-full w-full min-w-full shrink-0 basis-full snap-start"
                 aria-hidden={slideIndex !== index}
               >
                 <PhoneFrame
@@ -271,18 +283,19 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
                   width={slide.width}
                   height={slide.height}
                   priority={slideIndex === 0}
-                  sizes="(min-width: 1024px) 352px, 80vw"
+                  sizes="(min-width: 1024px) 384px, 80vw"
                   className="h-full w-full"
                   fit="fill"
+                  shadow={false}
                 />
               </div>
             ))}
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 left-0 flex items-center justify-between px-1">
+        <div className="mt-4 flex items-center justify-center gap-3">
           <button
             type="button"
-            className="pointer-events-auto flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-white/95 text-ink-900 shadow-md hover:bg-brand-50"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-white text-ink-900 shadow-md hover:bg-brand-50"
             onClick={() => {
               pause();
               goTo(indexRef.current - 1);
@@ -293,7 +306,7 @@ export function HeroGallery({ slides, label, previousLabel, nextLabel }: HeroGal
           </button>
           <button
             type="button"
-            className="pointer-events-auto flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-white/95 text-ink-900 shadow-md hover:bg-brand-50"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-white text-ink-900 shadow-md hover:bg-brand-50"
             onClick={() => {
               pause();
               goTo(indexRef.current + 1);
