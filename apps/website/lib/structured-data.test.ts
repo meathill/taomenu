@@ -32,8 +32,8 @@ describe('结构化数据不伪造评分（issue #10）', () => {
     }
   });
 
-  it('首页收紧后不再声明 FAQPage（FAQ 富结果保留在落地页）', () => {
-    expect(home).not.toContain("'@type': 'FAQPage'");
+  it('首页保留 FAQPage 富结果资格', () => {
+    expect(home).toContain("'@type': 'FAQPage'");
   });
 
   it('落地页保留 BreadcrumbList + FAQPage', () => {

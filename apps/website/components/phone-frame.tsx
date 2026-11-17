@@ -10,6 +10,7 @@ type PhoneFrameProps = {
   className?: string;
   /** `fill` stretches the shot to a height-constrained frame (equal card rows). */
   fit?: 'intrinsic' | 'fill';
+  loading?: 'eager' | 'lazy';
 };
 
 /** Static phone bezel for marketing screenshots. No lightbox — hero LCP stays a plain image. */
@@ -22,6 +23,7 @@ export function PhoneFrame({
   sizes = '240px',
   className,
   fit = 'intrinsic',
+  loading,
 }: PhoneFrameProps) {
   return (
     <div
@@ -34,6 +36,7 @@ export function PhoneFrame({
         height={height}
         priority={priority}
         sizes={sizes}
+        loading={priority ? undefined : loading}
         draggable={false}
         className={
           fit === 'fill'

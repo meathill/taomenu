@@ -15,6 +15,9 @@ const GROWTH_KEYS = [
   'growthCta',
   'growthEarlyBird',
   'finalCtaSecondary',
+  'highlightsTitle',
+  'faq7Q',
+  'faq7A',
 ] as const;
 
 describe('homepage growth copy', () => {

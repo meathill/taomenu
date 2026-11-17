@@ -1,9 +1,22 @@
-import { MapPinIcon, ShareNetworkIcon, StarIcon } from '@phosphor-icons/react/dist/ssr';
+import {
+  BrowserIcon,
+  CoffeeIcon,
+  DesktopTowerIcon,
+  DeviceMobileIcon,
+  MapPinIcon,
+  MoneyIcon,
+  QrCodeIcon,
+  RoadHorizonIcon,
+  ShareNetworkIcon,
+  StarIcon,
+  StorefrontIcon,
+} from '@phosphor-icons/react/dist/ssr';
 import { BILLING_PROMOS, formatPromoEndDate, isProPlusEarlyBirdActive } from '@taomenu/shared';
 import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { HeroGallery } from '@/components/hero-gallery';
+import { JsonLd } from '@/components/json-ld';
 import { PhoneFrame } from '@/components/phone-frame';
 import { Link } from '@/i18n/routing';
 import {
@@ -27,6 +40,7 @@ export async function generateMetadata({ params }: HomePageProps) {
   return buildPageMetadata(locale, '', t('title'), t('description'));
 }
 
+type FaqItem = { q: string; a: string };
 type HomeT = Awaited<ReturnType<typeof getTranslations>>;
 
 export default async function HomePage({ params }: HomePageProps) {
@@ -38,13 +52,98 @@ export default async function HomePage({ params }: HomePageProps) {
     ? formatPromoEndDate(BILLING_PROMOS.proPlusEarlyBird.endDate, locale)
     : null;
 
+  const faq: FaqItem[] = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
+    q: t(`faq${index}Q`),
+    a: t(`faq${index}A`),
+  }));
+
   return (
     <div className="pt-6 pb-16 sm:pt-12 sm:pb-20">
       <HeroSection t={t} locale={locale} />
 
       <HowItWorks t={t} locale={locale} />
 
+      <section className="mt-14">
+        <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          {t('highlightsTitle')}
+        </h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <HighlightCard
+            icon={<DesktopTowerIcon className="size-6" aria-hidden />}
+            t={t}
+            index={1}
+          />
+          <HighlightCard icon={<BrowserIcon className="size-6" aria-hidden />} t={t} index={2} />
+          <HighlightCard
+            icon={<DeviceMobileIcon className="size-6" aria-hidden />}
+            t={t}
+            index={3}
+          />
+          <HighlightCard icon={<MoneyIcon className="size-6" aria-hidden />} t={t} index={4} />
+        </div>
+      </section>
+
+      <section className="mt-14">
+        <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          {t('scenariosTitle')}
+        </h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ScenarioCard
+            icon={<StorefrontIcon className="size-6" aria-hidden />}
+            title={t('scenario1Title')}
+            body={t('scenario1Body')}
+            href="/phan-mem-order-nha-hang"
+          />
+          <ScenarioCard
+            icon={<CoffeeIcon className="size-6" aria-hidden />}
+            title={t('scenario2Title')}
+            body={t('scenario2Body')}
+            href="/menu-qr-cho-quan-an"
+          />
+          <ScenarioCard
+            icon={<RoadHorizonIcon className="size-6" aria-hidden />}
+            title={t('scenario3Title')}
+            body={t('scenario3Body')}
+            href="/phan-mem-order-tren-dien-thoai"
+          />
+          <ScenarioCard
+            icon={<QrCodeIcon className="size-6" aria-hidden />}
+            title={t('scenario4Title')}
+            body={t('scenario4Body')}
+            href="/phan-mem-order-quan-banh-mi"
+          />
+        </div>
+        <p className="mt-4 text-sm text-muted-foreground">
+          {t('moreScenarios')}{' '}
+          <Link
+            href="/phan-mem-quan-ly-nha-hang-mien-phi"
+            prefetch={false}
+            className="font-semibold text-brand-700 hover:underline"
+          >
+            {t('moreScenario1')}
+          </Link>
+          {' · '}
+          <Link
+            href="/menu-da-ngon-ngu"
+            prefetch={false}
+            className="font-semibold text-brand-700 hover:underline"
+          >
+            {t('moreScenario2')}
+          </Link>
+          {' · '}
+          <Link
+            href="/goi-nhan-vien-bang-ma-qr"
+            prefetch={false}
+            className="font-semibold text-brand-700 hover:underline"
+          >
+            {t('moreScenario3')}
+          </Link>
+        </p>
+      </section>
+
       <GrowthSection t={t} earlyBirdDate={earlyBirdDate} />
+
+      <FaqSection faq={faq} title={t('faqTitle')} />
 
       <section className="mt-14 rounded-2xl border border-border bg-white p-6 text-center sm:p-10">
         <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
@@ -69,6 +168,18 @@ export default async function HomePage({ params }: HomePageProps) {
           </Link>
         </div>
       </section>
+
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faq.map((item) => ({
+            '@type': 'Question',
+            name: item.q,
+            acceptedAnswer: { '@type': 'Answer', text: item.a },
+          })),
+        }}
+      />
     </div>
   );
 }
@@ -152,8 +263,13 @@ function HeroSection({ t, locale }: { t: HomeT; locale: string }) {
 }
 
 function HowImageBox({ children }: { children: ReactNode }) {
+  // Block layout with a definite height, so phone frames keep their aspect
+  // before lazy images load. A flex + items-center parent made h-full collapse
+  // into a short black bezel.
   return (
-    <div className="flex h-72 items-center justify-center bg-brand-50 p-5 sm:h-80">{children}</div>
+    <div className="h-72 bg-brand-50 p-5 sm:h-80">
+      <div className="mx-auto h-full w-fit max-w-full">{children}</div>
+    </div>
   );
 }
 
@@ -177,6 +293,7 @@ function HowItWorks({ t, locale }: { t: HomeT; locale: string }) {
               width={HOME_QR_SIZE.width}
               height={HOME_QR_SIZE.height}
               sizes="(min-width: 640px) 220px, 70vw"
+              loading="eager"
               className="h-full w-auto max-h-full max-w-full rounded-2xl border border-border bg-paper-50 object-contain shadow-sm"
             />
           </HowImageBox>
@@ -184,36 +301,34 @@ function HowItWorks({ t, locale }: { t: HomeT; locale: string }) {
         </li>
         <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid">
           <HowImageBox>
-            <div className="h-full w-auto max-h-full">
-              <div className="h-full aspect-[780/1688]">
-                <PhoneFrame
-                  src={homeGuestSrc('menu', locale)}
-                  alt={t('altMenu')}
-                  width={HOME_PHONE_SIZE.width}
-                  height={HOME_PHONE_SIZE.height}
-                  sizes="200px"
-                  className="h-full w-full"
-                  fit="fill"
-                />
-              </div>
+            <div className="h-full aspect-[780/1688]">
+              <PhoneFrame
+                src={homeGuestSrc('menu', locale)}
+                alt={t('altMenu')}
+                width={HOME_PHONE_SIZE.width}
+                height={HOME_PHONE_SIZE.height}
+                sizes="200px"
+                loading="eager"
+                className="h-full w-full"
+                fit="fill"
+              />
             </div>
           </HowImageBox>
           <HowStep index={2} t={t} />
         </li>
         <li className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:row-span-2 sm:grid sm:grid-rows-subgrid">
           <HowImageBox>
-            <div className="h-full w-auto max-h-full">
-              <div className="h-full aspect-[780/1688]">
-                <PhoneFrame
-                  src={owner.src}
-                  alt={t('altOrders')}
-                  width={owner.width}
-                  height={owner.height}
-                  sizes="200px"
-                  className="h-full w-full"
-                  fit="fill"
-                />
-              </div>
+            <div className="h-full aspect-[780/1688]">
+              <PhoneFrame
+                src={owner.src}
+                alt={t('altOrders')}
+                width={owner.width}
+                height={owner.height}
+                sizes="200px"
+                loading="eager"
+                className="h-full w-full"
+                fit="fill"
+              />
             </div>
           </HowImageBox>
           <HowStep index={3} t={t} />
@@ -236,6 +351,46 @@ function HowStep({ index, t }: { index: 1 | 2 | 3; t: HomeT }) {
         </p>
       </div>
     </div>
+  );
+}
+
+function HighlightCard({ icon, t, index }: { icon: ReactNode; t: HomeT; index: number }) {
+  return (
+    <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
+      <div className="flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+        {icon}
+      </div>
+      <h3 className="mt-3 text-base font-bold text-ink-900">{t(`highlight${index}Title`)}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+        {t(`highlight${index}Body`)}
+      </p>
+    </div>
+  );
+}
+
+function ScenarioCard({
+  icon,
+  title,
+  body,
+  href,
+}: {
+  icon: ReactNode;
+  title: string;
+  body: string;
+  href: string;
+}) {
+  return (
+    <Link
+      href={href}
+      prefetch={false}
+      className="flex h-full flex-col rounded-2xl border border-border bg-white p-5 shadow-sm hover:bg-brand-50"
+    >
+      <div className="flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+        {icon}
+      </div>
+      <h3 className="mt-3 font-bold text-ink-900">{title}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{body}</p>
+    </Link>
   );
 }
 
@@ -282,6 +437,22 @@ function GrowthSection({ t, earlyBirdDate }: { t: HomeT; earlyBirdDate: string |
       >
         {t('growthCta')}
       </Link>
+    </section>
+  );
+}
+
+function FaqSection({ faq, title }: { faq: FaqItem[]; title: string }) {
+  return (
+    <section className="mt-14">
+      <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">{title}</h2>
+      <ul className="mt-6 grid gap-4 md:grid-cols-2">
+        {faq.map((item) => (
+          <li key={item.q} className="rounded-2xl border border-border bg-white p-5">
+            <h3 className="font-bold text-ink-900">{item.q}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
