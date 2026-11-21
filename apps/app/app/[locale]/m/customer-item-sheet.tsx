@@ -1,7 +1,7 @@
 'use client';
 
 import { MinusIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
-import { formatCurrency } from '@taomenu/shared';
+import { formatCurrency, formatListedPrice } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { publicMediaPath } from '@/lib/menu-image';
@@ -39,6 +39,7 @@ export function CustomerItemSheet({ item, currency, onCancel, onConfirm }: Custo
   const selectedIds = useMemo(() => Object.values(selectedByGroup).flat(), [selectedByGroup]);
 
   const unitPrice = useMemo(() => {
+    if (item.priceAmount === null) return null;
     let total = item.priceAmount;
     for (const group of item.modifierGroups) {
       for (const option of group.options) {
@@ -50,7 +51,7 @@ export function CustomerItemSheet({ item, currency, onCancel, onConfirm }: Custo
     return total;
   }, [item, selectedIds]);
 
-  const linePrice = unitPrice * quantity;
+  const linePrice = unitPrice === null ? null : unitPrice * quantity;
 
   const nameSnapshot = useMemo(() => {
     const parts: string[] = [];
@@ -131,7 +132,7 @@ export function CustomerItemSheet({ item, currency, onCancel, onConfirm }: Custo
             <div className="min-w-0 flex-1">
               <h2 className="wrap-anywhere text-lg font-extrabold text-ink-900">{item.name}</h2>
               <p className="mt-1 text-sm tabular-nums text-muted-foreground">
-                {formatCurrency(item.priceAmount, currency, locale)}
+                {formatListedPrice(item.priceAmount, currency, locale, t('askStaff'))}
               </p>
             </div>
             <button
@@ -229,7 +230,9 @@ export function CustomerItemSheet({ item, currency, onCancel, onConfirm }: Custo
             className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-600 px-3 text-sm font-bold text-white"
             onClick={handleConfirm}
           >
-            {t('addToOrderWithPrice', { price: formatCurrency(linePrice, currency, locale) })}
+            {t('addToOrderWithPrice', {
+              price: formatListedPrice(linePrice, currency, locale, t('askStaff')),
+            })}
           </button>
         </div>
       </div>

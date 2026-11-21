@@ -10,7 +10,7 @@ export type OrderCard = {
   remainingAmount: number;
   /** 顾客下单备注（忌口、少辣等） */
   note?: string | null;
-  items: Array<{ name: string; quantity: number }>;
+  items: Array<{ name: string; quantity: number; lineTotalAmount?: number | null }>;
 };
 
 export type ServiceCard = {

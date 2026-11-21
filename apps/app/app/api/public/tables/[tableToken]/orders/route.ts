@@ -44,6 +44,7 @@ export async function POST(request: Request, context: RouteContext) {
       publicToken: result.publicToken,
       displayNumber: result.displayNumber,
       subtotalAmount: result.subtotalAmount,
+      hasUnpricedItems: result.hasUnpricedItems,
       status: result.status,
       reused: result.reused,
     },

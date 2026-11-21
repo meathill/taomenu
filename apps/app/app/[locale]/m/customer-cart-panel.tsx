@@ -1,9 +1,9 @@
 'use client';
 
 import { MinusIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
-import { formatCurrency } from '@taomenu/shared';
+import { formatCurrency, formatListedPrice } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
-import { type CartLine, ORDER_NOTE_MAX_LENGTH } from './customer-cart';
+import { type CartLine, cartHasUnpriced, ORDER_NOTE_MAX_LENGTH } from './customer-cart';
 
 type CustomerCartPanelProps = {
   cart: CartLine[];
@@ -31,6 +31,7 @@ export function CustomerCartPanel({
 }: CustomerCartPanelProps) {
   const t = useTranslations('customer');
   const locale = useLocale();
+  const hasUnpriced = cartHasUnpriced(cart);
   const stepButtonClassName =
     'grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-white text-ink-900 active:bg-paper-100';
 
@@ -48,7 +49,12 @@ export function CustomerCartPanel({
             <li key={line.lineKey} className="flex items-center gap-2 text-sm">
               <span className="min-w-0 flex-1 break-words text-ink-900">{line.name}</span>
               <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                {formatCurrency(line.priceAmount * line.quantity, currency, locale)}
+                {formatListedPrice(
+                  line.priceAmount === null ? null : line.priceAmount * line.quantity,
+                  currency,
+                  locale,
+                  t('priceConfirmedByStaff'),
+                )}
               </span>
               <button
                 type="button"
@@ -88,6 +94,11 @@ export function CustomerCartPanel({
             className="w-full resize-none rounded-xl border border-border bg-paper-50 px-3 py-2 text-base outline-none ring-jade-600 focus:ring-2"
           />
         </label>
+        {hasUnpriced ? (
+          <p className="text-xs font-medium text-muted-foreground" role="note">
+            {t('totalExcludesUnpriced')}
+          </p>
+        ) : null}
         {!isAcceptingOrders ? (
           <p className="text-xs font-semibold text-brand-700" role="status">
             {t('pausedCart')}
@@ -101,7 +112,9 @@ export function CustomerCartPanel({
         >
           {isSubmitting
             ? t('sending')
-            : t('sendWithPrice', { price: formatCurrency(subtotal, currency, locale) })}
+            : hasUnpriced && subtotal === 0
+              ? t('sendOrder')
+              : t('sendWithPrice', { price: formatCurrency(subtotal, currency, locale) })}
         </button>
       </div>
     </div>

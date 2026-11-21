@@ -51,7 +51,7 @@ export type PublicMenuPayload = {
       id: string;
       name: string;
       description: string | null;
-      priceAmount: number;
+      priceAmount: number | null;
       isSoldOut: boolean;
       /** R2 object key；前端拼 `/api/media/...` */
       imageKey: string | null;

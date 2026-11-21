@@ -23,15 +23,15 @@ export const createItemSchema = z.object({
   categoryId: z.string().uuid(),
   name: z.string().trim().min(1).max(MENU_ITEM_NAME_MAX),
   description: z.string().trim().max(MENU_ITEM_DESCRIPTION_MAX).optional(),
-  /** 最小单位整数（币种 0/2 位小数，见 currency.ts），最小 0 */
-  priceAmount: z.number().int().min(0).max(100_000_000),
+  /** 最小单位整数（币种 0/2 位小数，见 currency.ts）；null/省略 = 不标价，顾客端显示「询问店员」。0 仍是免费。 */
+  priceAmount: z.number().int().min(0).max(100_000_000).nullable().optional(),
   locale: z.string().trim().min(2).max(16).optional(),
 });
 
 export const updateItemSchema = z.object({
   name: z.string().trim().min(1).max(MENU_ITEM_NAME_MAX).optional(),
   description: z.string().trim().max(MENU_ITEM_DESCRIPTION_MAX).nullable().optional(),
-  priceAmount: z.number().int().min(0).max(100_000_000).optional(),
+  priceAmount: z.number().int().min(0).max(100_000_000).nullable().optional(),
   isAvailable: z.boolean().optional(),
   isSoldOut: z.boolean().optional(),
   sortOrder: z.number().int().min(0).max(10_000).optional(),

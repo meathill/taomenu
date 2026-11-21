@@ -167,16 +167,36 @@ export function sanitizeCurrencyInput(raw: string, currency: string): string {
 
 export type PriceInputError = 'required' | 'negative' | 'invalid';
 
-/** 价格输入框校验：允许 0（免费小料、白开水等），拒绝空值、负数与非法格式。 */
-export function validatePriceInput(raw: string, currency: string): PriceInputError | null {
+/** 价格输入框校验：允许 0（免费小料、白开水等），拒绝负数与非法格式。默认拒绝空值；allowEmpty 时空值表示不标价。 */
+export function validatePriceInput(
+  raw: string,
+  currency: string,
+  options?: { allowEmpty?: boolean },
+): PriceInputError | null {
   const trimmed = raw.trim();
   if (trimmed === '' || trimmed === '-') {
-    return trimmed === '-' ? 'negative' : 'required';
+    if (trimmed === '-') return 'negative';
+    return options?.allowEmpty ? null : 'required';
   }
   if (trimmed.startsWith('-')) {
     return 'negative';
   }
   return parseCurrencyInput(trimmed, currency) === null ? 'invalid' : null;
+}
+
+/** 已标价（含 0 = 免费）。null/undefined = 不标价，不是免费。 */
+export function hasListedPrice(amount: number | null | undefined): amount is number {
+  return typeof amount === 'number';
+}
+
+/** 顾客/店主展示：有标价则格式化，否则用「询问店员」文案。 */
+export function formatListedPrice(
+  amount: number | null | undefined,
+  currency: string,
+  locale: string,
+  askStaffLabel: string,
+): string {
+  return hasListedPrice(amount) ? formatCurrency(amount, currency, locale) : askStaffLabel;
 }
 
 /** 最小单位整数 → 主单位字符串，用于回填输入框，保证与 parseCurrencyInput 可往返 */

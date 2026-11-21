@@ -82,5 +82,7 @@
   "ownerWorkspace": "店主工作区",
   "pairedAs": "当前设备：{name}",
   "thisDevice": "这台设备",
-  "devicePreparation": "设备准备和提醒"
+  "devicePreparation": "设备准备和提醒",
+  "priceConfirmedByStaff": "含需店员确认价格的菜品。",
+  "askStaff": "询问店员"
 }

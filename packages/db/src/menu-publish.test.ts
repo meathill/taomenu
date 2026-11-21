@@ -65,6 +65,17 @@ describe('validateMenuForPublish', () => {
     expect(issues.filter((i) => i.code === 'TOO_MANY_LOCALES')).toHaveLength(0);
   });
 
+  it('不标价可以发布，负数价格不能发布，0 仍合法', () => {
+    const menu = sampleMenu();
+    menu.categories[0]!.items[0]!.priceAmount = null;
+    expect(validateMenuForPublish({ menu, baseLocale: 'vi', plan: 'free' })).toEqual([]);
+    menu.categories[0]!.items[0]!.priceAmount = 0;
+    expect(validateMenuForPublish({ menu, baseLocale: 'vi', plan: 'free' })).toEqual([]);
+    menu.categories[0]!.items[0]!.priceAmount = -1 as unknown as number;
+    const issues = validateMenuForPublish({ menu, baseLocale: 'vi', plan: 'free' });
+    expect(issues.some((i) => i.code === 'INVALID_PRICE')).toBe(true);
+  });
+
   it('无可用菜品不能发布', () => {
     const menu = sampleMenu();
     menu.categories[0]!.items[0]!.isAvailable = false;

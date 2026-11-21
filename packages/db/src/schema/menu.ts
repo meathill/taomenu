@@ -68,7 +68,8 @@ export const menuItems = sqliteTable('menu_items', {
   categoryId: text('category_id')
     .notNull()
     .references(() => menuCategories.id, { onDelete: 'cascade' }),
-  priceAmount: integer('price_amount').notNull(),
+  /** null = 不标价；0 = 免费 */
+  priceAmount: integer('price_amount'),
   imageKey: text('image_key'),
   sortOrder: integer('sort_order').notNull().default(0),
   isAvailable: integer('is_available', { mode: 'boolean' }).notNull().default(true),

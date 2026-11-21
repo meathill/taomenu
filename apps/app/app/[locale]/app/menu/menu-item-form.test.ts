@@ -135,4 +135,15 @@ describe('菜品抽屉表单灌入', () => {
   it('整数币种去掉多余小数', () => {
     expect(amountToInput(55000, 'VND')).toBe('55000');
   });
+
+  it('不标价回填空价格', () => {
+    expect(
+      buildItemFormValues({
+        item: { priceAmount: null, isAvailable: true, isSoldOut: false },
+        translation: { name: 'Chè', description: null },
+        currency: 'VND',
+        initialCategoryId: 'cat-1',
+      }).price,
+    ).toBe('');
+  });
 });

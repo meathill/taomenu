@@ -23,6 +23,8 @@
   "addItem": "Add item",
   "itemName": "Item name",
   "price": "Price ({currency})",
+  "priceHint": "Leave empty to show “Ask staff” to guests.",
+  "askStaff": "Ask staff",
   "saveContinue": "Save & next",
   "cancel": "Cancel",
   "invalidNamePrice": "Name or price is invalid.",

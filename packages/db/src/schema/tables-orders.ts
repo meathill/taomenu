@@ -112,8 +112,8 @@ export const orderItems = sqliteTable('order_items', {
     .references(() => menuItems.id),
   quantity: integer('quantity').notNull(),
   nameSnapshot: text('name_snapshot').notNull(),
-  unitPriceAmount: integer('unit_price_amount').notNull(),
-  lineTotalAmount: integer('line_total_amount').notNull(),
+  unitPriceAmount: integer('unit_price_amount'),
+  lineTotalAmount: integer('line_total_amount'),
 });
 
 export const pickupNumberSequences = sqliteTable(

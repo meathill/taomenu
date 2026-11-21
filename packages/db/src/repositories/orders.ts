@@ -36,6 +36,7 @@ export type CreateOrderResult =
       displayNumber: number;
       pickupNumber: number | null;
       subtotalAmount: number;
+      hasUnpricedItems: boolean;
       status: string;
       reused: boolean;
       outboxId?: string | null;
@@ -59,6 +60,7 @@ export async function createCustomerOrder(
       displayNumber: existing[0].displayNumber,
       pickupNumber: existing[0].pickupNumber,
       subtotalAmount: existing[0].subtotalAmount,
+      hasUnpricedItems: false,
       status: existing[0].status,
       reused: true,
     };
@@ -273,6 +275,7 @@ export async function createCustomerOrder(
     displayNumber,
     pickupNumber,
     subtotalAmount: priced.subtotalAmount,
+    hasUnpricedItems: priced.lines.some((line) => line.unitPriceAmount === null),
     status: 'submitted',
     reused: false,
     outboxId,

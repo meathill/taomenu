@@ -17,7 +17,7 @@ export type PublicMenuItem = {
   id: string;
   name: string;
   description?: string | null;
-  priceAmount: number;
+  priceAmount: number | null;
   isSoldOut: boolean;
   imageKey?: string | null;
   modifierGroups: PublicModifierGroup[];
@@ -26,7 +26,7 @@ export type PublicMenuItem = {
 export type CartLineSelection = {
   menuItemId: string;
   name: string;
-  priceAmount: number;
+  priceAmount: number | null;
   quantity: number;
   modifierIds: string[];
   lineKey: string;

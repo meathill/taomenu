@@ -13,7 +13,7 @@ export async function createItem(
     categoryId: string;
     name: string;
     description?: string;
-    priceAmount: number;
+    priceAmount?: number | null;
     locale?: string;
   },
 ) {
@@ -49,7 +49,7 @@ export async function createItem(
     id: itemId,
     storeId: ctx.storeId,
     categoryId: input.categoryId,
-    priceAmount: input.priceAmount,
+    priceAmount: input.priceAmount ?? null,
     imageKey: null,
     sortOrder,
     isAvailable: true,
@@ -81,7 +81,7 @@ export async function updateItem(
   input: {
     name?: string;
     description?: string | null;
-    priceAmount?: number;
+    priceAmount?: number | null;
     isAvailable?: boolean;
     isSoldOut?: boolean;
     sortOrder?: number;
@@ -113,7 +113,7 @@ export async function updateItem(
   await db
     .update(menuItems)
     .set({
-      priceAmount: input.priceAmount ?? rows[0].priceAmount,
+      priceAmount: input.priceAmount !== undefined ? input.priceAmount : rows[0].priceAmount,
       isAvailable: input.isAvailable ?? rows[0].isAvailable,
       isSoldOut: input.isSoldOut ?? rows[0].isSoldOut,
       sortOrder: input.sortOrder ?? rows[0].sortOrder,

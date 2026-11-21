@@ -82,5 +82,7 @@
   "ownerWorkspace": "Owner workspace",
   "pairedAs": "Signed in as {name}",
   "thisDevice": "this device",
-  "devicePreparation": "Device preparation and alerts"
+  "devicePreparation": "Device preparation and alerts",
+  "priceConfirmedByStaff": "Includes items whose price is confirmed by staff.",
+  "askStaff": "Ask staff"
 }

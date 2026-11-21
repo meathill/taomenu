@@ -3,7 +3,9 @@ import {
   BILLING_CURRENCIES,
   type BillingCurrency,
   formatCurrency,
+  formatListedPrice,
   getCurrencyDecimals,
+  hasListedPrice,
   isBillingCurrency,
   minorAmountToDecimalString,
   minorAmountToInput,
@@ -168,5 +170,28 @@ describe('validatePriceInput（issue #14）', () => {
     expect(validatePriceInput('0', 'VND')).toBeNull();
     expect(validatePriceInput('12.50', 'USD')).toBeNull();
     expect(validatePriceInput('45000', 'VND')).toBeNull();
+  });
+});
+
+describe('hasListedPrice / formatListedPrice', () => {
+  it('0 是已标价的免费，null 才是不标价', () => {
+    expect(hasListedPrice(0)).toBe(true);
+    expect(hasListedPrice(45000)).toBe(true);
+    expect(hasListedPrice(null)).toBe(false);
+    expect(hasListedPrice(undefined)).toBe(false);
+  });
+
+  it('不标价返回询问店员文案，不渲染 0', () => {
+    expect(formatListedPrice(null, 'VND', 'vi', 'Hỏi nhân viên')).toBe('Hỏi nhân viên');
+    expect(formatListedPrice(0, 'VND', 'vi-VN', 'Hỏi nhân viên')).toBe('0 ₫');
+    expect(formatListedPrice(45000, 'VND', 'vi', 'Hỏi nhân viên')).toContain('45');
+  });
+});
+
+describe('validatePriceInput allowEmpty', () => {
+  it('默认空值仍是 required；allowEmpty 时通过', () => {
+    expect(validatePriceInput('', 'VND')).toBe('required');
+    expect(validatePriceInput('', 'VND', { allowEmpty: true })).toBeNull();
+    expect(validatePriceInput('-', 'VND', { allowEmpty: true })).toBe('negative');
   });
 });

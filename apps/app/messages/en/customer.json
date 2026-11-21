@@ -57,5 +57,10 @@
   "addWithPrice": "Add · {price}",
   "addToOrderWithPrice": "Add to order · {price}",
   "quickAdd": "Add {name} to order",
-  "menuLanguage": "Menu language"
+  "menuLanguage": "Menu language",
+  "askStaff": "Ask staff",
+  "priceConfirmedByStaff": "Price confirmed by staff",
+  "totalExcludesUnpriced": "Total does not include items priced by staff.",
+  "submittedHintUnpriced": "Total {total}. Some prices will be confirmed by staff. This page updates automatically. Please keep it open.",
+  "pickupSubmittedHintUnpriced": "Total {total}. Some prices will be confirmed by staff. Staff will call your number. This page updates automatically if you keep it open."
 }

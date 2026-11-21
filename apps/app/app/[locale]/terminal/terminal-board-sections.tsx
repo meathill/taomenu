@@ -189,9 +189,19 @@ export function TerminalOrderSection({
                     <li key={`${order.id}-${item.name}`}>
                       <span className="font-semibold tabular-nums">{item.quantity}×</span>{' '}
                       {item.name}
+                      {item.lineTotalAmount === null ? (
+                        <span className="ml-1 text-xs font-medium text-muted-foreground">
+                          · {t('askStaff')}
+                        </span>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
+                {order.items.some((item) => item.lineTotalAmount === null) ? (
+                  <p className="mt-2 text-xs font-medium text-muted-foreground">
+                    {t('priceConfirmedByStaff')}
+                  </p>
+                ) : null}
                 {order.note ? (
                   <p className="mt-3 rounded-xl bg-brand-50 px-3 py-2 text-sm font-semibold break-words whitespace-pre-line text-ink-900">
                     <span className="mr-1 text-xs font-bold text-gold-600">{t('orderNote')}</span>

@@ -57,5 +57,10 @@
   "addWithPrice": "追加 · {price}",
   "addToOrderWithPrice": "注文に追加 · {price}",
   "quickAdd": "{name}を注文に追加",
-  "menuLanguage": "メニュー言語"
+  "menuLanguage": "メニュー言語",
+  "askStaff": "スタッフにお尋ねください",
+  "priceConfirmedByStaff": "価格はスタッフが確認します",
+  "totalExcludesUnpriced": "合計には、スタッフが価格を確認する商品は含まれません。",
+  "submittedHintUnpriced": "合計 {total}。一部の商品はスタッフが価格を確認します。このページは自動更新されるので、開いたままにしてください。",
+  "pickupSubmittedHintUnpriced": "合計 {total}。一部の商品はスタッフが価格を確認します。番号を呼ばれるまでお待ちください。このページを開いたままにすると状態が自動更新されます。"
 }

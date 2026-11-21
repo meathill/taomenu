@@ -1,6 +1,6 @@
 'use client';
 
-import { formatCurrency } from '@taomenu/shared';
+import { formatListedPrice } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { publicMediaPath } from '@/lib/menu-image';
 import type { PublicMenuItem } from './modifier-picker';
@@ -52,7 +52,7 @@ export function CustomerMenuItemCard({
             </span>
           ) : null}
           <span className="text-sm tabular-nums text-muted-foreground">
-            {formatCurrency(item.priceAmount, currency, locale)}
+            {formatListedPrice(item.priceAmount, currency, locale, t('askStaff'))}
             {item.isSoldOut ? ` · ${t('soldOut')}` : ''}
             {(item.modifierGroups?.length ?? 0) > 0 ? ` · ${t('options')}` : ''}
           </span>

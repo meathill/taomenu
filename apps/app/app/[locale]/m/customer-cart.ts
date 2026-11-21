@@ -21,7 +21,15 @@ export function addToCart(
 }
 
 export function cartSubtotal(cart: CartLine[]): number {
-  return cart.reduce((sum, line) => sum + line.priceAmount * line.quantity, 0);
+  return cart.reduce((sum, line) => {
+    if (line.priceAmount === null) return sum;
+    return sum + line.priceAmount * line.quantity;
+  }, 0);
+}
+
+/** 购物车里是否有不标价、需店员确认价格的行 */
+export function cartHasUnpriced(cart: CartLine[]): boolean {
+  return cart.some((line) => line.priceAmount === null);
 }
 
 /** 购物车行数量 ±delta（上限 99）；减到 0 时移除该行。 */

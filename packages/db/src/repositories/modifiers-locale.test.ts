@@ -43,7 +43,7 @@ describe('规格翻译语言额度', () => {
       name: 'Size',
       locale: 'en',
     });
-    expect(second.groupId).toBeTruthy();
+    expect(second?.groupId).toBeTruthy();
 
     await expect(
       createModifierGroup(ctx, db, {

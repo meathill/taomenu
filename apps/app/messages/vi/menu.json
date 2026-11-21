@@ -23,6 +23,8 @@
   "addItem": "Thêm món",
   "itemName": "Tên món",
   "price": "Giá ({currency})",
+  "priceHint": "Để trống thì khách sẽ thấy “Hỏi nhân viên”.",
+  "askStaff": "Hỏi nhân viên",
   "saveContinue": "Lưu & tiếp",
   "cancel": "Hủy",
   "invalidNamePrice": "Tên và giá không hợp lệ.",

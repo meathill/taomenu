@@ -1,7 +1,7 @@
 'use client';
 
 import { CopyIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react';
-import { formatCurrency } from '@taomenu/shared';
+import { formatListedPrice } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/button';
 import { MenuItemPhotoButton } from './menu-item-photo-button';
@@ -76,7 +76,7 @@ export function MenuItemRow({
         <div className="min-w-0">
           <p className="truncate font-semibold text-ink-900">{label}</p>
           <p className="text-sm tabular-nums text-muted-foreground">
-            {formatCurrency(item.priceAmount, currency, locale)}
+            {formatListedPrice(item.priceAmount, currency, locale, t('askStaff'))}
             {item.isSoldOut ? <span className="ml-2 text-brand-600">{t('soldOut')}</span> : null}
             {!item.isAvailable ? <span className="ml-2">{t('hidden')}</span> : null}
           </p>

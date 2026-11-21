@@ -23,7 +23,7 @@ export type MenuTreeCategory = {
   }>;
   items: Array<{
     id: string;
-    priceAmount: number;
+    priceAmount: number | null;
     sortOrder: number;
     isAvailable: boolean;
     isSoldOut: boolean;

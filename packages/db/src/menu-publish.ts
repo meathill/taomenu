@@ -7,7 +7,7 @@ export type PublishableTranslation = {
 
 export type PublishableItem = {
   id: string;
-  priceAmount: number;
+  priceAmount: number | null;
   isAvailable: boolean;
   translations: PublishableTranslation[];
 };
@@ -80,10 +80,14 @@ export function validateMenuForPublish(input: {
           entityId: item.id,
         });
       }
-      if (!Number.isInteger(item.priceAmount) || item.priceAmount < 0) {
+      if (
+        item.priceAmount !== null &&
+        (!Number.isInteger(item.priceAmount) || item.priceAmount < 0)
+      ) {
         issues.push({
           code: 'INVALID_PRICE',
-          message: 'Item price must be a non-negative integer in the store currency minor unit',
+          message:
+            'Item price must be a non-negative integer in the store currency minor unit, or omitted',
           entityId: item.id,
         });
       }

@@ -2,10 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // issue #23：顾客菜单的菜名（常见“中文 / English”双语）不能被单行截断
-const FILES = [
-  './[storeSlug]/t/[tableToken]/customer-menu-list.tsx',
-  './[storeSlug]/p/[pickupToken]/customer-pickup-menu.tsx',
-];
+const FILES = ['./customer-menu-item-card.tsx'];
 
 function itemNameClassNames(source: string): string[] {
   return [...source.matchAll(/<span className="([^"]+)">\s*\{item\.name\}/g)].map(

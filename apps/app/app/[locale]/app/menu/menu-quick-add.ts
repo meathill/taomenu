@@ -5,7 +5,7 @@ export const QUICK_ADD_NAME_MAX = MENU_ITEM_NAME_MAX;
 /** 单次批量添加的行数上限，避免一次发出过多请求 */
 export const QUICK_ADD_MAX_LINES = 50;
 
-export type QuickAddItem = { line: number; name: string; priceAmount: number };
+export type QuickAddItem = { line: number; name: string; priceAmount: number | null };
 export type QuickAddErrorReason = 'format' | 'negative' | 'nameTooLong' | 'tooMany';
 export type QuickAddError = { line: number; text: string; reason: QuickAddErrorReason };
 
@@ -51,6 +51,11 @@ export function parseQuickAddLines(
     const name = matched?.[1]?.trim() ?? '';
     const priceRaw = matched?.[2] ?? '';
     if (!matched || !name) {
+      // 只有菜名、没有价格：按不标价接受
+      if (!matched && text.length <= QUICK_ADD_NAME_MAX) {
+        items.push({ line, name: text, priceAmount: null });
+        return;
+      }
       errors.push({ line, text, reason: 'format' });
       return;
     }

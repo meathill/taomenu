@@ -7,6 +7,7 @@ import { useSyncPoweredByVisibility } from '@/lib/powered-by-visibility';
 import {
   addToCart,
   type CartLine,
+  cartHasUnpriced,
   cartSubtotal,
   changeCartQuantity,
   normalizeOrderNote,
@@ -64,6 +65,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
     subtotalAmount: number;
     publicToken?: string;
     status?: string;
+    hasUnpricedItems?: boolean;
   } | null>(null);
 
   const load = useCallback(async () => {
@@ -168,6 +170,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
         subtotalAmount: data.subtotalAmount ?? subtotal,
         publicToken: data.publicToken,
         status: data.status ?? 'submitted',
+        hasUnpricedItems: cartHasUnpriced(cart),
       });
       if (data.publicToken) {
         try {
@@ -259,7 +262,7 @@ export function CustomerPickupMenu({ pickupToken }: { pickupToken: string }) {
                 : t('statusSubmitted')}
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          {t('pickupSubmittedHint', {
+          {t(result.hasUnpricedItems ? 'pickupSubmittedHintUnpriced' : 'pickupSubmittedHint', {
             total: formatCurrency(result.subtotalAmount, currency, locale),
           })}
         </p>

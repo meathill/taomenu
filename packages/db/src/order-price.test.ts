@@ -30,4 +30,23 @@ describe('priceOrderLines', () => {
     const result = priceOrderLines([]);
     expect(result.ok).toBe(false);
   });
+
+  it('不标价行不计入小计，标价行仍正确累加', () => {
+    const result = priceOrderLines([
+      base,
+      { ...base, menuItemId: 'item-2', unitPriceAmount: null, quantity: 1, name: 'Chè' },
+    ]);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.subtotalAmount).toBe(90000);
+      expect(result.lines[1]?.unitPriceAmount).toBeNull();
+      expect(result.lines[1]?.lineTotalAmount).toBeNull();
+    }
+  });
+
+  it('整单不标价时小计为 0，仍然可以计价成功', () => {
+    const result = priceOrderLines([{ ...base, unitPriceAmount: null }]);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.subtotalAmount).toBe(0);
+  });
 });

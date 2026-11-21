@@ -17,6 +17,13 @@ describe('createItemSchema', () => {
     expect(updateItemSchema.safeParse({ priceAmount: -1 }).success).toBe(false);
   });
 
+  it('允许不标价：省略或 null', () => {
+    const base = { categoryId: '00000000-0000-4000-8000-000000000001', name: 'Chè' };
+    expect(createItemSchema.safeParse(base).success).toBe(true);
+    expect(createItemSchema.safeParse({ ...base, priceAmount: null }).success).toBe(true);
+    expect(updateItemSchema.safeParse({ priceAmount: null }).success).toBe(true);
+  });
+
   it('拒绝小数价格', () => {
     expect(
       createItemSchema.safeParse({

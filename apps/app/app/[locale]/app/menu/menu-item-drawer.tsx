@@ -108,17 +108,15 @@ export function MenuItemDrawer({
 
   async function saveItem() {
     if (!name.trim() || (!item && !categoryId)) return;
-    const priceError = isBaseMode ? validatePriceInput(price, currency) : null;
+    const priceError = isBaseMode
+      ? validatePriceInput(price, currency, { allowEmpty: true })
+      : null;
     if (priceError) {
       setError(t(PRICE_ERROR_KEYS[priceError]));
       return;
     }
     const priceAmount =
       item && !isBaseMode ? item.priceAmount : parseCurrencyInput(price, currency);
-    if (priceAmount === null) {
-      setError(t('invalidNamePrice'));
-      return;
-    }
     setIsPending(true);
     setError(null);
     try {
@@ -199,9 +197,7 @@ export function MenuItemDrawer({
                 variant="default"
                 size="lg"
                 pending={isPending}
-                disabled={
-                  !name.trim() || (isBaseMode && (!categoryId || !price || livePriceError !== null))
-                }
+                disabled={!name.trim() || (isBaseMode && (!categoryId || livePriceError !== null))}
                 onClick={() => void saveItem()}
                 className="flex-1 sm:flex-none"
               >
@@ -278,7 +274,11 @@ export function MenuItemDrawer({
                     <span className="mt-1 block text-xs font-semibold text-brand-600" role="alert">
                       {t(PRICE_ERROR_KEYS[livePriceError])}
                     </span>
-                  ) : null}
+                  ) : (
+                    <span className="mt-1 block text-xs font-medium text-muted-foreground">
+                      {t('priceHint')}
+                    </span>
+                  )}
                 </label>
               )}
               <div>

@@ -10,7 +10,7 @@ export type ItemFormValues = {
 };
 
 type ItemFormSource = {
-  priceAmount: number;
+  priceAmount: number | null;
   isAvailable: boolean;
   isSoldOut: boolean;
 };
@@ -44,7 +44,10 @@ export function buildItemFormValues(input: {
   return {
     name: input.translation?.name ?? '',
     description: input.translation?.description ?? '',
-    price: input.item ? amountToInput(input.item.priceAmount, input.currency) : '',
+    price:
+      input.item && input.item.priceAmount !== null
+        ? amountToInput(input.item.priceAmount, input.currency)
+        : '',
     categoryId: input.initialCategoryId ?? input.fallbackCategoryId ?? '',
     isAvailable: input.item?.isAvailable ?? true,
     isSoldOut: input.item?.isSoldOut ?? false,

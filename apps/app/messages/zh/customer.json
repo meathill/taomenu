@@ -57,5 +57,10 @@
   "addWithPrice": "添加 · {price}",
   "addToOrderWithPrice": "加入订单 · {price}",
   "quickAdd": "将{name}加入订单",
-  "menuLanguage": "菜单语言"
+  "menuLanguage": "菜单语言",
+  "askStaff": "询问店员",
+  "priceConfirmedByStaff": "价格由店员确认",
+  "totalExcludesUnpriced": "合计不含需店员确认价格的菜品。",
+  "submittedHintUnpriced": "合计 {total}。部分菜品价格将由店员确认。本页会自动更新，请保持打开。",
+  "pickupSubmittedHintUnpriced": "合计 {total}。部分菜品价格将由店员确认。请等候店员叫号。保持本页打开即可自动更新。"
 }

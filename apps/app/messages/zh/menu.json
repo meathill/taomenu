@@ -23,6 +23,8 @@
   "addItem": "添加菜品",
   "itemName": "菜品名称",
   "price": "价格（{currency}）",
+  "priceHint": "留空时，客人会看到“询问店员”。",
+  "askStaff": "询问店员",
   "saveContinue": "保存并继续",
   "cancel": "取消",
   "invalidNamePrice": "名称或价格无效。",

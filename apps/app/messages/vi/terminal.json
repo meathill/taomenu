@@ -82,5 +82,7 @@
   "ownerWorkspace": "Khu vực chủ quán",
   "pairedAs": "Đang dùng với tên {name}",
   "thisDevice": "thiết bị này",
-  "devicePreparation": "Chuẩn bị thiết bị và thông báo"
+  "devicePreparation": "Chuẩn bị thiết bị và thông báo",
+  "priceConfirmedByStaff": "Có món giá do nhân viên xác nhận.",
+  "askStaff": "Hỏi nhân viên"
 }

@@ -1,7 +1,7 @@
 export type PricedLineInput = {
   menuItemId: string;
   quantity: number;
-  unitPriceAmount: number;
+  unitPriceAmount: number | null;
   name: string;
   isAvailable: boolean;
   isSoldOut: boolean;
@@ -11,8 +11,8 @@ export type PricedLine = {
   menuItemId: string;
   quantity: number;
   nameSnapshot: string;
-  unitPriceAmount: number;
-  lineTotalAmount: number;
+  unitPriceAmount: number | null;
+  lineTotalAmount: number | null;
 };
 
 export type PriceError =
@@ -44,7 +44,8 @@ export function priceOrderLines(
     if (line.isSoldOut) {
       return { ok: false, error: { code: 'ITEM_SOLD_OUT', menuItemId: line.menuItemId } };
     }
-    const lineTotalAmount = line.unitPriceAmount * line.quantity;
+    const lineTotalAmount =
+      line.unitPriceAmount === null ? null : line.unitPriceAmount * line.quantity;
     priced.push({
       menuItemId: line.menuItemId,
       quantity: line.quantity,
@@ -52,7 +53,9 @@ export function priceOrderLines(
       unitPriceAmount: line.unitPriceAmount,
       lineTotalAmount,
     });
-    subtotalAmount += lineTotalAmount;
+    if (lineTotalAmount !== null) {
+      subtotalAmount += lineTotalAmount;
+    }
   }
 
   return { ok: true, lines: priced, subtotalAmount };

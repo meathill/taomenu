@@ -23,6 +23,8 @@
   "addItem": "品目を追加",
   "itemName": "品名",
   "price": "価格（{currency}）",
+  "priceHint": "空欄にすると、お客様には「スタッフにお尋ねください」と表示されます。",
+  "askStaff": "スタッフにお尋ねください",
   "saveContinue": "保存して次へ",
   "cancel": "キャンセル",
   "invalidNamePrice": "名前または価格が無効です。",

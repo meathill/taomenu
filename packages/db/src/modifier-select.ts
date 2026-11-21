@@ -28,7 +28,7 @@ export type ModifierSelectError =
 export type ModifierSelectResult =
   | {
       ok: true;
-      unitPriceAmount: number;
+      unitPriceAmount: number | null;
       nameSnapshot: string;
       selected: Array<{ id: string; name: string; priceDeltaAmount: number }>;
     }
@@ -40,7 +40,7 @@ export type ModifierSelectResult =
  */
 export function resolveModifierSelection(input: {
   baseName: string;
-  basePriceAmount: number;
+  basePriceAmount: number | null;
   groups: ModifierGroupInput[];
   selectedIds: string[];
 }): ModifierSelectResult {
@@ -93,10 +93,13 @@ export function resolveModifierSelection(input: {
     }
   }
 
-  let unitPriceAmount = basePriceAmount;
+  // 基价未标时整行都不标价（规格加价也先不计入顾客小计，由店员确认）。
+  let unitPriceAmount: number | null = basePriceAmount === null ? null : basePriceAmount;
   const nameParts: string[] = [];
   for (const option of selectedOptions) {
-    unitPriceAmount += option.priceDeltaAmount;
+    if (unitPriceAmount !== null) {
+      unitPriceAmount += option.priceDeltaAmount;
+    }
     nameParts.push(option.name);
   }
 

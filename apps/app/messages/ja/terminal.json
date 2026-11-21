@@ -82,5 +82,7 @@
   "ownerWorkspace": "オーナーワークスペース",
   "pairedAs": "{name} として接続中",
   "thisDevice": "この端末",
-  "devicePreparation": "端末の準備と通知"
+  "devicePreparation": "端末の準備と通知",
+  "priceConfirmedByStaff": "スタッフが価格を確認する商品が含まれます。",
+  "askStaff": "スタッフにお尋ねください"
 }

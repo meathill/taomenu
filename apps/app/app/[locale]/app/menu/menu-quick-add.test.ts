@@ -35,16 +35,15 @@ describe('parseQuickAddLines（issue #18）', () => {
     expect(parseQuickAddLines('Baguette 1,20', 'USD').items[0]?.priceAmount).toBe(120);
   });
 
-  it('负数、缺价格、超长名称都报错，并保留原文与行号', () => {
+  it('负数、超长名称报错；只有菜名则视为不标价', () => {
     const { items, errors } = parseQuickAddLines(
       ['Baguette -3', 'Croissant - -1', 'Just a name', '', `${'a'.repeat(121)} - 3`].join('\n'),
       'USD',
     );
-    expect(items).toEqual([]);
+    expect(items).toEqual([{ line: 3, name: 'Just a name', priceAmount: null }]);
     expect(errors).toEqual([
       { line: 1, text: 'Baguette -3', reason: 'negative' },
       { line: 2, text: 'Croissant - -1', reason: 'negative' },
-      { line: 3, text: 'Just a name', reason: 'format' },
       { line: 5, text: `${'a'.repeat(121)} - 3`, reason: 'nameTooLong' },
     ]);
   });

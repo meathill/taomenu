@@ -88,7 +88,7 @@ export function CustomerMenu({ tableToken }: CustomerMenuProps) {
       displayNumber: number;
       status: string;
       subtotalAmount: number;
-      items: Array<{ name: string; quantity: number; lineTotalAmount: number }>;
+      items: Array<{ name: string; quantity: number; lineTotalAmount: number | null }>;
     };
     setOrder({
       publicToken,

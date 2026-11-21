@@ -1,6 +1,6 @@
 'use client';
 
-import { formatCurrency } from '@taomenu/shared';
+import { formatListedPrice } from '@taomenu/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/button';
@@ -113,7 +113,7 @@ export function MenuQuickAddPanel({
             <li key={item.line} className="flex items-start justify-between gap-3 py-2">
               <span className="min-w-0 wrap-anywhere">{item.name}</span>
               <span className="shrink-0 tabular-nums">
-                {formatCurrency(item.priceAmount, currency, locale)}
+                {formatListedPrice(item.priceAmount, currency, locale, t('askStaff'))}
               </span>
             </li>
           ))}

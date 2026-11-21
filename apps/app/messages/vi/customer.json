@@ -57,5 +57,10 @@
   "addWithPrice": "Thêm · {price}",
   "addToOrderWithPrice": "Thêm vào đơn · {price}",
   "quickAdd": "Thêm {name} vào đơn",
-  "menuLanguage": "Ngôn ngữ thực đơn"
+  "menuLanguage": "Ngôn ngữ thực đơn",
+  "askStaff": "Hỏi nhân viên",
+  "priceConfirmedByStaff": "Giá do nhân viên xác nhận",
+  "totalExcludesUnpriced": "Tổng chưa gồm các món do nhân viên báo giá.",
+  "submittedHintUnpriced": "Tổng {total}. Một số món sẽ do nhân viên báo giá. Trang này tự cập nhật, vui lòng giữ mở.",
+  "pickupSubmittedHintUnpriced": "Tổng {total}. Một số món sẽ do nhân viên báo giá. Nhân viên sẽ gọi số của bạn. Nếu giữ trang này mở, trạng thái sẽ tự cập nhật."
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   addToCart,
   type CartLine,
+  cartHasUnpriced,
   cartSubtotal,
   changeCartQuantity,
   normalizeOrderNote,
@@ -76,6 +77,19 @@ describe('cartSubtotal', () => {
 
   it('空购物车金额为 0', () => {
     expect(cartSubtotal([])).toBe(0);
+  });
+
+  it('不标价行不计入小计，标价行不受影响', () => {
+    const cart: CartLine[] = [
+      { ...selection(), priceAmount: 35000, quantity: 2 },
+      {
+        ...selection({ lineKey: 'item-2-', menuItemId: 'item-2', priceAmount: null }),
+        quantity: 3,
+      },
+    ];
+    expect(cartSubtotal(cart)).toBe(70000);
+    expect(cartHasUnpriced(cart)).toBe(true);
+    expect(cartHasUnpriced([{ ...selection(), quantity: 1 }])).toBe(false);
   });
 });
 

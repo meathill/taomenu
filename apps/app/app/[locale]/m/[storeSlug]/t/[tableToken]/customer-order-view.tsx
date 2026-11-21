@@ -8,7 +8,7 @@ export type OrderStatusView = {
   publicToken: string;
   subtotalAmount: number;
   status: string;
-  items: Array<{ name: string; quantity: number; lineTotalAmount: number }>;
+  items: Array<{ name: string; quantity: number; lineTotalAmount: number | null }>;
 };
 
 type CustomerOrderViewProps = {
@@ -48,7 +48,12 @@ export function CustomerOrderView({
         })()}
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
-        {t('submittedHint', { total: formatCurrency(order.subtotalAmount, currency, locale) })}
+        {t(
+          order.items.some((item) => item.lineTotalAmount === null)
+            ? 'submittedHintUnpriced'
+            : 'submittedHint',
+          { total: formatCurrency(order.subtotalAmount, currency, locale) },
+        )}
       </p>
       <ul className="mt-4 space-y-1 text-sm">
         {order.items.map((item) => (
