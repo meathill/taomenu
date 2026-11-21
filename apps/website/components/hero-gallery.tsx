@@ -10,6 +10,8 @@ import {
   useState,
 } from 'react';
 import { PhoneFrame } from '@/components/phone-frame';
+import { bindHeroGalleryDrag } from '@/lib/hero-gallery-drag';
+import { measuredSlideIndex, nextIndexAfterPointer } from '@/lib/hero-gallery-pointer';
 import type { HomeHeroSlideId } from '@/lib/home-screenshots';
 
 export type HeroGallerySlide = {
@@ -37,11 +39,7 @@ function slideOffset(scroller: HTMLDivElement, index: number): number {
 }
 
 function measuredIndex(scroller: HTMLDivElement, slideCount: number): number {
-  if (scroller.clientWidth === 0) {
-    return 0;
-  }
-  const next = Math.round(scroller.scrollLeft / scroller.clientWidth);
-  return Math.min(slideCount - 1, Math.max(0, next));
+  return measuredSlideIndex(scroller.scrollLeft, scroller.clientWidth, slideCount);
 }
 
 export function HeroGallery({ slides, label }: HeroGalleryProps) {
@@ -50,7 +48,7 @@ export function HeroGallery({ slides, label }: HeroGalleryProps) {
   const pausedRef = useRef(true);
   const programmaticTargetRef = useRef<number | null>(null);
   const scrollEndTimerRef = useRef(0);
-  const dragRef = useRef<{ startX: number; startScroll: number; pointerId: number } | null>(null);
+  const dragCleanupRef = useRef<(() => void) | null>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(true);
   const [dragging, setDragging] = useState(false);
@@ -166,6 +164,8 @@ export function HeroGallery({ slides, label }: HeroGalleryProps) {
     return () => ro.disconnect();
   }, []);
 
+  useEffect(() => () => dragCleanupRef.current?.(), []);
+
   function pause() {
     pausedRef.current = true;
     setPaused(true);
@@ -190,6 +190,9 @@ export function HeroGallery({ slides, label }: HeroGalleryProps) {
   }
 
   function onScrollerPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === 'mouse' && event.button !== 0) {
+      return;
+    }
     pause();
     // A finger/mouse drag takes over from a programmatic scroll.
     clearProgrammaticScroll();
@@ -200,42 +203,26 @@ export function HeroGallery({ slides, label }: HeroGalleryProps) {
     if (!el) {
       return;
     }
-    dragRef.current = {
+    dragCleanupRef.current?.();
+    dragCleanupRef.current = bindHeroGalleryDrag({
+      scroller: el,
+      pointerId: event.pointerId,
       startX: event.clientX,
       startScroll: el.scrollLeft,
-      pointerId: event.pointerId,
-    };
-    el.setPointerCapture(event.pointerId);
-    el.style.scrollBehavior = 'auto';
-    setDragging(true);
-  }
-
-  function onScrollerPointerMove(event: PointerEvent<HTMLDivElement>) {
-    const drag = dragRef.current;
-    const el = scrollerRef.current;
-    if (!drag || !el) {
-      return;
-    }
-    el.scrollLeft = drag.startScroll - (event.clientX - drag.startX);
-  }
-
-  function endDrag(event: PointerEvent<HTMLDivElement>) {
-    const drag = dragRef.current;
-    const el = scrollerRef.current;
-    if (!drag) {
-      return;
-    }
-    dragRef.current = null;
-    setDragging(false);
-    if (el) {
-      if (el.hasPointerCapture(drag.pointerId)) {
-        el.releasePointerCapture(drag.pointerId);
-      }
-      el.style.scrollBehavior = '';
-      const snapped = measuredIndex(el, slides.length);
-      goTo(snapped);
-    }
-    event.preventDefault();
+      onDragChange: setDragging,
+      resolveIndex: (deltaX, scrollLeft, slideWidth) =>
+        nextIndexAfterPointer({
+          currentIndex: indexRef.current,
+          slideCount: slides.length,
+          deltaX,
+          scrollLeft,
+          slideWidth,
+        }),
+      onRelease: (next) => {
+        dragCleanupRef.current = null;
+        goTo(next);
+      },
+    });
   }
 
   function focusDot(slideIndex: number) {
@@ -306,14 +293,11 @@ export function HeroGallery({ slides, label }: HeroGalleryProps) {
         <div className="relative aspect-[390/844] w-full">
           <div
             ref={scrollerRef}
-            className={`absolute inset-x-0 top-0 bottom-7 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden ${
-              dragging ? 'cursor-grabbing' : 'cursor-grab'
+            className={`absolute inset-x-0 top-0 bottom-7 flex overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth select-none [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden ${
+              dragging ? 'cursor-grabbing snap-none' : 'cursor-grab snap-x snap-mandatory'
             }`}
             onScroll={onScroll}
             onPointerDown={onScrollerPointerDown}
-            onPointerMove={onScrollerPointerMove}
-            onPointerUp={endDrag}
-            onPointerCancel={endDrag}
           >
             {slides.map((slide, slideIndex) => (
               <div
@@ -355,7 +339,7 @@ export function HeroGallery({ slides, label }: HeroGalleryProps) {
                 aria-selected={selected}
                 aria-controls={`${baseId}-${slide.id}`}
                 tabIndex={selected ? 0 : -1}
-                className="flex h-7 w-5 items-center justify-center"
+                className="flex h-full min-w-7 flex-1 cursor-pointer items-center justify-center"
                 onClick={() => {
                   pause();
                   goTo(slideIndex);

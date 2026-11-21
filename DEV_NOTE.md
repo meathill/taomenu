@@ -179,6 +179,11 @@
   `Screenshot` 按文件名/宽高判断：竖屏套手机框，横屏（staff / menu-editor / qr-tables / payment）全宽展示。
   hero 与配图可点击弹出准全屏 dialog。
   hero 场景图放 `public/images/landing/{slug}/hero.webp`，接入要更新 `lib/landing.ts` 的 `LANDING_HERO`
+- 首页 hero 轮播（issue #30）：桌面用拖拽切页；位移小于 8px 的点击前进一张，避免截图 dead click。
+  拖拽过程要关掉 `scroll-snap`，否则浏览器会把脚本改的 `scrollLeft` 吸回去，拖了像没拖。
+  `setPointerCapture` 之后的 pointermove/up 到不了 React 根上的委托监听，松手逻辑要挂在 `window`。
+  指示点只铺在底部边框（`h-7`）里，不要把热区伸进截图，否则挡住编辑页的「发布菜单」。
+  说明文字、顶部标签和左右箭头已经去掉，不要加回去。
 - 演示门店造数：`apps/app/scripts/seed-demo-stores.ts`（tsx 运行）直写本地 miniflare D1——
   用 `node:sqlite` + drizzle d1 驱动包装（参考 `packages/db/src/testing/memory-d1.ts`），复用 `@taomenu/db` repository 函数；
   订单状态机必须逐级 transition（submitted→accepted→ready_for_pickup→picked_up），跳级会 INVALID_TRANSITION
